@@ -80,6 +80,7 @@ namespace OWSBG.World
             _rb.bodyType = RigidbodyType2D.Kinematic;
             _rb.simulated = true;
             _rb.interpolation = RigidbodyInterpolation2D.None;
+            _rb.useFullKinematicContacts = true;   // kinematic bodies only touch static triggers with this on
             _box = GetComponent<BoxCollider2D>();
             if (Abilities == null) Abilities = GetComponent<AbilitySet>();
             if (Input == null) Input = GetComponent<IWrenInput>();

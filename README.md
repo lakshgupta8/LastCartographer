@@ -26,8 +26,13 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 3. Read the story bible, then the combat doc, then the plan. Sprint 1 starts with Wren's controller.
 
 ## Playing the greybox
-Open `Assets/_Project/Scenes/Persistent/Persistent.unity` and press Play. The RoomManager loads
-`Greybox_Saltmarrow_A`; walk off the right edge to transition into room B (a Talonhold shaft is there).
+In the editor menu bar choose **OWSBG → Play From Start** (Ctrl+Shift+P). It opens the persistent
+scene plus the first room and enters Play mode. Then **click inside the Game view once** so it has
+keyboard focus (Unity only sends input to a focused Game view). Walk off the right edge to transition
+into room B, which has a Talonhold shaft.
+
+Opening `Assets/_Project/Scenes/Persistent/Persistent.unity` by hand also auto-opens the first room,
+and pressing Play inside any room scene bootstraps the persistent scene for you.
 
 | Action | Keyboard | Gamepad |
 |---|---|---|

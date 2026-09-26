@@ -80,10 +80,10 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 
 | ID | Task | M | Ref | after |
 |---|---|---|---|---|
-| CMB-01 `[ ]` | Wren controller: kinematic 2D, buffers, coyote, variable jump, apex hang; tuned in greybox | M0 | CMB-1, 2 | PRG-05 |
-| CMB-02 `[ ]` | Quill strike (3 directions), combo, down-strike pogo, hitstop, hit reactions | M0 | CMB-2.1 | CMB-01 |
-| CMB-03 `[ ]` | Inkwell + Bind | M0 | CMB-2.2, 4 | CMB-02 |
-| CMB-04 `[ ]` | Wingbeat, Talonhold, Inkthread, Windmemory implementations with ability gating | M1–M2 | CMB-3 | CMB-01 |
+| CMB-01 `[~]` | Wren controller: kinematic 2D, buffers, coyote, variable jump, apex hang; tuned in greybox | M0 | CMB-1, 2 | PRG-05 |
+| CMB-02 `[~]` | Quill strike (3 directions), combo, down-strike pogo, hitstop, hit reactions | M0 | CMB-2.1 | CMB-01 |
+| CMB-03 `[~]` | Inkwell + Bind | M0 | CMB-2.2, 4 | CMB-02 |
+| CMB-04 `[~]` | Wingbeat, Talonhold, Inkthread, Windmemory implementations with ability gating | M1–M2 | CMB-3 | CMB-01 |
 | CMB-05 `[ ]` | Flourishes: Crosshatch, Longstroke, Blot | M1 | CMB-4 | CMB-03 |
 | CMB-06 `[ ]` | Charters (3 base) with combo rewrites and silhouettes | M2 | CMB-5 | CMB-05 |
 | CMB-07 `[ ]` | Instruments (7) and slot system | M2 | CMB-6 | CMB-03 |
@@ -105,12 +105,12 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | ID | Task | M | Ref | after |
 |---|---|---|---|---|
 | PRG-01 `[x]` | Unity 6 project, URP Forward+, packages, asmdefs, folders | M0 | Engine | — |
-| PRG-02 `[x]` | Greybox bootstrap room: side-on camera, parallax layers, sun, post volume, lit sprite | M0 | Engine | PRG-01 |
-| PRG-03 `[ ]` | `InkSprite` Shader Graph: alpha clip, two-step ramp, `_Ink` state, paper grain | M0 | ART-3 | PRG-02 |
+| PRG-02 `[x]` | Persistent scene + two greybox rooms: side-on Cinemachine rig, parallax layers, sun, post volume, Wren rig, dummy | M0 | Engine | PRG-01 |
+| PRG-03 `[~]` | `InkSprite` Shader Graph: alpha clip, two-step ramp, `_Ink` state, paper grain | M0 | ART-3 | PRG-02 |
 | PRG-04 `[ ]` | Foreground-only depth-of-field render feature; paper-grain overlay feature | M0 | ART-3 | PRG-03 |
-| PRG-05 `[ ]` | Input: `.inputactions`, buffered input service, rebinding | M0 | CMB-1 | PRG-01 |
-| PRG-06 `[ ]` | Cinemachine 3 rig: follow, look-ahead, `Confiner2D` per room, boss cameras | M0 | Engine | CMB-01 |
-| PRG-07 `[ ]` | Room system: additive scenes, transitions, neighbour preload, Addressables | M0 | Engine | PRG-01 |
+| PRG-05 `[x]` | Input: `.inputactions`, buffered input service, rebinding | M0 | CMB-1 | PRG-01 |
+| PRG-06 `[~]` | Cinemachine 3 rig: follow, look-ahead, `Confiner2D` per room, boss cameras | M0 | Engine | CMB-01 |
+| PRG-07 `[~]` | Room system: additive scenes, transitions, neighbour preload, Addressables | M0 | Engine | PRG-01 |
 | PRG-08 `[ ]` | Dialogue runtime: Yarn Spinner, `<<flag>>`, `<<commission>>`, `<<fade>>`, `<<anchor>>`, dialogue UI | M0 | SB-11 | PRG-01 |
 | PRG-09 `[ ]` | `WorldState` + save/load (JSON, autosave at desks) | M0 | SB-10 | PRG-01 |
 | PRG-10 `[ ]` | Survey system: vantage points, atlas reveal, fast travel, erasure | M1 | DES-02 | PRG-08 |
@@ -129,7 +129,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-23 `[ ]` | Endings runner and epilogue walk | M3 | SB-9 | DES-12 |
 | PRG-24 `[ ]` | Performance: streaming budget, sprite batching, 60 fps lock | M4 | — | all |
 | PRG-25 `[ ]` | Build pipeline: CI, Windows build, Steam packaging | M4 | — | PRG-01 |
-| PRG-26 `[ ]` | Tests: controller frame-data, WorldState, save round-trip, ending reachability | M3 | — | PRG-09 |
+| PRG-26 `[~]` | Tests: controller frame-data, WorldState, save round-trip, ending reachability | M3 | — | PRG-09 |
 
 ### 3.5 Character art and animation (CHR)
 

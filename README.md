@@ -25,6 +25,27 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 2. Open `LastCartographer/`. The greybox room is `Assets/_Project/Scenes/Greybox/Greybox_Saltmarrow.unity`.
 3. Read the story bible, then the combat doc, then the plan. Sprint 1 starts with Wren's controller.
 
+## Playing the greybox
+Open `Assets/_Project/Scenes/Persistent/Persistent.unity` and press Play. The RoomManager loads
+`Greybox_Saltmarrow_A`; walk off the right edge to transition into room B (a Talonhold shaft is there).
+
+| Action | Keyboard | Gamepad |
+|---|---|---|
+| Move | WASD / arrows | left stick / d-pad |
+| Jump (hold for height) | Space | South |
+| Quill strike (up / down in air with stick) | J | West |
+| Wingbeat dash | Shift or K | RB / RT |
+| Bind (hold, spends 3 ink) | E | East |
+| Survey (hold at a vantage) | Q | North |
+
+Wingbeat and Talonhold are pre-unlocked in the greybox for feel-testing (`AbilitySet` on the Wren object).
+
+## Verifying headless
+```
+Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
+```
+The play-mode tests check the combat doc's frame data on the real controller: landing, held and tapped jump heights, coyote time, dash distance and gating, and the down-strike pogo.
+
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.
 - **Krita / Aseprite** for hand-drawn frames; **Unity 2D Animation** for boss rigs.

@@ -54,6 +54,8 @@ namespace OWSBG.Tests
             var doc = ui.GetComponent<UIDocument>();
             var settings = Object.Instantiate(doc.panelSettings);   // do not touch the asset
             settings.targetTexture = uiRt;
+            settings.clearColor = true;                        // otherwise old pages linger under new ones
+            settings.colorClearValue = new Color(0f, 0f, 0f, 0f);
             settings.scaleMode = PanelScaleMode.ScaleWithScreenSize;
             settings.referenceResolution = new Vector2Int(1920, 1080);
             doc.panelSettings = settings;
@@ -73,6 +75,7 @@ namespace OWSBG.Tests
             yield return Capture(cam, camRt, uiRt, "ui-dialogue.png");
             svc.Stop();
             for (int i = 0; i < 30 && svc.IsRunning; i++) yield return null;
+            Assert.IsFalse(view.IsVisible, "a stopped conversation leaves no page");
 
             var menu = ui.GetComponent<DeskMenu>();
             menu.Open(wren);

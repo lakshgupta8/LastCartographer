@@ -527,12 +527,12 @@ namespace OWSBG.Setup
 
             MakeDummy(room, new Vector2(4f, 0.6f));
             MakeSeeds(room, new Vector2(7f, 5.9f), 2);   // on the high platform, past the crab
-            MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Greybox_Sable", new Color(0.16f, 0.18f, 0.22f));
+            MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Quay_Sable", new Color(0.16f, 0.18f, 0.22f));
             var sable = MakeSchedule(room, "Sable_Greybox");
             sable.AddPost(DayPhase.Dawn, new Vector2(-9.5f, 0f), "", "mending nets", 1);
             sable.AddPost(DayPhase.Day, new Vector2(-9.5f, 0f), "", "mending nets", 1);
             sable.AddPost(DayPhase.Dusk, new Vector2(-8.2f, 0f), "", "reading the ledger", 1);
-            sable.AddPost(DayPhase.Night, new Vector2(-12.2f, 0f), "Greybox_Sable_Night", "asleep under the stilts", -1);
+            sable.AddPost(DayPhase.Night, new Vector2(-12.2f, 0f), "Quay_Sable_Night", "asleep under the stilts", -1);
             MakeVantage(room, "Reedmother", "Saltmarrow_A/Reedmother", new Vector2(14f, 0f));
             MakeDesk(room, new Vector2(-4.5f, 0f));
             MakeLedger(room, "Saltmarrow", new Vector2(-7f, 0f));
@@ -585,12 +585,12 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.70f, 0.72f, 0.66f), 10f);
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.81f, 0.74f), 16f);
 
-            MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Greybox_Dotha", new Color(0.36f, 0.40f, 0.34f));
+            MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Merrow_Dotha", new Color(0.36f, 0.40f, 0.34f));
             var dotha = MakeSchedule(room, "Dotha_Greybox");
             dotha.AddPost(DayPhase.Dawn, new Vector2(-12f, 0f), "", "on her stoop", 1);
             dotha.AddPost(DayPhase.Day, new Vector2(-12f, 0f), "", "on her stoop", 1);
-            dotha.AddPost(DayPhase.Dusk, new Vector2(0.5f, 0f), "Greybox_Dotha_Water", "singing to the water", 1);
-            dotha.AddPost(DayPhase.Night, new Vector2(-12f, 0f), "Greybox_Dotha_Night", "asleep", -1);
+            dotha.AddPost(DayPhase.Dusk, new Vector2(0.5f, 0f), "Merrow_Dotha_Water", "singing to the water", 1);
+            dotha.AddPost(DayPhase.Night, new Vector2(-12f, 0f), "Merrow_Dotha_Night", "asleep", -1);
             // The Merrow's End bounds-walk (DES-13): four bounds, two verses, Dotha the chorus.
             var walk = MakeBoundsWalk(room, "merrows_end", "saltmarrow.dotha.decided", 3, dotha);
             walk.AddVerse("the stoop and the post",
@@ -637,6 +637,13 @@ namespace OWSBG.Setup
             MakeDesk(room, new Vector2(-11f, 0f));
             // The lamp itself, lit once the Lamp-Keeper is beaten (her beacon vantage): a travel point.
             MakeLamp(room, "Lamp", new Vector2(3f, 0f), "lamp.Saltmarrow_Lighthouse", "the fourth lamp", "Saltmarrow_Lighthouse/Lamp");
+            // The lamp's inscription (NAR-04): readable with up, on the same trigger as the travel point.
+            var lampTalker = room.transform.Find("Lamp_Lamp").gameObject.AddComponent<NpcTalker>();
+            var ltSo = new SerializedObject(lampTalker);
+            ltSo.FindProperty("_startNode").stringValue = "Lighthouse_Lamp";
+            ltSo.FindProperty("_prompt").stringValue = "Read";
+            ltSo.FindProperty("_faceWren").boolValue = false;
+            ltSo.ApplyModifiedPropertiesWithoutUndo();
             MakeSpawn(room, "Start", new Vector2(-12.5f, 0f));
             MakeSpawn(room, "West", new Vector2(-14.5f, 0f));
             MakeTransition(room, "To_Chain_3", new Vector2(-15.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Chain_3"), "East");
@@ -693,6 +700,29 @@ namespace OWSBG.Setup
             arSo.FindProperty("_introCutscene").objectReferenceValue = introCs;
             arSo.FindProperty("_arenaCamera").objectReferenceValue = arenaCam;
             arSo.ApplyModifiedPropertiesWithoutUndo();
+
+            // Halvard's first hunt (NAR-04, bible 6.3): he walks in from the west once the lamp is lit,
+            // measures her over a conversation, and walks out. The heron waits inactive until then.
+            MakeNpc(room, "Halvard", new Vector2(-15f, 0f), "Lighthouse_Halvard_Idle", new Color(0.55f, 0.50f, 0.36f));
+            var halvardGo = room.transform.Find("Halvard").gameObject;
+            var huntShot = MakeShot(room, "CM Halvard", new Vector3(-10f, 3f, -14f));
+            var hunt = NewTimeline(CutsceneDir + "/CS_HalvardHunt.playable");
+            var walkIn = AddClip<ActorMoveClip>(hunt.CreateTrack<PlayableTrack>("Halvard"), 0.3, 3.0, "three paces");
+            walkIn.From = new Vector2(-15f, 0f); walkIn.To = new Vector2(-9f, 0f);
+            walkIn.Actor.exposedName = "halvard";
+            AddClip<DialogueNodeClip>(hunt.CreateTrack<PlayableTrack>("Talk"), 3.4, 0.2, "the count").Node = "Lighthouse_Halvard_Hunt";
+            var walkOut = AddClip<ActorMoveClip>(hunt.CreateTrack<PlayableTrack>("Halvard out"), 3.8, 3.0, "the reeds carry it");
+            walkOut.From = new Vector2(-9f, 0f); walkOut.To = new Vector2(-16f, 0f);
+            walkOut.Actor.exposedName = "halvard";
+            var huntCs = MakeCutscene(room, "halvard_hunt", hunt, huntShot);
+            huntCs.SetReference("halvard", halvardGo.transform);
+            EditorUtility.SetDirty(hunt);
+            var huntDir = huntCs.gameObject.AddComponent<HalvardHunt>();
+            var hdSo = new SerializedObject(huntDir);
+            hdSo.FindProperty("_cutscene").objectReferenceValue = huntCs;
+            hdSo.FindProperty("_halvard").objectReferenceValue = halvardGo;
+            hdSo.ApplyModifiedPropertiesWithoutUndo();
+            halvardGo.SetActive(false);
             MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomCScenePath);

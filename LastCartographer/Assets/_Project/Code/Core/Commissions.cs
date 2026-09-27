@@ -282,7 +282,7 @@ namespace OWSBG.Core
             {
                 Id = "saltmarrow.lantern_chain", Title = "Lantern Chain", Hub = "Saltmarrow", Poster = "The Guild, by proxy",
                 Brief = "Seven lights on this coast. Four are dark. The Guild pays by the lamp, and does not ask who kept them.",
-                Journal = "The fourth lighthouse is up the boardwalk past the shaft. Something still keeps it.",
+                Journal = "The fourth lighthouse is past Merrow's End and three dark lamps. Something still keeps it.",
                 Aftermath = "One lamp lit. The chain has six more links, and three of them are out past the tethers.",
                 Steps = new[] { CommissionStep.Vantage("Saltmarrow_Lighthouse/Lamp", "Re-light the fourth lighthouse") },
                 RewardScraps = 2,
@@ -304,7 +304,7 @@ namespace OWSBG.Core
             {
                 Id = "saltmarrow.iris_harvest", Title = "The Iris Harvest", Hub = "Saltmarrow", Poster = "A grower, unnamed",
                 Brief = "Guild agents are burning the pale iris. The grower wants their boots off the beds. Wants it done quiet.",
-                Journal = "The beds are past the stilts, up on the platforms. Clear what is trampling them.",
+                Journal = "The beds are up on the quay's platforms and along the boardwalk. Clear what is trampling them.",
                 Aftermath = "The beds are clear for now. The Ferrymen's prices moved the same day.",
                 Steps = new[] { CommissionStep.Count("kill.MarshCrab", 3, "Clear the iris beds") },
                 RewardScraps = 1, RewardInstrument = InstrumentKind.IrisTincture,
@@ -313,10 +313,10 @@ namespace OWSBG.Core
             {
                 Id = "saltmarrow.dotha", Title = "Dotha's Last Season", Hub = "Saltmarrow", Poster = "Merrow's End, what is left of it",
                 Brief = "The last elder of Merrow's End wants company for the season. She says it is her last. She has said that before.",
-                Journal = "Dotha sits at the west end of the next room. Sit with her. Learn what she sings. Decide.",
+                Journal = "Dotha sits on her stoop at the west end of Merrow's End. Sit with her. Learn what she sings. Decide.",
                 Aftermath = "Merrow's End is on the map, one way or the other. The Blank will remember how.",
                 Steps = new[] { CommissionStep.Flag("saltmarrow.dotha.decided", "Sit with Dotha and decide") },
-                RewardScraps = 2, BlankIsland = "Merrows_End", PostAfterFlag = "greybox.met_sable",
+                RewardScraps = 2, BlankIsland = "Merrows_End", PostAfterFlag = "saltmarrow.met_sable",
             },
             new CommissionDef
             {

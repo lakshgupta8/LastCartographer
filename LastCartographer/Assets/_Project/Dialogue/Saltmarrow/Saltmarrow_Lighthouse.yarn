@@ -1,0 +1,43 @@
+// The fourth lighthouse (bible 4.1, 6.1, 7.1). Room C.
+// The lamp's inscription (environment first, style guide 6), and Warden-Sergeant Halvard's first hunt (6.3):
+// the Guild finds her the moment the lamp is lit. No fight yet; a measuring. Halvard: Guild-formal, exact;
+// his image is paces and counts. He never raises the lance here.
+
+title: Lighthouse_Lamp
+---
+<<if has_flag("boss.lamp_keeper.defeated")>>
+    Inscription: Fourth light of the chain. Lit for the flock, going south. #plant:5.6
+    Inscription: Scratched under it, newer: "Still lit. Still here. Ask the light who it was for."
+<<else>>
+    Inscription: The housing is warm. Something up there is keeping the lamp.
+<<endif>>
+===
+
+title: Lighthouse_Halvard_Hunt
+---
+Halvard: Journeyman Wren. Three paces. Stay in them.
+Halvard: By the Guild's count you are missing. Missing does not carry a licence.
+Halvard: Isolde Marr is dead by the same count. It was taken the morning after. #plant:5.2
+-> A count isn't a survey.
+    Halvard: No. A survey would have cost a day. The Guildmaster gave it an hour. #plant:5.2
+-> Say her name again and I'll measure you.
+    Halvard: The Warden's voice. She taught you that too. Keep it. You'll need it.
+-> ...
+    Halvard: Silence is not a plea. I'll enter it as one.
+Halvard: The lamp you lit is Guild property. So is the map in your head.
+Halvard: Surrender the pages at Halden and you're a journeyman again. Keep them and you're a hunt.
+-> Then I'm a hunt.
+    Halvard: Noted. Four paces, now. I've measured your reach.
+-> What's the price of a licence?
+    Halvard: Everything you've drawn since the Edge. You'll hear that offer once more. Not from me.
+-> ...
+    Halvard: Entered. The reeds carry it to Halden faster than I can.
+Halvard: Halden, or before. The lance keeps its own count.
+<<flag act1.halvard_met 1>>
+<<flag act1.unlicensed 1>>
+===
+
+title: Lighthouse_Halvard_Idle
+---
+Halvard: Four paces. #still
+===

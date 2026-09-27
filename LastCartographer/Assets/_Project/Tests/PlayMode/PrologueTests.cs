@@ -134,7 +134,7 @@ namespace OWSBG.Tests
             yield return Until(() => Cutscene.Current == null, 6f, "the shore cutscene to finish");
             Assert.IsTrue(w.Is("prologue.woke_on_shore"));
             Assert.IsTrue(w.Is("act1.started"));
-            Assert.IsTrue(w.Is("greybox.met_sable"));
+            Assert.IsTrue(w.Is("saltmarrow.met_sable"));
             Assert.AreEqual(3, w.Get("prologue.torn_pages"));
             Assert.AreEqual(0f, ScreenFade.Level, 0.02f);
             Assert.IsFalse(wren.Frozen, "Act 1 begins with Wren free");

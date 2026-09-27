@@ -1,0 +1,83 @@
+// Dotha, last elder of Merrow's End (bible 4.1, 8.1 "Dotha's Last Season" [B]). Room B.
+// Voice: dry, counting what is left; short sentences; never asks for anything twice. Her image: the songs.
+// Cryptic register. The decision writes saltmarrow.dotha.decided: 1 remembered (write it as it was),
+// 2 let it fade, 3 walked (the bounds-walk, DES-13). The commission step reads the flag.
+
+title: Merrow_Dotha
+---
+<<if has_flag("saltmarrow.dotha.decided")>>
+    <<jump Merrow_Dotha_After>>
+<<endif>>
+<<if commission_is("saltmarrow.dotha", "taken")>>
+    <<jump Merrow_Dotha_Season>>
+<<endif>>
+Dotha: Sit if you're sitting. Stand if you're Guild.
+-> I'm sitting.
+    Dotha: Then you're not Guild. They don't. The wax, they say. Ruins the knees.
+-> Which are you?
+    Dotha: The last. That's not a faction. #still
+-> ...
+    Dotha: Quiet one. The water will like you. #still
+<<if not has_flag("saltmarrow.dotha.met")>>
+    Dotha: Merrow's End had eleven songs and forty roofs. Nine and one, now. Count them yourself.
+    <<flag saltmarrow.dotha.met 1>>
+<<endif>>
+Dotha: The board has my name on it. Has for three seasons. Nobody reads that far down. #still
+===
+
+title: Merrow_Dotha_Season
+---
+<<if not has_flag("saltmarrow.dotha.songs")>>
+    Dotha: You read that far down. Hm.
+    Dotha: Merrow's End had eleven songs. I have nine of them. The other two went with people.
+    Dotha: The first one is about weather. Sit. It's short. Everything true is.
+    <<flag saltmarrow.dotha.songs 1>>
+<<else>>
+    Dotha: Nine songs. Still nine. Decide before it's eight. #still
+<<endif>>
+Dotha: Then you decide what the map says about us. That's what the cowl's for.
+-> Write it as it was. Sing me the nine.
+    Dotha: As it was. Nobody's asked for that in forty years.
+    Dotha: Get your quill out, then. Slowly. Weather first.
+    <<flag saltmarrow.dotha.remembered 1>>
+    <<flag saltmarrow.dotha.decided 1>>
+-> Let it go. Keep the songs.
+    Dotha: Kind, I suppose. Kinder than the Guild manages.
+    Dotha: I'll sing them to the water, then. It listens as well as anyone.
+    <<flag saltmarrow.dotha.decided 2>>
+    <<fade Saltmarrow_B 2>>
+-> Walk it with me. All of it. <<if walk_known()>>
+    Dotha: You heard the whale, then. That's the shape of it. Old as the bridge. #plant:3.4
+    Dotha: Stand where I say, when I say it. That's all a village ever was.
+    <<walk merrows_end>>
+===
+
+title: Merrow_Dotha_After
+---
+<<if flag("saltmarrow.dotha.decided") == 3>>
+    Dotha: Walked. All of it. Nobody's walked it in forty years; the water was surprised. #still
+    Dotha: Come back at dusk. We'll walk it again. That's the whole trick. #still
+<<elseif has_flag("saltmarrow.dotha.remembered")>>
+    <<if place_fate("Saltmarrow_B") == "anchored">>
+        Dotha: Nine songs. You got the eighth one wrong. Leave it wrong. It's ours now. #still
+    <<else>>
+        Dotha: You wrote it down. Now seal it, or the writing's just weather. #still
+    <<endif>>
+<<else>>
+    Dotha: Still here. The water's a poor audience but it never leaves early. #still
+    <<if fade_stage("Saltmarrow_B") >= 3>>
+        Dotha: The roofs are going. I can see the reeds through the Marrow house. Good roof, that was.
+    <<endif>>
+<<endif>>
+===
+
+title: Merrow_Dotha_Water
+---
+// Dusk post: by the tether-post, singing the nine songs to the water.
+Dotha: Not now. The water's listening. #still
+===
+
+title: Merrow_Dotha_Night
+---
+Dotha: Asleep, or near enough. Ask me in the light. #still
+===

@@ -20,6 +20,8 @@ namespace OWSBG.UI
         public bool IsVisible => _built && _panel.style.display == DisplayStyle.Flex;
         public bool IsShowingOptions => _built && _options.style.display == DisplayStyle.Flex;
         public int OptionCount => _built ? _options.childCount : 0;
+        /// <summary>Whether an offered option can be taken (a failed &lt;&lt;if&gt;&gt; shows it dimmed, not hidden).</summary>
+        public bool IsOptionAvailable(int index) => _pendingAvail != null && index >= 0 && index < _pendingAvail.Length && _pendingAvail[index];
         public string SpeakerText => _built ? _speaker.text : _pendingSpeaker;
         public string LineText => _built ? _text.text : _pendingLine;
         public event Action<int> OptionClicked;

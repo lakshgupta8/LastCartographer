@@ -73,7 +73,7 @@ namespace OWSBG.Tests
 
             var svc = DialogueService.Instance;
             Assert.IsNotNull(svc);
-            svc.StartNode("Greybox_Sable");
+            svc.StartNode("Quay_Sable");
             var view = ui.GetComponent<DialogueView>();
             for (int i = 0; i < 90 && !view.IsVisible; i++) yield return null;
             yield return Capture(cam, camRt, uiRt, "ui-dialogue.png");

@@ -101,7 +101,7 @@ namespace OWSBG.Tests
             Assert.IsTrue(Commissions.Close(w, "saltmarrow.lantern_chain"));
             Assert.AreEqual(2, Commissions.Scraps(w));
 
-            w.Set("greybox.met_sable", 1);
+            w.Set("saltmarrow.met_sable", 1);
             Assert.AreEqual(1, _ledger.PostAvailable(), "Dotha's commission posts once Sable has been met");
             Assert.AreEqual(CommissionState.Posted, Commissions.StateOf(w, "saltmarrow.dotha"));
 

@@ -175,6 +175,10 @@ namespace OWSBG.Narrative
         [YarnFunction("walk_known")]
         public static bool WalkKnown() => BoundsWalks.IsLearned(GameState.World);
 
+        /// <summary>The Guild's count has come in: she is missing, and missing carries no licence.</summary>
+        [YarnFunction("unlicensed")]
+        public static bool IsUnlicensed() => Licence.IsUnlicensed(GameState.World);
+
         /// <summary>A Cantor's bell has wiped the place and nobody has drawn it since.</summary>
         [YarnFunction("erased")]
         public static bool IsErased(string place) => Atlas.IsErased(GameState.World, place);

@@ -98,6 +98,7 @@ namespace OWSBG.Tests
         [UnityTest]
         public IEnumerator WardenPatrolsTurnsAtWallsAndLancesWrenInFront()
         {
+            Licence.Revoke(GameState.World);                        // Halvard's count has come in: she is hunted
             _ctrl!.Teleport(new Vector2(10f, 0f));                 // out of the way
             var warden = SpawnWarden(new Vector2(-6f, 0.9f));       // faces left by default: six units to the wall
             yield return Fixed(3);
@@ -119,6 +120,48 @@ namespace OWSBG.Tests
             yield return Fixed(8);
             Assert.Less(_vitals.Masks, masks, "the thrust hurts");
             Assert.AreEqual(EnemyAnswer.Parry, warden.Answer);
+        }
+
+        [UnityTest]
+        public IEnumerator WardensMeasureAJourneymanAndHuntHerOnceUnlicensed()
+        {
+            var w = GameState.World;
+            _ctrl!.Teleport(new Vector2(10f, 0f));
+            var warden = SpawnWarden(new Vector2(-6f, 0.9f));
+            yield return Fixed(3);
+            Assert.IsFalse(warden.Hostile, "a journeyman's cowl still counts");
+
+            // In front of him with her papers in order: he stops, measures, and walks on. No lance, no hurt.
+            int masks = _vitals!.Masks;
+            _ctrl.Teleport(new Vector2(warden.transform.position.x + warden.Dir * 1.2f, 0f));
+            for (int i = 0; i < 60 && !warden.IsMeasuring; i++) yield return new WaitForFixedUpdate();
+            Assert.IsTrue(warden.IsMeasuring, "he measures");
+            Assert.AreEqual(1, warden.Measures);
+            for (int i = 0; i < 80 && warden.IsMeasuring; i++) yield return new WaitForFixedUpdate();
+            Assert.AreEqual(Warden.Move.Patrol, warden.State, "and looks away");
+            yield return Fixed(20);
+            Assert.AreEqual(0, warden.Thrusts, "no lance for a journeyman");
+            Assert.AreEqual(masks, _vitals.Masks, "and touching him does not hurt");
+
+            // Halvard's count comes in: the same Warden lowers the lance.
+            Assert.IsTrue(Licence.Revoke(w));
+            Assert.IsTrue(warden.Hostile);
+            _ctrl.Teleport(new Vector2(10f, 0f));
+            yield return Fixed(5);
+            for (int i = 0; i < 400 && warden.State != Warden.Move.Patrol; i++) yield return new WaitForFixedUpdate();
+            _ctrl.Teleport(new Vector2(warden.transform.position.x + warden.Dir * 2f, 0f));
+            for (int i = 0; i < 300 && !warden.IsTelegraphing; i++) yield return new WaitForFixedUpdate();
+            Assert.IsTrue(warden.IsTelegraphing, "the lance comes down for an unlicensed cartographer");
+            for (int i = 0; i < 60 && warden.Thrusts == 0; i++) yield return new WaitForFixedUpdate();
+            yield return Fixed(8);
+            Assert.Less(_vitals.Masks, masks, "and it lands");
+
+            // Oriel stands them down; a struck Warden hunts her anyway.
+            w.Set(Licence.StoodDownFlag, true);
+            Assert.IsFalse(warden.Hostile, "stood down");
+            Assert.IsTrue(warden.TakeHit(new HitInfo { Damage = 1, Direction = Vector2.left }));
+            Assert.IsTrue(warden.Provoked);
+            Assert.IsTrue(warden.Hostile, "provoked");
         }
 
         [UnityTest]

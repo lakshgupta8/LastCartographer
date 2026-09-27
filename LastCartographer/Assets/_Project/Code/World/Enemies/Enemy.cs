@@ -123,6 +123,8 @@ namespace OWSBG.World
         protected virtual bool AcceptsHit(in HitInfo hit) => true;
         /// <summary>Bosses hold their ground: no shove on hit.</summary>
         protected virtual bool AcceptsKnockback => true;
+        /// <summary>Whether touching the body hurts right now (a Warden measuring a journeyman withholds it).</summary>
+        protected virtual bool ContactHurts => true;
         /// <summary>Bosses deactivate instead so the arena can revive them for a retry.</summary>
         protected virtual bool DestroyOnDeath => true;
         public bool IsDying => _deathT >= 0f;
@@ -181,7 +183,7 @@ namespace OWSBG.World
 
         void ContactCheck()
         {
-            if (_contactDamage <= 0 || Wren == null) return;
+            if (_contactDamage <= 0 || Wren == null || !ContactHurts) return;
             var b = Collider.bounds;
             var filter = new ContactFilter2D { useLayerMask = true, layerMask = _playerMask, useTriggers = false };
             int n = Physics2D.OverlapBox(b.center, b.size + Vector3.one * 0.05f, 0f, filter, _overlaps);

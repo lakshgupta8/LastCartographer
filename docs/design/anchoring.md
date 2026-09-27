@@ -34,6 +34,13 @@ the locked time of day and looping props (ENV-09).
 lance (14 frames), thrusts a 2.4-unit box for 6 frames, recovers 30, then 1.4 s before the next. Body contact
 also hurts. 5 health. Answer: Parry (the sighting lens). Placed in the room inactive; `HeldState` switches them on.
 
+**Licence** (`Licence`, Core). Until Halvard's count at the lit lamp (`act1.unlicensed`, written by
+`Lighthouse_Halvard_Hunt`), a Warden **measures** a journeyman: stops in front of her for 40 frames, looks away,
+and does not measure again for 4 s; no lance, and touching him does not hurt (the first time, a caption). From
+the count on he is hostile everywhere, until Oriel stands the Wardens down (`halden.oriel.stood_down`, boss 6.8);
+Pell's report, if sent (`pell.report_sent`), sets them on her again whatever Oriel said. Striking a Warden
+provokes that one for the rest of the fight, papers or no. Yarn: `unlicensed()`.
+
 ## 5. Story hooks
 ```yarn
 <<anchor Saltmarrow_A>>   <<hold Emberdown_Rest>>   <<release Verdance_Aldermere>>
@@ -53,5 +60,6 @@ set. Saves need nothing extra.
 ## 8. Open
 - The bind requirement at the desk (a memory from a resident), and whether Wren can anchor without a licence.
 - Hold is performed by the bounds-walk (`docs/design/bounds-walk.md`, DES-13): the desk refuses Hold until the place is walked.
-- Wardens before Act 1's end: neutral, or absent.
+- Wardens before Act 1's end measure and look away (above). Whether some should be absent instead (a hub with
+  none until the town is anchored) is a per-town choice for DES-09 to DES-11.
 - Whether Release should advance the fade one stage on the spot (the story says it continues, not that it jumps).

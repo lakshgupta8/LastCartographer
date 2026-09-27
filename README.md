@@ -109,7 +109,7 @@ Materials `Art/Materials/M_FS_*.mat` hold the knobs.
 
 The regional decision (`docs/design/anchoring.md`): at the desk, once every vantage in the room is surveyed, the **Place**
 row proposes anchor / hold / release and J seals it, once and for all. Anchoring locks the room's colour grade and wakes the
-Guild's **Wardens** (long legs, a lance that lowers before it thrusts; the sighting lens parries it); holding stops the fade
+Guild's **Wardens** (long legs, a lance that lowers before it thrusts; the sighting lens parries it). Until Halvard has counted you at the lit lamp they only measure a journeyman and look away; from then on, unlicensed, you are hunted in every anchored town, and a Warden you strike hunts you regardless. Holding stops the fade
 and nothing else; releasing lets it fade on. Yarn: `<<anchor place>>`, `<<hold place>>`, `<<release place>>`, `place_fate("id")`.
 
 Fading (`docs/design/fade-stages.md`): each room has a `FadeGroup` over its paper layers and ground, driven by the place's

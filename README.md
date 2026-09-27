@@ -31,6 +31,11 @@ scene plus the first room and enters Play mode. Then **click inside the Game vie
 keyboard focus (Unity only sends input to a focused Game view). Walk off the right edge to transition
 into room B, which has a Talonhold shaft.
 
+Past room B's east edge is the fourth lighthouse: a drafting desk, then two doors and **the Lamp-Keeper**,
+the first boss (Tier I). Her beam sweeps the floor (jump it) and she dives at you (step aside); she is only
+hittable while grounded after a dive. Three phases on health thirds. Beating her grants Wingbeat, a vellum
+scrap, and turns her lamp into a beacon. Dying puts you back at the desk with the doors open; walk in again.
+
 Opening `Assets/_Project/Scenes/Persistent/Persistent.unity` by hand also auto-opens the first room,
 and pressing Play inside any room scene bootstraps the persistent scene for you.
 

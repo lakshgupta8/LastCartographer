@@ -74,7 +74,11 @@ namespace OWSBG.World
                 _deathT += Time.fixedDeltaTime;
                 float k = Mathf.Clamp01(_deathT / _deathSeconds);
                 transform.localScale = _baseScale * (1f - k);
-                if (k >= 1f) Destroy(gameObject);
+                if (k >= 1f)
+                {
+                    if (DestroyOnDeath) Destroy(gameObject);
+                    else { _deathT = -1f; gameObject.SetActive(false); }
+                }
                 return;
             }
             if (Wren == null) Wren = FindFirstObjectByType<WrenController>();
@@ -113,17 +117,48 @@ namespace OWSBG.World
 
         /// <summary>Whether this hit lands. Override for shells, undrawn smudges, armour.</summary>
         protected virtual bool AcceptsHit(in HitInfo hit) => true;
+        /// <summary>Bosses hold their ground: no shove on hit.</summary>
+        protected virtual bool AcceptsKnockback => true;
+        /// <summary>Bosses deactivate instead so the arena can revive them for a retry.</summary>
+        protected virtual bool DestroyOnDeath => true;
+        public bool IsDying => _deathT >= 0f;
+
+        /// <summary>Tooling and tests: resize the health pool and refill it.</summary>
+        public void SetMaxHealth(int max) { _maxHealth = Mathf.Max(1, max); Health = _maxHealth; }
+
+        /// <summary>Back to full health and the starting pose (boss retry, respawning rooms).</summary>
+        public void Revive()
+        {
+            Health = _maxHealth;
+            _deathT = -1f;
+            HurtstunLeft = 0;
+            SlowLeft = 0f;
+            MarkLeft = 0f;
+            _staggerLeft = 0f;
+            transform.localScale = _baseScale;
+            gameObject.SetActive(true);
+            Body.simulated = true;
+            Body.linearVelocity = Vector2.zero;
+            Collider.enabled = true;
+            OnRevived();
+        }
+
+        protected virtual void OnRevived() { }
+        /// <summary>After a landed hit changed Health (bosses check phase thresholds here).</summary>
+        protected virtual void OnHealthChanged() { }
 
         public bool TakeHit(in HitInfo hit)
         {
             if (IsDead || _deathT >= 0f) return false;
             if (!AcceptsHit(hit)) { OnHitBlocked(hit); return false; }
             Health = Mathf.Max(0, Health - hit.Damage);
+            OnHealthChanged();
             _flashUntil = Time.time + 0.1f;
             HurtstunLeft = _hurtstunFrames;
             var away = hit.Direction.sqrMagnitude > 0f ? hit.Direction.normalized : Vector2.right;
             float kb = _hitKnockback * hit.KnockbackOrDefault;
-            Body.linearVelocity = new Vector2(away.x * kb, Mathf.Max(Body.linearVelocity.y, away.y > 0f ? kb : 2f));
+            if (AcceptsKnockback)
+                Body.linearVelocity = new Vector2(away.x * kb, Mathf.Max(Body.linearVelocity.y, away.y > 0f ? kb : 2f));
             WasHit?.Invoke(this, hit);
             if (Health == 0) Die();
             return true;

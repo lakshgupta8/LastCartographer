@@ -27,6 +27,7 @@ namespace OWSBG.Setup
         public const string PersistentScenePath = Root + "/Scenes/Persistent/Persistent.unity";
         public const string RoomAScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_A.unity";
         public const string RoomBScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_B.unity";
+        public const string RoomCScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_Lighthouse.unity";
         const string InputAssetPath = Root + "/Settings/Input/WrenInput.inputactions";
         const string YarnProjectPath = Root + "/Dialogue/LastCartographer.yarnproject";
         const string PlaceholderTexPath = Root + "/Art/Characters/Placeholder_Wren.png";
@@ -263,12 +264,14 @@ namespace OWSBG.Setup
             Debug.Log("[OWSBG] BuildBootstrapScene: start");
             BuildRoomA();
             BuildRoomB();
+            BuildRoomC();
             BuildPersistent();
             EditorBuildSettings.scenes = new[]
             {
                 new EditorBuildSettingsScene(PersistentScenePath, true),
                 new EditorBuildSettingsScene(RoomAScenePath, true),
                 new EditorBuildSettingsScene(RoomBScenePath, true),
+                new EditorBuildSettingsScene(RoomCScenePath, true),
             };
             AssetDatabase.SaveAssets();
             Debug.Log("[OWSBG] BuildBootstrapScene: done");
@@ -362,6 +365,7 @@ namespace OWSBG.Setup
             sysGo.AddComponent<PlayerRespawn>();
             sysGo.AddComponent<OWSBG.UI.PlaceholderHud>();
             sysGo.AddComponent<OWSBG.UI.DeskMenu>();
+            sysGo.AddComponent<OWSBG.UI.BossHud>();
 
             // Room manager.
             var rmGo = new GameObject("RoomManager");
@@ -500,9 +504,116 @@ namespace OWSBG.Setup
             MakeSpawn(room, "East", new Vector2(17f, 0f));
             MakeTransition(room, "To_A", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f),
                 Path.GetFileNameWithoutExtension(RoomAScenePath), "East");
+            MakeTransition(room, "To_Lighthouse", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f),
+                Path.GetFileNameWithoutExtension(RoomCScenePath), "West");
 
             EditorSceneManager.SaveScene(scene, RoomBScenePath);
             Debug.Log("[OWSBG] saved " + RoomBScenePath);
+        }
+
+        // The fourth lighthouse: a desk, then the Lamp-Keeper's arena behind two doors.
+        static void BuildRoomC()
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var room = MakeRoom("Saltmarrow_Lighthouse", new Rect(-16f, -3f, 34f, 17f));
+
+            var floorMat = MakeLitMaterial("M_Greybox_Floor", new Color(0.45f, 0.47f, 0.36f));
+            var platMat = MakeLitMaterial("M_Greybox_Platform", new Color(0.52f, 0.46f, 0.36f));
+            var doorMat = MakeLitMaterial("M_Greybox_Door", new Color(0.30f, 0.26f, 0.24f));
+            MakeGround(room, "Floor", new Vector2(1f, -0.5f), new Vector2(34f, 1f), floorMat);
+            MakeGround(room, "Wall_E", new Vector2(17.5f, 5f), new Vector2(1f, 14f), platMat);
+            MakeGround(room, "Lamp_Housing", new Vector2(3f, 10.2f), new Vector2(3f, 0.8f), platMat);
+            MakeGround(room, "Ledge_L", new Vector2(-4f, 2.4f), new Vector2(2.5f, 0.5f), platMat);
+            MakeGround(room, "Ledge_R", new Vector2(10f, 2.4f), new Vector2(2.5f, 0.5f), platMat);
+
+            MakePaperLayer(room, "Mid_Reeds", 3f, 0f, new Color(0.56f, 0.60f, 0.54f), 6f);
+            MakePaperLayer(room, "Far_Tower", 8f, 4f, new Color(0.66f, 0.68f, 0.64f), 14f);
+            MakePaperLayer(room, "Farther_Sea", 16f, 6f, new Color(0.80f, 0.80f, 0.76f), 16f);
+
+            MakeDesk(room, new Vector2(-11f, 0f));
+            MakeSpawn(room, "Start", new Vector2(-12.5f, 0f));
+            MakeSpawn(room, "West", new Vector2(-14.5f, 0f));
+            MakeTransition(room, "To_B", new Vector2(-15.6f, 4f), new Vector2(0.8f, 10f),
+                Path.GetFileNameWithoutExtension(RoomBScenePath), "East");
+
+            // Doors: solid while the fight is on, inactive otherwise.
+            var doorW = MakeDoor(room, "Door_W", new Vector2(-6.5f, 3f), new Vector2(1f, 6f), doorMat);
+            var doorE = MakeDoor(room, "Door_E", new Vector2(12.5f, 3f), new Vector2(1f, 6f), doorMat);
+
+            // The boss on her perch under the lamp.
+            var boss = MakeBoss<LampKeeper>(room, "LampKeeper", new Vector2(3f, 8.6f), new Vector2(1.6f, 1.2f));
+            var lk = (LampKeeper)boss;
+            lk.floorY = 0f;
+            lk.arenaHalfWidth = 9f;
+            var bossSo = new SerializedObject(boss);
+            bossSo.FindProperty("_maxHealth").intValue = 24;
+            bossSo.FindProperty("_contactDamage").intValue = 1;
+            bossSo.FindProperty("_hurtstunFrames").intValue = 3;
+            bossSo.FindProperty("_bossName").stringValue = "The Lamp-Keeper";
+            bossSo.FindProperty("_tier").intValue = 1;
+            var lines = bossSo.FindProperty("_phaseLines");
+            lines.arraySize = 3;
+            lines.GetArrayElementAtIndex(0).stringValue = "The light stays.";
+            lines.GetArrayElementAtIndex(1).stringValue = "I remember the light. I remember nothing else.";
+            lines.GetArrayElementAtIndex(2).stringValue = "If it goes out, I go with it.";
+            bossSo.ApplyModifiedPropertiesWithoutUndo();
+
+            // The arena zone between the doors.
+            var arenaGo = new GameObject("Arena_LampKeeper") { layer = LayerMask.NameToLayer("Trigger") };
+            arenaGo.transform.SetParent(room.transform, false);
+            arenaGo.transform.position = new Vector3(3f, 5f, 0f);
+            var zone = arenaGo.AddComponent<BoxCollider2D>();
+            zone.isTrigger = true;
+            zone.size = new Vector2(17f, 11f);
+            var arena = arenaGo.AddComponent<BossArena>();
+            var arSo = new SerializedObject(arena);
+            arSo.FindProperty("_bossId").stringValue = "lamp_keeper";
+            arSo.FindProperty("_boss").objectReferenceValue = boss;
+            var doors = arSo.FindProperty("_doors");
+            doors.arraySize = 2;
+            doors.GetArrayElementAtIndex(0).objectReferenceValue = doorW;
+            doors.GetArrayElementAtIndex(1).objectReferenceValue = doorE;
+            arSo.FindProperty("_rewardAbility").intValue = (int)Ability.Wingbeat;
+            arSo.FindProperty("_vellumScraps").intValue = 1;
+            arSo.FindProperty("_beaconVantageId").stringValue = "Saltmarrow_Lighthouse/Lamp";
+            arSo.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorSceneManager.SaveScene(scene, RoomCScenePath);
+            Debug.Log("[OWSBG] saved " + RoomCScenePath);
+        }
+
+        static GameObject MakeDoor(Room room, string name, Vector2 center, Vector2 size, Material mat)
+        {
+            MakeGround(room, name, center, size, mat);
+            var go = room.transform.Find(name).gameObject;
+            go.SetActive(false);
+            return go;
+        }
+
+        // A boss: kinematic body on the Enemy layer with an ink quad; dormant until its arena starts the fight.
+        static Boss MakeBoss<T>(Room room, string name, Vector2 pos, Vector2 size) where T : Boss
+        {
+            var go = new GameObject(name) { layer = LayerMask.NameToLayer("Enemy") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.size = size;
+            var rb = go.AddComponent<Rigidbody2D>();
+            rb.bodyType = RigidbodyType2D.Kinematic;
+            rb.freezeRotation = true;
+            var boss = go.AddComponent<T>();
+
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
+            var mat = MakeInkMaterial("M_Boss_" + typeof(T).Name, tex);
+            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quad.name = "Sprite";
+            Object.DestroyImmediate(quad.GetComponent<Collider>());
+            quad.transform.SetParent(go.transform, false);
+            quad.transform.localScale = new Vector3(size.x * 1.6f, size.y * 1.6f, 1f);
+            var r = quad.GetComponent<MeshRenderer>();
+            r.sharedMaterial = mat;
+            r.shadowCastingMode = ShadowCastingMode.TwoSided;
+            return boss;
         }
 
         // ---- room helpers
@@ -740,14 +851,23 @@ namespace OWSBG.Setup
         // ------------------------------------------------------------------ 3
         public static void CaptureScreenshot()
         {
+            // OWSBG_SHOT_ROOM=A|B|C picks the room; OWSBG_SHOT_FOCUS="x,y" the point to frame (defaults: A, Wren).
+            var roomKey = System.Environment.GetEnvironmentVariable("OWSBG_SHOT_ROOM") ?? "A";
+            var roomPath = roomKey == "B" ? RoomBScenePath : roomKey == "C" ? RoomCScenePath : RoomAScenePath;
             EditorSceneManager.OpenScene(PersistentScenePath, OpenSceneMode.Single);
-            EditorSceneManager.OpenScene(RoomAScenePath, OpenSceneMode.Additive);
+            EditorSceneManager.OpenScene(roomPath, OpenSceneMode.Additive);
             var cam = Camera.main;
             if (cam == null) { Debug.LogError("[OWSBG] no main camera"); return; }
             var brain = cam.GetComponent<CinemachineBrain>();
             if (brain != null) brain.enabled = false;
             var wren = Object.FindFirstObjectByType<WrenController>();
             var focus = wren != null ? wren.transform.position : Vector3.zero;
+            var focusEnv = System.Environment.GetEnvironmentVariable("OWSBG_SHOT_FOCUS");
+            if (!string.IsNullOrEmpty(focusEnv))
+            {
+                var parts = focusEnv.Split(',');
+                if (parts.Length == 2 && float.TryParse(parts[0], out var fx) && float.TryParse(parts[1], out var fy)) focus = new Vector3(fx, fy, 0f);
+            }
             cam.transform.position = new Vector3(focus.x + 2f, focus.y + 2.5f, -18f);
             cam.transform.rotation = Quaternion.Euler(2f, 0f, 0f);
 

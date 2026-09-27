@@ -73,6 +73,12 @@ Room A also has the first world interactions. Stand in front of something and pr
 
 Room B's west end has Dotha, the last elder of Merrow's End. She only talks properly once her commission is taken; her decision seeds an island in the Blank (`blank.island.Merrows_End`). The design is in `docs/design/commissions.md`.
 
+The look (art-direction doc): `OWSBG/InkSprite` is the lit, alpha-clipped sprite shader with the two-step shadow ramp and the
+`_Ink` state; two full-screen passes sit on the URP renderer (`Settings/Rendering/URP_Renderer.asset`): **ForegroundBlur**
+(before post-processing; anything nearer than the gameplay plane blurs with distance, read from depth) and **PaperGrain**
+(after post-processing; static grain, stronger on light paper than on ink). Far layers blur through the volume's Gaussian DoF.
+Materials `Art/Materials/M_FS_*.mat` hold the knobs.
+
 Rooms are Addressables (`Assets/AddressableAssetsData`, group **Rooms**, one bundle per room, address = scene name);
 only the persistent scene is a built-in scene. `RoomManager` loads a room by address, keeps the bundles of its neighbours
 (the targets of its transitions) resident, and releases the rest. Play mode reads from the AssetDatabase, so nothing has to be

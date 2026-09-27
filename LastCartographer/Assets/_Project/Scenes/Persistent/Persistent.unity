@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 863688141}
+  m_Sun: {fileID: 520077545}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &64337340
+--- !u!1 &127631371
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,11 +127,423 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 64337345}
-  - component: {fileID: 64337344}
-  - component: {fileID: 64337343}
-  - component: {fileID: 64337342}
-  - component: {fileID: 64337341}
+  - component: {fileID: 127631373}
+  - component: {fileID: 127631386}
+  - component: {fileID: 127631385}
+  - component: {fileID: 127631384}
+  - component: {fileID: 127631383}
+  - component: {fileID: 127631372}
+  - component: {fileID: 127631382}
+  - component: {fileID: 127631381}
+  - component: {fileID: 127631380}
+  - component: {fileID: 127631379}
+  - component: {fileID: 127631378}
+  - component: {fileID: 127631377}
+  - component: {fileID: 127631376}
+  - component: {fileID: 127631375}
+  - component: {fileID: 127631374}
+  m_Layer: 7
+  m_Name: Wren
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &127631372
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af7871aea0140fb47905f9854c9887c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.WrenController
+  runSpeed: 9
+  decelFrames: 4
+  maxJumpHeight: 4.5
+  minJumpHeight: 2
+  timeToApex: 0.38
+  fallGravityMultiplier: 1.3
+  maxFallSpeed: 30
+  apexHangFrames: 3
+  apexThreshold: 1.5
+  coyoteFrames: 5
+  dashDistance: 5
+  dashFrames: 8
+  dashInvulnStart: 2
+  dashInvulnEnd: 5
+  clingSeconds: 2.5
+  slideSpeed: 4
+  wallJumpVelocity: {x: 12, y: 20}
+  wallJumpLockFrames: 8
+  pogoHeight: 3
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  skin: 0.02
+--- !u!4 &127631373
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 694039291}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &127631374
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef53c2eae7e98f049bb558c82af40699, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.WrenView
+  _visual: {fileID: 694039291}
+--- !u!114 &127631375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfa019b14061d744a867018d61aaa1c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.CharterSet
+  _profiles: []
+  _unlockAllBase: 1
+--- !u!114 &127631376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 502a9ba3ba645cb4f894650631563e02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.InstrumentBelt
+  dartSpeed: 16
+  dartMarkSeconds: 8
+  plumbVelocity: {x: 7, y: 9}
+  plumbDamage: 3
+  parryWindowFrames: 10
+  parryStaggerSeconds: 1
+  lanternSeconds: 10
+  tetherSeconds: 20
+  tincturePips: 5
+  throwHeight: 0.8
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 768
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _unlockAllForGreybox: 1
+--- !u!114 &127631377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6797e9a7ffe1fc4429fd9a21f7278c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.StrikeVisual
+  _inkMaterial: {fileID: 2100000, guid: b7ec2559fc9fac9488ad462bac6c42dc, type: 2}
+  _slashSeconds: 0.14
+  _fleckCount: 7
+  _fleckSpeed: 9
+  _fleckSeconds: 0.28
+--- !u!114 &127631378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3a011d2a271f4345ad0bd06b84532b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.Flourishes
+  crosshatchCost: 3
+  longstrokeCost: 3
+  blotCost: 4
+  crosshatchHits: 6
+  crosshatchInterval: 3
+  crosshatchReach: 2.4
+  crosshatchHeight: 1.4
+  longstrokeStartup: 4
+  longstrokeReach: 6
+  longstrokeThickness: 0.8
+  longstrokeDamage: 2
+  blotStartup: 3
+  blotRadius: 2.5
+  blotSlowSeconds: 2
+  blotKnockback: 6
+  originHeight: 0.6
+  recoveryFrames: 6
+  hitstopFrames: 2
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 768
+--- !u!114 &127631379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5956d7d21c8cb24094d440873133f83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.Interactor
+  _interactMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  _upThreshold: 0.6
+--- !u!114 &127631380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 721e20d016417db40966131847ec6efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.QuillStrike
+  reach: 2.2
+  thickness: 0.9
+  originHeight: 0.6
+  startupFrames: 3
+  activeFrames: 4
+  recoveryFrames: 8
+  damage: 1
+  hitstopFrames: 2
+  hitMask:
+    serializedVersion: 2
+    m_Bits: 768
+  comboWindowFrames: 18
+--- !u!114 &127631381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ebeab7731bb57343829fb2cd8e8691f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.WrenVitals
+  _maxMasks: 5
+  _masks: 5
+  _bindCost: 3
+  _bindSeconds: 0.6
+  _invulnFrames: 60
+  _hitKnockback: {x: 7, y: 9}
+--- !u!114 &127631382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d794db775b8851a4697805c3478ac542, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.Inkwell
+  _maxPips: 9
+  _pips: 0
+--- !u!114 &127631383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab6f9faf459c4e446bd40185eb8109a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.Core::OWSBG.Core.InputReader
+  _asset: {fileID: -944628639613478452, guid: 36620c915376e8848bca5467b5e87af0, type: 3}
+  _jumpBufferFrames: 6
+  _attackBufferFrames: 6
+  _dashBufferFrames: 4
+  _flourishBufferFrames: 6
+  _instrumentBufferFrames: 6
+--- !u!114 &127631384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b9d2420ca21b1749a2858734e332079, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.Core::OWSBG.Core.AbilitySet
+  _unlocked: 3
+--- !u!50 &127631385
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!61 &127631386
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 127631371}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0.55}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.6, y: 1.1}
+  m_EdgeRadius: 0
+--- !u!1 &466634173
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 466634175}
+  - component: {fileID: 466634174}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &466634174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466634173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: e7efa74208e70424b89503de1ec7dcc2, type: 2}
+--- !u!4 &466634175
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466634173}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &488824401
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 488824406}
+  - component: {fileID: 488824405}
+  - component: {fileID: 488824404}
+  - component: {fileID: 488824403}
+  - component: {fileID: 488824402}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -139,13 +551,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &64337341
+--- !u!114 &488824402
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 64337340}
+  m_GameObject: {fileID: 488824401}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 72ece51f2901e7445ab60da3685d6b5f, type: 3}
@@ -171,13 +583,13 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
---- !u!114 &64337342
+--- !u!114 &488824403
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 64337340}
+  m_GameObject: {fileID: 488824401}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
@@ -215,21 +627,21 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!81 &64337343
+--- !u!81 &488824404
 AudioListener:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 64337340}
+  m_GameObject: {fileID: 488824401}
   m_Enabled: 1
---- !u!20 &64337344
+--- !u!20 &488824405
 Camera:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 64337340}
+  m_GameObject: {fileID: 488824401}
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
@@ -274,13 +686,13 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!4 &64337345
+--- !u!4 &488824406
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 64337340}
+  m_GameObject: {fileID: 488824401}
   serializedVersion: 2
   m_LocalRotation: {x: 0.017452406, y: 0, z: 0, w: 0.9998477}
   m_LocalPosition: {x: 0, y: 2.5, z: -18}
@@ -289,7 +701,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &307513702
+--- !u!1 &520077544
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -297,573 +709,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 307513706}
-  - component: {fileID: 307513705}
-  - component: {fileID: 307513704}
-  - component: {fileID: 307513703}
-  m_Layer: 0
-  m_Name: CM Follow
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &307513703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 307513702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineConfiner2D
-  BoundingShape2D: {fileID: 0}
-  Damping: 0.5
-  SlowingDistance: 5
-  OversizeWindow:
-    Enabled: 0
-    MaxWindowSize: 0
-    Padding: 0
-  m_LegacyMaxWindowSize: -2
---- !u!114 &307513704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 307513702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
-  CameraDistance: 18
-  DeadZoneDepth: 0
-  Composition:
-    ScreenPosition: {x: 0, y: 0}
-    DeadZone:
-      Enabled: 1
-      Size: {x: 0.06, y: 0.16}
-    HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
-      Offset: {x: 0, y: 0}
-  CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 1.2, z: 0}
-  Damping: {x: 0.35, y: 0.6, z: 0}
-  Lookahead:
-    Enabled: 1
-    Time: 0.25
-    Smoothing: 8
-    IgnoreY: 1
---- !u!114 &307513705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 307513702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
-  Priority:
-    Enabled: 0
-    m_Value: 0
-  OutputChannel: 1
-  StandbyUpdate: 2
-  m_StreamingVersion: 0
-  m_LegacyPriority: 0
-  Target:
-    TrackingTarget: {fileID: 741199372}
-    LookAtTarget: {fileID: 0}
-    CustomLookAtTarget: 0
-  Lens:
-    FieldOfView: 30
-    OrthographicSize: 10
-    NearClipPlane: 0.3
-    FarClipPlane: 120
-    Dutch: 0
-    ModeOverride: 0
-    PhysicalProperties:
-      GateFit: 2
-      SensorSize: {x: 21.946, y: 16.002}
-      LensShift: {x: 0, y: 0}
-      FocusDistance: 10
-      Iso: 200
-      ShutterSpeed: 0.005
-      Aperture: 16
-      BladeCount: 5
-      Curvature: {x: 2, y: 11}
-      BarrelClipping: 0.25
-      Anamorphism: 0
-  BlendHint: 0
---- !u!4 &307513706
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 307513702}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.017452406, y: 0, z: 0, w: 0.9998477}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &520550075
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 520550079}
-  - component: {fileID: 520550078}
-  - component: {fileID: 520550077}
-  - component: {fileID: 520550076}
-  m_Layer: 0
-  m_Name: DialogueService
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &520550076
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 520550075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cdbe9fba1f8680e41835b5e160b4b4fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.Narrative::OWSBG.Narrative.DialogueService
-  _project: {fileID: 7545569452688597077, guid: b015c0ee4beadb54196f260d3b7f64c9, type: 3}
-  _presenters:
-  - {fileID: 520550077}
-  _freezeWren: 1
---- !u!114 &520550077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 520550075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdeee20639c1f7b4093d9660c6bb57a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.Narrative::OWSBG.Narrative.ViewDialoguePresenter
---- !u!114 &520550078
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 520550075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdeff91903c6c17439fe358ec3502b37, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.Narrative::OWSBG.Narrative.WorldStateVariableStorage
---- !u!4 &520550079
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 520550075}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &741199370
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 741199372}
-  - component: {fileID: 741199385}
-  - component: {fileID: 741199384}
-  - component: {fileID: 741199383}
-  - component: {fileID: 741199382}
-  - component: {fileID: 741199371}
-  - component: {fileID: 741199381}
-  - component: {fileID: 741199380}
-  - component: {fileID: 741199379}
-  - component: {fileID: 741199378}
-  - component: {fileID: 741199377}
-  - component: {fileID: 741199376}
-  - component: {fileID: 741199375}
-  - component: {fileID: 741199374}
-  - component: {fileID: 741199373}
-  m_Layer: 7
-  m_Name: Wren
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &741199371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af7871aea0140fb47905f9854c9887c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.WrenController
-  runSpeed: 9
-  decelFrames: 4
-  maxJumpHeight: 4.5
-  minJumpHeight: 2
-  timeToApex: 0.38
-  fallGravityMultiplier: 1.3
-  maxFallSpeed: 30
-  apexHangFrames: 3
-  apexThreshold: 1.5
-  coyoteFrames: 5
-  dashDistance: 5
-  dashFrames: 8
-  dashInvulnStart: 2
-  dashInvulnEnd: 5
-  clingSeconds: 2.5
-  slideSpeed: 4
-  wallJumpVelocity: {x: 12, y: 20}
-  wallJumpLockFrames: 8
-  pogoHeight: 3
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 64
-  skin: 0.02
---- !u!4 &741199372
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 986699450}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &741199373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef53c2eae7e98f049bb558c82af40699, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.WrenView
-  _visual: {fileID: 986699450}
---- !u!114 &741199374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfa019b14061d744a867018d61aaa1c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.CharterSet
-  _profiles: []
-  _unlockAllBase: 1
---- !u!114 &741199375
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 502a9ba3ba645cb4f894650631563e02, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.InstrumentBelt
-  dartSpeed: 16
-  dartMarkSeconds: 8
-  plumbVelocity: {x: 7, y: 9}
-  plumbDamage: 3
-  parryWindowFrames: 10
-  parryStaggerSeconds: 1
-  lanternSeconds: 10
-  tetherSeconds: 20
-  tincturePips: 5
-  throwHeight: 0.8
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 768
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 64
-  _unlockAllForGreybox: 1
---- !u!114 &741199376
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6797e9a7ffe1fc4429fd9a21f7278c36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.StrikeVisual
-  _inkMaterial: {fileID: 2100000, guid: b7ec2559fc9fac9488ad462bac6c42dc, type: 2}
-  _slashSeconds: 0.14
-  _fleckCount: 7
-  _fleckSpeed: 9
-  _fleckSeconds: 0.28
---- !u!114 &741199377
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3a011d2a271f4345ad0bd06b84532b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.Flourishes
-  crosshatchCost: 3
-  longstrokeCost: 3
-  blotCost: 4
-  crosshatchHits: 6
-  crosshatchInterval: 3
-  crosshatchReach: 2.4
-  crosshatchHeight: 1.4
-  longstrokeStartup: 4
-  longstrokeReach: 6
-  longstrokeThickness: 0.8
-  longstrokeDamage: 2
-  blotStartup: 3
-  blotRadius: 2.5
-  blotSlowSeconds: 2
-  blotKnockback: 6
-  originHeight: 0.6
-  recoveryFrames: 6
-  hitstopFrames: 2
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 768
---- !u!114 &741199378
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5956d7d21c8cb24094d440873133f83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.Interactor
-  _interactMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  _upThreshold: 0.6
---- !u!114 &741199379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 721e20d016417db40966131847ec6efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.QuillStrike
-  reach: 2.2
-  thickness: 0.9
-  originHeight: 0.6
-  startupFrames: 3
-  activeFrames: 4
-  recoveryFrames: 8
-  damage: 1
-  hitstopFrames: 2
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 768
-  comboWindowFrames: 18
---- !u!114 &741199380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1ebeab7731bb57343829fb2cd8e8691f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.WrenVitals
-  _maxMasks: 5
-  _masks: 5
-  _bindCost: 3
-  _bindSeconds: 0.6
-  _invulnFrames: 60
-  _hitKnockback: {x: 7, y: 9}
---- !u!114 &741199381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d794db775b8851a4697805c3478ac542, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.Inkwell
-  _maxPips: 9
-  _pips: 0
---- !u!114 &741199382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab6f9faf459c4e446bd40185eb8109a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.Core::OWSBG.Core.InputReader
-  _asset: {fileID: -944628639613478452, guid: 36620c915376e8848bca5467b5e87af0, type: 3}
-  _jumpBufferFrames: 6
-  _attackBufferFrames: 6
-  _dashBufferFrames: 4
-  _flourishBufferFrames: 6
-  _instrumentBufferFrames: 6
---- !u!114 &741199383
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b9d2420ca21b1749a2858734e332079, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: OWSBG.Core::OWSBG.Core.AbilitySet
-  _unlocked: 3
---- !u!50 &741199384
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_BodyType: 1
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
---- !u!61 &741199385
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 741199370}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0.55}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.6, y: 1.1}
-  m_EdgeRadius: 0
---- !u!1 &863688140
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 863688142}
-  - component: {fileID: 863688141}
+  - component: {fileID: 520077546}
+  - component: {fileID: 520077545}
   m_Layer: 0
   m_Name: Sun
   m_TagString: Untagged
@@ -871,13 +718,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!108 &863688141
+--- !u!108 &520077545
 Light:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 863688140}
+  m_GameObject: {fileID: 520077544}
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
@@ -936,13 +783,13 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
---- !u!4 &863688142
+--- !u!4 &520077546
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 863688140}
+  m_GameObject: {fileID: 520077544}
   serializedVersion: 2
   m_LocalRotation: {x: 0.3368241, y: -0.16317593, z: 0.059391174, w: 0.9254166}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -951,7 +798,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &986699449
+--- !u!1 &694039290
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -959,9 +806,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 986699450}
-  - component: {fileID: 986699452}
-  - component: {fileID: 986699451}
+  - component: {fileID: 694039291}
+  - component: {fileID: 694039293}
+  - component: {fileID: 694039292}
   m_Layer: 0
   m_Name: Sprite
   m_TagString: Untagged
@@ -969,28 +816,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &986699450
+--- !u!4 &694039291
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 986699449}
+  m_GameObject: {fileID: 694039290}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.6, z: 0}
   m_LocalScale: {x: 0.8, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 741199372}
+  m_Father: {fileID: 127631373}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!23 &986699451
+--- !u!23 &694039292
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 986699449}
+  m_GameObject: {fileID: 694039290}
   m_Enabled: 1
   m_CastShadows: 2
   m_ReceiveShadows: 1
@@ -1033,15 +880,15 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &986699452
+--- !u!33 &694039293
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 986699449}
+  m_GameObject: {fileID: 694039290}
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1280629470
+--- !u!1 &940010277
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1049,57 +896,127 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1280629473}
-  - component: {fileID: 1280629472}
-  - component: {fileID: 1280629471}
+  - component: {fileID: 940010281}
+  - component: {fileID: 940010280}
+  - component: {fileID: 940010279}
+  - component: {fileID: 940010278}
   m_Layer: 0
-  m_Name: PlayerSystems
+  m_Name: CM Follow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1280629471
+--- !u!114 &940010278
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1280629470}
+  m_GameObject: {fileID: 940010277}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0b4b8412b0704640889f454226e6d6a, type: 3}
+  m_Script: {fileID: 11500000, guid: f453f694addf4275988fac205bc91968, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.CommissionTracker
---- !u!114 &1280629472
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineConfiner2D
+  BoundingShape2D: {fileID: 0}
+  Damping: 0.5
+  SlowingDistance: 5
+  OversizeWindow:
+    Enabled: 0
+    MaxWindowSize: 0
+    Padding: 0
+  m_LegacyMaxWindowSize: -2
+--- !u!114 &940010279
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1280629470}
+  m_GameObject: {fileID: 940010277}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de475e437253da0439d3a627045311bd, type: 3}
+  m_Script: {fileID: 11500000, guid: 886251e9a18ece04ea8e61686c173e1b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.PlayerRespawn
-  _delaySeconds: 0.9
---- !u!4 &1280629473
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePositionComposer
+  CameraDistance: 18
+  DeadZoneDepth: 0
+  Composition:
+    ScreenPosition: {x: 0, y: 0}
+    DeadZone:
+      Enabled: 1
+      Size: {x: 0.06, y: 0.16}
+    HardLimits:
+      Enabled: 0
+      Size: {x: 0.8, y: 0.8}
+      Offset: {x: 0, y: 0}
+  CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1.2, z: 0}
+  Damping: {x: 0.35, y: 0.6, z: 0}
+  Lookahead:
+    Enabled: 1
+    Time: 0.25
+    Smoothing: 8
+    IgnoreY: 1
+--- !u!114 &940010280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 940010277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+  Priority:
+    Enabled: 0
+    m_Value: 0
+  OutputChannel: 1
+  StandbyUpdate: 2
+  m_StreamingVersion: 0
+  m_LegacyPriority: 0
+  Target:
+    TrackingTarget: {fileID: 127631373}
+    LookAtTarget: {fileID: 0}
+    CustomLookAtTarget: 0
+  Lens:
+    FieldOfView: 30
+    OrthographicSize: 10
+    NearClipPlane: 0.3
+    FarClipPlane: 120
+    Dutch: 0
+    ModeOverride: 0
+    PhysicalProperties:
+      GateFit: 2
+      SensorSize: {x: 21.946, y: 16.002}
+      LensShift: {x: 0, y: 0}
+      FocusDistance: 10
+      Iso: 200
+      ShutterSpeed: 0.005
+      Aperture: 16
+      BladeCount: 5
+      Curvature: {x: 2, y: 11}
+      BarrelClipping: 0.25
+      Anamorphism: 0
+  BlendHint: 0
+--- !u!4 &940010281
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1280629470}
+  m_GameObject: {fileID: 940010277}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.017452406, y: 0, z: 0, w: 0.9998477}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1432904577
+--- !u!1 &1360002198
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1107,17 +1024,17 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1432904588}
-  - component: {fileID: 1432904587}
-  - component: {fileID: 1432904586}
-  - component: {fileID: 1432904585}
-  - component: {fileID: 1432904584}
-  - component: {fileID: 1432904583}
-  - component: {fileID: 1432904582}
-  - component: {fileID: 1432904581}
-  - component: {fileID: 1432904580}
-  - component: {fileID: 1432904579}
-  - component: {fileID: 1432904578}
+  - component: {fileID: 1360002209}
+  - component: {fileID: 1360002208}
+  - component: {fileID: 1360002207}
+  - component: {fileID: 1360002206}
+  - component: {fileID: 1360002205}
+  - component: {fileID: 1360002204}
+  - component: {fileID: 1360002203}
+  - component: {fileID: 1360002202}
+  - component: {fileID: 1360002201}
+  - component: {fileID: 1360002200}
+  - component: {fileID: 1360002199}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -1125,125 +1042,125 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1432904578
+--- !u!114 &1360002199
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6bc51d58793f4c418e1c64f99bbb4aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.FadeView
---- !u!114 &1432904579
+--- !u!114 &1360002200
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8335f45a1f814c6429bec73bd32acf30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.PromptView
   _tutorialSeconds: 6
---- !u!114 &1432904580
+--- !u!114 &1360002201
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b4061e5243575a944bde811564594a14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.JournalView
   _toastSeconds: 3
---- !u!114 &1432904581
+--- !u!114 &1360002202
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4467fe29c0dd48f43bf33a3a5bf24f7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.LedgerView
---- !u!114 &1432904582
+--- !u!114 &1360002203
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e249c9516855ac24d9c99b9947d9f77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.BossView
   _lineSeconds: 2.6
---- !u!114 &1432904583
+--- !u!114 &1360002204
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 85542a6171c77a840a47477dacd30202, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.DeskMenu
---- !u!114 &1432904584
+--- !u!114 &1360002205
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64df16cf80bbd81448c9aae6f610d041, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.DialogueView
---- !u!114 &1432904585
+--- !u!114 &1360002206
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46811a6048fade54ea7194210c18bff6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.HudView
   _refreshSeconds: 0.1
---- !u!114 &1432904586
+--- !u!114 &1360002207
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c5066c87e04eda04eb546d96c88b7e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: OWSBG.UI::OWSBG.UI.UiRoot
---- !u!114 &1432904587
+--- !u!114 &1360002208
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
@@ -1260,13 +1177,13 @@ MonoBehaviour:
   m_PivotReferenceSize: 0
   m_Pivot: 0
   m_WorldSpaceCollider: {fileID: 0}
---- !u!4 &1432904588
+--- !u!4 &1360002209
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1432904577}
+  m_GameObject: {fileID: 1360002198}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -1275,7 +1192,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1942738503
+--- !u!1 &1732169433
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1283,8 +1200,82 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1942738505}
-  - component: {fileID: 1942738504}
+  - component: {fileID: 1732169437}
+  - component: {fileID: 1732169436}
+  - component: {fileID: 1732169435}
+  - component: {fileID: 1732169434}
+  m_Layer: 0
+  m_Name: DialogueService
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1732169434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732169433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdbe9fba1f8680e41835b5e160b4b4fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.Narrative::OWSBG.Narrative.DialogueService
+  _project: {fileID: 7545569452688597077, guid: b015c0ee4beadb54196f260d3b7f64c9, type: 3}
+  _presenters:
+  - {fileID: 1732169435}
+  _freezeWren: 1
+--- !u!114 &1732169435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732169433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdeee20639c1f7b4093d9660c6bb57a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.Narrative::OWSBG.Narrative.ViewDialoguePresenter
+--- !u!114 &1732169436
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732169433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdeff91903c6c17439fe358ec3502b37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.Narrative::OWSBG.Narrative.WorldStateVariableStorage
+--- !u!4 &1732169437
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732169433}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1755596332
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1755596334}
+  - component: {fileID: 1755596333}
   m_Layer: 0
   m_Name: RoomManager
   m_TagString: Untagged
@@ -1292,13 +1283,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1942738504
+--- !u!114 &1755596333
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1942738503}
+  m_GameObject: {fileID: 1755596332}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 79b3e1fcbe779364588ee2867d182340, type: 3}
@@ -1308,17 +1299,17 @@ MonoBehaviour:
   _startSpawn: Start
   _prologueRoom: Greybox_Greyfold_Edge
   _prologueSpawn: Start
-  _wren: {fileID: 741199371}
-  _confiner: {fileID: 307513703}
+  _wren: {fileID: 127631372}
+  _confiner: {fileID: 940010278}
   _useAddressables: 1
   _preloadNeighbours: 1
---- !u!4 &1942738505
+--- !u!4 &1755596334
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1942738503}
+  m_GameObject: {fileID: 1755596332}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -1327,7 +1318,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2025647749
+--- !u!1 &1870234043
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1335,39 +1326,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2025647751}
-  - component: {fileID: 2025647750}
+  - component: {fileID: 1870234046}
+  - component: {fileID: 1870234045}
+  - component: {fileID: 1870234044}
   m_Layer: 0
-  m_Name: Global Volume
+  m_Name: PlayerSystems
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2025647750
+--- !u!114 &1870234044
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2025647749}
+  m_GameObject: {fileID: 1870234043}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Script: {fileID: 11500000, guid: d0b4b8412b0704640889f454226e6d6a, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
-  m_IsGlobal: 1
-  priority: 0
-  blendDistance: 0
-  weight: 1
-  sharedProfile: {fileID: 11400000, guid: e7efa74208e70424b89503de1ec7dcc2, type: 2}
---- !u!4 &2025647751
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.CommissionTracker
+--- !u!114 &1870234045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1870234043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de475e437253da0439d3a627045311bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.PlayerRespawn
+  _delaySeconds: 0.9
+--- !u!4 &1870234046
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2025647749}
+  m_GameObject: {fileID: 1870234043}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -1380,12 +1380,12 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 64337345}
-  - {fileID: 863688142}
-  - {fileID: 741199372}
-  - {fileID: 307513706}
-  - {fileID: 2025647751}
-  - {fileID: 1432904588}
-  - {fileID: 520550079}
-  - {fileID: 1280629473}
-  - {fileID: 1942738505}
+  - {fileID: 488824406}
+  - {fileID: 520077546}
+  - {fileID: 127631373}
+  - {fileID: 940010281}
+  - {fileID: 466634175}
+  - {fileID: 1360002209}
+  - {fileID: 1732169437}
+  - {fileID: 1870234046}
+  - {fileID: 1755596334}

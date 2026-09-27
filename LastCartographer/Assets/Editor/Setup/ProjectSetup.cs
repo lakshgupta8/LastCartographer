@@ -37,6 +37,7 @@ namespace OWSBG.Setup
         public const string RoomBScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_B.unity";
         public const string RoomCScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_Lighthouse.unity";
         public const string RoomEdgeScenePath = Root + "/Scenes/Greybox/Greybox_Greyfold_Edge.unity";
+        const string RendererAssetPath = Root + "/Settings/Rendering/URP_Renderer.asset";
         const string CutsceneDir = Root + "/Data/Cutscenes";
         const string InputAssetPath = Root + "/Settings/Input/WrenInput.inputactions";
         const string YarnProjectPath = Root + "/Dialogue/LastCartographer.yarnproject";
@@ -278,6 +279,7 @@ namespace OWSBG.Setup
             BuildRoomB();
             BuildRoomC();
             BuildRoomEdge();
+            SetupRenderFeatures();
             BuildPersistent();
             // Rooms stream through Addressables (PRG-07); only the persistent scene is a built-in scene.
             EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(PersistentScenePath, true) };
@@ -824,6 +826,72 @@ namespace OWSBG.Setup
             so.FindProperty("_shot").objectReferenceValue = shot;
             so.ApplyModifiedPropertiesWithoutUndo();
             return cs;
+        }
+
+        // ---- The look (PRG-04): two full-screen passes on the URP renderer, materials under Art/Materials.
+
+        static void SetupRenderFeatures()
+        {
+            var data = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(RendererAssetPath);
+            if (data == null) { Debug.LogWarning("[OWSBG] renderer asset missing; run Configure first"); return; }
+            AddFullScreenFeature(data, "ForegroundBlur", "OWSBG/FullScreen/ForegroundBlur",
+                FullScreenPassRendererFeature.InjectionPoint.BeforeRenderingPostProcessing, ScriptableRenderPassInput.Depth, m =>
+                {
+                    m.SetFloat("_FocusDistance", 18f);   // camera sits 18 units behind the gameplay plane
+                    m.SetFloat("_Range", 7f);
+                    m.SetFloat("_MaxRadius", 7f);
+                });
+            AddFullScreenFeature(data, "PaperGrain", "OWSBG/FullScreen/PaperGrain",
+                FullScreenPassRendererFeature.InjectionPoint.AfterRenderingPostProcessing, ScriptableRenderPassInput.None, m =>
+                {
+                    m.SetFloat("_Strength", 0.07f);
+                    m.SetFloat("_Scale", 2f);
+                    m.SetFloat("_Fibre", 0.02f);
+                });
+            data.SetDirty();
+            EditorUtility.SetDirty(data);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[OWSBG] renderer features: " + data.rendererFeatures.Count);
+        }
+
+        static void AddFullScreenFeature(UniversalRendererData data, string name, string shaderName,
+            FullScreenPassRendererFeature.InjectionPoint point, ScriptableRenderPassInput requirements, System.Action<Material> configure)
+        {
+            var shader = Shader.Find(shaderName);
+            if (shader == null) { Debug.LogWarning("[OWSBG] shader missing: " + shaderName); return; }
+            var matPath = Root + "/Art/Materials/M_FS_" + name + ".mat";
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
+            if (mat == null) { mat = new Material(shader); AssetDatabase.CreateAsset(mat, matPath); }
+            else if (mat.shader != shader) mat.shader = shader;
+            configure?.Invoke(mat);
+            EditorUtility.SetDirty(mat);
+
+            FullScreenPassRendererFeature feature = null;
+            foreach (var f in data.rendererFeatures) if (f is FullScreenPassRendererFeature fs && fs.name == name) feature = fs;
+            if (feature == null)
+            {
+                feature = ScriptableObject.CreateInstance<FullScreenPassRendererFeature>();
+                feature.name = name;
+                AssetDatabase.AddObjectToAsset(feature, data);
+                AssetDatabase.SaveAssets();
+                // Mirror what the renderer inspector does: the feature list and its local-id map, in step.
+                var so = new SerializedObject(data);
+                var list = so.FindProperty("m_RendererFeatures");
+                var map = so.FindProperty("m_RendererFeatureMap");
+                int n = list.arraySize;
+                list.arraySize = n + 1;
+                list.GetArrayElementAtIndex(n).objectReferenceValue = feature;
+                AssetDatabase.TryGetGUIDAndLocalFileIdentifier(feature, out _, out long localId);
+                map.arraySize = n + 1;
+                map.GetArrayElementAtIndex(n).longValue = localId;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+            feature.passMaterial = mat;
+            feature.injectionPoint = point;
+            feature.requirements = requirements;
+            feature.fetchColorBuffer = true;
+            feature.passIndex = 0;
+            EditorUtility.SetDirty(feature);
         }
 
         // ---- Addressables (PRG-07): one group, one bundle per room, address = scene name.

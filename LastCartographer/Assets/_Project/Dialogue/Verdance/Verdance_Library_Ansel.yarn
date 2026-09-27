@@ -1,0 +1,45 @@
+// The Sunken Library (bible 4.3, 8.3 [F 5.1]): an anchored library; Brother Ansel has read page 214 for thirty-eight
+// years. The book is a history of the Halloways (5.4). Turn the page and he forgets the thirty-eight years.
+// Library_2. Teodor will not turn it; he tells her so at the reading stair (Library_1).
+
+title: Library_Teodor_Ansel
+---
+Teodor: He is reading. He has been reading for thirty-eight years. He is happy on that page.
+Teodor: I will not turn it for you. May I say a thing you will not like? Neither should you. #plant:5.1
+<<flag verdance.library.teodor_asked 1>>
+===
+
+title: Library_Ansel
+---
+<<if has_flag("verdance.library.page_turned")>>
+    Ansel: Two hundred and fifteen. The owl had a daughter. I never knew that. Did you? #plant:5.4
+    <<stop>>
+<<endif>>
+<<if has_flag("verdance.library.decided")>>
+    Ansel: Two hundred and fourteen. A marvellous page. I have only just begun it. #still
+    <<stop>>
+<<endif>>
+Ansel: Two hundred and fourteen. A marvellous page. I have only just begun it.
+Ansel: A history of the Halloways. The owl who kept the Atlas. It is very good about his family. #plant:5.4
+Ansel: I am coming to the part about his daughter. Any moment now.
+-> What's on the next page?
+    Ansel: I do not know. That is the pleasure of it. I will know soon.
+-> Can I turn it for you?
+    Ansel: Would you? My wings are so tired. I have been holding it open a little while.
+    <<jump Library_Ansel_Turn>>
+-> ...
+    Ansel: Yes. Quiet. It is a library.
+<<flag verdance.library.decided 2>>
+===
+
+title: Library_Ansel_Turn
+---
+-> Turn the page.
+    Ansel: Oh. Oh. Two hundred and fifteen.
+    Ansel: Where is everyone? It was morning. Who are you? Who has let the dust in?
+    <<flag verdance.library.page_turned 1>>
+    <<flag verdance.library.decided 1>>
+-> Leave it where it is.
+    Ansel: Kind of you. Another time. There is no hurry. There never is, down here. #still
+    <<flag verdance.library.decided 2>>
+===

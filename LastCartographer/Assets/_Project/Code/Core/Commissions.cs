@@ -287,6 +287,7 @@ namespace OWSBG.Core
             _defaults = true;
             foreach (var d in Saltmarrow()) { _byId[d.Id] = d; _defs.Add(d); }
             foreach (var d in Emberdown()) { _byId[d.Id] = d; _defs.Add(d); }
+            foreach (var d in Verdance()) { _byId[d.Id] = d; _defs.Add(d); }
         }
 
         /// <summary>Bible 8.1, greybox-sized: each is finishable in the three greybox rooms.</summary>
@@ -393,6 +394,63 @@ namespace OWSBG.Core
                 Aftermath = "The Greyfold, from outside. Runa has counted it since she was a chick.",
                 Steps = new[] { CommissionStep.Vantage("Emberdown_Overlook_2/Overlook", "Survey the overlook") },
                 RewardScraps = 1, Foreshadows = "4.6", RequiresAbility = Ability.Talonhold, PostAfterFlag = "emberdown.runa.climbed",
+            },
+        };
+        /// <summary>Bible 8.3: the Quiet House's ledger. Vantage steps name the planned rooms (RoomPlans, DES-09).</summary>
+        public static CommissionDef[] Verdance() => new[]
+        {
+            new CommissionDef
+            {
+                Id = "verdance.ash_remembers", Title = "What the Ash Remembers", Hub = "Verdance", Poster = "Aldermere, by its own hand",
+                Brief = "Aldermere has asked to be let go. Its last day is tomorrow. It would like a visitor.",
+                Journal = "East of the Quiet House. Go to Aldermere's square on its last day. Stay, or do not.",
+                Aftermath = "Aldermere is decided. The ash field will remember which way.",
+                Steps = new[] { CommissionStep.Flag("verdance.aldermere.decided", "Be in Aldermere's square on its last day") },
+                RewardScraps = 3, BlankIsland = "Aldermere", PostAfterFlag = "verdance.teodor.met",
+            },
+            new CommissionDef
+            {
+                Id = "verdance.sunken_library", Title = "The Sunken Library", Hub = "Verdance", Poster = "A reader's note, pressed flat",
+                Brief = "Somebody in the drowned library has been reading the same page since before the brothers came.",
+                Journal = "Past the grove, down the reading stair. Find the reader. Decide about the page.",
+                Aftermath = "Page two hundred and fourteen, or fifteen. Either way, somebody knows now.",
+                Steps = new[]
+                {
+                    CommissionStep.Vantage("Verdance_Library_2/Page", "Survey the reading room"),
+                    CommissionStep.Flag("verdance.library.decided", "Turn the page, or leave it"),
+                },
+                RewardScraps = 2, Foreshadows = "5.1", RequiresAbility = Ability.Inkthread, PostAfterFlag = "verdance.teodor.thread",
+            },
+            new CommissionDef
+            {
+                Id = "verdance.solvent", Title = "The Solvent", Hub = "Verdance", Poster = "Ferrow's Mill, unsigned",
+                Brief = "The brothers are letting a mill go on the Old Road. The miller says he never asked.",
+                Journal = "Ferrow's Mill is where the trees begin, on the Old Road. Find out who asked.",
+                Aftermath = "Somebody asked. Somebody did not. The wheel knows which.",
+                Steps = new[] { CommissionStep.Flag("verdance.solvent.decided", "Settle the mill") },
+                RewardScraps = 2, PostAfterFlag = "verdance.teodor.met",
+            },
+            new CommissionDef
+            {
+                Id = "verdance.overgrown_gate", Title = "The Overgrown Gate", Hub = "Verdance", Poster = "The last milestone, scratched",
+                Brief = "Past the gate the road stops. Survey it, the milestone says, and it goes on for one night.",
+                Journal = "The Overgrown Gate is past Aldermere, by thread. Survey it after dark and follow the road.",
+                Aftermath = "An inn of travellers who ask if you have eaten. In the morning the road was gone.",
+                Steps = new[]
+                {
+                    CommissionStep.Vantage("Verdance_Gate_2/Gate", "Survey the Overgrown Gate"),
+                    CommissionStep.Flag("verdance.gate.inn_visited", "Follow the road to its inn"),
+                },
+                RewardScraps = 2, BlankIsland = "Overgrown_Inn", RequiresAbility = Ability.Inkthread, PostAfterFlag = "verdance.teodor.thread",
+            },
+            new CommissionDef
+            {
+                Id = "verdance.vigil", Title = "The Lantern Grove Vigil", Hub = "Verdance", Poster = "Teodor",
+                Brief = "Brother Teodor sits in the grove every night. He says anyone may sit with him. Nobody has.",
+                Journal = "Across the thread from the root chapel. Sit with Teodor. There are no choices.",
+                Aftermath = "Eleven lanterns. Eleven places. He never once said was.",
+                Steps = new[] { CommissionStep.Flag("verdance.grove.vigil", "Sit the vigil") },
+                RewardScraps = 1, PostAfterFlag = "verdance.teodor.thread",
             },
         };
     }

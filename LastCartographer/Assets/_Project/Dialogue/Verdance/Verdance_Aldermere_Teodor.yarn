@@ -1,0 +1,50 @@
+// What the Ash Remembers [B] (bible 4.3, 8.3): Aldermere asked the Unwriters to let it go. Wren arrives on its last
+// day. Attend it to the end, or try to stop it and the Choir sings over the square (boss 6.6).
+// Aldermere_2, the square. Mayor Hollin, a thrush, speaks for the village; Teodor stands at the edge.
+
+title: Aldermere_Teodor
+---
+<<if has_flag("verdance.aldermere.attended")>>
+    Teodor: The square is paper now. They are in the Blank, cartographer. They asked for that. They are well. #still
+    <<stop>>
+<<endif>>
+<<if has_flag("verdance.aldermere.stopped")>>
+    Hollin: You are the one who stopped it. Thank you, I suppose. We are still here. We are still here. #still
+    <<stop>>
+<<endif>>
+Hollin: Welcome to Aldermere. There is bread. There is always bread on the last day.
+Hollin: We voted. Every hand. The Guild wanted four hundred crowns a street, and then we would be the same forever.
+Hollin: We would rather be remembered than kept. The brothers were kind enough to ask us twice.
+Teodor: Three times. I asked three times. I made sure.
+-> Then I'll stay to the end.
+    <<jump Aldermere_Attend>>
+-> I won't let you fade.
+    <<jump Aldermere_Stop>>
+-> Who will remember you?
+    Hollin: You will. That is why we are glad you came. A visitor is the best kind of memory.
+    <<jump Aldermere_Attend>>
+===
+
+title: Aldermere_Attend
+---
+Hollin: Stay by the bread. The bells start at dusk. It does not hurt. Brother Teodor has done this before.
+Teodor: The kindest thing you will see, cartographer. I am glad it is you watching.
+Hollin: When you pass again, do not look for us. Look for the ash field. We will be in it.
+<<release Verdance_Aldermere_1>>
+<<release Verdance_Aldermere_2>>
+<<release Verdance_Aldermere_3>>
+<<flag verdance.aldermere.attended 1>>
+<<flag verdance.aldermere.decided 1>>
+===
+
+title: Aldermere_Stop
+---
+Teodor: Ah. May I say a thing you will not like? They did not ask you.
+Hollin: Please. Put the quill down. We voted.
+-> Put the bells down, then.
+    Teodor: The Choir will not. They sing what was asked of them. I will neither stop them nor help them.
+-> ...
+    Teodor: Then you must answer the Choir. I am sorry. It is the one thing I am sorry for today.
+<<flag verdance.aldermere.stopped 1>>
+<<flag verdance.aldermere.decided 2>>
+===

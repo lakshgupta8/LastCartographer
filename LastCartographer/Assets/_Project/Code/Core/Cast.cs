@@ -117,12 +117,12 @@ namespace OWSBG.Core
             At("runa", Epilogue, "Emberdown.KettilsRest", "the epilogue, by ending", "Epilogue_Runa");
 
             Member("teodor", "Brother Teodor Ashe", "mourning dove", "the Unwriters", "the faded in the present tense", "asks permission before a hard sentence", "a raised voice");
-            At("teodor", Act1, "Verdance.QuietHouse", "first meeting: the reeds have told him; the vigil's invitation", "QuietHouse_Teodor", writes: "verdance.teodor.met");
-            At("teodor", Act1, "Verdance.RootChapel", "Inkthread: the solvent-line reversed", "RootChapel_Teodor_Thread", writes: "verdance.teodor.thread");
-            At("teodor", Act1, "Verdance.LanternGrove", "the vigil: eleven names, no choices", "Grove_Teodor_Vigil", writes: "verdance.grove.vigil");
-            At("teodor", Act1, "Verdance.SunkenLibrary", "Ansel's page: he will not turn it for you", "Library_Teodor_Ansel", writes: "verdance.library.teodor_asked");
-            At("teodor", Act1, "Verdance.Aldermere", "the last day: attend, or stop it", "Aldermere_Teodor", writes: "verdance.aldermere.attended / .stopped");
-            At("teodor", Act2, "Verdance.QuietHouse", "the keystone: say why", "QuietHouse_Teodor_Keystone", writes: "teodor.keystone_given / teodor.refused");
+            At("teodor", Act1, "Verdance.QuietHouse", "first meeting: the reeds have told him; the vigil's invitation", "QuietHouse_Teodor", staged: true, writes: "verdance.teodor.met");
+            At("teodor", Act1, "Verdance.RootChapel", "Inkthread: the solvent-line reversed", "RootChapel_Teodor_Thread", staged: true, writes: "verdance.teodor.thread");
+            At("teodor", Act1, "Verdance.LanternGrove", "the vigil: eleven names, no choices", "Grove_Teodor_Vigil", staged: true, writes: "verdance.grove.vigil");
+            At("teodor", Act1, "Verdance.SunkenLibrary", "Ansel's page: he will not turn it for you", "Library_Teodor_Ansel", staged: true, writes: "verdance.library.teodor_asked");
+            At("teodor", Act1, "Verdance.Aldermere", "the last day: attend, or stop it", "Aldermere_Teodor", staged: true, writes: "verdance.aldermere.attended / .stopped");
+            At("teodor", Act2, "Verdance.QuietHouse", "the keystone: say why", "QuietHouse_Teodor_Keystone", staged: true, writes: "teodor.keystone_given / teodor.refused");
             At("teodor", Act3, "Halden.Observatory", "the Unwritten: he dissolves the keystones, naming their places", "Observatory_Teodor_Unwritten", writes: "ending.unwritten");
             At("teodor", Epilogue, "Verdance.QuietHouse", "the epilogue, by ending", "Epilogue_Teodor");
 

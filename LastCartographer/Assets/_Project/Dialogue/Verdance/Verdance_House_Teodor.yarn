@@ -1,0 +1,68 @@
+// Brother Teodor Ashe, mourning dove, the Unwriters (bible 3.3, character-bibles.md §4). The Quiet House (House_2).
+// Voice: slow, complete sentences, gentle; never a raised voice. Asks permission before a hard sentence. Calls Wren
+// "cartographer". Image: the faded in the present tense; he never says "was" of a bird.
+// State he reads: Isolde, Aldermere's last day, the thread, the vigil, the library, the keystone.
+
+title: QuietHouse_Teodor
+---
+<<if not has_flag("verdance.teodor.met")>>
+    <<jump QuietHouse_Teodor_First>>
+<<endif>>
+<<if has_flag("verdance.aldermere.decided") and not has_flag("teodor.keystone_given") and not has_flag("teodor.refused")>>
+    <<jump QuietHouse_Teodor_Keystone>>
+<<endif>>
+<<if has_flag("teodor.keystone_given")>>
+    Teodor: It is heavier than it looks. I told you. I carried it eleven years and it never got lighter. #still
+<<elseif has_flag("teodor.refused")>>
+    Teodor: Sit, cartographer. The House does not close its door on a wrong answer. Only the stone stays. #still
+<<elseif has_flag("verdance.grove.vigil")>>
+    Teodor: You sat with them. They are glad of it. Wenlow especially; Wenlow likes company.
+<<else>>
+    Teodor: The grove is lit tonight. It is always lit. Come when you are ready. There are no choices there.
+<<endif>>
+-> Why do the Cantors carry bells?
+    Teodor: So that nobody is let go in silence. A bell is a kind of name. You will hear them.
+-> What do you want from me?
+    Teodor: Nothing, yet. May I say a thing you will not like? You will want something from me. We will see.
+-> Nothing today.
+    Teodor: Then rest. The House is quiet for that reason, and no other.
+===
+
+title: QuietHouse_Teodor_First
+---
+Teodor: You are Isolde's. May I say a thing you will not like?
+-> Say it.
+    Teodor: She is a careful woman. She is careless with one thing. You are standing in it. #plant:5.2
+-> Everyone says that first.
+    Teodor: Then everyone is careful. Sit. The reeds have been telling me about you for a week.
+-> ...
+    Teodor: Good. The grove is quieter than that. You will do well there.
+Teodor: I was a surveyor, once. I anchored eleven villages. I sit with them now, in the grove.
+Teodor: Aldermere holds its last day tomorrow. They asked us. Come, if you like. It is a kindness to be there.
+<<flag verdance.teodor.met 1>>
+===
+
+title: QuietHouse_Teodor_Keystone
+---
+<<if has_flag("verdance.aldermere.stopped")>>
+    Teodor: You stopped Aldermere's last day. The Choir sang over me and I let it.
+    Teodor: They are held now. Ask them whether they are glad. I have, every evening since.
+    Teodor: The stone stays with me, cartographer. Not as a punishment. As a thing I am still sure of.
+    <<flag teodor.refused 1>>
+    <<stop>>
+<<endif>>
+Teodor: You stood in the square to the end. May I ask you a thing, and hear an honest answer?
+Teodor: Why do I do this? Not the Unwriters. Me. Why do I let places go?
+-> Because you were brave enough to.
+    Teodor: No. But you were close, and you were kind. I have been called brave. It was never true.
+    <<flag teodor.refused 1>>
+-> Because they asked. And you made sure.
+    Teodor: Yes. That is why. They asked, and I made sure. #plant:5.1
+    Teodor: The tenth, I was not sure. My mother asked, and I did it, and I have not been sure since.
+    Teodor: Take it. It is heavier than it looks.
+    <<flag teodor.keystone_given 1>>
+    <<flag keystone.quiet_house 1>>
+-> Because you grieve every one of them.
+    Teodor: I do. But grief is not a reason. It is what a reason leaves. You were kind to say it.
+    <<flag teodor.refused 1>>
+===

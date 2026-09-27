@@ -1,0 +1,32 @@
+// The Overgrown Gate [B, A Inkthread] (bible 8.3): survey the gate and a faded road appears for one night, ending at
+// an inn full of Remnant travellers who ask if you've eaten. Gate_2, after the Gatekeeper (6.7). The innkeeper is
+// Remnant: half-sentences, present tense, polite; asks if you have eaten; never "I'm dead" (style guide 4).
+// And the gate's inscription, environment first (plant 5.6).
+
+title: Gate_Inscription
+---
+Inscription: Passage for the winged. Land, and be welcome. #plant:5.6
+Inscription: Scratched under it, low down, in a hand that climbed: "And the rest of us?"
+===
+
+title: Gate_Inn
+---
+<<if not surveyed("Verdance_Gate_2/Gate")>>
+    Inscription: The road ends at the gate. Beyond it, only trees. Nothing is drawn there yet.
+    <<stop>>
+<<endif>>
+<<if has_flag("verdance.gate.inn_visited")>>
+    Innkeeper: Back. Good. The road is only here the one night. Have you... #still
+    <<stop>>
+<<endif>>
+Innkeeper: A traveller. Come in, come in. The fire is... it is warm. It is warm.
+Innkeeper: Have you eaten? You have not eaten. Sit.
+-> Who are all these people?
+    Innkeeper: Travellers. On the road. The road goes to... it goes on. We are waiting for morning.
+-> I've eaten, thank you.
+    Innkeeper: Good. Good. Nobody says that. Everyone is so hungry here, and nobody eats.
+-> ...
+    Innkeeper: Tired. Yes. Sit by the... there. The chair knows you.
+Innkeeper: In the morning the road goes. It always goes. We are still here, after. Somewhere.
+<<flag verdance.gate.inn_visited 1>>
+===

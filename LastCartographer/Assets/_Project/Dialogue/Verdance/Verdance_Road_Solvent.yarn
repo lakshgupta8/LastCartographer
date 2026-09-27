@@ -1,0 +1,31 @@
+// The Solvent (bible 8.3): a Cantor crew un-anchoring a mill on the Old Road that did not ask. Or did it?
+// Ferrow's Mill, Road_3. Sister Wend (dove, Cantor) has the solvent; Miller Tobin did not ask; his mother did.
+// The same question Teodor carries about Ettle, from the other side.
+
+title: Road_Solvent
+---
+<<if has_flag("verdance.solvent.decided")>>
+    <<if flag("verdance.solvent.decided") == 1>>
+        Tobin: The wheel's still. Mother is glad. I am getting used to it. That is the same thing, some days. #still
+    <<elseif flag("verdance.solvent.decided") == 2>>
+        Tobin: Still turning. Still the same flour. Mother will not speak to me. The wheel does. #still
+    <<else>>
+        Tobin: We are still talking about it. Mother and I. First time in years. The wheel can wait. #still
+    <<endif>>
+    <<stop>>
+<<endif>>
+Wend: Stand clear, Guild. The mill is being let go. The ledger says it asked.
+Tobin: I never asked! Nobody asked me! The wheel turns. It has turned the same for thirty years. That is fine!
+Wend: Your mother asked. She signed for the house. The house is the mill.
+-> Let them do it.
+    Wend: Thank you. It is a small bell. It will not take long.
+    Tobin: Mother. Mother, what did you do.
+    <<flag verdance.solvent.decided 1>>
+-> Stop. He didn't ask.
+    Wend: Then we are finished here. We do not let go what anyone still holds. Mark that, Guild.
+    <<flag verdance.solvent.decided 2>>
+-> Ask his mother. With him there.
+    Wend: That is not how the ledger works.
+    Tobin: It is how a family works. Mother? Come down. Please.
+    <<flag verdance.solvent.decided 3>>
+===

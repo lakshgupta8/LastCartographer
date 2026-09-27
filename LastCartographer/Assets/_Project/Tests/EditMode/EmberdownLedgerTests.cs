@@ -43,7 +43,7 @@ namespace OWSBG.Tests
                 foreach (var s in d.Steps.Where(s => s.Kind == StepKind.Vantage))
                     Assert.IsTrue(vantages.Contains(s.Key), d.Id + " asks for a vantage a planned room has: " + s.Key);
             }
-            Assert.AreEqual(10, CommissionCatalog.All.Count, "the coast's five and Kettil's five");
+            Assert.AreEqual(15, CommissionCatalog.All.Count, "the coast's five, Kettil's five and the Quiet House's five");
             Assert.AreEqual(5, CommissionCatalog.AtHub("Saltmarrow").Count, "the coast's ledger is unchanged");
         }
 
@@ -60,7 +60,19 @@ namespace OWSBG.Tests
                 foreach (var s in d.Steps.Where(s => s.Kind == StepKind.Flag))
                     Assert.IsTrue(written.Contains(s.Key) || ByCode(s.Key), d.Id + " waits on " + s.Key + ", which nothing writes");
             }
-            // The arc's own beats are all written.
+            // Verdance's ledger: five, two islands, vantage steps on the planned rooms.
+            var verd = CommissionCatalog.AtHub("Verdance");
+            Assert.AreEqual(5, verd.Count);
+            CollectionAssert.AreEquivalent(new[] { "Aldermere", "Overgrown_Inn" }, verd.Where(d => d.SeedsIsland).Select(d => d.BlankIsland));
+            var vantages = new HashSet<string>(RoomPlans.All.Where(r => r.Vantage != null).Select(r => r.VantageId));
+            foreach (var d in verd)
+                foreach (var s in d.Steps.Where(s => s.Kind == StepKind.Vantage))
+                    Assert.IsTrue(vantages.Contains(s.Key), d.Id + " asks for a planned vantage: " + s.Key);
+            // The arcs' own beats are all written.
+            foreach (var f in new[] { "verdance.teodor.met", "verdance.teodor.thread", "verdance.grove.vigil", "verdance.aldermere.attended",
+                                      "verdance.aldermere.stopped", "teodor.keystone_given", "teodor.refused", "keystone.quiet_house",
+                                      "verdance.library.page_turned", "verdance.solvent.decided", "verdance.gate.inn_visited" })
+                Assert.IsTrue(written.Contains(f), f + " is written by a script");
             foreach (var f in new[] { "emberdown.kettil.met", "emberdown.runa.counted", "emberdown.runa.climbed", "emberdown.debate.heard",
                                       "emberdown.hollowvein_opened", "emberdown.hollowvein.walked", "emberdown.hollowvein.buried",
                                       "emberdown.overlook.seen", "runa.named_wren", "holdfast.walk_learned" })

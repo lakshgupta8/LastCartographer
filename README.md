@@ -17,6 +17,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/story/character-bibles.md` | The returning cast (Pell, Sable, Runa, Teodor, Marrow): image, voice, where they stand act by act, what they say each time |
 | `docs/story/saltmarrow-arc.md` | Act 1's first push as written: beats, flags, who says what |
 | `docs/story/emberdown-arc.md` | The Emberdown climb as written: Kettil, Runa, the debate, Hollowvein, Brann; Kettil's ledger |
+| `docs/story/verdance-arc.md` | The Verdance climb as written: Teodor, Aldermere's last day, Ansel's page, the keystone check; the Quiet House's ledger |
 | `docs/story/boss-sheets.md` | The fifteen bosses: reason, arena by phase, three lines, answers, aftermath |
 | `docs/design/game-design-overview.md` | Pillars, loop, systems, scope |
 | `docs/design/combat-and-movement.md` | Wren's kit, Inkwell, Flourishes, Charters, Instruments, enemy and boss rules |

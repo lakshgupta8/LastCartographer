@@ -644,6 +644,17 @@ namespace OWSBG.Setup
             arSo.FindProperty("_rewardAbility").intValue = (int)Ability.Wingbeat;
             arSo.FindProperty("_vellumScraps").intValue = 1;
             arSo.FindProperty("_beaconVantageId").stringValue = "Saltmarrow_Lighthouse/Lamp";
+
+            // Staging (PRG-06, PRG-16): a fixed camera on the whole arena for the fight, and a first-entry
+            // intro that pushes in on the perch while the doors are already shut.
+            var arenaCam = MakeShot(room, "CM Arena", new Vector3(3f, 4.2f, -21f));
+            var introShot = MakeShot(room, "CM BossIntro", new Vector3(3f, 7.4f, -11f));
+            var intro = NewTimeline(CutsceneDir + "/CS_LampKeeperIntro.playable");
+            AddClip<PaperFadeClip>(intro.CreateTrack<PlayableTrack>("Hold"), 0.0, 2.2, "on the perch").From = 0f;
+            var introCs = MakeCutscene(room, "lamp_keeper_intro", intro, introShot);
+            EditorUtility.SetDirty(intro);
+            arSo.FindProperty("_introCutscene").objectReferenceValue = introCs;
+            arSo.FindProperty("_arenaCamera").objectReferenceValue = arenaCam;
             arSo.ApplyModifiedPropertiesWithoutUndo();
 
             EditorSceneManager.SaveScene(scene, RoomCScenePath);
@@ -723,13 +734,7 @@ namespace OWSBG.Setup
             MakeSpawn(room, "Start", new Vector2(5.5f, 0f));
 
             // A fixed shot on the white for Isolde's walk.
-            var shotGo = new GameObject("CM Departure");
-            shotGo.transform.SetParent(room.transform, false);
-            shotGo.transform.position = new Vector3(14f, 3.7f, -18f);
-            shotGo.transform.rotation = Quaternion.Euler(2f, 0f, 0f);
-            var shot = shotGo.AddComponent<CinemachineCamera>();
-            var shotLens = shot.Lens; shotLens.FieldOfView = 30f; shotLens.NearClipPlane = 0.3f; shotLens.FarClipPlane = 120f; shot.Lens = shotLens;
-            shotGo.SetActive(false);
+            var shot = MakeShot(room, "CM Departure", new Vector3(14f, 3.7f, -18f));
 
             var arrive = NewTimeline(CutsceneDir + "/CS_EdgeArrive.playable");
             var arriveFade = AddClip<PaperFadeClip>(arrive.CreateTrack<PlayableTrack>("Fade"), 0.0, 2.0, "paper thins");
@@ -790,6 +795,19 @@ namespace OWSBG.Setup
                 r.shadowCastingMode = ShadowCastingMode.Off;
                 r.receiveShadows = false;
             }
+        }
+
+        // A fixed Cinemachine shot, inactive until something raises it (a cutscene, a boss arena).
+        static CinemachineCamera MakeShot(Room room, string name, Vector3 position)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = position;
+            go.transform.rotation = Quaternion.Euler(2f, 0f, 0f);
+            var cam = go.AddComponent<CinemachineCamera>();
+            var lens = cam.Lens; lens.FieldOfView = 30f; lens.NearClipPlane = 0.3f; lens.FarClipPlane = 120f; cam.Lens = lens;
+            go.SetActive(false);
+            return cam;
         }
 
         // ---- cutscene helpers (PRG-16): timeline assets built in code, one Cutscene object per scene beat.

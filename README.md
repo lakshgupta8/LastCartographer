@@ -41,7 +41,8 @@ and room A's `Cutscene_shore_wake`; the script is `Dialogue/Greyfold/Prologue_Ed
 Past room B's east edge is the fourth lighthouse: a drafting desk, then two doors and **the Lamp-Keeper**,
 the first boss (Tier I). Her beam sweeps the floor (jump it) and she dives at you (step aside); she is only
 hittable while grounded after a dive. Three phases on health thirds. Beating her grants Wingbeat, a vellum
-scrap, and turns her lamp into a beacon. Dying puts you back at the desk with the doors open; walk in again.
+scrap, and turns her lamp into a beacon. Dying puts you back at the desk with the doors open; walk in again. The first entry plays a short intro on the perch
+(a cutscene on the pipeline below) and a fixed arena camera holds the whole room until the fight ends either way.
 
 Opening `Assets/_Project/Scenes/Persistent/Persistent.unity` by hand also auto-opens the first room,
 and pressing Play inside any room scene bootstraps the persistent scene for you.

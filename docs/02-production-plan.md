@@ -89,7 +89,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CMB-07 `[~]` | Instruments (7) and slot system (greybox effects for all 7; Compass-dart marks await Inkthread, tether-hook is a marker) | M2 | CMB-6 | CMB-03 |
 | CMB-08 `[~]` | Enemy framework: state machine, telegraphs, "answer" tagging, families | M1 | CMB-7 | CMB-02 |
 | CMB-09 `[~]` | Enemy roster: 12 for M1, 40 by M3 | M1–M3 | CMB-7 | CMB-08 |
-| CMB-10 `[~]` | Boss framework: phases, arena states, intro/outro (coroutine until PRG-16 Timeline), retry loop under 8 s | M1 | CMB-8 | CMB-08 |
+| CMB-10 `[~]` | Boss framework: phases, arena states, intro through the Timeline pipeline on first entry, retry loop under 8 s; outro cutscene pending | M1 | CMB-8 | CMB-08 |
 | CMB-11 `[~]` | The Lamp-Keeper (6.1): greybox kit (beam, dive, double beam), three phases, rewards | M1 | SB-6.1 | CMB-10 |
 | CMB-12 `[ ]` | Halvard recurring (6.3 × 3 kits) | M2 | SB-6.3 | CMB-10 |
 | CMB-13 `[ ]` | The Collapse, Brann, the Gatekeeper, the Choir | M2–M3 | SB-6.4–6.7 | CMB-10 |
@@ -109,7 +109,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-03 `[~]` | `InkSprite` shader (HLSL, not Shader Graph): alpha clip, two-step ramp, `_Ink` state, paper grain; done for the greybox, needs the art pass (line weight, wash) once sprites exist | M0 | ART-3 | PRG-02 |
 | PRG-04 `[~]` | Foreground-only depth-of-field render feature; paper-grain overlay feature (both as full-screen passes on the renderer; tuning against real art pending) | M0 | ART-3 | PRG-03 |
 | PRG-05 `[x]` | Input: `.inputactions`, buffered input service, rebinding | M0 | CMB-1 | PRG-01 |
-| PRG-06 `[~]` | Cinemachine 3 rig: follow, look-ahead, `Confiner2D` per room, boss cameras | M0 | Engine | CMB-01 |
+| PRG-06 `[~]` | Cinemachine 3 rig: follow, look-ahead, `Confiner2D` per room, boss cameras (fixed arena camera per BossArena; cutscene shots; per-region tuning pending) | M0 | Engine | CMB-01 |
 | PRG-07 `[~]` | Room system: additive scenes, transitions, neighbour preload, Addressables (rooms are addressables in one bundle each; neighbour bundles kept resident; Build Settings fallback; content build entry point, no CI yet) | M0 | Engine | PRG-01 |
 | PRG-08 `[~]` | Dialogue runtime: Yarn Spinner, `<<flag>>`, `<<commission>>`, `<<fade>>`, `<<anchor>>`, dialogue UI | M0 | SB-11 | PRG-01 |
 | PRG-09 `[~]` | `WorldState` + save/load (JSON, autosave at desks) | M0 | SB-10 | PRG-01 |

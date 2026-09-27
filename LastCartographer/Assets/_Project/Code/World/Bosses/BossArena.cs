@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using OWSBG.Core;
+using Unity.Cinemachine;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -10,8 +11,9 @@ namespace OWSBG.World
     /// The room state around a boss (CMB-10): a zone that, when Wren steps in and the boss is not
     /// yet defeated, closes the doors, runs a short intro, starts the fight; on the boss's death
     /// opens the doors, writes the flag and hands out the reward; on Wren's death resets the boss
-    /// so the retry is just walking back in. The intro is a plain coroutine until the Timeline
-    /// cutscene pipeline (PRG-16) exists.
+    /// so the retry is just walking back in. The first entry plays the intro cutscene (PRG-16) if one
+    /// is set, retries use a short wait; an arena camera (PRG-06) takes over from the follow rig while
+    /// the fight is on and hands back when it ends either way.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public sealed class BossArena : MonoBehaviour
@@ -23,6 +25,10 @@ namespace OWSBG.World
         [SerializeField] List<GameObject> _doors = new List<GameObject>();
         [SerializeField] float _introSeconds = 1.2f;
         [SerializeField] float _retryIntroSeconds = 0.4f;
+        [Header("Staging")]
+        [SerializeField] Cutscene _introCutscene;
+        [SerializeField] CinemachineCamera _arenaCamera;
+        [SerializeField] int _arenaCameraPriority = 40;
         [Header("Reward")]
         [SerializeField] Ability _rewardAbility = Ability.None;
         [SerializeField] int _vellumScraps = 1;
@@ -36,6 +42,9 @@ namespace OWSBG.World
         public float IntroSeconds { get => _introSeconds; set => _introSeconds = value; }
         public float RetryIntroSeconds { get => _retryIntroSeconds; set => _retryIntroSeconds = value; }
         public IReadOnlyList<GameObject> Doors => _doors;
+        public Cutscene IntroCutscene { get => _introCutscene; set => _introCutscene = value; }
+        public CinemachineCamera ArenaCamera { get => _arenaCamera; set => _arenaCamera = value; }
+        public bool ArenaCameraActive => _arenaCamera != null && _arenaCamera.gameObject.activeSelf;
 
         public static event Action<BossArena> FightStarted, FightWon, FightReset;
         public event Action<ArenaState> StateChanged;
@@ -59,6 +68,7 @@ namespace OWSBG.World
         {
             if (_boss != null) _boss.Defeated += OnBossDefeated;
             SetDoors(false);
+            SetArenaCamera(false);
         }
 
         void OnDisable()
@@ -113,11 +123,18 @@ namespace OWSBG.World
                 _vitals = _wren.GetComponent<WrenVitals>();
                 if (_vitals != null) _vitals.Died += OnWrenDied;
             }
-            float wait = _hasFoughtOnce ? _retryIntroSeconds : _introSeconds;
+            bool first = !_hasFoughtOnce;
+            float wait = first ? _introSeconds : _retryIntroSeconds;
             _hasFoughtOnce = true;
             if (_wren != null) _wren.Frozen = true;
+            SetArenaCamera(true);
             FightStarted?.Invoke(this);
-            if (wait > 0f) yield return new WaitForSeconds(wait);
+            if (first && _introCutscene != null)
+            {
+                _introCutscene.Play();
+                while (_introCutscene.IsPlaying && State == ArenaState.Intro) yield return null;
+            }
+            else if (wait > 0f) yield return new WaitForSeconds(wait);
             if (_wren != null) _wren.Frozen = false;
             if (State != ArenaState.Intro) yield break;   // reset during the intro
             SetState(ArenaState.Fighting);
@@ -134,8 +151,10 @@ namespace OWSBG.World
         public void ResetFight()
         {
             StopAllCoroutines();
+            if (_introCutscene != null && _introCutscene.IsPlaying) _introCutscene.Stop();
             _boss.ResetFight();
             SetDoors(false);
+            SetArenaCamera(false);
             _armed = false;
             SetState(ArenaState.Idle);
             FightReset?.Invoke(this);
@@ -144,6 +163,7 @@ namespace OWSBG.World
         void OnBossDefeated(Boss boss)
         {
             SetDoors(false);
+            SetArenaCamera(false);
             SetState(ArenaState.Won);
             var w = GameState.World;
             w.Set(FlagKey, true);
@@ -160,6 +180,13 @@ namespace OWSBG.World
                 if (abilities != null) abilities.Unlock(_rewardAbility);
             }
             FightWon?.Invoke(this);
+        }
+
+        void SetArenaCamera(bool on)
+        {
+            if (_arenaCamera == null) return;
+            if (on) _arenaCamera.Priority = _arenaCameraPriority;
+            _arenaCamera.gameObject.SetActive(on);
         }
 
         void SetDoors(bool closed)

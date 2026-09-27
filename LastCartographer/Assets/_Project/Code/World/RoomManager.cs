@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using OWSBG.Core;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,6 +18,8 @@ namespace OWSBG.World
 
         [SerializeField] string _startRoom;
         [SerializeField] string _startSpawn = "Start";
+        [SerializeField] string _prologueRoom;
+        [SerializeField] string _prologueSpawn = "Start";
         [SerializeField] WrenController _wren;
         [SerializeField] CinemachineConfiner2D _confiner;
 
@@ -41,8 +44,10 @@ namespace OWSBG.World
                 Adopt(existing, _startSpawn);
                 yield break;
             }
-            if (!string.IsNullOrEmpty(_startRoom))
-                yield return Load(_startRoom, _startSpawn, null);
+            bool prologue = !string.IsNullOrEmpty(_prologueRoom) && !Bootstrap.SkipPrologue && !GameState.World.Is("prologue.woke_on_shore");
+            var first = prologue ? _prologueRoom : _startRoom;
+            if (!string.IsNullOrEmpty(first))
+                yield return Load(first, prologue ? _prologueSpawn : _startSpawn, null);
         }
 
         void Adopt(Room room, string spawn)

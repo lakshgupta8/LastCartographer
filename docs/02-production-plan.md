@@ -40,7 +40,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 |---|---|---|---|---|
 | NAR-01 `[x]` | Story bible v2 (Silksong-inspired framing, bird kingdom, bosses, abilities) | M0 | SB-all | — |
 | NAR-02 `[x]` | Dialogue style guide incl. cryptic-register rules | M0 | SB-11 | NAR-01 |
-| NAR-03 `[~]` | Prologue script (the Edge with Isolde) in Yarn; seed file exists | M0 | SB-7.0 | PRG-08 |
+| NAR-03 `[~]` | Prologue script (the Edge with Isolde) in Yarn; playable end to end in the greybox (arrive, survey, bind, seal, smudges, departure, shore); Isolde fighting beside Wren and the real Greyfold room are open | M0 | SB-7.0 | PRG-08 |
 | NAR-04 `[ ]` | Saltmarrow arc: Sable, Dotha, the Lamp-Keeper, Halvard's first hunt; Commissions (5) | M1 | SB-4.1, 8.1 | NAR-02 |
 | NAR-05 `[ ]` | Recurring-character bibles: Pell, Sable, Runa, Teodor, Marrow (where they appear on the map, what they say each time) | M1 | SB-6 | NAR-01 |
 | NAR-06 `[ ]` | Boss character sheets: reason, arena, three phase lines, aftermath, for all 15 | M1 | SB-6 | NAR-01, CMB-09 |
@@ -119,7 +119,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-13 `[ ]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner | M2 | DES-03 | PRG-10 |
 | PRG-14 `[ ]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement | M2 | DES-04 | PRG-03 |
 | PRG-15 `[ ]` | NPC schedules and hub life (NavMesh, `#still` loops) | M2 | SB-5.1 | PRG-07 |
-| PRG-16 `[ ]` | Cutscene pipeline: Timeline + Cinemachine + Yarn hooks | M1 | — | PRG-06 |
+| PRG-16 `[~]` | Cutscene pipeline: Timeline + Cinemachine + Yarn hooks (Cutscene object, actor-move / paper-fade / dialogue-node clips, `<<cutscene>>` waits, shot camera; boss intros still coroutines) | M1 | — | PRG-06 |
 | PRG-17 `[~]` | Death and smudge recovery | M1 | GDD 6 | PRG-09 |
 | PRG-18 `[ ]` | Clarity meter and lantern-radius rendering in the Blank | M3 | SB-4.7 | PRG-03 |
 | PRG-19 `[ ]` | Localization wiring | M2 | — | PRG-08 |

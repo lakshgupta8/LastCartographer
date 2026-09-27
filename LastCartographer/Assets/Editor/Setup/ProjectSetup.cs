@@ -15,6 +15,8 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
@@ -29,6 +31,8 @@ namespace OWSBG.Setup
         public const string RoomAScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_A.unity";
         public const string RoomBScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_B.unity";
         public const string RoomCScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_Lighthouse.unity";
+        public const string RoomEdgeScenePath = Root + "/Scenes/Greybox/Greybox_Greyfold_Edge.unity";
+        const string CutsceneDir = Root + "/Data/Cutscenes";
         const string InputAssetPath = Root + "/Settings/Input/WrenInput.inputactions";
         const string YarnProjectPath = Root + "/Dialogue/LastCartographer.yarnproject";
         const string PlaceholderTexPath = Root + "/Art/Characters/Placeholder_Wren.png";
@@ -268,6 +272,7 @@ namespace OWSBG.Setup
             BuildRoomA();
             BuildRoomB();
             BuildRoomC();
+            BuildRoomEdge();
             BuildPersistent();
             EditorBuildSettings.scenes = new[]
             {
@@ -275,6 +280,7 @@ namespace OWSBG.Setup
                 new EditorBuildSettingsScene(RoomAScenePath, true),
                 new EditorBuildSettingsScene(RoomBScenePath, true),
                 new EditorBuildSettingsScene(RoomCScenePath, true),
+                new EditorBuildSettingsScene(RoomEdgeScenePath, true),
             };
             AssetDatabase.SaveAssets();
             Debug.Log("[OWSBG] BuildBootstrapScene: done");
@@ -360,6 +366,8 @@ namespace OWSBG.Setup
             uiGo.AddComponent<OWSBG.UI.BossView>();
             uiGo.AddComponent<OWSBG.UI.LedgerView>();
             uiGo.AddComponent<OWSBG.UI.JournalView>();
+            uiGo.AddComponent<OWSBG.UI.PromptView>();
+            uiGo.AddComponent<OWSBG.UI.FadeView>();
 
             // Dialogue service drawing through the UI's dialogue view.
             var dlgGo = new GameObject("DialogueService");
@@ -386,6 +394,8 @@ namespace OWSBG.Setup
             var rmSo = new SerializedObject(rm);
             rmSo.FindProperty("_startRoom").stringValue = Path.GetFileNameWithoutExtension(RoomAScenePath);
             rmSo.FindProperty("_startSpawn").stringValue = "Start";
+            rmSo.FindProperty("_prologueRoom").stringValue = Path.GetFileNameWithoutExtension(RoomEdgeScenePath);
+            rmSo.FindProperty("_prologueSpawn").stringValue = "Start";
             rmSo.FindProperty("_wren").objectReferenceValue = wren.GetComponent<WrenController>();
             rmSo.FindProperty("_confiner").objectReferenceValue = confiner;
             rmSo.ApplyModifiedPropertiesWithoutUndo();
@@ -514,6 +524,20 @@ namespace OWSBG.Setup
             MakeSpawn(room, "Start", new Vector2(-2f, 0f));
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
             MakeSpawn(room, "East", new Vector2(17f, 0f));
+            MakeSpawn(room, "Shore", new Vector2(-11.5f, 0f));
+
+            // Waking on the shore after the prologue: the white thins while Sable speaks.
+            var wake = NewTimeline(CutsceneDir + "/CS_ShoreWake.playable");
+            var wakeFade = AddClip<PaperFadeClip>(wake.CreateTrack<PlayableTrack>("Fade"), 0.3, 2.4, "white thins");
+            wakeFade.From = 1f; wakeFade.To = 0f; wakeFade.Color = ScreenFade.White;
+            AddClip<DialogueNodeClip>(wake.CreateTrack<PlayableTrack>("Talk"), 1.2, 0.2, "Sable").Node = "Prologue_Shore_Wake";
+            var wakeCs = MakeCutscene(room, "shore_wake", wake, null);
+            var shore = wakeCs.gameObject.AddComponent<ShoreWake>();
+            var shoreSo = new SerializedObject(shore);
+            shoreSo.FindProperty("_cutscene").objectReferenceValue = wakeCs;
+            shoreSo.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(wake);
+
             MakeTransition(room, "To_B", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f),
                 Path.GetFileNameWithoutExtension(RoomBScenePath), "West");
 
@@ -656,6 +680,150 @@ namespace OWSBG.Setup
             r.sharedMaterial = mat;
             r.shadowCastingMode = ShadowCastingMode.TwoSided;
             return boss;
+        }
+
+        // The Greyfold's edge (bible 4.6, 7.0): a faded plain that runs into the white. The prologue.
+        static void BuildRoomEdge()
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var room = MakeRoom("Greyfold_Edge", new Rect(-16f, -3f, 42f, 17f));
+
+            var floorMat = MakeLitMaterial("M_Greybox_Floor_Edge", new Color(0.62f, 0.62f, 0.56f));
+            var platMat = MakeLitMaterial("M_Greybox_Platform_Edge", new Color(0.66f, 0.63f, 0.56f));
+            MakeGround(room, "Floor", new Vector2(5f, -0.5f), new Vector2(42f, 1f), floorMat);
+            MakeGround(room, "Wall_L", new Vector2(-15.5f, 5f), new Vector2(1f, 14f), platMat);
+            MakeGround(room, "Ledge_1", new Vector2(-6f, 2.2f), new Vector2(3f, 0.5f), platMat);
+            MakeGround(room, "Ledge_2", new Vector2(0.5f, 3.6f), new Vector2(2.5f, 0.5f), platMat);
+
+            MakePaperLayer(room, "Mid_Edge", 3f, 0f, new Color(0.74f, 0.75f, 0.70f), 6f);
+            MakePaperLayer(room, "Far_Cathedral", 8f, 2f, new Color(0.82f, 0.82f, 0.79f), 11f);
+            MakePaperLayer(room, "Farther_Edge", 16f, 6f, new Color(0.90f, 0.90f, 0.88f), 16f);
+            MakeBlankWhite(room);
+
+            MakeNpc(room, "Isolde", new Vector2(8f, 0f), "Prologue_Edge_Idle", new Color(0.22f, 0.24f, 0.34f));
+            MakeVantage(room, "HalfCathedral", "Greyfold_Edge/HalfCathedral", new Vector2(3f, 0f));
+            MakeEnemy<Smudge>(room, "Smudge_1", new Vector2(0f, 2.2f), new Vector2(1.1f, 1.1f));
+            MakeEnemy<Smudge>(room, "Smudge_2", new Vector2(4.5f, 2.8f), new Vector2(1.1f, 1.1f));
+            MakeEnemy<Smudge>(room, "Smudge_3", new Vector2(10f, 2.4f), new Vector2(1.1f, 1.1f));
+            var smudges = new[] { room.transform.Find("Smudge_1").gameObject, room.transform.Find("Smudge_2").gameObject, room.transform.Find("Smudge_3").gameObject };
+            foreach (var s in smudges) s.SetActive(false);   // dusk releases them
+
+            // Nothing walks into the white until Isolde has.
+            var wall = new GameObject("BlankWall") { layer = LayerMask.NameToLayer("Ground") };
+            wall.transform.SetParent(room.transform, false);
+            wall.transform.position = new Vector3(13.5f, 3f, 0f);
+            wall.AddComponent<BoxCollider2D>().size = new Vector2(1f, 12f);
+            var edgeGo = new GameObject("BlankEdge");
+            edgeGo.transform.SetParent(room.transform, false);
+            var edge = edgeGo.AddComponent<BlankEdge>();
+            edge.StartX = 13f; edge.EndX = 22f;
+
+            MakeSpawn(room, "Start", new Vector2(5.5f, 0f));
+
+            // A fixed shot on the white for Isolde's walk.
+            var shotGo = new GameObject("CM Departure");
+            shotGo.transform.SetParent(room.transform, false);
+            shotGo.transform.position = new Vector3(14f, 3.7f, -18f);
+            shotGo.transform.rotation = Quaternion.Euler(2f, 0f, 0f);
+            var shot = shotGo.AddComponent<CinemachineCamera>();
+            var shotLens = shot.Lens; shotLens.FieldOfView = 30f; shotLens.NearClipPlane = 0.3f; shotLens.FarClipPlane = 120f; shot.Lens = shotLens;
+            shotGo.SetActive(false);
+
+            var arrive = NewTimeline(CutsceneDir + "/CS_EdgeArrive.playable");
+            var arriveFade = AddClip<PaperFadeClip>(arrive.CreateTrack<PlayableTrack>("Fade"), 0.0, 2.0, "paper thins");
+            arriveFade.From = 1f; arriveFade.To = 0f; arriveFade.Color = ScreenFade.Paper;
+            AddClip<DialogueNodeClip>(arrive.CreateTrack<PlayableTrack>("Talk"), 1.6, 0.2, "Isolde").Node = "Prologue_Edge_Arrive";
+            var arriveCs = MakeCutscene(room, "edge_arrive", arrive, null);
+
+            var depart = NewTimeline(CutsceneDir + "/CS_EdgeDeparture.playable");
+            var walk = AddClip<ActorMoveClip>(depart.CreateTrack<PlayableTrack>("Isolde"), 0.5, 5.0, "into the white");
+            walk.From = new Vector2(8f, 0f); walk.To = new Vector2(24f, 0f);
+            walk.Actor.exposedName = "isolde";
+            AddClip<PaperFadeClip>(depart.CreateTrack<PlayableTrack>("Hold"), 5.5, 0.5, "beat").From = 0f;
+            var departCs = MakeCutscene(room, "edge_departure", depart, shot);
+            departCs.SetReference("isolde", room.transform.Find("Isolde"));
+            EditorUtility.SetDirty(arrive); EditorUtility.SetDirty(depart);
+
+            var dirGo = new GameObject("PrologueDirector");
+            dirGo.transform.SetParent(room.transform, false);
+            var director = dirGo.AddComponent<PrologueDirector>();
+            var dso = new SerializedObject(director);
+            dso.FindProperty("_arrive").objectReferenceValue = arriveCs;
+            dso.FindProperty("_vantage").objectReferenceValue = room.transform.Find("Vantage_HalfCathedral").GetComponent<VantagePoint>();
+            dso.FindProperty("_isolde").objectReferenceValue = room.transform.Find("Isolde").gameObject;
+            var arr = dso.FindProperty("_smudges");
+            arr.arraySize = smudges.Length;
+            for (int i = 0; i < smudges.Length; i++) arr.GetArrayElementAtIndex(i).objectReferenceValue = smudges[i];
+            dso.FindProperty("_blankWall").objectReferenceValue = wall;
+            dso.FindProperty("_blankEdge").objectReferenceValue = edge;
+            dso.FindProperty("_shoreScene").stringValue = Path.GetFileNameWithoutExtension(RoomAScenePath);
+            dso.FindProperty("_shoreSpawn").stringValue = "Shore";
+            dso.ApplyModifiedPropertiesWithoutUndo();
+
+            EditorSceneManager.SaveScene(scene, RoomEdgeScenePath);
+            Debug.Log("[OWSBG] saved " + RoomEdgeScenePath);
+        }
+
+        // Sheets of paper-white from x = 12 on, nearer ones starting further in, so the plain runs out of ink.
+        static void MakeBlankWhite(Room room)
+        {
+            var mat = MakeLitMaterial("M_Blank_White", new Color(0.97f, 0.96f, 0.93f));
+            mat.SetFloat("_ReceiveShadows", 0f);
+            mat.EnableKeyword("_RECEIVE_SHADOWS_OFF");
+            EditorUtility.SetDirty(mat);
+            float[] z = { 0.6f, 4.5f, 10f, 18f };   // between the paper layers, never on one
+            float[] x0 = { 16f, 14f, 12f, 10f };
+            for (int i = 0; i < z.Length; i++)
+            {
+                var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                q.name = "Blank_" + i;
+                q.layer = LayerMask.NameToLayer("Paper");
+                Object.DestroyImmediate(q.GetComponent<Collider>());
+                q.transform.SetParent(room.transform, false);
+                float w = 40f;
+                q.transform.position = new Vector3(x0[i] + w * 0.5f, 6f, z[i]);
+                q.transform.localScale = new Vector3(w, 30f, 1f);
+                var r = q.GetComponent<MeshRenderer>();
+                r.sharedMaterial = mat;
+                r.shadowCastingMode = ShadowCastingMode.Off;
+                r.receiveShadows = false;
+            }
+        }
+
+        // ---- cutscene helpers (PRG-16): timeline assets built in code, one Cutscene object per scene beat.
+
+        static TimelineAsset NewTimeline(string path)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            AssetDatabase.DeleteAsset(path);
+            var t = ScriptableObject.CreateInstance<TimelineAsset>();
+            AssetDatabase.CreateAsset(t, path);
+            return t;
+        }
+
+        static T AddClip<T>(TrackAsset track, double start, double duration, string name) where T : ScriptableObject, IPlayableAsset
+        {
+            var clip = track.CreateClip<T>();
+            clip.start = start;
+            clip.duration = duration;
+            clip.displayName = name;
+            return (T)clip.asset;
+        }
+
+        static Cutscene MakeCutscene(Room room, string id, TimelineAsset timeline, CinemachineCamera shot)
+        {
+            var go = new GameObject("Cutscene_" + id);
+            go.transform.SetParent(room.transform, false);
+            var director = go.AddComponent<PlayableDirector>();
+            director.playableAsset = timeline;
+            director.playOnAwake = false;
+            director.extrapolationMode = DirectorWrapMode.None;
+            var cs = go.AddComponent<Cutscene>();
+            var so = new SerializedObject(cs);
+            so.FindProperty("_id").stringValue = id;
+            so.FindProperty("_shot").objectReferenceValue = shot;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return cs;
         }
 
         // ---- room helpers
@@ -927,7 +1095,7 @@ namespace OWSBG.Setup
         {
             // OWSBG_SHOT_ROOM=A|B|C picks the room; OWSBG_SHOT_FOCUS="x,y" the point to frame (defaults: A, Wren).
             var roomKey = System.Environment.GetEnvironmentVariable("OWSBG_SHOT_ROOM") ?? "A";
-            var roomPath = roomKey == "B" ? RoomBScenePath : roomKey == "C" ? RoomCScenePath : RoomAScenePath;
+            var roomPath = roomKey == "B" ? RoomBScenePath : roomKey == "C" ? RoomCScenePath : roomKey == "E" ? RoomEdgeScenePath : RoomAScenePath;
             EditorSceneManager.OpenScene(PersistentScenePath, OpenSceneMode.Single);
             EditorSceneManager.OpenScene(roomPath, OpenSceneMode.Additive);
             var cam = Camera.main;

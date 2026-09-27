@@ -14,7 +14,7 @@ namespace OWSBG.UI
         public static UiRoot Instance { get; private set; }
 
         UIDocument _doc;
-        VisualElement _hud, _boss, _dialogue, _desk, _caption;
+        VisualElement _hud, _boss, _dialogue, _desk, _caption, _fade;
 
         public VisualElement Root => _doc != null ? _doc.rootVisualElement : null;
         public VisualElement Hud => Layer(ref _hud, "layer-hud");
@@ -22,6 +22,7 @@ namespace OWSBG.UI
         public VisualElement Dialogue => Layer(ref _dialogue, "layer-dialogue");
         public VisualElement Desk => Layer(ref _desk, "layer-desk");
         public VisualElement Caption => Layer(ref _caption, "layer-caption");
+        public VisualElement Fade => Layer(ref _fade, "layer-fade");
         public bool IsReady => Root != null;
 
         void Awake()
@@ -54,7 +55,7 @@ namespace OWSBG.UI
             if (field == null)
             {
                 // Keep the stacking order stable whichever view asks first.
-                string[] order = { "layer-hud", "layer-boss", "layer-dialogue", "layer-desk", "layer-caption" };
+                string[] order = { "layer-hud", "layer-boss", "layer-dialogue", "layer-desk", "layer-caption", "layer-fade" };
                 foreach (var n in order) if (root.Q(n) == null) root.Add(InkTheme.Layer(n));
                 field = root.Q(name);
             }

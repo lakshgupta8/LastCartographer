@@ -18,9 +18,13 @@ namespace OWSBG.Tests
     /// </summary>
     public class UiScreenshotTests
     {
+        [SetUp]
+        public void SetUp() { OWSBG.Core.GameState.NewGame(); Bootstrap.SkipPrologueOverride = true; }
+
         [UnityTearDown]
         public IEnumerator TearDown()
         {
+            Bootstrap.SkipPrologueOverride = null;
             Time.timeScale = 1f;
             var empty = SceneManager.CreateScene("TestEmpty_" + Random.Range(0, 1 << 20));
             SceneManager.SetActiveScene(empty);

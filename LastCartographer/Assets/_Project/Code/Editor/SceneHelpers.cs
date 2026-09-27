@@ -15,6 +15,8 @@ namespace OWSBG.Editor
     {
         public const string PersistentPath = "Assets/_Project/Scenes/Persistent/Persistent.unity";
         public const string StartRoomPath = "Assets/_Project/Scenes/Greybox/Greybox_Saltmarrow_A.unity";
+        public const string PrologueRoomPath = "Assets/_Project/Scenes/Greybox/Greybox_Greyfold_Edge.unity";
+        const string SkipPref = "OWSBG.SkipPrologue";
 
         static SceneHelpers()
         {
@@ -34,17 +36,30 @@ namespace OWSBG.Editor
             };
         }
 
-        [MenuItem("OWSBG/Play From Start %#p", priority = 0)]
+        [MenuItem("OWSBG/Play From Start (the Edge) %#p", priority = 0)]
         public static void PlayFromStart()
         {
             if (EditorApplication.isPlaying) { EditorApplication.isPlaying = false; return; }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            EditorPrefs.SetBool(SkipPref, false);
+            EditorSceneManager.OpenScene(PersistentPath, OpenSceneMode.Single);
+            var room = System.IO.File.Exists(PrologueRoomPath) ? PrologueRoomPath : StartRoomPath;
+            EditorSceneManager.OpenScene(room, OpenSceneMode.Additive);
+            EditorApplication.isPlaying = true;
+        }
+
+        [MenuItem("OWSBG/Play From Saltmarrow (skip prologue)", priority = 1)]
+        public static void PlayFromSaltmarrow()
+        {
+            if (EditorApplication.isPlaying) { EditorApplication.isPlaying = false; return; }
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            EditorPrefs.SetBool(SkipPref, true);
             EditorSceneManager.OpenScene(PersistentPath, OpenSceneMode.Single);
             EditorSceneManager.OpenScene(StartRoomPath, OpenSceneMode.Additive);
             EditorApplication.isPlaying = true;
         }
 
-        [MenuItem("OWSBG/Open Greybox", priority = 1)]
+        [MenuItem("OWSBG/Open Greybox", priority = 2)]
         public static void OpenGreybox()
         {
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;

@@ -1,6 +1,7 @@
 // Prologue: The Edge. Story bible section 7.0. Wren and Isolde at the Greyfold's edge at dusk.
 // The tutorial is characterisation. Isolde speaks plainly (style guide section 6, the exception).
-// Commands (<<flag>>, <<survey_hint>>, <<bind_prompt>>, <<tutorial>>) are implemented in PRG-08.
+// Beats are started by PrologueDirector from flags; nodes end where the player has to do something.
+// Commands: <<flag>>, <<tutorial>>, <<bind_prompt>>, <<cutscene>> (PRG-08, PRG-16).
 
 title: Prologue_Edge_Arrive
 ---
@@ -15,28 +16,25 @@ Isolde: Tell me what you see, journeyman.
     Isolde: No one can. That's the first thing to learn about the Blank. Look beside it.
 Isolde: We'll take a page of it before dark. Then I'll show you something.
 <<tutorial survey>>
-Isolde: The lens. Slow. Let the pen find the line; don't push it.
-<<jump Prologue_Edge_Survey>>
+Isolde: The marker, there. The lens. Slow. Let the pen find the line; don't push it.
 ===
 
 title: Prologue_Edge_Survey
 ---
-<<if $vantage_inked == 1>>
-    Isolde: There. Feel the page take it?
-    Isolde: Now bind it. A page without a memory is only a drawing.
-    <<bind_prompt isolde.first_sight>>
-    Isolde: I'll give you mine. Write it exactly.
-    Isolde: "A child at the edge of the white, looking straight at me. The only one who could."  #plant:5.3
-    -> Me.
-        Isolde: You. Six years old and not afraid of it. I was terrified.
-    -> Why that memory?
-        Isolde: Because it's the truest thing I own. Binding wants the truest thing.
-    -> ...
-        Isolde: Quiet suits a cartographer. Seal it.
-    <<tutorial seal>>
-    <<flag prologue.sealed_edge_page 1>>
-    <<jump Prologue_Edge_Dusk>>
-<<endif>>
+Isolde: There. Feel the page take it?
+Isolde: Now bind it. A page without a memory is only a drawing.
+<<bind_prompt isolde.first_sight>>
+Isolde: I'll give you mine. Write it exactly.
+Isolde: "A child at the edge of the white, looking straight at me. The only one who could." #plant:5.3
+-> Me.
+    Isolde: You. Six years old and not afraid of it. I was terrified.
+-> Why that memory?
+    Isolde: Because it's the truest thing I own. Binding wants the truest thing.
+-> ...
+    Isolde: Quiet suits a cartographer. Seal it.
+<<tutorial seal>>
+<<flag prologue.sealed_edge_page 1>>
+<<jump Prologue_Edge_Dusk>>
 ===
 
 title: Prologue_Edge_Dusk
@@ -44,7 +42,10 @@ title: Prologue_Edge_Dusk
 Isolde: Good. That's the last thing I can teach you standing still.
 <<tutorial strike>>
 Isolde: Smudges come out at dusk here. Quill up. Strike where the ink is thickest.
-// Three smudges; combat tutorial; Isolde fights beside Wren.
+===
+
+title: Prologue_Edge_AfterSmudges
+---
 <<flag prologue.first_smudges 1>>
 Isolde: You hold it like Voss taught you. Loosen your wrist. #plant:5.5
 <<jump Prologue_Edge_Departure>>
@@ -62,15 +63,27 @@ Isolde: I'm going in.
     Isolde: Because I drew something I shouldn't have. And because someone in there is owed a visit. #plant:5.2
 Isolde: Don't anchor what I've drawn. Come find why.
 Isolde: Look at me. Only at me. Then look beside the white. #plant:5.3
+<<cutscene edge_departure>>
 <<flag prologue.isolde_entered 1>>
-// Isolde walks in. Player follows. Clarity drains. Fade to paper.
+===
+
+// Isolde when pressed up on between beats. The director starts the beats themselves.
+title: Prologue_Edge_Idle
+---
+<<if not has_flag("prologue.sealed_edge_page")>>
+    Isolde: Beside it, journeyman. The marker's behind you. Slow. #still
+<<elseif not has_flag("prologue.first_smudges")>>
+    Isolde: Quill up. They're only ink. Strike when they're thickest. #still
+<<else>>
+    <<jump Prologue_Edge_Departure>>
+<<endif>>
 ===
 
 title: Prologue_Shore_Wake
 ---
 // Saltmarrow shore. Wren wakes. Sable stands over her.
 Sable: Wings high, stranger. You've come a long way to be lost.
-Sable: Guild cowl. No licence on you. No atlas either.
+Sable: Guild cowl. No licence on you. No atlas either. Three torn pages and a quill.
 -> Where is this?
     Sable: The Saltmarrow. The far side of everything. The Blank spat you out here; it does that, sometimes.
 -> How long was I gone?
@@ -78,6 +91,8 @@ Sable: Guild cowl. No licence on you. No atlas either.
 -> There was a kite. Isolde Marr.
     Sable: Nobody came out but you. Nobody ever comes out. #plant:5.2
 Sable: Quay's up the boardwalk. Everything there has a price. Including me.
+<<flag prologue.torn_pages 3>>
+<<flag greybox.met_sable 1>>
 <<flag prologue.woke_on_shore 1>>
 <<flag act1.started 1>>
 ===

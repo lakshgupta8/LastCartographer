@@ -12,6 +12,23 @@ namespace OWSBG.World
     {
         public const string PersistentSceneName = "Persistent";
 
+        /// <summary>Tests and tooling: true skips the prologue, false forces it, null defers to the editor pref.</summary>
+        public static bool? SkipPrologueOverride { get; set; }
+
+        /// <summary>Start a new game at Saltmarrow instead of the Edge (OWSBG → Play From Saltmarrow).</summary>
+        public static bool SkipPrologue
+        {
+            get
+            {
+                if (SkipPrologueOverride.HasValue) return SkipPrologueOverride.Value;
+#if UNITY_EDITOR
+                return UnityEditor.EditorPrefs.GetBool("OWSBG.SkipPrologue", false);
+#else
+                return false;
+#endif
+            }
+        }
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void EnsurePersistent()
         {

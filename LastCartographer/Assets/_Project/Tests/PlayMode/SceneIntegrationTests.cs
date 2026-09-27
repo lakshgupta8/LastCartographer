@@ -26,6 +26,8 @@ namespace OWSBG.Tests
             // In the editor, input only reaches Play mode when the Game view has focus, and devices
             // are disabled while the player is unfocused. Batch mode is never focused, so deliver
             // everything regardless for the duration of the test.
+            OWSBG.Core.GameState.NewGame();
+            Bootstrap.SkipPrologueOverride = true;   // this test is about Saltmarrow; the Edge has its own
             _previousBehavior = InputSystem.settings.editorInputBehaviorInPlayMode;
             _previousBackground = InputSystem.settings.backgroundBehavior;
             InputSystem.settings.editorInputBehaviorInPlayMode =
@@ -39,6 +41,7 @@ namespace OWSBG.Tests
             if (_keyboard != null) { InputSystem.RemoveDevice(_keyboard); _keyboard = null; }
             InputSystem.settings.editorInputBehaviorInPlayMode = _previousBehavior;
             InputSystem.settings.backgroundBehavior = _previousBackground;
+            Bootstrap.SkipPrologueOverride = null;
             Time.timeScale = 1f;
 
             // Leave a clean slate for other tests even if this one failed mid-way.

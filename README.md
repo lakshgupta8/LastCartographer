@@ -26,10 +26,17 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 3. Read the story bible, then the combat doc, then the plan. Sprint 1 starts with Wren's controller.
 
 ## Playing the greybox
-In the editor menu bar choose **OWSBG → Play From Start** (Ctrl+Shift+P). It opens the persistent
-scene plus the first room and enters Play mode. Then **click inside the Game view once** so it has
+In the editor menu bar choose **OWSBG → Play From Start (the Edge)** (Ctrl+Shift+P). It opens the persistent
+scene plus the prologue room and enters Play mode. **OWSBG → Play From Saltmarrow** skips the prologue and starts in room A. Then **click inside the Game view once** so it has
 keyboard focus (Unity only sends input to a focused Game view). Walk off the right edge to transition
 into room B, which has a Talonhold shaft.
+
+**The prologue (the Edge).** A new game opens at the Greyfold's edge with Isolde: the paper thins, she asks what you see,
+then sends you to the marker behind you (hold Q). Surveying it brings the binding and the seal (a wax seal is set where you stand),
+then three smudges come out at dusk; killing them brings her last lesson and she walks into the white. Follow her past
+where the wall was: the screen goes white and you wake on the Saltmarrow shore with Sable standing over you, and Act 1 begins.
+Every beat is driven by flags (`prologue.*`), so reloading lands you in the right one. The scenes are `Greybox_Greyfold_Edge`
+and room A's `Cutscene_shore_wake`; the script is `Dialogue/Greyfold/Prologue_Edge_Isolde.yarn`.
 
 Past room B's east edge is the fourth lighthouse: a drafting desk, then two doors and **the Lamp-Keeper**,
 the first boss (Tier I). Her beam sweeps the floor (jump it) and she dives at you (step aside); she is only
@@ -66,16 +73,20 @@ Room A also has the first world interactions. Stand in front of something and pr
 
 Room B's west end has Dotha, the last elder of Merrow's End. She only talks properly once her commission is taken; her decision seeds an island in the Blank (`blank.island.Merrows_End`). The design is in `docs/design/commissions.md`.
 
+Cutscenes (`Assets/_Project/Data/Cutscenes/*.playable`, built by the setup script) are Timeline assets on a `Cutscene` object:
+`ActorMoveClip` walks an actor, `PaperFadeClip` drives the screen fade, `DialogueNodeClip` starts a Yarn node and holds the
+timeline until it ends; an optional Cinemachine shot takes over while it plays and Wren is frozen throughout.
+
 The HUD, dialogue page, desk page and boss bar are one UI Toolkit document (`UI` object in the persistent
 scene; `Assets/_Project/Code/UI`), built in code on the paper-and-ink palette until the UI art (ENV-11) lands.
 
-Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`.
+Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it); functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`.
 
 ## Verifying headless
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-journal.png` with the UI composited over the camera, for a headless visual check.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-journal.png` with the UI composited over the camera, for a headless visual check.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

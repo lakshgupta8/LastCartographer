@@ -15,6 +15,7 @@ namespace OWSBG.Tests
     {
         public readonly List<string> Lines = new List<string>();
         public string PreferOption = "";
+        public System.Action<string>? OnLine;
 
         public override YarnTask OnDialogueStartedAsync() => YarnTask.CompletedTask;
         public override YarnTask OnDialogueCompleteAsync() => YarnTask.CompletedTask;
@@ -22,6 +23,7 @@ namespace OWSBG.Tests
         public override YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
         {
             Lines.Add((line.CharacterName ?? "") + "|" + line.TextWithoutCharacterName.Text);
+            OnLine?.Invoke(line.TextWithoutCharacterName.Text);
             return YarnTask.CompletedTask;
         }
 

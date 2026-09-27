@@ -157,8 +157,15 @@ namespace OWSBG.Core
             At("kettil", Act1, "Emberdown.CinderBaths", "the debate, with real numbers", "Baths_Kettil_Debate", staged: true);
 
             Member("idrenne", "Speaker Idrenne", "crane", "the Windreach Clans", "where she was standing when she learned it", "amused, unhurried", "\"always\" or \"never\"");
-            At("idrenne", Act2, "Windreach.LongGrassCamp", "the moving camp: three nights", "Camp_Idrenne");
-            At("idrenne", Act2, "Windreach.IdrennesFire", "how the clans do it, plainly; the keystone, laughing", "Fire_Idrenne", writes: "windreach.fire.witnessed");
+            At("idrenne", Act2, "Windreach.LongGrassCamp", "the moving camp, the first night: the fire ring", "Camp_Idrenne", staged: true, writes: "windreach.camp.night=1");
+            At("idrenne", Act2, "Windreach.DryRiver", "the second night, in the riverbed: the stones are a map", "River_Idrenne_Night", staged: true, writes: "windreach.stones.named");
+            At("idrenne", Act2, "Windreach.WindGate", "the fledgling-leap: forty years, and then Wren", "Gate_Idrenne_Leap", staged: true, writes: "windreach.leap.done, ability.windmemory");
+            At("idrenne", Act2, "Windreach.IdrennesFire", "the third night, in the high grass: where each was standing", "Grass_Idrenne_Night", staged: true, writes: "windreach.camp.walked");
+            At("idrenne", Act2, "Windreach.IdrennesFire", "how the clans do it, plainly; the survey; the keystone, laughing", "Fire_Idrenne", staged: true, writes: "windreach.fire.witnessed, windreach.survey.decided, keystone.windreach");
+            At("idrenne", Act2, "Windreach.FallenStar", "the one cost", "Star_Idrenne", staged: true, writes: "windreach.star.cold");
+
+            Member("hale", "Surveyor Hale", "godwit", "Meridian Guild", "the finished page", "\"professional courtesy\"", "\"we\"");
+            At("hale", Act2, "Windreach.NineStones", "the ninth stone at dusk: stop him, let him finish, or hold the staff; boss 6.9", "Stones_Hale", staged: true, writes: "windreach.hale.decided, windreach.hale.finished / windreach.hale.pages");
 
             Member("voss", "Guildmaster Aurelian Voss", "grey heron", "Meridian Guild", "titles; \"we\" for the Guild", "flinches at \"Halloway\"", "\"Corra\"");
             At("voss", Act2, "Greyfold.Threshold", "the one speech; boss 6.11", "Threshold_Voss", writes: "greyfold.crossed");

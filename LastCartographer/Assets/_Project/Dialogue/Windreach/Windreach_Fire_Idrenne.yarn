@@ -1,0 +1,81 @@
+// Idrenne's Fire (Fire_2; bible 4.5, 8.5 [F 9.2]): the game saying the true ending's requirement aloud, plainly,
+// including the clans' rot (3.6: they were refused anchoring; the philosophy came after). Then the region's decision
+// (whether to survey the Steppe at all) and the keystone, given up laughing. No cost. Deliberately.
+// Lifting it wakes the Fallen Star in the crater below (6.10): the one cost.
+
+title: Fire_Idrenne
+---
+<<if has_flag("windreach.fire.witnessed")>>
+    Idrenne: Warm your hands. It's only a fire now. It was only a fire before, too.
+    <<stop>>
+<<endif>>
+<<if not has_flag("windreach.camp.walked")>>
+    Idrenne: Walk the three fires first. I'll say it once, to someone who's walked them.
+    <<stop>>
+<<endif>>
+Idrenne: You had a question. Isolde had the same one. Ask it.
+-> How do you hold a place?
+    <<voice surveyor windreach>>
+-> How do I stop it fading?
+    <<voice warden windreach>>
+-> Do places need holding at all?
+    <<voice drift windreach>>
+Idrenne: I learned it here, at this fire, the year the Guild said no to us.
+Idrenne: We asked to be anchored. We were poor. They said the Steppe wasn't worth a stone.
+Idrenne: So we made a philosophy of it afterwards. I'll not pretend otherwise. It works anyway. #plant:9.2
+Idrenne: A place holds when it's lived in. Walked. Every name in it said out loud.
+Idrenne: One town can't do it alone. It takes everyone you've met, singing the same walk. #plant:9.2
+Idrenne: And the stones go back where they came from. You don't keep a place in a vault.
+<<flag windreach.fire.witnessed 1>>
+<<if has_flag("windreach.hale.finished")>>
+    Idrenne: Your lens bird finished his sighting. The Steppe's on Guild paper now. We'll keep walking it.
+<<else>>
+    Idrenne: Now. You carry a quill. Will you draw the Steppe?
+    -> I'll draw it. For you, not them.
+        Idrenne: Paper goes where paper goes. I learned that at your Plateau's gate. Draw well.
+        <<flag windreach.survey.decided 1>>
+        <<voice surveyor windreach>>
+    -> I'll leave it undrawn.
+        Idrenne: Then it's ours, and the grass's. Thank you.
+        <<flag windreach.survey.decided 2>>
+        <<voice warden windreach>>
+    -> I'll walk it instead. Every year. <<if walk_known()>>
+        Idrenne: Ha. Then you're one of us, and it's held the old way. Come back hungry.
+        <<flag windreach.survey.decided 3>>
+        <<voice drift windreach>>
+<<endif>>
+Idrenne: Oh. And this. Our cooking-stone. Your Guild would call it a keystone.
+Idrenne: Take it. We'll cook on a flat rock. No cost. I mean it. Ha!
+<<flag keystone.windreach 1>>
+<<flag windreach.star.woken 1>>
+Fire: Below the rise, in the crater, iron groans. Forty years an anvil. It sits up.
+===
+
+title: Star_Idrenne
+---
+<<if not has_flag("windreach.star.woken")>>
+    Idrenne: The smiths' anvil. Iron from the sky. Asleep since I was a girl. Mind your feet anyway.
+    <<stop>>
+<<endif>>
+<<if has_flag("boss.fallen_star.defeated")>>
+    <<if not has_flag("windreach.star.cold")>>
+        Idrenne: Ha. Told you. No cost. Well. One.
+        Idrenne: The anvil's cold. The smiths will complain for a year. They like complaining.
+        <<flag windreach.star.cold 1>>
+    <<else>>
+        Idrenne: Cold iron. The smiths found something new to complain about. Good for them.
+    <<endif>>
+    <<stop>>
+<<endif>>
+Idrenne: There it is. The cost. Mind the iron.
+-> I'll put it back to sleep.
+    Idrenne: Swing hard. It's been hit for forty years. It'll want to hit back.
+    <<voice warden windreach>>
+-> What does it want?
+    Idrenne: A swing. Forty years our anvil. It's owed one.
+    <<voice surveyor windreach>>
+-> Leave it. It's earned the rest.
+    Idrenne: Then it stands there awake till it's tired. We'll smith somewhere else.
+    <<voice drift windreach>>
+<<flag windreach.star.met 1>>
+===

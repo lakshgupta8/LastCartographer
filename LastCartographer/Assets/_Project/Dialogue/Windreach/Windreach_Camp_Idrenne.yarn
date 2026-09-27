@@ -1,0 +1,97 @@
+// Speaker Idrenne, crane, the Windreach Clans (bible 3.6, 4.5, 8.5; character-bibles.md §8). The Moving Camp:
+// three nights at three sites, the camp moving on between them (PRG-21): the fire ring (Camp_2), the riverbed
+// (River_2), the high grass (Fire_1). The Wind Gate's leap falls between the second night and the third.
+// Voice: amused, unhurried; answers with where she was standing when she learned the answer. Does not say "always"
+// or "never": the clans live in the particular.
+
+title: Camp_Idrenne
+---
+<<if flag("windreach.camp.night") >= 1>>
+    <<if has_flag("keystone.windreach")>>
+        Idrenne: We cook on a flat rock from the river now. The soup hasn't noticed.
+    <<elseif has_flag("windreach.camp.walked")>>
+        Idrenne: You're known here. Sit anywhere. Everyone does.
+    <<elseif flag("windreach.camp.night") >= 2>>
+        Idrenne: The camp's on the high grass tonight, past the Gate. Only the post-wagon stays.
+    <<else>>
+        Idrenne: The camp's gone on to the riverbed. Follow the grass we flattened, east.
+    <<endif>>
+    <<stop>>
+<<endif>>
+Idrenne: You came down the south road from the Plateau.
+Idrenne: I was standing by the first stone when I learned what that means. A map in the pack. A question.
+Idrenne: Sit. Eat first. Questions keep.
+-> Isolde Marr named you. One of five.
+    Idrenne: Isolde. I was knee-deep in the Dry River when she asked me the same thing.
+    Idrenne: I told her to walk with us. She said she'd come back. Here you are instead.
+    <<voice surveyor windreach>>
+-> Is anyone out here hunting you?
+    Idrenne: Hunting, no. Counting, maybe. A bird with a brass lens, a day behind us.
+    Idrenne: I learned that at the ninth stone, watching grass bend where no wind was.
+    <<voice warden windreach>>
+-> ...
+    Idrenne: Good. The grass talks enough for both of us.
+    <<voice drift windreach>>
+Idrenne: We walk tomorrow. Three days, three fires. Walk with us, and ask your question at the last one.
+<<flag windreach.idrenne.met 1>>
+<<flag windreach.camp.night 1>>
+===
+
+title: River_Idrenne_Night
+---
+<<if flag("windreach.camp.night") < 1>>
+    Riverbed: Cold ashes in a ring of boats. Somebody camps here, some nights.
+    <<stop>>
+<<endif>>
+<<if flag("windreach.camp.night") >= 2>>
+    Idrenne: The fourth stone is the riverbed. We sat on it. Not many maps can say that.
+    <<stop>>
+<<endif>>
+Idrenne: Second fire. Your feet will hate you tomorrow. Mine did, the year I learned this walk.
+Idrenne: You looked at the stones. Nine of them. The Guild thinks they're a boundary.
+Idrenne: They're a map. Eight are places we stop: the Long Grass, the river, the Gate, the high grass.
+Idrenne: The fire, the star, the old sea road, the south gate of your Plateau.
+Idrenne: The ninth has nothing carved on it. The ninth is wherever we're standing.
+-> A map nobody can take away.
+    Idrenne: Somebody's trying. The lens bird sights them one by one. I watched him from the reeds.
+    <<voice surveyor windreach>>
+-> Show me the one he's sighting.
+    Idrenne: The ninth, at dusk. He's sighting the one that can't be sighted. Let him learn that.
+    <<voice warden windreach>>
+-> Then the ninth stone is here.
+    Idrenne: Tonight it is. Tomorrow it's the Gate. You're quick. I was slower, and older.
+    <<voice drift windreach>>
+Idrenne: Tomorrow is the Wind Gate. The young jump. Nobody's come up the updraft in forty years.
+Idrenne: We sing them off anyway. Somebody might.
+<<flag windreach.stones.named 1>>
+<<flag windreach.camp.night 2>>
+===
+
+title: Grass_Idrenne_Night
+---
+<<if not has_flag("windreach.leap.done")>>
+    Grass: Grass over her head, trampled flat in a circle. The clan camps here past the Gate.
+    <<stop>>
+<<endif>>
+<<if has_flag("windreach.camp.walked")>>
+    Idrenne: The third fire's ash. Mine's up the rise, if you've a question left.
+    <<stop>>
+<<endif>>
+Idrenne: Third fire. On the last night we say where we were standing when we learned something.
+Ossa: In the riverbed. I learned a boat doesn't need water to be a boat.
+Brek: At the Gate, forty-one years back. I learned I couldn't fly. Tonight I learned somebody still can.
+Idrenne: Your turn, map-bird. Where were you standing?
+-> At the Edge, when Isolde walked in.
+    Idrenne: Then that one's yours. Say it again next year and it's ours too.
+    <<voice surveyor windreach>>
+-> Here. With all of you.
+    Idrenne: Ha. That's a cheat. It's a good cheat. We'll allow it.
+    <<voice warden windreach>>
+-> On a stone that isn't carved.
+    Idrenne: The ninth. You were listening. Brek, she was listening.
+    <<voice drift windreach>>
+Idrenne: There. Now you're known here. That's all it is. Everyone walks it, and everyone's known.
+Idrenne: The Guild wanted paper and a stone in a vault. We have legs and names.
+<<flag windreach.camp.night 3>>
+<<flag windreach.camp.walked 1>>
+===

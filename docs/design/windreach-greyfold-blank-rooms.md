@@ -57,17 +57,17 @@ generated from what she left unanchored (PRG-20) and drifts past the Hollow's fa
 |---|---|---|---|---|---|---|
 | **Stones_1** The south road's end | NineStones | Out of Lowmarket's south gate onto the Steppe: grass to the horizon, sky most of the screen. The first standing stone, lichen on its north face. | Waymark | Warden (out of uniform: Hale's escort) | — | W → Lowmarket_3 [`act2.started`], E → Stones_2 |
 | **Stones_2** The long walk | NineStones | Stones two to eight in the line the clans have walked since before the Guild; the stones are a map (the Nine Stones). Ink-swirl updrafts, too weak to ride yet. | Fifth | smudge ×2 | — | W → Stones_1, E → Stones_3 |
-| **Stones_3** The ninth stone | NineStones | Where the route turns north. Surveyor Hale at dusk, sighting the stones one by one (6.9, optional); the camp's wagons are just east. | — | — | arena: hale | W → Stones_2, E → Camp_1 |
+| **Stones_3** The ninth stone | NineStones | Where the route turns north. Surveyor Hale at dusk, sighting the stones one by one (6.9, optional); the camp's wagons are just east. | — | — | Hale, arena: hale | W → Stones_2, E → Camp_1 |
 | **Camp_1** The wagons | LongGrassCamp | The walking-wagons in a ring. One stays at the Long Grass wherever the camp has gone: the walkers' post, with the desk and the ledger. | Wagons | — | desk | W → Stones_3, E → Camp_2 |
 | **Camp_2** The fire ring | LongGrassCamp | The camp's first night (the Moving Camp). Idrenne tells where she was standing when she learned each thing. The camp moves on to the riverbed, then the high grass. | — | — | Idrenne | W → Camp_1, E → River_1 [Wingbeat (soft)] |
 | **River_1** The far bank | DryRiver | A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it). | — | smudge | — | W → Camp_2 [Wingbeat (soft)], E → River_2 |
-| **River_2** The riverbed | DryRiver | Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried. | Bed | smudge ×2 | — | W → River_1, E → River_3 |
+| **River_2** The riverbed | DryRiver | Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried. | Bed | smudge ×2 | Idrenne | W → River_1, E → River_3 |
 | **River_3** The cut bank | DryRiver | The river's old cliff. The Wind Gate is at the top, and only Talonhold climbs it. | — | smudge | — | W → River_2, up → Gate_1 [Talonhold] |
-| **Gate_1** The leap | WindGate | The fledgling-leap on the cliff's lip: the clan sings, the young jump. Nobody has lived through it in forty years until Wren. Windmemory. | Gate | — | — | down → River_3 [Talonhold], E → Gate_2 [Windmemory] |
+| **Gate_1** The leap | WindGate | The fledgling-leap on the cliff's lip: the clan sings, the young jump. Nobody has lived through it in forty years until Wren. Windmemory. | Gate | — | Idrenne | down → River_3 [Talonhold], E → Gate_2 [Windmemory] |
 | **Gate_2** The updrafts | WindGate | Ink-swirls to ride: the first glide course. North, the high grass; down the far side, a long glide into the Greyfold's white at the Mirror Pool. | — | — | — | W → Gate_1 [Windmemory], E → Fire_1 [Windmemory], down → Pool_1 [Windmemory] |
-| **Fire_1** The high grass | IdrennesFire | Grass over Wren's head; the camp's third night pitches here, and the clan walks her in. | — | — | — | W → Gate_2 [Windmemory], E → Fire_2 |
+| **Fire_1** The high grass | IdrennesFire | Grass over Wren's head; the camp's third night pitches here, and the clan walks her in. | — | — | Idrenne | W → Gate_2 [Windmemory], E → Fire_2 |
 | **Fire_2** Idrenne's Fire | IdrennesFire | The hearth; the keystone is its cooking-stone. Idrenne says plainly how the clans do it (plant 9.2) and gives it up laughing. Surveying Windreach at all is decided here. | Hearth | — | Idrenne | W → Fire_1, down → Star_1 [Windmemory] |
-| **Star_1** The crater rim | FallenStar | A glide down from the hearth to the rim; the smiths' wagon keeps a desk. | Rim | — | desk | up → Fire_2 [Windmemory], E → Star_2 |
+| **Star_1** The crater rim | FallenStar | A glide down from the hearth to the rim; the smiths' wagon keeps a desk. | Rim | — | Idrenne, desk | up → Fire_2 [Windmemory], E → Star_2 |
 | **Star_2** The anvil-crater | FallenStar | The Fallen Star, forty years the clans' anvil, the hearth's heat run into its iron. Lift the stone at the Fire and it wakes (6.10, optional). | — | — | arena: fallen_star | W → Star_1 |
 <!-- /table -->
 

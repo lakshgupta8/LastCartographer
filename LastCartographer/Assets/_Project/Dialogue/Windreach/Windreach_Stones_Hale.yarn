@@ -1,0 +1,70 @@
+// Surveyor Hale, godwit, the Meridian Guild (6.9, optional). The ninth stone at dusk (Stones_3). He is finishing
+// a secret survey of the Steppe; nine stones and the Guild can anchor Windreach. The ninth is the uncarved one:
+// wherever the clan is standing (River_Idrenne_Night). He cannot sight it until somebody stands there.
+// Voice: professional, courteous, a colleague to her. Works alone; does not say "we".
+
+title: Stones_Hale
+---
+<<if has_flag("boss.hale.defeated")>>
+    <<jump Stones_Hale_Pages>>
+<<endif>>
+<<if has_flag("windreach.hale.decided")>>
+    <<if has_flag("windreach.hale.finished")>>
+        Hale: Nine of nine. Filed. I'll take the long road home. Lovely grass. #still
+    <<else>>
+        Hale: The ninth won't sit for the lens. Professional courtesy: I'm waiting for you.
+    <<endif>>
+    <<stop>>
+<<endif>>
+Hale: Journeyman. Professional courtesy: I'll finish first.
+Hale: Eight stones sighted. The ninth, and the Guild can anchor the Steppe. The Guildmaster asked for it himself.
+-> Not this one. Put the lens down.
+    Hale: Then it's a duel. The only kind two surveyors can have. Mind the stones.
+    <<voice warden windreach>>
+-> Why won't the ninth sit for you?
+    Hale: It moves. I don't know how a stone moves. Four nights I've sighted it.
+    Hale: Help me, or stop me. I'd take either.
+    <<voice surveyor windreach>>
+    -> Then I'll stop you.
+        Hale: Fair. Mind the stones.
+        <<voice warden windreach>>
+    -> Stand there. I'll hold the staff.
+        <<voice drift windreach>>
+        <<jump Stones_Hale_Finish>>
+-> Finish it, then.
+    <<voice drift windreach>>
+    <<jump Stones_Hale_Finish>>
+<<flag windreach.hale.challenged 1>>
+<<flag windreach.hale.decided 1>>
+===
+
+title: Stones_Hale_Finish
+---
+Hale: Thank you. Truly. Hold it there. Somebody standing is all it wanted.
+Hale: Nine. The Steppe is on the Guild's map. They'll send a stone within the year.
+<<flag windreach.hale.finished 1>>
+<<flag windreach.hale.decided 1>>
+===
+
+title: Stones_Hale_Pages
+---
+<<if has_flag("windreach.hale.pages")>>
+    Hale: I'll tell them the grass ate it. It does, you know. #still
+    <<stop>>
+<<endif>>
+Hale: Eleven months of pages. I can't tear them. You do it.
+-> Burn them. All eleven months.
+    Hale: Yes. Better you than me. Keep the lens. I won't need it.
+    <<flag windreach.hale.pages 1>>
+    <<voice warden windreach>>
+-> I'll keep them. Nobody else will.
+    Hale: A survey only you hold. Isolde would have laughed. Keep the lens too.
+    <<flag windreach.hale.pages 2>>
+    <<voice surveyor windreach>>
+-> ...
+    Hale: Silence. Fair. I'll burn them on the road myself. Take the lens.
+    <<flag windreach.hale.pages 1>>
+    <<voice drift windreach>>
+<<flag windreach.hale.lens 1>>
+<<flag windreach.hale.decided 1>>
+===

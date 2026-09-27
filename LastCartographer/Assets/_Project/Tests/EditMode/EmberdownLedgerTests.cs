@@ -43,7 +43,7 @@ namespace OWSBG.Tests
                 foreach (var s in d.Steps.Where(s => s.Kind == StepKind.Vantage))
                     Assert.IsTrue(vantages.Contains(s.Key), d.Id + " asks for a vantage a planned room has: " + s.Key);
             }
-            Assert.AreEqual(20, CommissionCatalog.All.Count, "five at each of the four hubs");
+            Assert.AreEqual(25, CommissionCatalog.All.Count, "five at each of the five hubs with a ledger");
             Assert.AreEqual(5, CommissionCatalog.AtHub("Saltmarrow").Count, "the coast's ledger is unchanged");
         }
 
@@ -78,6 +78,15 @@ namespace OWSBG.Tests
             foreach (var f in new[] { "isolde.cache", "halden.orchard.cache_read", "pell.report_sent", "pell.report_kept", "pell.report_read",
                                       "halden.vault_opened", "halden.vault.pell_counted", "halden.maren.decided", "halden.strike.decided",
                                       "act2.halvard_second", "halden.oriel.met" })
+                Assert.IsTrue(written.Contains(f), f + " is written by a script");
+            // Windreach's ledger: five, no island (the Steppe is walked, not left), two past the Wind Gate.
+            var wind = CommissionCatalog.AtHub("Windreach");
+            Assert.AreEqual(5, wind.Count);
+            Assert.IsFalse(wind.Any(d => d.SeedsIsland));
+            Assert.AreEqual(2, wind.Count(d => d.RequiresAbility == Ability.Windmemory));
+            foreach (var f in new[] { "windreach.idrenne.met", "windreach.stones.named", "windreach.leap.done", "windreach.camp.walked",
+                                      "windreach.fire.witnessed", "windreach.survey.decided", "keystone.windreach", "windreach.star.woken",
+                                      "windreach.hale.finished", "windreach.hale.pages", "windreach.hale.decided" })
                 Assert.IsTrue(written.Contains(f), f + " is written by a script");
             // The arcs' own beats are all written.
             foreach (var f in new[] { "verdance.teodor.met", "verdance.teodor.thread", "verdance.grove.vigil", "verdance.aldermere.attended",

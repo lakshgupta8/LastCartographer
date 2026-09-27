@@ -307,7 +307,7 @@ namespace OWSBG.Core
             R("Windreach_Stones_2", "Windreach.NineStones", "The long walk", "Stones two to eight in the line the clans have walked since before the Guild; the stones are a map (the Nine Stones). Ink-swirl updrafts, too weak to ride yet.", "Fifth", "smudge ×2", new string[0], false, null, null)
                 .West("Windreach_Stones_1", Ability.None)
                 .East("Windreach_Stones_3", Ability.None);
-            R("Windreach_Stones_3", "Windreach.NineStones", "The ninth stone", "Where the route turns north. Surveyor Hale at dusk, sighting the stones one by one (6.9, optional); the camp's wagons are just east.", null, "", new string[0], false, "hale", null)
+            R("Windreach_Stones_3", "Windreach.NineStones", "The ninth stone", "Where the route turns north. Surveyor Hale at dusk, sighting the stones one by one (6.9, optional); the camp's wagons are just east.", null, "", new[] { "hale" }, false, "hale", null)
                 .West("Windreach_Stones_2", Ability.None)
                 .East("Windreach_Camp_1", Ability.None);
             R("Windreach_Camp_1", "Windreach.LongGrassCamp", "The wagons", "The walking-wagons in a ring. One stays at the Long Grass wherever the camp has gone: the walkers' post, with the desk and the ledger.", "Wagons", "", new string[0], true, null, null)
@@ -319,26 +319,26 @@ namespace OWSBG.Core
             R("Windreach_River_1", "Windreach.DryRiver", "The far bank", "A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it).", null, "smudge", new string[0], false, null, null)
                 .West("Windreach_Camp_2", Ability.Wingbeat, null, true)
                 .East("Windreach_River_2", Ability.None);
-            R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried.", "Bed", "smudge ×2", new string[0], false, null, null)
+            R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried.", "Bed", "smudge ×2", new[] { "idrenne" }, false, null, null)
                 .West("Windreach_River_1", Ability.None)
                 .East("Windreach_River_3", Ability.None);
             R("Windreach_River_3", "Windreach.DryRiver", "The cut bank", "The river's old cliff. The Wind Gate is at the top, and only Talonhold climbs it.", null, "smudge", new string[0], false, null, null)
                 .West("Windreach_River_2", Ability.None)
                 .Up("Windreach_Gate_1", Ability.Talonhold);
-            R("Windreach_Gate_1", "Windreach.WindGate", "The leap", "The fledgling-leap on the cliff's lip: the clan sings, the young jump. Nobody has lived through it in forty years until Wren. Windmemory.", "Gate", "", new string[0], false, null, null)
+            R("Windreach_Gate_1", "Windreach.WindGate", "The leap", "The fledgling-leap on the cliff's lip: the clan sings, the young jump. Nobody has lived through it in forty years until Wren. Windmemory.", "Gate", "", new[] { "idrenne" }, false, null, null)
                 .Down("Windreach_River_3", Ability.Talonhold)
                 .East("Windreach_Gate_2", Ability.Windmemory);
             R("Windreach_Gate_2", "Windreach.WindGate", "The updrafts", "Ink-swirls to ride: the first glide course. North, the high grass; down the far side, a long glide into the Greyfold's white at the Mirror Pool.", null, "", new string[0], false, null, null)
                 .West("Windreach_Gate_1", Ability.Windmemory)
                 .East("Windreach_Fire_1", Ability.Windmemory)
                 .Down("Greyfold_Pool_1", Ability.Windmemory);
-            R("Windreach_Fire_1", "Windreach.IdrennesFire", "The high grass", "Grass over Wren's head; the camp's third night pitches here, and the clan walks her in.", null, "", new string[0], false, null, null)
+            R("Windreach_Fire_1", "Windreach.IdrennesFire", "The high grass", "Grass over Wren's head; the camp's third night pitches here, and the clan walks her in.", null, "", new[] { "idrenne" }, false, null, null)
                 .West("Windreach_Gate_2", Ability.Windmemory)
                 .East("Windreach_Fire_2", Ability.None);
             R("Windreach_Fire_2", "Windreach.IdrennesFire", "Idrenne's Fire", "The hearth; the keystone is its cooking-stone. Idrenne says plainly how the clans do it (plant 9.2) and gives it up laughing. Surveying Windreach at all is decided here.", "Hearth", "", new[] { "idrenne" }, false, null, null)
                 .West("Windreach_Fire_1", Ability.None)
                 .Down("Windreach_Star_1", Ability.Windmemory);
-            R("Windreach_Star_1", "Windreach.FallenStar", "The crater rim", "A glide down from the hearth to the rim; the smiths' wagon keeps a desk.", "Rim", "", new string[0], true, null, null)
+            R("Windreach_Star_1", "Windreach.FallenStar", "The crater rim", "A glide down from the hearth to the rim; the smiths' wagon keeps a desk.", "Rim", "", new[] { "idrenne" }, true, null, null)
                 .Up("Windreach_Fire_2", Ability.Windmemory)
                 .East("Windreach_Star_2", Ability.None);
             R("Windreach_Star_2", "Windreach.FallenStar", "The anvil-crater", "The Fallen Star, forty years the clans' anvil, the hearth's heat run into its iron. Lift the stone at the Fire and it wakes (6.10, optional).", null, "", new string[0], false, "fallen_star", null)

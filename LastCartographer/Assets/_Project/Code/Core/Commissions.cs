@@ -289,6 +289,7 @@ namespace OWSBG.Core
             foreach (var d in Emberdown()) { _byId[d.Id] = d; _defs.Add(d); }
             foreach (var d in Verdance()) { _byId[d.Id] = d; _defs.Add(d); }
             foreach (var d in Halden()) { _byId[d.Id] = d; _defs.Add(d); }
+            foreach (var d in Windreach()) { _byId[d.Id] = d; _defs.Add(d); }
         }
 
         /// <summary>Bible 8.1, greybox-sized: each is finishable in the three greybox rooms.</summary>
@@ -505,6 +506,55 @@ namespace OWSBG.Core
                 Aftermath = "A chick's drawing of a heron, framed. And a key to the Vault, which Pell says is technically stealing.",
                 Steps = new[] { CommissionStep.Flag("halden.office.pell_ledgers", "Look through the Guildmaster's window with Pell") },
                 RewardScraps = 2, Foreshadows = "5.5", RequiresAbility = Ability.Inkthread, PostAfterFlag = "halden.hall.pell_minder",
+            },
+        };
+        /// <summary>Bible 8.5: the Long Grass Camp's ledger, kept in the post-wagon (Camp_1) wherever the camp has gone.</summary>
+        public static CommissionDef[] Windreach() => new[]
+        {
+            new CommissionDef
+            {
+                Id = "windreach.moving_camp", Title = "The Moving Camp", Hub = "Windreach", Poster = "Speaker Idrenne, by word of mouth",
+                Brief = "The clan walks tomorrow. Three days, three fires. Anyone who walks with us eats with us.",
+                Journal = "Walk with the clan: the fire ring, the riverbed, and past the Wind Gate, the high grass.",
+                Aftermath = "Three fires. Everyone said where they were standing. So did you.",
+                Steps = new[] { CommissionStep.Flag("windreach.camp.night", "Walk three days with the clan", 3) },
+                RewardScraps = 2,
+            },
+            new CommissionDef
+            {
+                Id = "windreach.nine_stones", Title = "The Nine Stones", Hub = "Windreach", Poster = "A child's hand; a stone drawn nine times",
+                Brief = "The clans have walked past the same nine stones since before the Guild. Ask what they are.",
+                Journal = "Idrenne tells it at the second fire, in the riverbed.",
+                Aftermath = "A map nobody can take away. Eight places, and the ninth is wherever you are standing.",
+                Steps = new[] { CommissionStep.Flag("windreach.stones.named", "Learn what the stones are") },
+                RewardScraps = 1, PostAfterFlag = "windreach.idrenne.met",
+            },
+            new CommissionDef
+            {
+                Id = "windreach.guild_surveyor", Title = "The Guild Surveyor", Hub = "Windreach", Poster = "Unsigned. Somebody saw a lens flash.",
+                Brief = "A bird with a brass lens walks a day behind the clan and sights the stones at dusk.",
+                Journal = "The ninth stone, where the route turns north, at dusk.",
+                Aftermath = "The Steppe's survey is decided: finished, burned, or kept by the only other bird who could read it.",
+                Steps = new[] { CommissionStep.Flag("windreach.hale.decided", "Meet the surveyor at the ninth stone") },
+                RewardScraps = 2, PostAfterFlag = "windreach.stones.named",
+            },
+            new CommissionDef
+            {
+                Id = "windreach.fallen_star", Title = "The Fallen Star", Hub = "Windreach", Poster = "The smiths, crossly",
+                Brief = "Our anvil is awake. We would like it to be an anvil again. Idrenne says it is owed a swing.",
+                Journal = "The crater below Idrenne's Fire. Glide down; mind the iron.",
+                Aftermath = "The anvil is cold. The smiths complain. Idrenne laughs.",
+                Steps = new[] { CommissionStep.Flag(Bosses.FlagKey("fallen_star"), "Put the Fallen Star back to sleep") },
+                RewardScraps = 2, RequiresAbility = Ability.Windmemory, PostAfterFlag = "windreach.star.woken",
+            },
+            new CommissionDef
+            {
+                Id = "windreach.idrennes_fire", Title = "Idrenne's Fire", Hub = "Windreach", Poster = "Speaker Idrenne",
+                Brief = "You walked the three fires. Come up the rise to mine and ask your question.",
+                Journal = "Past the high grass, up the rise: Idrenne's Fire.",
+                Aftermath = "She said it plainly. A place holds when it's lived in, walked, and every name in it said.",
+                Steps = new[] { CommissionStep.Flag("windreach.fire.witnessed", "Ask Idrenne your question") },
+                RewardScraps = 1, Foreshadows = "9.2", RequiresAbility = Ability.Windmemory, PostAfterFlag = "windreach.camp.walked",
             },
         };
     }

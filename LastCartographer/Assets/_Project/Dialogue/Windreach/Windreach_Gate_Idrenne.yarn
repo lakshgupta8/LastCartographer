@@ -1,0 +1,32 @@
+// The Wind Gate (Gate_1; bible 4.5, 4.0): the fledgling-leap. The clan sings the young off the lip; nobody has come
+// up the updraft in forty years, since the Unmaking took the sky. Wren does: Windmemory. The wind knowing her is a
+// plant for where she is from (5.3). The leap comes on the third day of the walk.
+
+title: Gate_Idrenne_Leap
+---
+<<if flag("windreach.camp.night") < 2>>
+    Idrenne: The Gate is the third day's. Walk the first two with us and you'll know why.
+    <<stop>>
+<<endif>>
+<<if has_flag("windreach.leap.done")>>
+    Idrenne: Forty years we sang them off this lip. Then you. I was standing right here.
+    <<stop>>
+<<endif>>
+Idrenne: This is the Gate. The young stand on the lip, and we sing, and they jump.
+Idrenne: The updraft used to catch them. For forty years now it hasn't. We sing anyway.
+Idrenne: Nobody makes you. Nobody has, since the first one fell.
+-> I'll jump.
+    Idrenne: Then we'll sing.
+    <<voice warden windreach>>
+-> What do you sing?
+    Idrenne: Where each of us was standing when we learned to fly. Nobody remembers. So we sing the places.
+    <<voice surveyor windreach>>
+-> ...
+    Idrenne: Yes. That's how the brave ones stand, too.
+    <<voice drift windreach>>
+Gate: She jumps. The song follows her down. Then the air remembers her, and holds.
+Idrenne: Ha! Look at her. Brek, look. The wind knows you, map-bird.
+Idrenne: It knows where you're from better than you do. #plant:5.3
+<<grant Windmemory>>
+<<flag windreach.leap.done 1>>
+===

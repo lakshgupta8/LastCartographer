@@ -1,0 +1,134 @@
+// The Blank's islands (bible 4.7, 8.6, 10: "the Blank is built from your choices"). Every place Wren left to the
+// Blank drifts here, and its people react to how she left it. Five are authored, one per [B] commission (Islands);
+// any other released place speaks from Island_Remnant.
+// Remnant voice (style guide §4): half-sentences, present tense, polite; ask whether you've eaten; never "I'm dead".
+
+title: Island_Merrow_Dotha
+---
+<<if has_flag("blank.merrow.visited")>>
+    Dotha: Eleven. Still eleven. The water's a better audience here. #still
+    <<stop>>
+<<endif>>
+Dotha: You. Sit if you're sitting.
+Dotha: Eleven songs. I have all eleven here. The two that went with people came back with them.
+<<if flag("saltmarrow.dotha.decided") == 2>>
+    Dotha: You let it go. Kind. You said so, and it was.
+<<else>>
+    Dotha: Nobody held it. So here it is. Roofs and all. Forty of them.
+<<endif>>
+-> Sing me the eleventh.
+    Dotha: It's about a stranger on the stoop. It's short. Everything true is.
+    <<voice surveyor blank>>
+-> Do you want to come back?
+    Dotha: I don't ask twice. I asked once. You answered.
+    <<voice warden blank>>
+-> ...
+    Dotha: Quiet one. The white likes you too.
+    <<voice drift blank>>
+<<flag blank.merrow.visited 1>>
+===
+
+title: Island_Hollowvein
+---
+<<if has_flag("blank.hollowvein.visited")>>
+    <<if has_flag("blank.hollowvein.called")>>
+        Brask: Thirty-one. Answered. Tell Runa we heard. #still
+    <<else>>
+        Brask: Still listening. Have you eaten? #still
+    <<endif>>
+    <<stop>>
+<<endif>>
+Brask: Is it the roll-call? We've been listening for it. Thirty-one of us, standing.
+Brask: Nobody's called us. Have you eaten? There's nothing. You're welcome to it.
+-> I know the roll-call. <<if walk_known()>>
+    Brask: Then call it. We'll answer. Every one.
+    Mine: Thirty-one names, into the white. Thirty-one answers, out of it.
+    <<flag blank.hollowvein.called 1>>
+    <<voice warden blank>>
+-> Runa counts you every night.
+    Brask: Runa? Kettil's girl? She was this high. She counts us?
+    Brask: Then we're counted. That's something. That's a lot.
+    <<voice surveyor blank>>
+-> ...
+    Brask: That's what the Guild said too. Sit, anyway.
+    <<voice drift blank>>
+<<flag blank.hollowvein.visited 1>>
+===
+
+title: Island_Aldermere
+---
+<<if has_flag("blank.aldermere.visited")>>
+    Hollin: Still tonight. Still bread. Come back any time; it's tonight. #still
+    <<stop>>
+<<endif>>
+Hollin: Cartographer! You came to the festival. It's still tonight. It's tonight all night.
+Hollin: Have you eaten? There's bread. There's bread till morning, and morning's a long way.
+Hollin: We would rather be remembered than kept. And you remembered. Look at us.
+-> It's a good festival.
+    Hollin: The best. We only had the one. We made it last.
+    <<voice drift blank>>
+-> Teodor sits with you every evening.
+    Hollin: Teodor! Tell him the bread's still warm. Tell him he was right.
+    <<voice surveyor blank>>
+-> Do you want to be held?
+    Hollin: Held? We're dancing. Ask me after. There isn't an after. Ha!
+    <<voice warden blank>>
+<<flag blank.aldermere.visited 1>>
+===
+
+title: Island_Inn
+---
+<<if has_flag("blank.inn.visited")>>
+    Innkeeper: The same soup. Sit. #still
+    <<stop>>
+<<endif>>
+Innkeeper: Traveller. The road brought you. It does, one night in a long while.
+Innkeeper: Have you eaten? The soup is the same soup. Nobody minds. Sit.
+-> Who else is on the road?
+    Innkeeper: Everyone who took it. Nobody who's coming. Salt?
+    <<voice surveyor blank>>
+-> I came through the gate. Again.
+    Innkeeper: Twice! A regular. We'll keep your chair.
+    <<voice warden blank>>
+-> ...
+    Innkeeper: Quiet ones eat more. Here.
+    <<voice drift blank>>
+<<flag blank.inn.visited 1>>
+===
+
+title: Island_Lowmarket
+---
+<<if has_flag("blank.lowmarket.visited")>>
+    Brisk: The mill turns. Nobody's paid. Nobody's owed. #still
+    <<stop>>
+<<endif>>
+Brisk: Journeyman. You stayed out. Fair. It wasn't your strike.
+Brisk: No owners here. No wages. No survey. Just the mill, turning, and us.
+Brisk: Have you eaten? There's paper. You can't eat paper. Force of habit.
+-> Are you glad?
+    Brisk: Nobody's owed anything here. I thought I'd like it more.
+    <<voice surveyor blank>>
+-> I should have stepped in.
+    Brisk: Maybe. We'd have been kept, then. Same bread forever. Pick your forever.
+    <<voice warden blank>>
+-> ...
+    Brisk: Aye. The mill says that too.
+    <<voice drift blank>>
+<<flag blank.lowmarket.visited 1>>
+===
+
+title: Island_Remnant
+---
+Remnant: Oh. A visitor. We don't— have you eaten?
+Remnant: This is a place. It was on a map, once. You drew it, maybe. #still
+-> I left it unanchored.
+    Remnant: Then it's here. That's where unanchored goes. It's not bad. It's quiet.
+    <<voice surveyor blank>>
+-> Do you want to come back?
+    Remnant: Back? We're here. Where's back?
+    <<voice warden blank>>
+-> ...
+    Remnant: Yes. Like that. Sit a while.
+    <<voice drift blank>>
+<<flag blank.remnant.visited 1>>
+===

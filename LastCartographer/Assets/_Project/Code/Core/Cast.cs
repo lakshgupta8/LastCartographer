@@ -102,8 +102,8 @@ namespace OWSBG.Core
             Member("sable", "Sable", "cormorant", "the Ferrymen", "prices", "ends the conversation first", "\"I hope\"");
             At("sable", Act1, "Saltmarrow.Quay", "the quay: the Guild's haste, the board, the reed, the whale, the widow, the shop, Halvard, Aury", "Quay_Sable", staged: true, writes: "saltmarrow.sable.*, saltmarrow.bone_bridge.heard, saltmarrow.widow.decided");
             At("sable", Act1, "Saltmarrow.BoneBridge", "the whale's step: she rows Wren under and does not sing along", "BoneBridge_Sable", writes: "saltmarrow.bone_bridge.rowed");
-            At("sable", Act2, "Saltmarrow.LanternChain", "the tether to the third lighthouse; she rows it herself", "Chain_Sable_Tether", writes: "sable.tether_sold, saltmarrow.tether");
-            At("sable", Act3, "Blank.AurysLighthouse", "sits with Aury; talks prices; does not tell him", "Aury_Sable", writes: "sable.aury_told, blank.aury.knows");
+            At("sable", Act2, "Saltmarrow.LanternChain", "the tether to the third lighthouse; she rows it herself", "Chain_Sable_Tether", staged: true, writes: "sable.tether_sold, saltmarrow.tether");
+            At("sable", Act3, "Blank.AurysLighthouse", "sits with Aury; talks prices; does not tell him", "Aury_Sable", staged: true, writes: "sable.aury_told, blank.aury.knows");
             At("sable", Epilogue, "Saltmarrow.Quay", "prices, by ending", "Epilogue_Sable", staged: true);
 
             Member("runa", "Runa", "capercaillie", "the Holdfast", "counting people out loud, sung", "\"we\" for her town even alone", "\"I don't know how\"");
@@ -179,8 +179,8 @@ namespace OWSBG.Core
             At("corra", Act3, "Blank.OldCapital", "her room: the drawing that keeps everyone out; the small one, carried out if Wren looks (5.5)", "Capital_Corra", staged: true, writes: "corra.memory_carried");
 
             Member("aury", "Aury", "cormorant", "the Remnant", "asks whether you've eaten", "does not know the difference", "\"I'm dead\"");
-            At("aury", Act2, "Blank.AurysLighthouse", "the third lighthouse by tether; the keystone in his wings", "Aury_Lighthouse");
-            At("aury", Act3, "Blank.AurysLighthouse", "his island; Sable beside him", "Aury_Island");
+            At("aury", Act2, "Blank.AurysLighthouse", "the third lighthouse by tether; the keystone in his wings", "Aury_Lighthouse", staged: true, writes: "blank.aury.met, keystone.aury");
+            At("aury", Act3, "Blank.AurysLighthouse", "his island; Sable beside him", "Aury_Island", staged: true, writes: "blank.aury.island");
 
             Member("ilse", "Ilse", "(Wren's mother, grey)", "the Remnant", "letting go", "sees Wren before Wren sees her", "\"stay\"");
             At("ilse", Act3, "Blank.ThessalyHollow", "reveal 5.3", "Hollow_Ilse", staged: true, writes: "blank.ilse.heard");

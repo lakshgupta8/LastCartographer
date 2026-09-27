@@ -1,0 +1,29 @@
+// The tether (bible 8.1 Lantern Chain; character-bibles.md §2, Act 2). At the Lantern Chain's tether-post, Sable sells
+// the cord to the faded third lighthouse, then rows it herself. It opens Aury's Lighthouse (`saltmarrow.tether`).
+// Voice: clipped; names the price of everything; ends conversations first; never "I hope".
+
+title: Chain_Sable_Tether
+---
+<<if not has_flag("act2.started") or not has_flag("saltmarrow.sable.aury")>>
+    Sable: Tether-post. Cords to places that aren't there. Not for sale to you. Yet. #still
+    <<stop>>
+<<endif>>
+<<if has_flag("sable.tether_sold")>>
+    Sable: Cord's tied. Boat's here. Go, or I'm rowing without you. #still
+    <<stop>>
+<<endif>>
+Sable: Third lighthouse. You asked who keeps it. Now you're going.
+Sable: Tether's fifteen. My rowing's free. Don't read anything into that.
+-> Fifteen. Done.
+    Sable: Fair price. Only fair one on this coast.
+    <<voice surveyor saltmarrow>>
+-> Why is the rowing free?
+    Sable: Because I'm not selling him. Get in.
+    <<voice warden saltmarrow>>
+-> ...
+    Sable: Good. He talks enough for both of you.
+    <<voice drift saltmarrow>>
+Sable: Remember. He doesn't know. Don't tell him. That's a favour, not a price.
+<<flag sable.tether_sold 1>>
+<<flag saltmarrow.tether 1>>
+===

@@ -98,7 +98,12 @@ namespace OWSBG.Tests
             foreach (var f in new[] { "ending.chosen", "ending.fixed", "ending.open", "ending.unwritten", "ending.rest", "ending.chorus_led",
                                       "ending.voss_coda", "keystone.isolde", "marrow.words", "epilogue.done" })
                 Assert.IsTrue(written.Contains(f), f + " is written by a script (NAR-13)");
-            foreach (var l in WorldGraph.Links.Where(l => l.Flag != null && l.Flag != "saltmarrow.tether"))
+            foreach (var f in new[] { "sable.tether_sold", "saltmarrow.tether", "keystone.aury", "blank.aury.knows", "sable.aury_told" })
+                Assert.IsTrue(written.Contains(f), f + " is written by a script (NAR-14)");
+            // Every keystone a hand can carry is handed over somewhere.
+            foreach (var h in Keystones.Homes.Where(h => h != Keystones.InTheFrame))
+                Assert.IsTrue(written.Contains(Keystones.FlagKey(h)), "the " + h + " stone is handed over by a script");
+            foreach (var l in WorldGraph.Links.Where(l => l.Flag != null))
                 Assert.IsTrue(written.Contains(l.Flag), "the map's gate " + l.Flag + " (" + l.From + " – " + l.To + ") is opened by a script");
             // The arcs' own beats are all written.
             foreach (var f in new[] { "verdance.teodor.met", "verdance.teodor.thread", "verdance.grove.vigil", "verdance.aldermere.attended",

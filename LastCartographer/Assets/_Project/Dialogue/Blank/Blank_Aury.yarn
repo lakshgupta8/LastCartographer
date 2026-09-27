@@ -1,0 +1,85 @@
+// Aury's Lighthouse (Aury_2; bible 4.7, 8.1, 8.6, 5.3; character-bibles.md §2, §8). Sable's brother, a cormorant,
+// keeper of the faded third lighthouse. He does not know he faded. Act 2, by Sable's tether: the keystone is in his
+// wings, and he recognises Wren (plant 5.3: "the Remnant in the third lighthouse recognising her"). Act 3: his island
+// drifts to the Hollow and Sable sits with him, talking prices. She does not tell him. Wren can.
+// Aury: asks whether you've eaten; does not know the difference; never "I'm dead".
+
+title: Aury_Lighthouse
+---
+<<if has_flag("blank.aury.met")>>
+    <<if has_flag("keystone.aury")>>
+        Aury: Have you eaten? You look like you haven't. #still
+    <<else>>
+        Aury: Still humming, this thing. Take it, will you? It keeps me up.
+        -> I'll take it.
+            Aury: Good. Mind, it's heavy. The lamp won't miss it.
+            <<flag keystone.aury 1>>
+        -> Keep it. It's the lamp's.
+            Aury: Suit yourself. It's company.
+    <<endif>>
+    <<stop>>
+<<endif>>
+Aury: A visitor! Up the causeway, in this. Have you eaten?
+Aury: I keep the light. Sable rows out with the oil. Not lately. She's busy, I expect.
+Aury: Have we met? You've a look. Like a chick I saw once, carried past, out of the white. #plant:5.3
+-> Sable sent me.
+    Aury: Did she! Tell her the oil's low. She'll know what that means.
+    <<voice surveyor blank>>
+-> Who carried the chick?
+    Aury: A woman with a lantern. Walking fast. Didn't stop to eat. Nobody does.
+    <<voice warden blank>>
+-> ...
+    Aury: Quiet. Like Sable. She talks prices so she doesn't have to talk.
+    <<voice drift blank>>
+Aury: Found this in the lamp's heart. Heavy. Hums. No use to a lamp. Take it, will you?
+-> I'll take it.
+    Aury: Good. Mind, it's heavy. The lamp won't miss it.
+    <<flag keystone.aury 1>>
+-> Keep it. It's the lamp's.
+    Aury: Suit yourself. It's company.
+<<flag blank.aury.met 1>>
+===
+
+title: Aury_Island
+---
+<<if not has_flag("act3.started")>>
+    Aury: Have you eaten? The causeway's long. #still
+    <<stop>>
+<<endif>>
+Aury: The island's moved. Or I have. Sable's coming, she says. Have you eaten?
+<<flag blank.aury.island 1>>
+===
+
+title: Aury_Sable
+---
+<<if not has_flag("act3.started") or not has_flag("sable.tether_sold")>>
+    Aury: Sable? Not lately. She's busy, I expect.
+    <<stop>>
+<<endif>>
+<<if has_flag("sable.aury_sat")>>
+    <<if has_flag("blank.aury.knows")>>
+        Aury: That's why the oil's late. Well. Have you eaten? #still
+    <<else>>
+        Sable: Oil's up. Rope's up. Sit down or row. #still
+    <<endif>>
+    <<stop>>
+<<endif>>
+Sable: Oil's up. Rope's up. Everything's up but you, Aury.
+Aury: Ha. Have you eaten, Sable?
+Sable: Don't. That's not a price. That's a favour.
+-> Aury. You faded. Forty-one years ago.
+    Aury: ...Oh.
+    Aury: That's why the oil's late.
+    Lighthouse: Sable says nothing. For the first time, nothing.
+    Sable: Boat's leaving.
+    <<flag sable.aury_told 1>>
+    <<flag blank.aury.knows 1>>
+    <<voice surveyor blank>>
+-> The oil's on its way.
+    Sable: It is. I'm rowing it.
+    <<voice warden blank>>
+-> ...
+    Sable: Good. Sit. He likes company.
+    <<voice drift blank>>
+<<flag sable.aury_sat 1>>
+===

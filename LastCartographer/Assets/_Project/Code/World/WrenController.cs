@@ -106,6 +106,15 @@ namespace OWSBG.World
             _vel = Vector2.zero;
         }
 
+        /// <summary>Ignore horizontal input for a number of frames (Flourishes, wall jumps). Optionally stop.</summary>
+        public void LockInput(int frames, bool halt)
+        {
+            _inputLock = Mathf.Max(_inputLock, frames);
+            if (halt) { _vel.x = 0f; _dashFramesLeft = 0; }
+        }
+
+        public void UnlockInput() { _inputLock = 0; }
+
         /// <summary>Shove Wren (taking a hit). Locks horizontal input for a few frames and cancels a dash.</summary>
         public void Knockback(Vector2 velocity, int lockFrames = 10)
         {
@@ -135,7 +144,7 @@ namespace OWSBG.World
             if (Frozen && Input != null)
             {
                 // Drain buffered presses so nothing fires the moment dialogue ends.
-                Input.ConsumeJump(); Input.ConsumeDash(); Input.ConsumeAttack();
+                Input.ConsumeJump(); Input.ConsumeDash(); Input.ConsumeAttack(); Input.ConsumeFlourish();
             }
 
             _grounded = Probe(Vector2.down);

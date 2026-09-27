@@ -17,6 +17,7 @@ namespace OWSBG.Core
         bool ConsumeJump();
         bool ConsumeDash();
         bool ConsumeAttack();
+        bool ConsumeFlourish();
         /// <summary>Age the buffers by one fixed frame. Called once per FixedUpdate by the controller.</summary>
         void Tick();
     }

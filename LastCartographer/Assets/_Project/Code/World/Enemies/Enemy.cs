@@ -29,6 +29,10 @@ namespace OWSBG.World
         public bool IsDead => Health <= 0;
         public EnemyAnswer Answer => _answer;
         public int HurtstunLeft { get; private set; }
+        /// <summary>Seconds of slow remaining (Blot). Velocity is scaled by SlowFactor while active.</summary>
+        public float SlowLeft { get; private set; }
+        public bool IsSlowed => SlowLeft > 0f;
+        public float SlowFactor { get; set; } = 0.35f;
         public event Action<Enemy, HitInfo> WasHit;
         public event Action<Enemy> Died;
 
@@ -76,8 +80,15 @@ namespace OWSBG.World
             if (Wren == null) Wren = FindFirstObjectByType<WrenController>();
             if (HurtstunLeft > 0) { HurtstunLeft--; return; }
             Tick(Time.fixedDeltaTime);
+            if (SlowLeft > 0f)
+            {
+                SlowLeft -= Time.fixedDeltaTime;
+                Body.linearVelocity *= SlowFactor;
+            }
             ContactCheck();
         }
+
+        public void ApplySlow(float seconds) { if (!IsDead) SlowLeft = Mathf.Max(SlowLeft, seconds); }
 
         /// <summary>Behaviour step, skipped during hurtstun and death.</summary>
         protected abstract void Tick(float dt);

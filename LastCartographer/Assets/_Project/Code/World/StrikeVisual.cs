@@ -64,6 +64,25 @@ namespace OWSBG.World
             _slash.gameObject.SetActive(true);
         }
 
+        /// <summary>Flourishes: an ink burst at a point in a direction (use Vector2.zero for all round).</summary>
+        public void Burst(Vector2 origin, Vector2 dir, int count, float speed = 9f)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var t = _pool.Count > 0 ? _pool.Pop() : MakeQuad("Fleck");
+                t.gameObject.SetActive(true);
+                t.position = new Vector3(origin.x, origin.y, -0.2f);
+                float ang = dir.sqrMagnitude > 0f
+                    ? Mathf.Atan2(dir.y, dir.x) + Random.Range(-0.9f, 0.9f)
+                    : Random.Range(0f, Mathf.PI * 2f);
+                var vel = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang)) * speed * Random.Range(0.5f, 1.2f);
+                _flecks.Add(new Fleck { T = t, Vel = vel, Life = _fleckSeconds, Size = Random.Range(0.1f, 0.26f) });
+            }
+        }
+
+        /// <summary>Flourishes: show the slash in a direction (Longstroke, Crosshatch ticks).</summary>
+        public void Slash(Vector2 dir) => OnSwung(dir);
+
         void OnLanded(IHittable target)
         {
             _strike.GetHitbox(out var center, out var size);

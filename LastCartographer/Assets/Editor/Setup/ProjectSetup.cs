@@ -406,6 +406,8 @@ namespace OWSBG.Setup
             var strike = go.AddComponent<QuillStrike>();
             strike.hitMask = LayerMask.GetMask("Hittable", "Enemy");
             go.AddComponent<Interactor>();
+            var flourishes = go.AddComponent<Flourishes>();
+            flourishes.hitMask = LayerMask.GetMask("Hittable", "Enemy");
             var strikeVisual = go.AddComponent<StrikeVisual>();
             var svSo = new SerializedObject(strikeVisual);
             svSo.FindProperty("_inkMaterial").objectReferenceValue = MakeLitMaterial("M_Ink_Black", new Color(0.06f, 0.06f, 0.08f));

@@ -13,9 +13,10 @@ namespace OWSBG.Core
         [SerializeField] int _jumpBufferFrames = 6;
         [SerializeField] int _attackBufferFrames = 6;
         [SerializeField] int _dashBufferFrames = 4;
+        [SerializeField] int _flourishBufferFrames = 6;
 
-        InputAction _move, _jump, _attack, _dash, _bind, _survey;
-        ButtonBuffer _jumpBuf, _attackBuf, _dashBuf;
+        InputAction _move, _jump, _attack, _dash, _bind, _survey, _flourish;
+        ButtonBuffer _jumpBuf, _attackBuf, _dashBuf, _flourishBuf;
 
         public InputActionAsset Asset
         {
@@ -31,12 +32,14 @@ namespace OWSBG.Core
         public bool ConsumeJump() => _jumpBuf.Consume();
         public bool ConsumeDash() => _dashBuf.Consume();
         public bool ConsumeAttack() => _attackBuf.Consume();
+        public bool ConsumeFlourish() => _flourishBuf.Consume();
 
         void Awake()
         {
             _jumpBuf = new ButtonBuffer(_jumpBufferFrames);
             _attackBuf = new ButtonBuffer(_attackBufferFrames);
             _dashBuf = new ButtonBuffer(_dashBufferFrames);
+            _flourishBuf = new ButtonBuffer(_flourishBufferFrames);
             Bind();
         }
 
@@ -52,9 +55,11 @@ namespace OWSBG.Core
             _dash = map.FindAction("Dash");
             _bind = map.FindAction("Bind");
             _survey = map.FindAction("Survey");
+            _flourish = map.FindAction("Flourish");
             if (_jump != null) _jump.performed += OnJump;
             if (_attack != null) _attack.performed += OnAttack;
             if (_dash != null) _dash.performed += OnDash;
+            if (_flourish != null) _flourish.performed += OnFlourish;
             if (isActiveAndEnabled) map.Enable();
         }
 
@@ -63,7 +68,8 @@ namespace OWSBG.Core
             if (_jump != null) _jump.performed -= OnJump;
             if (_attack != null) _attack.performed -= OnAttack;
             if (_dash != null) _dash.performed -= OnDash;
-            _move = _jump = _attack = _dash = _bind = _survey = null;
+            if (_flourish != null) _flourish.performed -= OnFlourish;
+            _move = _jump = _attack = _dash = _bind = _survey = _flourish = null;
         }
 
         void OnEnable() { _asset?.FindActionMap("Player", false)?.Enable(); }
@@ -73,12 +79,14 @@ namespace OWSBG.Core
         void OnJump(InputAction.CallbackContext _) => _jumpBuf.Press();
         void OnAttack(InputAction.CallbackContext _) => _attackBuf.Press();
         void OnDash(InputAction.CallbackContext _) => _dashBuf.Press();
+        void OnFlourish(InputAction.CallbackContext _) => _flourishBuf.Press();
 
         public void Tick()
         {
             _jumpBuf.Tick();
             _attackBuf.Tick();
             _dashBuf.Tick();
+            _flourishBuf.Tick();
         }
     }
 }

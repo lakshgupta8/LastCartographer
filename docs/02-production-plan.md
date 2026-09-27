@@ -84,7 +84,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CMB-02 `[~]` | Quill strike (3 directions), combo, down-strike pogo, hitstop, hit reactions | M0 | CMB-2.1 | CMB-01 |
 | CMB-03 `[~]` | Inkwell + Bind | M0 | CMB-2.2, 4 | CMB-02 |
 | CMB-04 `[~]` | Wingbeat, Talonhold, Inkthread, Windmemory implementations with ability gating | M1–M2 | CMB-3 | CMB-01 |
-| CMB-05 `[ ]` | Flourishes: Crosshatch, Longstroke, Blot | M1 | CMB-4 | CMB-03 |
+| CMB-05 `[~]` | Flourishes: Crosshatch, Longstroke, Blot | M1 | CMB-4 | CMB-03 |
 | CMB-06 `[ ]` | Charters (3 base) with combo rewrites and silhouettes | M2 | CMB-5 | CMB-05 |
 | CMB-07 `[ ]` | Instruments (7) and slot system | M2 | CMB-6 | CMB-03 |
 | CMB-08 `[~]` | Enemy framework: state machine, telegraphs, "answer" tagging, families | M1 | CMB-7 | CMB-02 |

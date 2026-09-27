@@ -41,6 +41,7 @@ and pressing Play inside any room scene bootstraps the persistent scene for you.
 | Quill strike (up / down in air with stick) | J | West |
 | Wingbeat dash | Shift or K | RB / RT |
 | Bind (hold, spends 3 ink) | E | East |
+| Flourish: neutral = Crosshatch, forward = Longstroke, up = Blot | L | LT / LB |
 | Survey (hold at a vantage) | Q | North |
 
 Wingbeat and Talonhold are pre-unlocked in the greybox for feel-testing (`AbilitySet` on the Wren object).

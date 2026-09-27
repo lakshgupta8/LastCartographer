@@ -21,6 +21,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/story/halden-arc.md` | The Plateau as written: Isolde's cache and the five names, the strike, Pell's report, the audience, Oriel; the Hall's ledger; Wren's voices |
 | `docs/story/windreach-arc.md` | The Steppe as written: the three fires, the leap, Idrenne's Fire said plainly, Hale at the ninth stone, the Fallen Star; the camp's ledger |
 | `docs/story/threshold.md` | The Greyfold as written for Acts 1–2: the act break, the notice, Marrow in the pool, Halvard's third, Voss's one speech in all its variants, Pell at the line |
+| `docs/story/act3.md` | Act 3 as written: Isolde's atlas, the Hollow and Ilse, Corra's small drawing, Corvin's argument, the Return, Marrow's three words, Pell's last list |
 | `docs/story/boss-sheets.md` | The fifteen bosses: reason, arena by phase, three lines, answers, aftermath |
 | `docs/design/game-design-overview.md` | Pillars, loop, systems, scope |
 | `docs/design/combat-and-movement.md` | Wren's kit, Inkwell, Flourishes, Charters, Instruments, enemy and boss rules |

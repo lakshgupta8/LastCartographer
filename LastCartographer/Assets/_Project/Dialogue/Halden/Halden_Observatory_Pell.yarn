@@ -1,0 +1,27 @@
+// The Observatory (Observatory_2; character-bibles.md §1). The Return: Pell holds the frame's door while Wren
+// chooses. Pell's last list is one item long, and it is whatever voice Wren has used most (Voices.Dominant):
+// Surveyor, "the leaves"; Warden, "her"; Drift, "the sky". The choice itself is NAR-13's.
+
+title: Observatory_Pell_Return
+---
+<<if not has_flag("act3.started")>>
+    Pell: The dome's shut. Which, technically, means we're not meant to be up here. Again.
+    <<stop>>
+<<endif>>
+<<if has_flag("pell.last_list")>>
+    Pell: I'm holding the door. Go on. #still
+    <<stop>>
+<<endif>>
+Pell: One thing. Just one. I've been practising.
+<<if dominant_voice() == "warden">>
+    Pell: Her. Whoever she is, the one you're doing this for. Her.
+    <<flag pell.last_list 2>>
+<<elseif dominant_voice() == "drift">>
+    Pell: The sky. That's the list. It's a short list. It's a big item.
+    <<flag pell.last_list 3>>
+<<else>>
+    Pell: The leaves. The ones in the orchard that fall. Keep those.
+    <<flag pell.last_list 1>>
+<<endif>>
+Pell: That's it. That's the whole list. Go on. I'll hold the door.
+===

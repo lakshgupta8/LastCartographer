@@ -196,6 +196,10 @@ namespace OWSBG.Narrative
         [YarnFunction("voice_in")]
         public static float VoiceIn(string scope, string kind) => Voices.TryParse(kind, out var v) ? Voices.Count(GameState.World, v, scope) : 0f;
 
+        /// <summary>The voice Wren has used most: "surveyor", "warden" or "drift" (Pell's last list; the epilogue's last line).</summary>
+        [YarnFunction("dominant_voice")]
+        public static string DominantVoice() => Voices.Dominant(GameState.World).ToString().ToLowerInvariant();
+
         /// <summary>How many keystones Wren carries (Voss counts them at the Threshold).</summary>
         [YarnFunction("keystones")]
         public static float KeystoneCount() => Keystones.Count(GameState.World);

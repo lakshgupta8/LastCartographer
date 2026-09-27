@@ -81,9 +81,10 @@ namespace OWSBG.Tests
                 bool planned = RoomPlans.InZone(a.Zone).Any(r => r.Npcs.Contains(a.Character));
                 Assert.IsTrue(built || planned, a.Node + " has a room in " + a.Zone + ", built or planned, with " + a.Character + " in it");
             }
-            CollectionAssert.AreEquivalent(new[] { "isolde", "sable", "dotha", "halvard", "runa", "kettil", "teodor", "pell", "maren", "idrenne", "hale", "marrow", "voss" }, staged.Select(a => a.Character).Distinct());
-            Assert.AreEqual(5, Cast.AppearancesOf("pell").Count(a => a.Staged), "Pell's Halden scenes (NAR-09), the act break and the Threshold (NAR-11)");
-            Assert.IsTrue(Cast.AppearancesOf("marrow").Where(a => a.Staged).All(a => a.Act == Cast.Act2), "Marrow's one Act 2 echo is written; the rest are Act 3's");
+            CollectionAssert.AreEquivalent(new[] { "isolde", "sable", "dotha", "halvard", "runa", "kettil", "teodor", "pell", "maren", "idrenne", "hale", "marrow", "voss", "ilse", "corvin", "corra" }, staged.Select(a => a.Character).Distinct());
+            Assert.AreEqual(6, Cast.AppearancesOf("pell").Count(a => a.Staged), "Pell's Halden scenes (NAR-09), the act break and the Threshold (NAR-11), the last list (NAR-12)");
+            Assert.IsTrue(Cast.AppearancesOf("marrow").Where(a => a.Node != null && a.Act <= Cast.Act3).All(a => a.Staged), "Marrow's echo and three words are written (NAR-12)");
+            Assert.IsFalse(Cast.Appearances.Any(a => a.Staged && a.Act == Cast.Epilogue), "the epilogues are NAR-13's");
             Assert.AreEqual(6, Cast.AppearancesOf("runa").Count(a => a.Staged), "Runa's Emberdown scenes are written (NAR-07)");
             Assert.AreEqual(6, Cast.AppearancesOf("teodor").Count(a => a.Staged), "Teodor's Verdance scenes are written (NAR-08)");
         }

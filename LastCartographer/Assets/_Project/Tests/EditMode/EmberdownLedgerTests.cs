@@ -92,7 +92,10 @@ namespace OWSBG.Tests
             foreach (var f in new[] { "act2.started", "pell.saw_her_cross", "act2.threshold", "marrow.seen_in_pool", "act2.halvard_third",
                                       "greyfold.crossed", "pell.at_threshold", "keystone.hollowvein" })
                 Assert.IsTrue(written.Contains(f), f + " is written by a script");
-            foreach (var l in WorldGraph.Links.Where(l => l.Flag != null && !l.Flag.StartsWith("act3.") && l.Flag != "saltmarrow.tether"))
+            foreach (var f in new[] { "act3.started", "blank.ilse.heard", "blank.isolde.found", "marrow.following", "corra.memory_carried",
+                                      "corvin.stance", "keystone.archivist", "ending.rest_offered", "voss.changed", "return.voss.met", "pell.last_list" })
+                Assert.IsTrue(written.Contains(f), f + " is written by a script (NAR-12)");
+            foreach (var l in WorldGraph.Links.Where(l => l.Flag != null && l.Flag != "saltmarrow.tether"))
                 Assert.IsTrue(written.Contains(l.Flag), "the map's gate " + l.Flag + " (" + l.From + " – " + l.To + ") is opened by a script");
             // The arcs' own beats are all written.
             foreach (var f in new[] { "verdance.teodor.met", "verdance.teodor.thread", "verdance.grove.vigil", "verdance.aldermere.attended",

@@ -96,7 +96,7 @@ namespace OWSBG.Core
             At("pell", Act2, "Halden.Vault", "the empty slot (plant 5.2)", "Vault_Pell_Slot", staged: true, writes: "halden.vault.pell_counted");
             At("pell", Act2, "Halden.Bastion", "Voss's office by the flyer-tower: the drawing (plant 5.5)", "Office_Pell_Drawing", staged: true, writes: "halden.office.pell_ledgers");
             At("pell", Act2, "Greyfold.Threshold", "if the report was not sent: comes to see her cross", "Threshold_Pell_Cross", staged: true, writes: "pell.at_threshold");
-            At("pell", Act3, "Halden.Observatory", "the Return: holds the frame's door; the last list", "Observatory_Pell_Return", writes: "pell.last_list");
+            At("pell", Act3, "Halden.Observatory", "the Return: holds the frame's door; the last list", "Observatory_Pell_Return", staged: true, writes: "pell.last_list");
             At("pell", Epilogue, "Halden.JourneymansHall", "the epilogue walk, by ending", "Epilogue_Pell");
 
             Member("sable", "Sable", "cormorant", "the Ferrymen", "prices", "ends the conversation first", "\"I hope\"");
@@ -129,17 +129,17 @@ namespace OWSBG.Core
             Member("marrow", "Marrow", "grey chick, unreadable", "none", "echoes", "one original word per island, four in all", "a word that is not the scene's");
             At("marrow", Prologue, "Greyfold.HalfCathedral", "glimpsed in the white at the thirtieth step, silent");
             At("marrow", Act2, "Greyfold.MirrorPool", "in the pool's reflection and not on the bank; one echo", "MirrorPool_Marrow", staged: true, writes: "marrow.seen_in_pool");
-            At("marrow", Act3, "Blank.ThessalyHollow", "following, from the Lantern on; Ilse does not know it; first word", "Blank_Marrow_Follow", writes: "marrow.following, marrow.words=1");
-            At("marrow", Act3, "Blank.OldCapital", "echoes Corvin; second word", "Capital_Marrow_Word", writes: "marrow.words=2");
-            At("marrow", Act3, "Greyfold.Threshold", "the Return: echoes Voss; third word", "Threshold_Marrow", writes: "marrow.words=3");
+            At("marrow", Act3, "Blank.ThessalyHollow", "following, from the Lantern on; Ilse does not know it; first word", "Blank_Marrow_Follow", staged: true, writes: "marrow.following, marrow.words=1");
+            At("marrow", Act3, "Blank.OldCapital", "echoes Corvin; second word", "Capital_Marrow_Word", staged: true, writes: "marrow.words=2");
+            At("marrow", Act3, "Greyfold.Threshold", "the Return: echoes Voss; third word", "Threshold_Marrow", staged: true, writes: "marrow.words=3");
             At("marrow", Epilogue, "Blank.ThessalyHollow", "the verdict: its last original word, or none", "Epilogue_Marrow", writes: "marrow.words=4");
 
             // ---- The rest of the returning cast (§8), enough to place them ---------------------------------------------
             Member("isolde", "Isolde Marr", "(Wren's mentor)", "Meridian Guild", "questions instead of answers", "\"journeyman\" when proud, \"Wren\" when scared", "\"I'm sorry\"", plain: true);
             At("isolde", Prologue, "Greyfold.HalfCathedral", "the Edge: survey, bind, seal; she walks in", "Prologue_Edge_Arrive", staged: true, writes: "prologue.*");
             At("isolde", Act1, "Halden.OldOrchard", "her cache: the Stillness measured, five names", "Orchard_Isolde_Cache", staged: true, writes: "isolde.cache");
-            At("isolde", Act3, "Greyfold.IsoldesLastCamp", "her complete atlas (reveal 5.2)", "LastCamp_Isolde", writes: "act3.started");
-            At("isolde", Act3, "Blank.ThessalyHollow", "alive, grey at the edges; cannot leave under her own power", "Hollow_Isolde");
+            At("isolde", Act3, "Greyfold.IsoldesLastCamp", "her complete atlas (reveal 5.2)", "LastCamp_Isolde", staged: true, writes: "act3.started");
+            At("isolde", Act3, "Blank.ThessalyHollow", "alive, grey at the edges; cannot leave under her own power", "Hollow_Isolde", staged: true, writes: "blank.isolde.found");
 
             Member("halvard", "Warden-Sergeant Halvard", "heron", "Meridian Guild", "paces and counts", "enters silence as a plea", "her first name");
             At("halvard", Act1, "Saltmarrow.LanternChain", "the first hunt: three paces, the count, unlicensed (staged in the fourth lighthouse; the bible's Salt Chapel)", "Lighthouse_Halvard_Hunt", staged: true, writes: "act1.halvard_met, act1.unlicensed");
@@ -169,17 +169,21 @@ namespace OWSBG.Core
 
             Member("voss", "Guildmaster Aurelian Voss", "grey heron", "Meridian Guild", "titles; \"we\" for the Guild", "flinches at \"Halloway\"", "\"Corra\"");
             At("voss", Act2, "Greyfold.Threshold", "the one speech; boss 6.11", "Threshold_Voss", staged: true, writes: "greyfold.crossed");
+            At("voss", Act3, "Greyfold.Threshold", "the Return: still at the line; Corra's memory, if she carries it, and the one word", "Return_Voss", staged: true, writes: "return.voss.met, voss.changed");
             At("voss", Act3, "Halden.Observatory", "changed, or a statue", "Observatory_Voss");
 
             Member("corvin", "Corvin Halloway, the Archivist", "great owl", "the Remnant", "\"When I—\"", "self-correcting", "\"it wasn't my fault\"");
-            At("corvin", Act3, "Blank.OldCapital", "the mirror-Observatory; reveals 5.4 and 5.6; boss 6.14", "Capital_Corvin");
+            At("corvin", Act3, "Blank.OldCapital", "the mirror-Observatory; reveals 5.4 and 5.6; boss 6.14", "Capital_Corvin", staged: true, writes: "corvin.stance, keystone.archivist, ending.rest_offered");
+
+            Member("corra", "Corra", "heron chick", "the Remnant", "draws him bigger", "asks if he is behind you", "\"gone\"");
+            At("corra", Act3, "Blank.OldCapital", "her room: the drawing that keeps everyone out; the small one, carried out if Wren looks (5.5)", "Capital_Corra", staged: true, writes: "corra.memory_carried");
 
             Member("aury", "Aury", "cormorant", "the Remnant", "asks whether you've eaten", "does not know the difference", "\"I'm dead\"");
             At("aury", Act2, "Blank.AurysLighthouse", "the third lighthouse by tether; the keystone in his wings", "Aury_Lighthouse");
             At("aury", Act3, "Blank.AurysLighthouse", "his island; Sable beside him", "Aury_Island");
 
             Member("ilse", "Ilse", "(Wren's mother, grey)", "the Remnant", "letting go", "sees Wren before Wren sees her", "\"stay\"");
-            At("ilse", Act3, "Blank.ThessalyHollow", "reveal 5.3", "Hollow_Ilse");
+            At("ilse", Act3, "Blank.ThessalyHollow", "reveal 5.3", "Hollow_Ilse", staged: true, writes: "blank.ilse.heard");
         }
     }
 }

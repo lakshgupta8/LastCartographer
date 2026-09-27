@@ -1,0 +1,160 @@
+// The Old Capital District (bible 4.7, 7.3 step 4, 5.4–5.6, 6.13, 6.14, 9). Corra's room (Capital_2): her drawing
+// of her father keeps everyone out, him included (6.13). After it, Corra herself, if Wren looks: her memory can be
+// carried out, which is what can turn Voss (5.5, 9.5). The mirror-Observatory (Capital_4): Corvin, the Archivist.
+// He reveals 5.4 and 5.6 and lays out the choice. Wren can finish the Survey with him, or argue for giving the stones
+// back. The argument is built from 5.3 (Ilse), 5.4 (his holding alone) and 5.6 (flight coming back through her).
+// Win all three and he is persuaded (bible 9.2); the fight (6.14) happens either way.
+// Corvin: grand, weary, self-correcting; "When I—"; does not say "it wasn't my fault".
+// Corra: a heron chick; draws him bigger; does not say "gone".
+
+title: Capital_Corra
+---
+<<if not has_flag("boss.corras_drawing.defeated")>>
+    Corra: That's my father. He's coming. Don't.
+    <<stop>>
+<<endif>>
+<<if has_flag("corra.decided")>>
+    <<if has_flag("corra.memory_carried")>>
+        Corra: Did you give it him yet? He'll say it's the wrong size. It isn't. #still
+    <<else>>
+        Corra: I'm drawing him again. Smaller this time. So he fits through the door. #still
+    <<endif>>
+    <<stop>>
+<<endif>>
+Corra: I drew him bigger. He was bigger.
+Corra: He's the Guildmaster now. I know. I drew that too. He doesn't come in.
+Corra: Is that him? Behind you? Is he here?
+-> Let me carry this to him.
+    <<voice warden blank>>
+    <<jump Capital_Corra_Carry>>
+-> What's his name?
+    Corra: Papa. And Aurelian, when he's in trouble. #plant:5.5
+    Corra: Will you take him this? It's a small one. The big one's for keeping people out.
+    <<voice surveyor blank>>
+    -> Yes. I'll take it.
+        <<jump Capital_Corra_Carry>>
+    -> Not yet.
+        Corra: Then I'll keep drawing. I've got lots of paper. It's all paper here.
+-> ...
+    Corra: You're like him. He doesn't talk either.
+    <<voice drift blank>>
+<<flag corra.decided 1>>
+===
+
+title: Capital_Corra_Carry
+---
+Corra: Here. The small one. It's the right size.
+Corra: Tell him I kept drawing. Tell him the crayon ran out and I did it in outline.
+<<flag corra.memory_carried 1>>
+<<flag corra.decided 1>>
+===
+
+title: Capital_Corvin
+---
+<<if has_flag("boss.archivist.defeated")>>
+    <<jump Capital_Corvin_After>>
+<<endif>>
+<<if has_flag("capital.corvin.spoken")>>
+    Corvin: When I— sit. The chair is still there. It will be there after, too. #still
+    <<stop>>
+<<endif>>
+Corvin: When I— granddaughter. Sit. I have drawn you a chair.
+Corvin: The night it broke, I walked in looking for my wife and my daughter.
+Corvin: I held on so hard the Hollow went under with me. Ilse's village. Yours.
+Corvin: Halloway. It's yours. Isolde gave it to you so you could come and ask me for it.
+Corvin: And the sky. When I— the sky was in the Atlas, like everything else.
+Corvin: When it broke, you forgot it. Nobody lost their wings. They lost the memory of them.
+Corvin: It comes back through you. Both worlds. That is why the old flight finds you, piece by piece.
+Corvin: Seven stones and the Atlas is whole. Nothing fades. The sky stays held, safe, for everyone.
+Corvin: Or give them back, and hope. I have hoped for forty-one years. It is overrated.
+-> Finish the Survey with you.
+    Corvin: Good. Good. Bring them to the frame. I will show you where each one sits.
+    <<flag corvin.stance 1>>
+    <<voice warden blank>>
+-> Give them back. All of them.
+    <<voice surveyor blank>>
+    <<jump Capital_Corvin_Argue>>
+-> ...
+    Corvin: Then think. I drew you a chair for thinking.
+    <<voice drift blank>>
+<<flag capital.corvin.spoken 1>>
+===
+
+title: Capital_Corvin_Argue
+---
+Corvin: Give them back? When I— Ilse fades. Do you want your mother to fade?
+-> She let me go. She'd let this go. <<if has_flag("blank.ilse.heard")>>
+    Corvin: She would. She did. She let me go too, and I didn't let her.
+    <<flag corvin.argued_ilse 1>>
+-> She's already faded.
+    Corvin: So she has. And you'd leave her so. Hm.
+-> ...
+    Corvin: Silence is not an answer, granddaughter. It is a chair.
+Corvin: The Hollow went under because I held. And you would have me hold nothing?
+-> You held alone. That pulled it under.
+    Corvin: Alone. When I— yes. There was nobody else walking it. Nobody singing.
+    <<flag corvin.argued_alone 1>>
+-> Then hold everything.
+    Corvin: That is my argument, not yours. Try again, later.
+-> You couldn't have known.
+    Corvin: Don't. Somebody has to have done it. It was me.
+Corvin: And the sky? Break the frame and it scatters. Nobody holds it whole again.
+-> It came back to me. Not the Atlas. <<if has_flag("windreach.leap.done")>>
+    Corvin: At the Wind Gate. I heard. The whole Steppe heard. Forty years, and then you.
+    <<flag corvin.argued_sky 1>>
+-> Then let it scatter.
+    Corvin: You say it so lightly. You've flown.
+-> ...
+    Corvin: Hm.
+<<if has_flag("corvin.argued_ilse") and has_flag("corvin.argued_alone") and has_flag("corvin.argued_sky")>>
+    Corvin: When I— you are young, and you might be right. I am old. Show me.
+    <<flag corvin.stance 2>>
+<<else>>
+    Corvin: No. You are young, and you are wrong, and I love you. Sit.
+    <<flag corvin.stance 3>>
+<<endif>>
+<<flag capital.corvin.spoken 1>>
+===
+
+title: Capital_Corvin_After
+---
+<<if has_flag("capital.corvin.after")>>
+    Corvin: Go on. Draw it better than I did. #still
+    <<stop>>
+<<endif>>
+Corvin: Then draw it better than I did. Go on.
+<<if keystones() == 0>>
+    Corvin: You carry none. Nobody's stones at all. Then there is a third way.
+    Corvin: Stay. Sit in the chair. Draw with me. Nobody will hold you to anything.
+    <<flag ending.rest_offered 1>>
+    -> Keep your stone. I'll think.
+        Corvin: Thinking is allowed. The chair is good for it.
+        <<voice drift blank>>
+    -> Give it to me.
+        Corvin: The seventh. Heavier than it looks. They all are.
+        <<flag keystone.archivist 1>>
+        <<voice warden blank>>
+<<else>>
+    Corvin: The seventh. Take it. Whatever you mean to do with it. Heavier than it looks.
+    <<flag keystone.archivist 1>>
+<<endif>>
+<<flag capital.corvin.after 1>>
+===
+
+title: Capital_Marrow_Word
+---
+<<if flag("marrow.words") >= 2>>
+    Lantern: The grey chick, one pace back, one to the left. #still
+    <<stop>>
+<<endif>>
+<<if not has_flag("capital.corvin.spoken") or flag("marrow.words") < 1>>
+    Lantern: The grey chick looks up at the mirror-dome and says nothing.
+    <<stop>>
+<<endif>>
+Corvin: When I— I held it. I held all of it. Nothing was lost.
+Marrow: Nothing was lost. #echo:corvin
+Corvin: You see? Even the child.
+Marrow: Lost. #echo:corvin
+Marrow: Up.
+<<flag marrow.words 2>>
+===

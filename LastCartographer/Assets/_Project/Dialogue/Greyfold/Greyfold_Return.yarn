@@ -1,0 +1,52 @@
+// The Return (bible 7.3 step 5, 9.5): the Threshold from inside. Voss is still at the line. If Wren carries Corra's
+// memory out, she gives it him, and he says the one word he does not say; he goes in to find her. If not, he holds
+// the line, and the Observatory will have a statue it did not have before (NAR-13).
+// Marrow echoes Voss; its third word. The word is not the scene's: nobody here says it.
+
+title: Return_Voss
+---
+<<if not has_flag("act3.started")>>
+    Voss: Journeyman. The line holds. Go and rest.
+    <<stop>>
+<<endif>>
+<<if has_flag("return.voss.met")>>
+    <<if has_flag("voss.changed")>>
+        Threshold: His tethers, dropped at the line. His footprints go in. #still
+    <<else>>
+        Voss: The line holds, journeyman. It will hold after you. #still
+    <<endif>>
+    <<stop>>
+<<endif>>
+Voss: Journeyman. You came back out. So it can be done.
+<<if has_flag("corra.memory_carried")>>
+    Threshold: She holds out the small drawing. A heron, crayon-lined, the right size.
+    Voss: ...
+    Voss: Corra.
+    Voss: She drew me the right size. When did I— she drew me the right size.
+    Voss: I am going in. Today. Hold the line for me, journeyman. Somebody should.
+    <<flag voss.changed 1>>
+<<else>>
+    Voss: We will not. Somebody must hold the line.
+    Voss: Go and do what you came to do. We will be here. We are always here.
+<<endif>>
+<<flag return.voss.met 1>>
+===
+
+title: Threshold_Marrow
+---
+<<if flag("marrow.words") >= 3>>
+    Lantern: The grey chick, one pace back, one to the left. #still
+    <<stop>>
+<<endif>>
+<<if not has_flag("return.voss.met") or flag("marrow.words") < 2>>
+    Lantern: The grey chick stops at the line and waits for her.
+    <<stop>>
+<<endif>>
+<<if has_flag("voss.changed")>>
+    Marrow: The right size. #echo:voss
+<<else>>
+    Marrow: Hold the line. #echo:voss
+<<endif>>
+Marrow: Look.
+<<flag marrow.words 3>>
+===

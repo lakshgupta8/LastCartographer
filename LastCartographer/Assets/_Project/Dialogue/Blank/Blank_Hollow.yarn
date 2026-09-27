@@ -1,0 +1,70 @@
+// Thessaly Hollow (bible 4.7, 7.3 steps 2–3; character-bibles.md §5, §8). The Lantern (Hollow_1): inside, colour
+// blooming round Wren, and a grey chick starts following. The Hollow (Hollow_2): Ilse, grey, sees her first
+// (reveal 5.3). Isolde, alive, grey at the edges, cannot leave under her own power.
+// Ilse: lets go; sees Wren before Wren sees her; does not say "stay". She does not name her daughter: the name
+// is Isolde's gift, and Ilse never had it. Isolde here is proud ("journeyman"), not scared.
+// Marrow echoes; its first original word is a word no one in the Hollow says.
+
+title: Hollow_Ilse
+---
+<<if has_flag("blank.ilse.heard")>>
+    Ilse: Go and see my father. Then come and sit with me, if there's time. #still
+    <<stop>>
+<<endif>>
+Ilse: There you are. I saw you at the edge of the village before you saw me.
+Ilse: You hold your head the same. Tilted, as if you're listening for something far off.
+Ilse: You were born here. After. When the Hollow was already like this. #plant:5.3
+Ilse: Children born in the white belong to both. You could see her. The woman with the lantern.
+Ilse: She carried you out. The crossing took everything you remembered. I let it.
+Ilse: I let you go. It was the only thing I was ever sure of.
+-> You're my mother.
+    Ilse: I was. I am. It's the same word here.
+    <<voice surveyor blank>>
+-> Come out with me.
+    Ilse: No. I let go of things. It's what I'm good at.
+    <<voice warden blank>>
+-> ...
+    Ilse: You did that as a chick too. Looked, and said nothing.
+    <<voice drift blank>>
+Ilse: My father holds this place. He held on too hard, once. Ask him what it cost. #plant:5.4
+<<flag blank.ilse.heard 1>>
+===
+
+title: Hollow_Isolde
+---
+<<if has_flag("blank.isolde.found")>>
+    Isolde: Go on, journeyman. I'm not going anywhere. That's the problem. #still
+    <<stop>>
+<<endif>>
+Isolde: Journeyman. You crossed. Look at you.
+Isolde: I can't leave. I tried. The white lets go of things that walked in whole. I didn't.
+Isolde: Did you read it? The atlas? Then you know what I took, and who it's for.
+-> I read it. All of it.
+    Isolde: Good. Then you don't need me to explain. You never did.
+    <<voice surveyor blank>>
+-> I'm getting you out.
+    Isolde: No carrying. Finish what you came for. Then we'll see what's left to carry.
+    <<voice warden blank>>
+-> ...
+    Isolde: That's mine. You stole that from me. Keep it.
+    <<voice drift blank>>
+<<flag blank.isolde.found 1>>
+===
+
+title: Blank_Marrow_Follow
+---
+<<if not has_flag("marrow.following")>>
+    Lantern: White, and then colour, blooming round her feet as she walks.
+    Lantern: An island drifts up under her. Behind her, one pace back and one to the left, a grey chick.
+    <<flag marrow.following 1>>
+    <<stop>>
+<<endif>>
+<<if has_flag("blank.ilse.heard") and flag("marrow.words") < 1>>
+    Ilse: I let you go. It was the only thing I was ever sure of.
+    Marrow: Let you go. #echo:ilse
+    Marrow: Wren.
+    <<flag marrow.words 1>>
+    <<stop>>
+<<endif>>
+Lantern: The grey chick, one pace back, one to the left. #still
+===

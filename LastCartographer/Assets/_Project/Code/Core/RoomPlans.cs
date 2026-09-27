@@ -383,7 +383,7 @@ namespace OWSBG.Core
             R("Blank_Hollow_1", "Blank.ThessalyHollow", "The Lantern", "Inside. White, and colour blooming round Wren as she walks; the first island drifts up under her feet. A grey chick starts following.", null, "lost Remnant", new[] { "marrow" }, false, null, null)
                 .West("Greyfold_LastCamp_1", Ability.None, "act3.started")
                 .East("Blank_Hollow_2", Ability.None);
-            R("Blank_Hollow_2", "Blank.ThessalyHollow", "Thessaly Hollow", "Wren's birth village, grey. Ilse sees her first (reveal 5.3). Isolde, grey at the edges, cannot leave. The hub: a desk in Ilse's house.", null, "", new[] { "ilse", "isolde" }, true, null, null)
+            R("Blank_Hollow_2", "Blank.ThessalyHollow", "Thessaly Hollow", "Wren's birth village, grey. Ilse sees her first (reveal 5.3). Isolde, grey at the edges, cannot leave. The hub: a desk in Ilse's house.", null, "", new[] { "ilse", "isolde", "marrow" }, true, null, null)
                 .West("Blank_Hollow_1", Ability.None)
                 .East("Blank_Hollow_3", Ability.None);
             R("Blank_Hollow_3", "Blank.ThessalyHollow", "The drift", "The Hollow's far edge, where the islands of every place she left unanchored drift past (PRG-20). The capital lies east; Aury's light below.", null, "lost Remnant ×2", new string[0], false, null, null)
@@ -393,7 +393,7 @@ namespace OWSBG.Core
             R("Blank_Capital_1", "Blank.OldCapital", "The district's edge", "Streets of the old capital, half-drawn. A desk in the doorway of what was a Guild office.", null, "lost Remnant", new string[0], true, null, null)
                 .West("Blank_Hollow_3", Ability.None)
                 .East("Blank_Capital_2", Ability.None);
-            R("Blank_Capital_2", "Blank.OldCapital", "Corra's room", "A white room with a crayon floor. A child's drawing of her father, huge and wrong, keeps everyone out (6.13).", null, "", new string[0], false, "corras_drawing", null)
+            R("Blank_Capital_2", "Blank.OldCapital", "Corra's room", "A white room with a crayon floor. A child's drawing of her father, huge and wrong, keeps everyone out (6.13).", null, "", new[] { "corra" }, false, "corras_drawing", null)
                 .West("Blank_Capital_1", Ability.None)
                 .East("Blank_Capital_3", Ability.None);
             R("Blank_Capital_3", "Blank.OldCapital", "The mirror streets", "The district open: the capital's streets reversed, the Observatory's mirror-half at their end. A desk on its steps.", null, "lost Remnant ×2", new string[0], true, null, null)

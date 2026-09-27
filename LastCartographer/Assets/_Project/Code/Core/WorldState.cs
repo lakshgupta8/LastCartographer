@@ -19,6 +19,10 @@ namespace OWSBG.Core
         /// <summary>Desks stood at and lamps lit: the atlas's travel points (Atlas).</summary>
         public HashSet<string> Waypoints = new HashSet<string>();
         public List<string> BoundMemories = new List<string>();
+        /// <summary>Death's drop (Memories): what the smudge holds, and where it stands.</summary>
+        public List<string> DroppedMemories = new List<string>();
+        public string DropRoom;
+        public float DropX, DropY;
         /// <summary>Yarn "$" variables that are not booleans (booleans live in Flags).</summary>
         public Dictionary<string, float> Numbers = new Dictionary<string, float>();
         public Dictionary<string, string> Strings = new Dictionary<string, string>();

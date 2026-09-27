@@ -7,7 +7,7 @@ namespace OWSBG.World
     /// fixed period; only drawn frames can be hit or hurt Wren. Lunges when drawn and close.
     /// The visual's _Ink parameter follows the state so the fade shader does the work. Answer: any hit, timed.
     /// </summary>
-    public sealed class Smudge : Enemy, IRevealable
+    public class Smudge : Enemy, IRevealable
     {
         [SerializeField] float _drawnSeconds = 0.9f;
         [SerializeField] float _undrawnSeconds = 0.7f;

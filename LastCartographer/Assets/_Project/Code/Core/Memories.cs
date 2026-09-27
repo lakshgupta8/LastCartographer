@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+
+namespace OWSBG.Core
+{
+    /// <summary>
+    /// Bound memories (bible §10: memory as currency; GDD 6: death and retry). A memory is bound in a scene
+    /// (the prologue's "the first time she saw you") and carried in <see cref="WorldState.BoundMemories"/>.
+    /// Death drops every bound memory where Wren fell, as a smudge; striking the smudge down recovers them.
+    /// A second death before the recovery folds the old drop into the new one: the ink remembers, it is only
+    /// out of reach.
+    /// </summary>
+    public static class Memories
+    {
+        public static event Action<string> Bound;
+        public static event Action<string, int> Dropped;     // room, count
+        public static event Action<int> Recovered;           // count
+
+        public static string Name(string id) => id switch
+        {
+            "isolde.first_sight" => "the first time she saw you",
+            "dotha.eleven_songs" => "eleven songs, and which came first",
+            "sable.boats_back" => "the count of boats that came back",
+            _ => id,
+        };
+
+        public static bool Has(WorldState w, string id) => w.BoundMemories.Contains(id);
+        public static int Count(WorldState w) => w.BoundMemories.Count;
+
+        public static bool Bind(WorldState w, string id)
+        {
+            if (string.IsNullOrEmpty(id) || w.BoundMemories.Contains(id)) return false;
+            w.BoundMemories.Add(id);
+            Bound?.Invoke(id);
+            return true;
+        }
+
+        /// <summary>A drop is waiting somewhere in the world.</summary>
+        public static bool HasDrop(WorldState w) => !string.IsNullOrEmpty(w.DropRoom) && w.DroppedMemories.Count > 0;
+
+        /// <summary>
+        /// Death: everything bound goes into the drop at this spot, on top of whatever an earlier, unrecovered drop
+        /// held. Returns false when there is nothing to drop and no earlier drop to move.
+        /// </summary>
+        public static bool Drop(WorldState w, string room, float x, float y)
+        {
+            if (w.BoundMemories.Count == 0 && w.DroppedMemories.Count == 0) return false;
+            foreach (var m in w.BoundMemories) if (!w.DroppedMemories.Contains(m)) w.DroppedMemories.Add(m);
+            w.BoundMemories.Clear();
+            w.DropRoom = room;
+            w.DropX = x; w.DropY = y;
+            Dropped?.Invoke(room, w.DroppedMemories.Count);
+            return true;
+        }
+
+        /// <summary>The smudge is struck down: the drop comes back to her.</summary>
+        public static int Recover(WorldState w)
+        {
+            int n = 0;
+            foreach (var m in w.DroppedMemories) if (!w.BoundMemories.Contains(m)) { w.BoundMemories.Add(m); n++; }
+            w.DroppedMemories.Clear();
+            w.DropRoom = null;
+            w.DropX = w.DropY = 0f;
+            if (n > 0) Recovered?.Invoke(n);
+            return n;
+        }
+
+        /// <summary>"the first time she saw you, and eleven songs" for captions.</summary>
+        public static string Describe(IEnumerable<string> ids)
+        {
+            var names = new List<string>();
+            foreach (var id in ids) names.Add(Name(id));
+            if (names.Count == 0) return "";
+            if (names.Count == 1) return names[0];
+            return string.Join(", ", names.GetRange(0, names.Count - 1)) + " and " + names[names.Count - 1];
+        }
+    }
+}

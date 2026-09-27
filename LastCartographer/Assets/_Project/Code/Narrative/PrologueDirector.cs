@@ -97,15 +97,11 @@ namespace OWSBG.Narrative
         void OnBindPrompt(string memoryId)
         {
             var w = W;
-            if (!w.BoundMemories.Contains(memoryId)) w.BoundMemories.Add(memoryId);
+            Memories.Bind(w, memoryId);
             Captions.Show("Bound: " + MemoryName(memoryId), 4f);
         }
 
-        public static string MemoryName(string id) => id switch
-        {
-            "isolde.first_sight" => "the first time she saw you",
-            _ => id,
-        };
+        public static string MemoryName(string id) => Memories.Name(id);
 
         void OnTutorial(string name)
         {

@@ -20,6 +20,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/game-design-overview.md` | Pillars, loop, systems, scope |
 | `docs/design/combat-and-movement.md` | Wren's kit, Inkwell, Flourishes, Charters, Instruments, enemy and boss rules |
 | `docs/design/art-direction.md` | Ink-on-paper look, 2.5D definition, palettes, the `_Ink` fade state |
+| `docs/design/death-and-retry.md` | Death, the return to the desk, and the smudge that holds bound memories |
 | `LastCartographer/` | The Unity 6 project (editor 6000.3.7f1) |
 | `logs/` | Batch-mode editor logs and the greybox screenshot |
 
@@ -82,6 +83,7 @@ Wingbeat and Talonhold are pre-unlocked in the greybox for feel-testing (`Abilit
 Room A also has the first world interactions. Stand in front of something and press **up** (W or stick up) to use it:
 - the dark bird on the left is Sable, captain of the Ferrymen: a Yarn conversation on the paper page (1-3 or arrows, J to confirm). She reads the coast's state: what you have drawn, what the board says, who has died and who has been declared so;
 - the paper sheet on a post between Sable and the desk is the **Commissions ledger**: the coast's side-quests. Read it (up) to see what is posted, J takes one, and once the journal (M) shows it fulfilled, J at the board turns it in for vellum scraps. Three post from the start; Dotha's posts after you meet Sable and the Tether-Widows after the Lamp-Keeper;
+- dying (`docs/design/death-and-retry.md`) returns you to the last desk with full masks and an empty Inkwell. Whatever you had **bound** (the prologue's memory, for one) stays where you fell as a smudge of your own; walk back and strike it down while it is drawn to take the memories back. Dying again moves the drop, it never loses it;
 - the small table is a drafting desk: restores masks and Instrument uses, sets the respawn point, sleeps to the next dawn, saves to `saves/slot0.json`, and opens the desk menu (row 0 swaps the Charter with ◂ ▸ or 1-3; the rows below swap what sits in each Instrument slot; J leaves);
 - the light brown slab up on the left wall is a weak floor (a plumb weight breaks it; the quill only scratches it) and the faint slab on the far right is a hidden platform (a Field lantern draws it for ten seconds; Sable sells the lantern);
 - the blue post on the right is a vantage point: hold **Q** on it to survey it (Sable notices afterwards, and the atlas page marks it drawn).

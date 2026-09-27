@@ -52,7 +52,7 @@ namespace OWSBG.Core
         [Serializable]
         sealed class SaveData
         {
-            public int version = 3;
+            public int version = 4;
             public List<string> flagKeys = new List<string>();
             public List<int> flagValues = new List<int>();
             public List<string> anchoredPlaces = new List<string>();
@@ -60,6 +60,9 @@ namespace OWSBG.Core
             public List<string> erasedVantages = new List<string>();
             public List<string> waypoints = new List<string>();
             public List<string> boundMemories = new List<string>();
+            public List<string> droppedMemories = new List<string>();
+            public string dropRoom;
+            public float dropX, dropY;
             public List<string> numberKeys = new List<string>();
             public List<float> numberValues = new List<float>();
             public List<string> stringKeys = new List<string>();
@@ -85,6 +88,9 @@ namespace OWSBG.Core
                 d.erasedVantages.AddRange(w.ErasedVantages);
                 d.waypoints.AddRange(w.Waypoints);
                 d.boundMemories.AddRange(w.BoundMemories);
+                d.droppedMemories.AddRange(w.DroppedMemories);
+                d.dropRoom = w.DropRoom;
+                d.dropX = w.DropX; d.dropY = w.DropY;
                 foreach (var kv in w.Numbers) { d.numberKeys.Add(kv.Key); d.numberValues.Add(kv.Value); }
                 foreach (var kv in w.Strings) { d.stringKeys.Add(kv.Key); d.stringValues.Add(kv.Value); }
                 d.respawnRoom = w.RespawnRoom;
@@ -110,6 +116,9 @@ namespace OWSBG.Core
                 foreach (var v in erasedVantages) w.ErasedVantages.Add(v);
                 foreach (var p in waypoints) w.Waypoints.Add(p);
                 w.BoundMemories.AddRange(boundMemories);
+                w.DroppedMemories.AddRange(droppedMemories);
+                w.DropRoom = dropRoom;
+                w.DropX = dropX; w.DropY = dropY;
                 for (int i = 0; i < numberKeys.Count && i < numberValues.Count; i++) w.Numbers[numberKeys[i]] = numberValues[i];
                 for (int i = 0; i < stringKeys.Count && i < stringValues.Count; i++) w.Strings[stringKeys[i]] = stringValues[i];
                 w.RespawnRoom = respawnRoom;

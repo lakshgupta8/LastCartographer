@@ -120,7 +120,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-14 `[~]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement (FadeStages + FadeGroup per room, `<<fade>>`; the Remnant look and audio pending) | M2 | DES-04 | PRG-03 |
 | PRG-15 `[~]` | NPC schedules and hub life (day clock with dawn/day/dusk/night, desk rest sleeps, per-phase posts and nodes, anchored hour lock and `#still` loops, hour tint; v1 in `docs/design/hub-life.md`; NavMesh / cross-room routes and shops open) | M2 | SB-5.1 | PRG-07 |
 | PRG-16 `[~]` | Cutscene pipeline: Timeline + Cinemachine + Yarn hooks (Cutscene object, actor-move / paper-fade / dialogue-node clips, `<<cutscene>>` waits, shot camera; boss intros still coroutines) | M1 | — | PRG-06 |
-| PRG-17 `[~]` | Death and smudge recovery | M1 | GDD 6 | PRG-09 |
+| PRG-17 `[~]` | Death and smudge recovery (return to desk or wax seal; the drop of bound memories as a `MemorySmudge` rebuilt in its room, recovered by striking it down, folded forward on a second death; save v4; v1 in `docs/design/death-and-retry.md`; the smudge's look pending ENV-12) | M1 | GDD 6 | PRG-09 |
 | PRG-18 `[ ]` | Clarity meter and lantern-radius rendering in the Blank | M3 | SB-4.7 | PRG-03 |
 | PRG-19 `[ ]` | Localization wiring | M2 | — | PRG-08 |
 | PRG-20 `[ ]` | Blank island generator from `WorldState` | M3 | SB-8.6 | PRG-14 |

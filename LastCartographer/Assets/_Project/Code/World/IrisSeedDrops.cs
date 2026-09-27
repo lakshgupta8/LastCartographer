@@ -17,6 +17,7 @@ namespace OWSBG.World
                 case "MarshCrab": return 1;
                 case "ReedSkimmer": return 1;
                 case "Smudge": return 2;
+                case "MemorySmudge": return 0;   // her own death's smudge (GDD 6)
                 case "Cantor": return 3;
                 case "Warden": return 2;
                 case "LampKeeper": return 10;

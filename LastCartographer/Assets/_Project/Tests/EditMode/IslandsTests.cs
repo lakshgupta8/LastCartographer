@@ -43,6 +43,27 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void TheDriftIsOrderedAndNamedForWhatThePlacesWere()
+        {
+            var w = new WorldState();
+            Places.Release(w, "Saltmarrow_Stilts");
+            Places.Release(w, "Emberdown_Baths_2");
+            w.Set("emberdown.hollowvein.buried", true);
+            Places.Release(w, "Verdance_Aldermere_2");
+            var drifts = Islands.Drifting(w);
+            CollectionAssert.AreEqual(new[] { "Island_Hollowvein", "Island_Aldermere", "Island_Emberdown_Baths_2", "Island_Saltmarrow_Stilts" },
+                drifts.Select(d => d.Scene).ToList(), "the authored islands in their order, then the rest");
+            Assert.AreEqual("The baths", drifts[2].Name, "a planned room's name");
+            Assert.IsTrue(drifts[3].Name.Length > 0 && !drifts[3].Name.Contains("_"), "a built room's atlas name, or its id read aloud");
+            Assert.IsTrue(drifts[2].IsGeneric && !drifts[0].IsGeneric);
+            Assert.AreEqual(Islands.GenericNode, drifts[2].Node);
+            Assert.AreEqual("Island_Aldermere", Islands.Resolve(w, "Island_Aldermere").Node);
+            Assert.IsNull(Islands.Resolve(w, "Island_Lowmarket"), "not drifting in this world");
+            Assert.IsNull(Islands.Resolve(w, "Greybox_Saltmarrow_B"));
+            Assert.IsTrue(Islands.IsIslandScene("Island_X") && !Islands.IsIslandScene("Greybox_X"));
+        }
+
+        [Test]
         public void AnyOtherReleasedPlaceIsAGenericIsland()
         {
             var w = new WorldState();

@@ -10,7 +10,7 @@ namespace OWSBG.World
     public abstract class Interactable : MonoBehaviour
     {
         [SerializeField] string _prompt = "Look";
-        public string Prompt => _prompt;
+        public string Prompt { get => _prompt; set => _prompt = value; }
 
         /// <summary>False while dialogue or a cutscene should block interaction.</summary>
         public virtual bool CanInteract(Interactor who) => isActiveAndEnabled;

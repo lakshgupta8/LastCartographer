@@ -27,6 +27,42 @@ namespace OWSBG.Core
     public static class Islands
     {
         public const string GenericNode = "Island_Remnant";
+        /// <summary>Island rooms are scenes made at runtime (PRG-20), named for what they were.</summary>
+        public const string ScenePrefix = "Island_";
+        /// <summary>The Hollow's far edge (Blank_Hollow_3), where the chain of islands begins and the first island's west exit leads.</summary>
+        public const string DriftEntryScene = "Blank_Hollow_3";
+
+        /// <summary>One island drifting in the Blank now: its room's scene name, its name, and the node its people speak from.</summary>
+        public sealed class Drift
+        {
+            public string Scene;
+            public string Name;
+            public string Node;
+            /// <summary>The released place a generic island is made from; null for an authored one.</summary>
+            public string PlaceId;
+            public Island Island;
+            public bool IsGeneric => Island == null;
+        }
+
+        public static bool IsIslandScene(string scene) => !string.IsNullOrEmpty(scene) && scene.StartsWith(ScenePrefix);
+        public static string SceneOf(Island i) => ScenePrefix + i.Id;
+        public static string SceneOfPlace(string place) => ScenePrefix + place;
+
+        /// <summary>What a released place was called: its plan's name, its atlas name, or its id read aloud.</summary>
+        public static string PlaceName(string place)
+            => RoomPlans.Find(place)?.Name ?? Atlas.FindPlace(place)?.Name ?? place.Replace('_', ' ');
+
+        /// <summary>The islands in the Blank now, in the order they drift past the Hollow: the authored ones, then every other released place.</summary>
+        public static List<Drift> Drifting(WorldState w)
+        {
+            var list = new List<Drift>();
+            foreach (var i in Present(w)) list.Add(new Drift { Scene = SceneOf(i), Name = i.Name, Node = i.Node, Island = i });
+            foreach (var p in GenericPlaces(w)) list.Add(new Drift { Scene = SceneOfPlace(p), Name = PlaceName(p), Node = GenericNode, PlaceId = p });
+            return list;
+        }
+
+        /// <summary>The island a scene name means, if it is drifting now.</summary>
+        public static Drift Resolve(WorldState w, string scene) => IsIslandScene(scene) ? Drifting(w).Find(d => d.Scene == scene) : null;
 
         static bool Released(WorldState w, string place) => OWSBG.Core.Places.FateOf(w, place) == PlaceFate.Released;
 

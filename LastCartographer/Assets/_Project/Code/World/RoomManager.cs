@@ -48,6 +48,12 @@ namespace OWSBG.World
         public bool IsPreloading { get; private set; }
         public event Action<string> RoomChanged;
 
+        /// <summary>
+        /// Rooms made at runtime instead of loaded (the Blank's islands, PRG-20): given a scene name, returns the Room it
+        /// built in a new scene, or null for a scene it does not own. Registered by the builder; asked before Addressables.
+        /// </summary>
+        public static Func<string, Room> Generator;
+
         void Awake()
         {
             if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -116,7 +122,13 @@ namespace OWSBG.World
 
             Scene loaded = default;
             bool ok = false;
-            if (_useAddressables)
+            var generated = Generator?.Invoke(scene);
+            if (generated != null)
+            {
+                loaded = generated.gameObject.scene;
+                ok = loaded.IsValid();
+            }
+            if (!ok && _useAddressables)
             {
                 var locations = Addressables.LoadResourceLocationsAsync(scene, typeof(SceneInstance));
                 yield return locations;

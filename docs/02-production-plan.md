@@ -123,7 +123,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-17 `[~]` | Death and smudge recovery (return to desk or wax seal; the drop of bound memories as a `MemorySmudge` rebuilt in its room, recovered by striking it down, folded forward on a second death; save v4; v1 in `docs/design/death-and-retry.md`; the smudge's look pending ENV-12) | M1 | GDD 6 | PRG-09 |
 | PRG-18 `[ ]` | Clarity meter and lantern-radius rendering in the Blank | M3 | SB-4.7 | PRG-03 |
 | PRG-19 `[ ]` | Localization wiring | M2 | — | PRG-08 |
-| PRG-20 `[ ]` | Blank island generator from `WorldState` | M3 | SB-8.6 | PRG-14 |
+| PRG-20 `[~]` | Blank island generator from `WorldState`; v1: `Islands.Drifting` orders the drift, `IslandBuilder` makes each island's room in a runtime scene when `RoomManager` asks for it (`RoomManager.Generator`), with its people on its node and exits along the chain (`docs/design/blank-generator.md`); the lantern-radius look and the drift room are not built | M3 | SB-8.6 | PRG-14 |
 | PRG-21 `[ ]` | Moving camp (Windreach) and day-advance travel | M3 | SB-4.5 | PRG-15 |
 | PRG-22 `[~]` | Bounds-walk rhythm runtime (BoundsWalk set piece, roll-call strip, `<<walk>>`, hold on completion; the desk defers Hold to it; music pending) | M2 | DES-13 | PRG-08 |
 | PRG-23 `[ ]` | Endings runner and epilogue walk | M3 | SB-9 | DES-12 |

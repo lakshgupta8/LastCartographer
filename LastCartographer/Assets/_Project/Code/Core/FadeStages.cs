@@ -19,7 +19,8 @@ namespace OWSBG.Core
 
         public static int Get(WorldState w, string place) => Clamp(w.Get(Key(place)));
 
-        public static bool IsAnchored(WorldState w, string place) => w.AnchoredPlaces.Contains(place);
+        /// <summary>Anchored or held (Places): the fade is stopped.</summary>
+        public static bool IsAnchored(WorldState w, string place) => Places.IsFadeStopped(w, place);
 
         /// <summary>Move a place further toward blank. False when anchored, out of range, or not an advance.</summary>
         public static bool Advance(WorldState w, string place, int stage)

@@ -173,7 +173,7 @@ Sable: Everything here has a price.
             Assert.IsTrue(_ctrl!.Frozen);
             Assert.IsNotNull(_menu.Panel);
             Assert.AreEqual(DisplayStyle.Flex, _menu.Panel.style.display.value);
-            Assert.AreEqual(4, _menu.Panel.Q("rows").childCount, "Charter row plus three slots");
+            Assert.AreEqual(5, _menu.Panel.Q("rows").childCount, "Charter row, three slots, the place");
             Assert.IsTrue(_menu.Panel.Q("rows")[0].ClassListContains("selected"));
 
             _menu.Step(1);
@@ -195,6 +195,7 @@ Sable: Everything here has a price.
         [UnityTest]
         public IEnumerator BossBarAppearsForTheFightAndCarriesThePhaseLine()
         {
+            _ctrl!.Teleport(new Vector2(-12f, 0f));   // outside the zone until the test walks in
             _bossGo = new GameObject("LampKeeper") { layer = Layer("Enemy") };
             _bossGo.transform.position = new Vector3(3f, 8.6f, 0f);
             _bossGo.AddComponent<BoxCollider2D>().size = new Vector2(1.6f, 1.2f);
@@ -211,7 +212,7 @@ Sable: Everything here has a price.
             yield return Frames(3);
             Assert.IsFalse(_bossView!.IsShowing);
 
-            _ctrl!.Teleport(new Vector2(0f, 0f));
+            _ctrl.Teleport(new Vector2(0f, 0f));
             for (int i = 0; i < 30 && !boss.IsFightActive; i++) yield return new WaitForFixedUpdate();
             yield return Frames(2);
             Assert.IsTrue(_bossView.IsShowing);

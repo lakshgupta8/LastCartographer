@@ -33,6 +33,7 @@ Shader "OWSBG/FullScreen/PaperGrain"
             float _Fibre;
             half4 _PaperTint;
             float _TintAmount;
+            float _OWSBG_Held;   // global: 1 inside an anchored place (HeldState)
 
             half Hash21(float2 p)
             {
@@ -54,6 +55,9 @@ Shader "OWSBG/FullScreen/PaperGrain"
                 half amount = _Strength * (0.35h + 0.65h * lum);
                 col.rgb += grain * amount + fibre * _Fibre * lum;
                 col.rgb = lerp(col.rgb, col.rgb * _PaperTint.rgb, _TintAmount);
+                // Anchored: the colour grade locks. Desaturate a third and cast toward brass-blue.
+                half3 locked = lerp(lum.xxx, col.rgb, 0.65h) * half3(0.93h, 0.97h, 1.05h);
+                col.rgb = lerp(col.rgb, locked, saturate(_OWSBG_Held));
                 return col;
             }
             ENDHLSL

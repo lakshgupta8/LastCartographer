@@ -63,7 +63,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 |---|---|---|---|---|
 | DES-01 `[x]` | Game design overview | M0 | GDD | NAR-01 |
 | DES-02 `[ ]` | Survey spec: vantage points, atlas inking animation, fast travel, erasure/re-survey | M0 | SB-10 | DES-01 |
-| DES-03 `[ ]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns | M0 | SB-1.3, 10 | DES-02 |
+| DES-03 `[~]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns; v1 in `docs/design/anchoring.md`, bind requirement and licence rules open | M0 | SB-1.3, 10 | DES-02 |
 | DES-04 `[~]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage); v1 in `docs/design/fade-stages.md`, per-region curves open | M0 | SB-10, ART-3 | DES-01 |
 | DES-05 `[ ]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades | M1 | CMB-6 | DES-01 |
 | DES-06 `[~]` | Commissions system spec (ledger, states, rewards, Blank-island flags); v1 in `docs/design/commissions.md`, failure and expiry rules open | M1 | SB-8 | DES-01 |
@@ -88,7 +88,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CMB-06 `[~]` | Charters (3 base) with combo rewrites and silhouettes (greybox: combo, passives, default Flourish, tint; silhouettes await CHR art) | M2 | CMB-5 | CMB-05 |
 | CMB-07 `[~]` | Instruments (7) and slot system (greybox effects for all 7; Compass-dart marks await Inkthread, tether-hook is a marker) | M2 | CMB-6 | CMB-03 |
 | CMB-08 `[~]` | Enemy framework: state machine, telegraphs, "answer" tagging, families | M1 | CMB-7 | CMB-02 |
-| CMB-09 `[~]` | Enemy roster: 12 for M1, 40 by M3 | M1–M3 | CMB-7 | CMB-08 |
+| CMB-09 `[~]` | Enemy roster: 12 for M1, 40 by M3 (greybox: Marsh Crab, Reed Skimmer, Smudge, Warden) | M1–M3 | CMB-7 | CMB-08 |
 | CMB-10 `[~]` | Boss framework: phases, arena states, intro through the Timeline pipeline on first entry, retry loop under 8 s; outro cutscene pending | M1 | CMB-8 | CMB-08 |
 | CMB-11 `[~]` | The Lamp-Keeper (6.1): greybox kit (beam, dive, double beam), three phases, rewards | M1 | SB-6.1 | CMB-10 |
 | CMB-12 `[ ]` | Halvard recurring (6.3 × 3 kits) | M2 | SB-6.3 | CMB-10 |
@@ -116,7 +116,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure | M1 | DES-02 | PRG-08 |
 | PRG-11 `[~]` | Drafting desk: rest, respawn, Charter/Instrument swap (placeholder IMGUI desk menu), save | M1 | GDD 6 | PRG-09 |
 | PRG-12 `[~]` | Commissions ledger runtime and journal (state machine in WorldState, tracker, ledger page, journal + toasts, Yarn command and functions, Saltmarrow greybox set; atlas page pending) | M1 | DES-06 | PRG-09 |
-| PRG-13 `[ ]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner | M2 | DES-03 | PRG-10 |
+| PRG-13 `[~]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner (Places store, HeldState grade lock + Wardens, desk place row, Yarn verbs; NPC schedule loops are PRG-15) | M2 | DES-03 | PRG-10 |
 | PRG-14 `[~]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement (FadeStages + FadeGroup per room, `<<fade>>`; the Remnant look and audio pending) | M2 | DES-04 | PRG-03 |
 | PRG-15 `[ ]` | NPC schedules and hub life (NavMesh, `#still` loops) | M2 | SB-5.1 | PRG-07 |
 | PRG-16 `[~]` | Cutscene pipeline: Timeline + Cinemachine + Yarn hooks (Cutscene object, actor-move / paper-fade / dialogue-node clips, `<<cutscene>>` waits, shot camera; boss intros still coroutines) | M1 | — | PRG-06 |

@@ -20,7 +20,7 @@ namespace OWSBG.World
         [SerializeField] int _contactDamage = 1;
         [SerializeField] float _hitKnockback = 4f;
         [SerializeField] int _hurtstunFrames = 6;
-        [SerializeField] EnemyAnswer _answer = EnemyAnswer.AnyHit;
+        [SerializeField] protected EnemyAnswer _answer = EnemyAnswer.AnyHit;
         [SerializeField] LayerMask _playerMask;
         [SerializeField] float _deathSeconds = 0.25f;
 

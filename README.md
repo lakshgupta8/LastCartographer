@@ -80,6 +80,11 @@ The look (art-direction doc): `OWSBG/InkSprite` is the lit, alpha-clipped sprite
 (after post-processing; static grain, stronger on light paper than on ink). Far layers blur through the volume's Gaussian DoF.
 Materials `Art/Materials/M_FS_*.mat` hold the knobs.
 
+The regional decision (`docs/design/anchoring.md`): at the desk, once every vantage in the room is surveyed, the **Place**
+row proposes anchor / hold / release and J seals it, once and for all. Anchoring locks the room's colour grade and wakes the
+Guild's **Wardens** (long legs, a lance that lowers before it thrusts; the sighting lens parries it); holding stops the fade
+and nothing else; releasing lets it fade on. Yarn: `<<anchor place>>`, `<<hold place>>`, `<<release place>>`, `place_fate("id")`.
+
 Fading (`docs/design/fade-stages.md`): each room has a `FadeGroup` over its paper layers and ground, driven by the place's
 stage 0–4 in `WorldState` (`fade.<place>`). Stages advance only from story beats (`<<fade place stage>>`); anchored places hold.
 In the greybox, telling Dotha to let Merrow's End fade thins room B: the reeds wash toward paper as you walk back through.

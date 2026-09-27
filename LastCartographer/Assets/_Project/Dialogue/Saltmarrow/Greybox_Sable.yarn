@@ -22,7 +22,15 @@ Sable: Quay's up the boardwalk. Everything there has a price. Including me.
 
 title: Greybox_Sable_Again
 ---
-Sable: Still here. Still lost.
+<<if place_fate("Saltmarrow_A") == "anchored">>
+    Sable: Anchored, then. The same tide every day now. You'll get used to it. Everyone does. #still
+<<elseif place_fate("Saltmarrow_A") == "held">>
+    Sable: Held, is it. Roll-call at dusk. Don't be late; a bird nobody names is a bird nobody keeps. #still
+<<elseif place_fate("Saltmarrow_A") == "released">>
+    Sable: You let it go. Honest, at least. I'll ask the price of a tether while there's still a quay to sell it from. #still
+<<else>>
+    Sable: Still here. Still lost.
+<<endif>>
 <<if commission_is("saltmarrow.tether_widows", "taken") and not has_flag("saltmarrow.widow.decided")>>
     <<jump Greybox_Sable_Widow>>
 <<endif>>

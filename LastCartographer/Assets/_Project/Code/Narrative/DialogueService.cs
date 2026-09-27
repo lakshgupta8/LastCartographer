@@ -21,6 +21,7 @@ namespace OWSBG.Narrative
     ///   &lt;&lt;commission id verb&gt;&gt;  post | take | fulfil | close | fail a commission (PRG-12)
     ///   &lt;&lt;cutscene id&gt;&gt;          play a Cutscene and wait for it (PRG-16)
     ///   &lt;&lt;fade place stage&gt;&gt;     advance a place's fade stage 0-4 (PRG-14); anchored places ignore it
+    ///   &lt;&lt;anchor place&gt;&gt; / &lt;&lt;hold place&gt;&gt; / &lt;&lt;release place&gt;&gt;   the regional decision, once and final (PRG-13)
     /// Functions: flag(key), has_flag(key), surveyed(id), commission_state(id), commission_is(id, state).
     /// </summary>
     public sealed class DialogueService : MonoBehaviour
@@ -90,11 +91,20 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("bind_prompt", id => BindPrompt?.Invoke(id));
             runner.AddCommandHandler("cutscene", (Func<string, YarnTask>)PlayCutsceneAsync);
             runner.AddCommandHandler<string, int>("fade", (place, stage) => FadeStages.Advance(GameState.World, place, stage));
+            runner.AddCommandHandler<string>("anchor", place => Decide(place, PlaceFate.Anchored));
+            runner.AddCommandHandler<string>("hold", place => Decide(place, PlaceFate.Held));
+            runner.AddCommandHandler<string>("release", place => Decide(place, PlaceFate.Released));
             runner.AddCommandHandler<string, string>("commission", (id, verb) =>
             {
                 if (!Commissions.Apply(GameState.World, id, verb))
                     Debug.LogWarning("[OWSBG] <<commission " + id + " " + verb + ">> is not a valid move from " + Commissions.StateOf(GameState.World, id));
             });
+        }
+
+        static void Decide(string place, PlaceFate fate)
+        {
+            if (!Places.Decide(GameState.World, place, fate))
+                Debug.LogWarning("[OWSBG] <<" + Places.Describe(fate) + " " + place + ">> refused: already " + Places.Describe(Places.FateOf(GameState.World, place)));
         }
 
         static async YarnTask PlayCutsceneAsync(string id)
@@ -118,6 +128,10 @@ namespace OWSBG.Narrative
         /// <summary>"unknown", "posted", "taken", "fulfilled", "closed" or "failed".</summary>
         [YarnFunction("commission_state")]
         public static string CommissionStateOf(string id) => Commissions.Describe(Commissions.StateOf(GameState.World, id));
+
+        /// <summary>"unwritten", "anchored", "held" or "released".</summary>
+        [YarnFunction("place_fate")]
+        public static string PlaceFateOf(string place) => Places.Describe(Places.FateOf(GameState.World, place));
 
         [YarnFunction("fade_stage")]
         public static float FadeStageOf(string place) => FadeStages.Get(GameState.World, place);

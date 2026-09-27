@@ -522,6 +522,7 @@ namespace OWSBG.Setup
             MakeEnemy<MarshCrab>(room, "Crab_1", new Vector2(7f, 5.9f), new Vector2(0.9f, 0.7f));
             MakeEnemy<ReedSkimmer>(room, "Skimmer_1", new Vector2(9f, 4f), new Vector2(0.9f, 0.5f));
             MakeEnemy<Smudge>(room, "Smudge_1", new Vector2(-15.5f, 1.5f), new Vector2(1.1f, 1.1f));
+            MakeHeldState(room, new Vector2(2f, 0.9f), new Vector2(12f, 0.9f));
 
             MakeSpawn(room, "Start", new Vector2(-2f, 0f));
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
@@ -568,6 +569,7 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.81f, 0.74f), 16f);
 
             MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Greybox_Dotha", new Color(0.36f, 0.40f, 0.34f));
+            MakeHeldState(room, new Vector2(-5f, 0.9f), new Vector2(14f, 0.9f));
 
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
             MakeSpawn(room, "East", new Vector2(17f, 0f));
@@ -952,6 +954,20 @@ namespace OWSBG.Setup
             AddressableAssetSettings.BuildPlayerContent(out var result);
             if (!string.IsNullOrEmpty(result.Error)) throw new System.Exception("[OWSBG] Addressables build failed: " + result.Error);
             Debug.Log("[OWSBG] Addressables built in " + result.Duration.ToString("0.0") + " s: " + result.OutputPath);
+        }
+
+        // The held state (PRG-13): Wardens placed inactive; anchoring the place switches them on and locks the grade.
+        static void MakeHeldState(Room room, params Vector2[] wardenPositions)
+        {
+            var held = room.gameObject.AddComponent<HeldState>();
+            held.PlaceId = room.RoomId;
+            for (int i = 0; i < wardenPositions.Length; i++)
+            {
+                MakeEnemy<Warden>(room, "Warden_" + (i + 1), wardenPositions[i], new Vector2(0.7f, 1.6f));
+                var go = room.transform.Find("Warden_" + (i + 1)).gameObject;
+                go.SetActive(false);
+                held.AddWarden(go);
+            }
         }
 
         // The place's fade (PRG-14): paper layers drop at 4 (foreground at 3); ground washes but never drops.

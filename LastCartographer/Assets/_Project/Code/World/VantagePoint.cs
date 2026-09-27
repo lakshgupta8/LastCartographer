@@ -16,7 +16,7 @@ namespace OWSBG.World
         [SerializeField] float _holdSeconds = 1.2f;
         [SerializeField] float _inkRefillSeconds = 10f;
 
-        public string VantageId => _vantageId;
+        public string VantageId { get => _vantageId; set => _vantageId = value; }
         public string DisplayName => _displayName;
         public bool IsSurveyed => GameState.World.IsSurveyed(_vantageId);
         /// <summary>0..1 while holding; 0 when idle or done.</summary>

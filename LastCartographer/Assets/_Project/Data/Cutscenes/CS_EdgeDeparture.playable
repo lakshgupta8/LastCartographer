@@ -1,6 +1,63 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-5869862189746616236
+--- !u!114 &-6456241338348342988
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8ae9f1dbe24dc2408b92f38af0e4d00, type: 3}
+  m_Name: PaperFadeClip
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.PaperFadeClip
+  From: 0
+  To: 0
+  Color: {r: 0.96, g: 0.93, b: 0.85, a: 1}
+--- !u!114 &-5592500048559446990
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acbc335a25cbb1943b9b382dd54ff292, type: 3}
+  m_Name: ActorMoveClip
+  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.ActorMoveClip
+  Actor:
+    exposedName: isolde
+    defaultValue: {fileID: 0}
+  From: {x: 8, y: 0}
+  To: {x: 24, y: 0}
+  FaceDirection: 1
+  Ease:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &-1366652577662343182
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -24,10 +81,10 @@ MonoBehaviour:
   - m_Version: 1
     m_Start: 0.5
     m_ClipIn: 0
-    m_Asset: {fileID: 6813953428801462954}
+    m_Asset: {fileID: -5592500048559446990}
     m_Duration: 5
     m_TimeScale: 1
-    m_ParentTrack: {fileID: -5869862189746616236}
+    m_ParentTrack: {fileID: -1366652577662343182}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
     m_BlendInDuration: 0
@@ -92,44 +149,7 @@ MonoBehaviour:
     m_DisplayName: into the white
   m_Markers:
     m_Objects: []
---- !u!114 &-244808032157741302
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a8ae9f1dbe24dc2408b92f38af0e4d00, type: 3}
-  m_Name: PaperFadeClip
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.PaperFadeClip
-  From: 0
-  To: 0
-  Color: {r: 0.96, g: 0.93, b: 0.85, a: 1}
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfda56da833e2384a9677cd3c976a436, type: 3}
-  m_Name: CS_EdgeDeparture
-  m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.TimelineAsset
-  m_Version: 0
-  m_Tracks:
-  - {fileID: -5869862189746616236}
-  - {fileID: 5938523050107722238}
-  m_FixedDuration: 0
-  m_EditorSettings:
-    m_Framerate: 60
-    m_ScenePreview: 1
-  m_DurationMode: 0
-  m_MarkerTrack: {fileID: 0}
---- !u!114 &5938523050107722238
+--- !u!114 &-700383356740482441
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -153,10 +173,10 @@ MonoBehaviour:
   - m_Version: 1
     m_Start: 5.5
     m_ClipIn: 0
-    m_Asset: {fileID: -244808032157741302}
+    m_Asset: {fileID: -6456241338348342988}
     m_Duration: 0.5
     m_TimeScale: 1
-    m_ParentTrack: {fileID: 5938523050107722238}
+    m_ParentTrack: {fileID: -700383356740482441}
     m_EaseInDuration: 0
     m_EaseOutDuration: 0
     m_BlendInDuration: 0
@@ -221,45 +241,25 @@ MonoBehaviour:
     m_DisplayName: beat
   m_Markers:
     m_Objects: []
---- !u!114 &6813953428801462954
+--- !u!114 &11400000
 MonoBehaviour:
-  m_ObjectHideFlags: 1
+  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: acbc335a25cbb1943b9b382dd54ff292, type: 3}
-  m_Name: ActorMoveClip
-  m_EditorClassIdentifier: OWSBG.World::OWSBG.World.ActorMoveClip
-  Actor:
-    exposedName: isolde
-    defaultValue: {fileID: 0}
-  From: {x: 8, y: 0}
-  To: {x: 24, y: 0}
-  FaceDirection: 1
-  Ease:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
+  m_Script: {fileID: 11500000, guid: bfda56da833e2384a9677cd3c976a436, type: 3}
+  m_Name: CS_EdgeDeparture
+  m_EditorClassIdentifier: Unity.Timeline::UnityEngine.Timeline.TimelineAsset
+  m_Version: 0
+  m_Tracks:
+  - {fileID: -1366652577662343182}
+  - {fileID: -700383356740482441}
+  m_FixedDuration: 0
+  m_EditorSettings:
+    m_Framerate: 60
+    m_ScenePreview: 1
+  m_DurationMode: 0
+  m_MarkerTrack: {fileID: 0}

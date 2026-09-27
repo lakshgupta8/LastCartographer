@@ -1,0 +1,42 @@
+// Interlude B: the Audience (bible 3.2, 7.2). Queen-Regent Maren Ostrell, swan, rules for a nephew who has been nine
+// for forty years. She offers the Crown's favour to whoever will "make Halden permanent". The Crown's hall behind
+// the flyer-tower's landing (Bastion_1). And Oriel before her drill-yard (Bastion_2), only if Pell's report went.
+
+title: Bastion_Maren_Audience
+---
+<<if has_flag("halden.maren.decided")>>
+    Maren: The court is always glad of you. The court is always glad. #still
+    <<stop>>
+<<endif>>
+Maren: Journeyman. Unlicensed, I am told. The Crown does not mind. The Crown minds very few things now.
+Maren: Halden has not changed in forty years. Nobody hungry. Nobody lost. I would like it to stay so.
+Maren: Make it permanent. The Guild cannot, quite. You walk where they do not. Name your price.
+-> Nothing stays. Not even Halden.
+    Maren: Everything here stays. You will see, if you remain long enough. Nobody has ever left.
+    <<voice surveyor halden>>
+    <<flag halden.maren.decided 2>>
+-> I'll do it. For the city.
+    Maren: Good. Then the Crown has a cartographer again. We had one. She walked away.
+    <<voice warden halden>>
+    <<flag halden.maren.decided 1>>
+-> Your nephew is nine. Still. <<if has_flag("halden.orchard.cache_read")>>
+    Maren: He is nine. He has always... He was born the spring before the Unmaking. That is forty-one years. #plant:5.1
+    Maren: Get out. No. Stay. Say it again, slowly. I need to hear someone say it.
+    <<voice drift halden>>
+    <<flag halden.maren.decided 3>>
+===
+
+title: Bastion_Oriel
+---
+<<if not has_flag("pell.report_sent")>>
+    Warden: The Captain is not receiving. The yard is closed for drill. Move along, journeyman.
+    <<stop>>
+<<endif>>
+<<if has_flag("boss.oriel.defeated")>>
+    Oriel: Accurate, all of it. I read it a third time. It still does not say why you are like this. #still
+    <<stop>>
+<<endif>>
+Oriel: Pell writes well. Plainly. I have read it twice.
+Oriel: It says you came back from the Greyfold unchanged. Nobody does that. Show me how.
+<<flag halden.oriel.met 1>>
+===

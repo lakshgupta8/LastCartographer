@@ -283,7 +283,7 @@ namespace OWSBG.Core
                 .West("Halden_Orchard_1", Ability.None)
                 .East("Greyfold.EdgeCamp", Ability.None, "isolde.cache")
                 .Up("Halden_Bastion_1", Ability.Talonhold | Ability.Inkthread);
-            R("Halden_Bastion_1", "Halden.Bastion", "The flyer-tower", "A tower built for flyers: no stairs. Talonhold up the walls, Inkthread across the gaps. A desk on the top landing; the Crown's hall behind it (Interlude B).", null, "Warden", new string[0], true, null, null)
+            R("Halden_Bastion_1", "Halden.Bastion", "The flyer-tower", "A tower built for flyers: no stairs. Talonhold up the walls, Inkthread across the gaps. A desk on the top landing; the Crown's hall behind it (Interlude B).", null, "Warden", new[] { "maren" }, true, null, null)
                 .Down("Halden_Orchard_2", Ability.Talonhold | Ability.Inkthread)
                 .Up("Halden_Bastion_2", Ability.None);
             R("Halden_Bastion_2", "Halden.Bastion", "The drill-yard", "Oriel's arena if Pell's report was sent (6.8); otherwise an empty yard with chalk lines.", "Yard", "", new string[0], false, "oriel", null)

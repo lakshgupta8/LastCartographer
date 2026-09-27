@@ -53,7 +53,7 @@ title: Orchard_FirstMeeting
 ---
 Keeper: You're Isolde's. #plant:5.4
 Keeper: She stood where you're standing. Asked about the leaves.
--> The leaves. You're the only one who rakes them.
+-> You're the only one who rakes them.
     Keeper: Someone has to. Nobody else remembers they fall.
 -> Where did she go after here?
     Keeper: Down. Same as everyone who asks the right question.

@@ -43,7 +43,7 @@ namespace OWSBG.Tests
                 foreach (var s in d.Steps.Where(s => s.Kind == StepKind.Vantage))
                     Assert.IsTrue(vantages.Contains(s.Key), d.Id + " asks for a vantage a planned room has: " + s.Key);
             }
-            Assert.AreEqual(15, CommissionCatalog.All.Count, "the coast's five, Kettil's five and the Quiet House's five");
+            Assert.AreEqual(20, CommissionCatalog.All.Count, "five at each of the four hubs");
             Assert.AreEqual(5, CommissionCatalog.AtHub("Saltmarrow").Count, "the coast's ledger is unchanged");
         }
 
@@ -68,6 +68,17 @@ namespace OWSBG.Tests
             foreach (var d in verd)
                 foreach (var s in d.Steps.Where(s => s.Kind == StepKind.Vantage))
                     Assert.IsTrue(vantages.Contains(s.Key), d.Id + " asks for a planned vantage: " + s.Key);
+            // Halden's ledger: five, one island (Lowmarket), vantage steps on the planned rooms.
+            var hal = CommissionCatalog.AtHub("Halden");
+            Assert.AreEqual(5, hal.Count);
+            CollectionAssert.AreEquivalent(new[] { "Lowmarket" }, hal.Where(d => d.SeedsIsland).Select(d => d.BlankIsland));
+            foreach (var d in hal)
+                foreach (var s in d.Steps.Where(s => s.Kind == StepKind.Vantage))
+                    Assert.IsTrue(vantages.Contains(s.Key), d.Id + " asks for a planned vantage: " + s.Key);
+            foreach (var f in new[] { "isolde.cache", "halden.orchard.cache_read", "pell.report_sent", "pell.report_kept", "pell.report_read",
+                                      "halden.vault_opened", "halden.vault.pell_counted", "halden.maren.decided", "halden.strike.decided",
+                                      "act2.halvard_second", "halden.oriel.met" })
+                Assert.IsTrue(written.Contains(f), f + " is written by a script");
             // The arcs' own beats are all written.
             foreach (var f in new[] { "verdance.teodor.met", "verdance.teodor.thread", "verdance.grove.vigil", "verdance.aldermere.attended",
                                       "verdance.aldermere.stopped", "teodor.keystone_given", "teodor.refused", "keystone.quiet_house",

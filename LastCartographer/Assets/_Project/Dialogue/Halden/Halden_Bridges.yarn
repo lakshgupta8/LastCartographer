@@ -1,0 +1,58 @@
+// The Seven Bridges (bible 4.4, 8.4). Halvard's second hunt on the last span (Bridges_4; boss 6.3, second kit).
+// And the Seventh Bridge (Bridges_3): "under repair" for forty years; the Arden family is paid to stand on it.
+// And the Master's Exam (Hall_3): Tam's eleven identical years of notes (plant 5.1).
+
+title: Bridges_Halvard_Hunt
+---
+<<if has_flag("boss.halvard_2.defeated")>>
+    <<stop>>
+<<endif>>
+Halvard: Journeyman. Four paces, now. I said I'd measured you.
+Halvard: The bridge is Guild property. So is the fall. I've a new lance for it.
+-> Still counting, Sergeant?
+    Halvard: Always. Twice now. There is no third book.
+    <<voice surveyor halden>>
+-> Stand aside. I'm going to the Hall.
+    Halvard: Through me, then. The Hall can wait on the count.
+    <<voice warden halden>>
+-> ...
+    Halvard: Entered as a plea. Again. You've a talent for it.
+    <<voice drift halden>>
+<<flag act2.halvard_second 1>>
+===
+
+title: Bridges_Family
+---
+<<if has_flag("halden.bridge.family_met")>>
+    Arden: Under repair. We are the repair. #still
+    <<stop>>
+<<endif>>
+Arden: Under repair. Keep to the left.
+Arden: We are paid to stand here. My grandmother stood here, and her son. Now us.
+Arden: The Bridge Office says the stone is weak. If we step off, it might fall. Nobody has tested it.
+-> Has anyone looked at the stone?
+    Arden: Looked? It's under repair. You don't look at a thing under repair. You wait.
+-> Step off. I'll catch you if it goes.
+    Arden: And lose the wage? Forty years of wage? No. Thank you. Kindly meant.
+-> ...
+    Arden: Aye. It's peaceful, standing. You'd be surprised.
+<<flag halden.bridge.family_met 1>>
+===
+
+title: Hall_Tam
+---
+<<if has_flag("halden.exam.notes_read")>>
+    Tam: Next spring. I feel good about next spring. #still
+    <<stop>>
+<<endif>>
+Tam: Wren! You're back. Are you sitting it? Next spring. I'm sitting it next spring.
+Tam: I've got my notes. Eleven books. I start a fresh one each year, to be safe.
+Tam: Look. The same, see? Every year I get it right. I just need to sit it. #plant:5.1
+-> These are identical, Tam. Every page.
+    Tam: Well, the answers don't change. That's what makes them answers.
+-> When did you start revising?
+    Tam: Last autumn. Just last autumn. Time goes quickly in the Hall.
+-> ...
+    Tam: You look tired. Revising? Me too. Always.
+<<flag halden.exam.notes_read 1>>
+===

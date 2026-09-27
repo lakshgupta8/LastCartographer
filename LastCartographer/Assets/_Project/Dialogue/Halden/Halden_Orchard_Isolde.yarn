@@ -1,0 +1,55 @@
+// The Old Orchard (Orchard_2; bible 4.4, 7.1 step 5, 8.4). The only place in Halden with fallen leaves.
+// Isolde's cache: her torn pages, the Stillness measured, and five names (reveal 5.1). The pages speak in her
+// voice: plain, questions instead of answers. The Orchard Keeper knew Corvin (8.4 [F 5.4]); the gravestone.
+
+title: Orchard_Isolde_Cache
+---
+<<if has_flag("isolde.cache")>>
+    Pages: Five who could hold a place without me. Go and find out if I was right.
+    <<stop>>
+<<endif>>
+Pages: Journeyman. If you are reading this, you came the long way. Good. Look at the leaves.
+Pages: They fall here. Nowhere else in Halden does anything fall. Why not? #plant:5.1
+Pages: The market has sold the same eleven stalls of fruit for eleven years. I counted.
+Pages: The king is nine. He has been nine since I was your age.
+Pages: Anchoring stops the fade. It stops everything else too. The Guild knows. Voss knows.
+Pages: So what do we do instead? I don't know. I know five who might.
+Pages: Sable, who crosses. Runa, Kettil's girl, who walks. Teodor Ashe, who lets go.
+Pages: Idrenne, who never needed any of it. And Pell, if Pell will.
+Pages: Don't anchor what I've drawn. Come find why. You're nearly there.
+-> She knew I'd come here.
+    <<voice surveyor halden>>
+-> Then I'll find them. All five.
+    <<voice warden halden>>
+-> ...
+    <<voice drift halden>>
+<<flag isolde.cache 1>>
+<<flag halden.orchard.cache_read 1>>
+===
+
+title: Orchard_Keeper
+---
+<<if has_flag("halden.orchard.keeper_met")>>
+    Keeper: Still raking. Nobody else remembers they fall. #still
+    <<stop>>
+<<endif>>
+Keeper: You're Isolde's. #plant:5.4
+Keeper: She stood where you're standing. Asked about the leaves.
+-> You're the only one who rakes them.
+    Keeper: Someone has to. Nobody else remembers they fall.
+    <<voice surveyor halden>>
+-> Where did she go after here?
+    Keeper: Down. Same as everyone who asks the right question.
+    <<voice warden halden>>
+-> ...
+    Keeper: That's what she said too.
+    <<voice drift halden>>
+Keeper: I planted these trees for an owl who kept the Atlas. He liked the leaves. He liked them falling.
+<<flag halden.orchard.keeper_met 1>>
+===
+
+title: Orchard_Gravestone
+---
+Inscription: Halloway. A compass rose, and an owl's eye in it.
+Inscription: A second name beneath, worn off by rain. Four letters. The first is an I. #plant:5.4
+===

@@ -1,0 +1,68 @@
+// The Paper Mill Strike [B] (bible 4.4, 8.4). Lowmarket, below the walls, is fading; its board reads "survey
+// scheduled" and has for years. The millworkers have downed tools to make the Guild survey it. The mills' owners
+// could pay; they will not. Foreman Brisk (starling) leads the strike; Clerk Anvers (Guild, heron) keeps the schedule.
+// Mediate (the owners pay; Lowmarket is anchored), stand with the strike (teach them the walk and they hold it
+// themselves), or stay out (the strike breaks and Lowmarket goes into the Blank).
+
+title: Lowmarket_Strike
+---
+<<if has_flag("halden.strike.decided")>>
+    <<jump Lowmarket_Strike_After>>
+<<endif>>
+Brisk: Forty days out. The mills are cold. The owners are warm. Lowmarket is getting thinner.
+Anvers: The survey is scheduled. It has been scheduled for nine years. Schedules take time.
+Brisk: Nine years. Look at the paint. Look at my hands. You can see the table through them, some mornings.
+-> The owners pay for the survey.
+    <<jump Lowmarket_Mediate>>
+-> Hold it yourselves. I'll teach the walk. <<if walk_known()>>
+    <<jump Lowmarket_Walk>>
+-> It isn't my strike.
+    <<jump Lowmarket_StayOut>>
+===
+
+title: Lowmarket_Mediate
+---
+Anvers: The owners, pay? For a district that pays no dues? That is not how...
+Brisk: They'll pay. Or the journeyman stands at their mill gate with the rest of us.
+Anvers: Very well. Four hundred crowns a street. Anchored by the new moon. It will be the same, after. Forever.
+Brisk: The same is better than gone. Isn't it? Tell me it is.
+<<voice surveyor halden>>
+<<anchor Halden_Lowmarket_1>>
+<<anchor Halden_Lowmarket_2>>
+<<anchor Halden_Lowmarket_3>>
+<<flag halden.strike.decided 1>>
+===
+
+title: Lowmarket_Walk
+---
+Brisk: A walk? Round the district, every night? We're millworkers, not a choir.
+Brisk: ...Every street a name. Every name a step. Aye. We can learn a thing if we're shown it twice.
+Anvers: That is not a survey. The Guild will not recognise it.
+Brisk: The Guild hasn't recognised us for nine years. We'll manage.
+<<voice warden halden>>
+<<flag halden.strike.walk_taught 1>>
+<<flag halden.strike.decided 2>>
+===
+
+title: Lowmarket_StayOut
+---
+Brisk: No. It isn't. Nobody's is. That's what the owners say too.
+Anvers: The strike will end within the month. They always do. The survey remains scheduled.
+Brisk: Go on, then. Up the stair. Remember us, if you can. Somebody should.
+<<voice drift halden>>
+<<release Halden_Lowmarket_1>>
+<<release Halden_Lowmarket_2>>
+<<release Halden_Lowmarket_3>>
+<<flag halden.strike.decided 3>>
+===
+
+title: Lowmarket_Strike_After
+---
+<<if flag("halden.strike.decided") == 1>>
+    Brisk: Same bread. Same paint. Same me. It holds. I don't know if I'm glad. #still
+<<elseif flag("halden.strike.decided") == 2>>
+    Brisk: Forty-two streets and a bakery. We walked them last night. Nobody missed a name.
+<<else>>
+    Brisk: Thinner every day. We'll be in your white place soon. Save us a street. #still
+<<endif>>
+===

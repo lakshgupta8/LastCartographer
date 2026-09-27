@@ -106,6 +106,11 @@ namespace OWSBG.Narrative
                 var walk = BoundsWalk.Find(id);
                 if (walk == null || !walk.Begin()) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: no such walk here, or it is already walked");
             });
+            runner.AddCommandHandler<string, string>("voice", (kind, scope) =>
+            {
+                if (Voices.TryParse(kind, out var v)) Voices.Record(GameState.World, v, scope);
+                else Debug.LogWarning("[OWSBG] <<voice " + kind + ">>: surveyor, warden or drift");
+            });
             runner.AddCommandHandler<string>("grant", name =>
             {
                 if (!Enum.TryParse(name, true, out Ability a) || a == Ability.None) { Debug.LogWarning("[OWSBG] <<grant " + name + ">>: no such ability"); return; }
@@ -182,6 +187,14 @@ namespace OWSBG.Narrative
         /// <summary>Wren knows the roll-call (taught at Kettil's Rest, or heard in the whale).</summary>
         [YarnFunction("walk_known")]
         public static bool WalkKnown() => BoundsWalks.IsLearned(GameState.World);
+
+        /// <summary>How many times Wren has chosen a voice (surveyor, warden, drift), across the game.</summary>
+        [YarnFunction("voice")]
+        public static float VoiceCount(string kind) => Voices.TryParse(kind, out var v) ? Voices.Count(GameState.World, v) : 0f;
+
+        /// <summary>How many times Wren has chosen a voice in one scope (a region: "halden").</summary>
+        [YarnFunction("voice_in")]
+        public static float VoiceIn(string scope, string kind) => Voices.TryParse(kind, out var v) ? Voices.Count(GameState.World, v, scope) : 0f;
 
         /// <summary>The Guild's count has come in: she is missing, and missing carries no licence.</summary>
         [YarnFunction("unlicensed")]

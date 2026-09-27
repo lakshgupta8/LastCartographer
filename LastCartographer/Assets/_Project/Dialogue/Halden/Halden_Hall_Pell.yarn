@@ -1,0 +1,75 @@
+// Pell, jackdaw, journeyman (character-bibles.md §1). The Journeyman's Hall (Hall_2), Act 2.
+// Voice: long, breathless, lists; "which, technically, means"; never unkind; speaks plainly. Image: lists that shorten.
+// Interlude A (bible 7.2): the Minder's Report. Pell has written it; Wren can read it; Pell decides. Having read it,
+// two or more Warden answers in Halden and Pell keeps it; otherwise Pell sends it, and reads it aloud to her face.
+// Sent: Wardens hunt her in every anchored town (Licence), and Oriel (6.8).
+
+title: Hall_Pell_Minder
+---
+<<if has_flag("pell.report_decided")>>
+    <<jump Hall_Pell_After>>
+<<endif>>
+<<if has_flag("halden.hall.pell_minder")>>
+    <<jump Hall_Pell_Report>>
+<<endif>>
+Pell: Five things. No, three. Three things, I've been practising.
+Pell: The Hall thinks you drowned. Tam thinks you'll sit the exam with him. I think neither.
+-> You wrote it down.
+    Pell: All of it. It's accurate. That's the whole problem, isn't it.
+    <<voice surveyor halden>>
+-> Then don't send it.
+    Pell: If I don't, someone less accurate will. Which, technically, is worse for you.
+    <<voice warden halden>>
+-> ...
+    Pell: You do that. Isolde did that. I always talked into it.
+    <<voice drift halden>>
+Pell: I'm to walk with you. Minder, they call it. Which means I tell them where you went.
+<<flag halden.hall.pell_minder 1>>
+===
+
+title: Hall_Pell_Report
+---
+Pell: It's written. The report. I've read it four times. It doesn't get kinder. It gets more accurate.
+-> Let me read it.
+    <<jump Hall_Pell_Read>>
+-> Then send it.
+    Pell: That's what Isolde would say. Isolde isn't here. Which, technically, is the problem.
+    <<jump Hall_Pell_Send>>
+-> ...
+    Pell: Silence. You know I can't write that down. There isn't a column for it.
+    <<jump Hall_Pell_Send>>
+===
+
+title: Hall_Pell_Read
+---
+Report: Journeyman Wren entered the Greyfold without a tether and returned unchanged.
+Report: She carries the torn pages of Isolde Marr. She is unlicensed. She has not surrendered them.
+Report: She has, in the minder's view, been kind to everyone she has met. This is not relevant.
+Pell: It's accurate. That's the whole problem.
+<<flag pell.report_read 1>>
+<<if voice_in("halden", "warden") >= 2>>
+    Pell: You'd have carried me out. Of anywhere. I know that now.
+    Pell: One list. One item. I'm not sending it.
+    <<flag pell.report_kept 1>>
+    <<flag pell.report_decided 1>>
+<<else>>
+    <<jump Hall_Pell_Send>>
+<<endif>>
+===
+
+title: Hall_Pell_Send
+---
+Pell: I'm sending it. I'm telling you to your face, because that's the only fair part.
+Pell: Captain Oriel will read it. She reads everything twice.
+<<flag pell.report_sent 1>>
+<<flag pell.report_decided 1>>
+===
+
+title: Hall_Pell_After
+---
+<<if has_flag("pell.report_sent")>>
+    Pell: Three things. The Wardens have it. Oriel has it. I have a copy. I read it at night.
+<<else>>
+    Pell: One thing. It's in my drawer. It's still accurate. It stays there.
+<<endif>>
+===

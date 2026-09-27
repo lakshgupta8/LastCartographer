@@ -92,9 +92,9 @@ namespace OWSBG.Core
             // ---- The five (character-bibles.md §1–5) ------------------------------------------------------------------
             Member("pell", "Pell", "jackdaw", "Meridian Guild", "lists, shortening", "\"which, technically, means...\"", "anything unkind", plain: true);
             At("pell", Act1, "Greyfold.RoadThatStops", "the act break: sent to watch, sees her step in and come back", "Edge_Pell_Watch", writes: "pell.saw_her_cross");
-            At("pell", Act2, "Halden.JourneymansHall", "the minder; Interlude A, the report", "Hall_Pell_Minder", writes: "pell.report_read, pell.report_sent");
-            At("pell", Act2, "Halden.Vault", "the empty slot (plant 5.2)", "Vault_Pell_Slot", writes: "halden.vault.pell_counted");
-            At("pell", Act2, "Halden.Bastion", "Voss's office by the flyer-tower: the drawing (plant 5.5)", "Office_Pell_Drawing", writes: "halden.office.pell_ledgers");
+            At("pell", Act2, "Halden.JourneymansHall", "the minder; Interlude A, the report", "Hall_Pell_Minder", staged: true, writes: "pell.report_read, pell.report_sent");
+            At("pell", Act2, "Halden.Vault", "the empty slot (plant 5.2)", "Vault_Pell_Slot", staged: true, writes: "halden.vault.pell_counted");
+            At("pell", Act2, "Halden.Bastion", "Voss's office by the flyer-tower: the drawing (plant 5.5)", "Office_Pell_Drawing", staged: true, writes: "halden.office.pell_ledgers");
             At("pell", Act2, "Greyfold.Threshold", "if the report was not sent: comes to see her cross", "Threshold_Pell_Cross", writes: "pell.at_threshold");
             At("pell", Act3, "Halden.Observatory", "the Return: holds the frame's door; the last list", "Observatory_Pell_Return", writes: "pell.last_list");
             At("pell", Epilogue, "Halden.JourneymansHall", "the epilogue walk, by ending", "Epilogue_Pell");
@@ -137,17 +137,20 @@ namespace OWSBG.Core
             // ---- The rest of the returning cast (§8), enough to place them ---------------------------------------------
             Member("isolde", "Isolde Marr", "(Wren's mentor)", "Meridian Guild", "questions instead of answers", "\"journeyman\" when proud, \"Wren\" when scared", "\"I'm sorry\"", plain: true);
             At("isolde", Prologue, "Greyfold.HalfCathedral", "the Edge: survey, bind, seal; she walks in", "Prologue_Edge_Arrive", staged: true, writes: "prologue.*");
-            At("isolde", Act1, "Halden.OldOrchard", "her cache: the Stillness measured, five names", "Orchard_Isolde_Cache", writes: "isolde.cache");
+            At("isolde", Act1, "Halden.OldOrchard", "her cache: the Stillness measured, five names", "Orchard_Isolde_Cache", staged: true, writes: "isolde.cache");
             At("isolde", Act3, "Greyfold.IsoldesLastCamp", "her complete atlas (reveal 5.2)", "LastCamp_Isolde", writes: "act3.started");
             At("isolde", Act3, "Blank.ThessalyHollow", "alive, grey at the edges; cannot leave under her own power", "Hollow_Isolde");
 
             Member("halvard", "Warden-Sergeant Halvard", "heron", "Meridian Guild", "paces and counts", "enters silence as a plea", "her first name");
             At("halvard", Act1, "Saltmarrow.LanternChain", "the first hunt: three paces, the count, unlicensed (staged in the fourth lighthouse; the bible's Salt Chapel)", "Lighthouse_Halvard_Hunt", staged: true, writes: "act1.halvard_met, act1.unlicensed");
-            At("halvard", Act2, "Halden.SevenBridges", "the second hunt, new kit", "Bridges_Halvard_Hunt", writes: "act2.halvard_second");
+            At("halvard", Act2, "Halden.SevenBridges", "the second hunt, new kit", "Bridges_Halvard_Hunt", staged: true, writes: "act2.halvard_second");
             At("halvard", Act2, "Greyfold.Threshold", "the third, beside Voss", "Threshold_Halvard", writes: "act2.halvard_third");
 
             Member("dotha", "Dotha", "(last elder of Merrow's End)", "Merrow's End", "the songs, counted down", "never asks twice", "\"please\"");
             At("dotha", Act1, "Saltmarrow.MerrowsEnd", "her last season: nine songs of eleven; three ways", "Merrow_Dotha", staged: true, writes: "saltmarrow.dotha.*");
+
+            Member("maren", "Queen-Regent Maren Ostrell", "swan", "the Crown of Halden", "permanence", "rules for a nephew who is nine forever", "\"change\"");
+            At("maren", Act2, "Halden.Bastion", "Interlude B: the audience; make Halden permanent", "Bastion_Maren_Audience", staged: true, writes: "halden.maren.decided");
 
             Member("kettil", "Old Kettil", "capercaillie", "the Holdfast", "counting people", "proverbs, orders, laughter", "\"Guild\" without spitting");
             At("kettil", Act1, "Emberdown.KettilsRest", "town-mother; the roll-call is hers by right and Runa's by voice", "Rest_Kettil", staged: true);

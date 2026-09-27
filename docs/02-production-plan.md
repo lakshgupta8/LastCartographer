@@ -46,7 +46,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | NAR-06 `[~]` | Boss character sheets: reason, arena, three phase lines, aftermath, for all 15; v1 in `docs/story/boss-sheets.md` and as data (`Bosses`, the twelve-word rule and the map tested; the Lamp-Keeper built from her sheet); kits are sketches for CMB-12..16 | M1 | SB-6 | NAR-01, CMB-09 |
 | NAR-07 `[~]` | Emberdown arc: Kettil, Runa, Hollowvein, the Cinder Bath Debate, Brann; Commissions; v1 written (`Emberdown_*.yarn`, `docs/story/emberdown-arc.md`, Kettil's ledger of five), run through the Yarn project by tests; the rooms and the two walks are unbuilt | M2 | SB-4.2, 8.2 | NAR-05 |
 | NAR-08 `[~]` | Verdance arc: Teodor, Aldermere, the Sunken Library, the Gatekeeper; Commissions; v1 written (`Verdance_*.yarn`, `docs/story/verdance-arc.md`, the Quiet House's ledger of five, Teodor's keystone check), run through the Yarn project by tests; the rooms are unbuilt | M2 | SB-4.3, 8.3 | NAR-05 |
-| NAR-09 `[ ]` | Halden arc: Orchard cache, Lowmarket strike, Interludes A and B, Oriel; Commissions | M2 | SB-4.4, 7.2 | NAR-04 |
+| NAR-09 `[~]` | Halden arc: Orchard cache, Lowmarket strike, Interludes A and B, Oriel; Commissions; v1 written (`Halden_*.yarn`, `docs/story/halden-arc.md`, the Hall's ledger of five), with the voice tally (`Voices`, `<<voice>>`) that Pell's report weighs; the rooms are unbuilt | M2 | SB-4.4, 7.2 | NAR-04 |
 | NAR-10 `[ ]` | Windreach arc: the moving camp, Idrenne's Fire, Hale, the Fallen Star | M3 | SB-4.5, 8.5 | NAR-05 |
 | NAR-11 `[ ]` | The Threshold: Voss confrontation, all variants | M3 | SB-7.2, 6.11 | NAR-09 |
 | NAR-12 `[ ]` | Act 3: Isolde's camp, Thessaly Hollow, Corra, Corvin, the Return | M3 | SB-7.3, 5.x | NAR-07..11 |

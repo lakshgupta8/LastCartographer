@@ -288,6 +288,7 @@ namespace OWSBG.Core
             foreach (var d in Saltmarrow()) { _byId[d.Id] = d; _defs.Add(d); }
             foreach (var d in Emberdown()) { _byId[d.Id] = d; _defs.Add(d); }
             foreach (var d in Verdance()) { _byId[d.Id] = d; _defs.Add(d); }
+            foreach (var d in Halden()) { _byId[d.Id] = d; _defs.Add(d); }
         }
 
         /// <summary>Bible 8.1, greybox-sized: each is finishable in the three greybox rooms.</summary>
@@ -451,6 +452,59 @@ namespace OWSBG.Core
                 Aftermath = "Eleven lanterns. Eleven places. He never once said was.",
                 Steps = new[] { CommissionStep.Flag("verdance.grove.vigil", "Sit the vigil") },
                 RewardScraps = 1, PostAfterFlag = "verdance.teodor.thread",
+            },
+        };
+        /// <summary>Bible 8.4: the Journeyman's Hall's ledger. Vantage steps name the planned rooms (RoomPlans, DES-10).</summary>
+        public static CommissionDef[] Halden() => new[]
+        {
+            new CommissionDef
+            {
+                Id = "halden.strike", Title = "The Paper Mill Strike", Hub = "Halden", Poster = "The Lowmarket millworkers",
+                Brief = "Forty days out. Lowmarket wants a survey before it is gone. The owners will not pay for one.",
+                Journal = "Down the stair from the toll bridges, the strike hall in Lowmarket. Settle it, or leave it.",
+                Aftermath = "Lowmarket is decided: anchored, held, or thinning into the white.",
+                Steps = new[] { CommissionStep.Flag("halden.strike.decided", "Settle the strike") },
+                RewardScraps = 3, BlankIsland = "Lowmarket", PostAfterFlag = "halden.hall.pell_minder",
+            },
+            new CommissionDef
+            {
+                Id = "halden.masters_exam", Title = "The Master's Exam", Hub = "Halden", Poster = "Tam, for the eleventh time",
+                Brief = "Tam needs a study partner. He sits the exam next spring. He is very well prepared.",
+                Journal = "Tam is in the exam rooms past the Hall. Look at his notes.",
+                Aftermath = "Eleven books, all the same. He sits it next spring.",
+                Steps = new[] { CommissionStep.Flag("halden.exam.notes_read", "Look at Tam's notes") },
+                RewardScraps = 1, Foreshadows = "5.1", PostAfterFlag = "halden.hall.pell_minder",
+            },
+            new CommissionDef
+            {
+                Id = "halden.seventh_bridge", Title = "The Seventh Bridge", Hub = "Halden", Poster = "The Bridge Office",
+                Brief = "The seventh bridge is under repair. The Office requires an inspection. It has required one for some time.",
+                Journal = "The seventh of the Seven Bridges, north of the mills. Survey it, and speak to whoever is standing on it.",
+                Aftermath = "A family is paid to stand on a bridge that may be fine. Nobody has checked. Nobody will.",
+                Steps = new[]
+                {
+                    CommissionStep.Vantage("Halden_Bridges_3/Seventh", "Survey the seventh bridge"),
+                    CommissionStep.Flag("halden.bridge.family_met", "Speak to the repair"),
+                },
+                RewardScraps = 1,
+            },
+            new CommissionDef
+            {
+                Id = "halden.orchard_keeper", Title = "The Orchard Keeper", Hub = "Halden", Poster = "Unsigned; a leaf pressed in it",
+                Brief = "The keeper of the Old Orchard would like a word with Isolde's journeyman. She says she knows which one you are.",
+                Journal = "The Old Orchard is at the end of the Hall's street. She rakes the leaves.",
+                Aftermath = "She planted the orchard for an owl who liked the leaves falling.",
+                Steps = new[] { CommissionStep.Flag("halden.orchard.keeper_met", "Speak to the Orchard Keeper") },
+                RewardScraps = 2, Foreshadows = "5.4",
+            },
+            new CommissionDef
+            {
+                Id = "halden.voss_office", Title = "Voss's Office", Hub = "Halden", Poster = "Pell, in a hurry",
+                Brief = "Pell has an idea. Pell says it is a bad idea. It involves the flyer-tower and the Guildmaster's window.",
+                Journal = "Up the flyer-tower from the orchard wall; the Guildmaster's window is at the top. Pell will meet you there.",
+                Aftermath = "A chick's drawing of a heron, framed. And a key to the Vault, which Pell says is technically stealing.",
+                Steps = new[] { CommissionStep.Flag("halden.office.pell_ledgers", "Look through the Guildmaster's window with Pell") },
+                RewardScraps = 2, Foreshadows = "5.5", RequiresAbility = Ability.Inkthread, PostAfterFlag = "halden.hall.pell_minder",
             },
         };
     }

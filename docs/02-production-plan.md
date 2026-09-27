@@ -87,8 +87,8 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CMB-05 `[ ]` | Flourishes: Crosshatch, Longstroke, Blot | M1 | CMB-4 | CMB-03 |
 | CMB-06 `[ ]` | Charters (3 base) with combo rewrites and silhouettes | M2 | CMB-5 | CMB-05 |
 | CMB-07 `[ ]` | Instruments (7) and slot system | M2 | CMB-6 | CMB-03 |
-| CMB-08 `[ ]` | Enemy framework: state machine, telegraphs, "answer" tagging, families | M1 | CMB-7 | CMB-02 |
-| CMB-09 `[ ]` | Enemy roster: 12 for M1, 40 by M3 | M1–M3 | CMB-7 | CMB-08 |
+| CMB-08 `[~]` | Enemy framework: state machine, telegraphs, "answer" tagging, families | M1 | CMB-7 | CMB-02 |
+| CMB-09 `[~]` | Enemy roster: 12 for M1, 40 by M3 | M1–M3 | CMB-7 | CMB-08 |
 | CMB-10 `[ ]` | Boss framework: phases, arena states, intro/outro Timeline, retry loop under 8 s | M1 | CMB-8 | CMB-08 |
 | CMB-11 `[ ]` | The Lamp-Keeper (6.1) | M1 | SB-6.1 | CMB-10 |
 | CMB-12 `[ ]` | Halvard recurring (6.3 × 3 kits) | M2 | SB-6.3 | CMB-10 |
@@ -120,7 +120,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-14 `[ ]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement | M2 | DES-04 | PRG-03 |
 | PRG-15 `[ ]` | NPC schedules and hub life (NavMesh, `#still` loops) | M2 | SB-5.1 | PRG-07 |
 | PRG-16 `[ ]` | Cutscene pipeline: Timeline + Cinemachine + Yarn hooks | M1 | — | PRG-06 |
-| PRG-17 `[ ]` | Death and smudge recovery | M1 | GDD 6 | PRG-09 |
+| PRG-17 `[~]` | Death and smudge recovery | M1 | GDD 6 | PRG-09 |
 | PRG-18 `[ ]` | Clarity meter and lantern-radius rendering in the Blank | M3 | SB-4.7 | PRG-03 |
 | PRG-19 `[ ]` | Localization wiring | M2 | — | PRG-08 |
 | PRG-20 `[ ]` | Blank island generator from `WorldState` | M3 | SB-8.6 | PRG-14 |

@@ -150,6 +150,10 @@ namespace OWSBG.Setup
             // Keep the default: queries can hit triggers. Movement casts exclude triggers by layer
             // mask; interaction and strike overlaps rely on finding trigger colliders.
             Physics2D.queriesHitTriggers = true;
+            // Wren's kinematic body must never shove dynamic enemies; contact damage is an overlap check.
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Player"), LayerMask.NameToLayer("Enemy"), true);
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Enemy"), true);
+            Physics2D.IgnoreLayerCollision(LayerMask.NameToLayer("Enemy"), LayerMask.NameToLayer("Trigger"), true);
             Debug.Log("[OWSBG] layers set: Ground, Player, Enemy, Hittable, Paper, Trigger");
         }
 
@@ -353,6 +357,11 @@ namespace OWSBG.Setup
             pres.GetArrayElementAtIndex(0).objectReferenceValue = presenter;
             dsSo.ApplyModifiedPropertiesWithoutUndo();
 
+            // Death handling and placeholder HUD.
+            var sysGo = new GameObject("PlayerSystems");
+            sysGo.AddComponent<PlayerRespawn>();
+            sysGo.AddComponent<OWSBG.UI.PlaceholderHud>();
+
             // Room manager.
             var rmGo = new GameObject("RoomManager");
             var rm = rmGo.AddComponent<RoomManager>();
@@ -445,6 +454,9 @@ namespace OWSBG.Setup
             MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Greybox_Sable", new Color(0.16f, 0.18f, 0.22f));
             MakeVantage(room, "Reedmother", "Saltmarrow_A/Reedmother", new Vector2(14f, 0f));
             MakeDesk(room, new Vector2(-4.5f, 0f));
+            MakeEnemy<MarshCrab>(room, "Crab_1", new Vector2(7f, 5.9f), new Vector2(0.9f, 0.7f));
+            MakeEnemy<ReedSkimmer>(room, "Skimmer_1", new Vector2(9f, 4f), new Vector2(0.9f, 0.5f));
+            MakeEnemy<Smudge>(room, "Smudge_1", new Vector2(-15.5f, 1.5f), new Vector2(1.1f, 1.1f));
 
             MakeSpawn(room, "Start", new Vector2(-2f, 0f));
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
@@ -548,6 +560,30 @@ namespace OWSBG.Setup
             d.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Dummy", new Color(0.75f, 0.35f, 0.30f));
             d.AddComponent<BoxCollider2D>().isTrigger = true;
             d.AddComponent<TrainingDummy>();
+        }
+
+        // A greybox enemy: dynamic 2D body on the Enemy layer with an ink-quad visual (Smudge uses _Ink).
+        static void MakeEnemy<T>(Room room, string name, Vector2 pos, Vector2 size) where T : Enemy
+        {
+            var go = new GameObject(name) { layer = LayerMask.NameToLayer("Enemy") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.size = size;
+            var rb = go.AddComponent<Rigidbody2D>();
+            rb.freezeRotation = true;
+            go.AddComponent<T>();
+
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
+            var mat = MakeInkMaterial("M_Enemy_" + typeof(T).Name, tex);
+            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quad.name = "Sprite";
+            Object.DestroyImmediate(quad.GetComponent<Collider>());
+            quad.transform.SetParent(go.transform, false);
+            quad.transform.localScale = new Vector3(size.x * 1.3f, size.y * 1.3f, 1f);
+            var r = quad.GetComponent<MeshRenderer>();
+            r.sharedMaterial = mat;
+            r.shadowCastingMode = ShadowCastingMode.TwoSided;
         }
 
         // A stand-in bird: an ink-tinted quad with a trigger, talkable with up.

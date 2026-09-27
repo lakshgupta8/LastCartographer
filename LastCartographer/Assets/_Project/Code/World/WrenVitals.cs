@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace OWSBG.World
 {
-    /// <summary>Masks (health) and Bind (heal by holding, spends ink). Combat doc 1 and 2.2.</summary>
+    /// <summary>Masks (health), Bind (heal by holding, spends ink), knockback on hit. Combat doc 1 and 2.2.</summary>
     [RequireComponent(typeof(Inkwell))]
     public sealed class WrenVitals : MonoBehaviour
     {
@@ -12,6 +12,7 @@ namespace OWSBG.World
         [SerializeField] int _bindCost = 3;
         [SerializeField] float _bindSeconds = 0.6f;
         [SerializeField] int _invulnFrames = 60;
+        [SerializeField] Vector2 _hitKnockback = new Vector2(7f, 9f);
 
         Inkwell _ink;
         WrenController _ctrl;
@@ -22,6 +23,7 @@ namespace OWSBG.World
         public int Masks => _masks;
         public bool IsBinding => _bindHeld > 0f;
         public bool IsDead => _masks <= 0;
+        public bool IsInvulnerable => _invulnLeft > 0 || (_ctrl != null && _ctrl.IsInvulnerable);
         public event Action<int> MasksChanged;
         public event Action Bound, Hurt, Died;
 
@@ -35,7 +37,7 @@ namespace OWSBG.World
         {
             if (_invulnLeft > 0) _invulnLeft--;
 
-            bool wantBind = _ctrl != null && _ctrl.Input != null && _ctrl.Input.BindHeld
+            bool wantBind = _ctrl != null && _ctrl.Input != null && !_ctrl.Frozen && _ctrl.Input.BindHeld
                             && _masks < _maxMasks && _ink.Pips >= _bindCost && _ctrl.IsGrounded;
             if (wantBind)
             {
@@ -54,10 +56,22 @@ namespace OWSBG.World
             else _bindHeld = 0f;
         }
 
+        /// <summary>Take damage from a source at a world position (knockback points away from it).</summary>
+        public bool Damage(int amount, Vector2 sourcePosition)
+        {
+            if (!Damage(amount)) return false;
+            if (_ctrl != null)
+            {
+                float dir = _ctrl.Position.x >= sourcePosition.x ? 1f : -1f;
+                _ctrl.Knockback(new Vector2(dir * _hitKnockback.x, _hitKnockback.y));
+            }
+            return true;
+        }
+
         public bool Damage(int amount)
         {
             if (amount <= 0 || IsDead) return false;
-            if (_invulnLeft > 0 || (_ctrl != null && _ctrl.IsInvulnerable)) return false;
+            if (IsInvulnerable) return false;
             _masks = Mathf.Max(0, _masks - amount);
             _invulnLeft = _invulnFrames;
             _bindHeld = 0f;
@@ -70,6 +84,7 @@ namespace OWSBG.World
         public void RestoreAll()
         {
             _masks = _maxMasks;
+            _invulnLeft = 0;
             MasksChanged?.Invoke(_masks);
         }
     }

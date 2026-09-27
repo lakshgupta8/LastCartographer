@@ -106,6 +106,16 @@ namespace OWSBG.World
             _vel = Vector2.zero;
         }
 
+        /// <summary>Shove Wren (taking a hit). Locks horizontal input for a few frames and cancels a dash.</summary>
+        public void Knockback(Vector2 velocity, int lockFrames = 10)
+        {
+            _vel = velocity;
+            _inputLock = lockFrames;
+            _dashFramesLeft = 0;
+            _jumpCutApplied = true;
+            _grounded = false;
+        }
+
         /// <summary>Called by the strike when a down-strike lands: bounce and refresh the dash.</summary>
         public void Pogo()
         {

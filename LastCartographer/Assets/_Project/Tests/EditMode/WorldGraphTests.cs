@@ -42,6 +42,10 @@ namespace OWSBG.Tests
             Assert.IsTrue(act2.Contains("Windreach.WindGate"));
             Assert.IsFalse(act2.Contains("Windreach.IdrennesFire"), "the keystone is past the Wind Gate's ceremony");
             Assert.IsFalse(act2.Contains("Greyfold.Threshold"), "the Threshold is the climax");
+            Assert.IsFalse(act2.Contains("Greyfold.IsoldesLastCamp"), "her camp is across the line (DES-11)");
+            var tether = WorldGraph.Reachable(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread | Ability.Clarity, f => f == "saltmarrow.tether" || f == "isolde.cache");
+            Assert.IsTrue(tether.Contains("Blank.AurysLighthouse"));
+            Assert.IsFalse(tether.Contains("Blank.ThessalyHollow"), "Aury's island is no back door into Act 3");
         }
 
         [Test]

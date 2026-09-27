@@ -49,7 +49,8 @@ namespace OWSBG.Core
     }
 
     /// <summary>
-    /// Room-by-room plans for the regions not yet built (DES-09 Emberdown and the Verdance, DES-10 Halden Reach), as data so the spec
+    /// Room-by-room plans for the regions not yet built (DES-09 Emberdown and the Verdance, DES-10 Halden Reach, DES-11 Windreach,
+    /// the Greyfold and the Blank's fixed islands), as data so the spec
     /// (`docs/design/emberdown-verdance-rooms.md`, generated from the same source) can be checked against the macro map
     /// (<see cref="WorldGraph"/>), the boss sheets and the cast. Pure data.
     /// </summary>
@@ -266,7 +267,7 @@ namespace OWSBG.Core
                 .East("Halden_Lowmarket_3", Ability.None);
             R("Halden_Lowmarket_3", "Halden.Lowmarket", "The south gate", "The south road to Windreach, barred until Act 2 opens it.", null, "Warden", new string[0], false, null, null)
                 .West("Halden_Lowmarket_2", Ability.None)
-                .East("Windreach.NineStones", Ability.None, "act2.started");
+                .East("Windreach_Stones_1", Ability.None, "act2.started");
             R("Halden_Hall_1", "Halden.JourneymansHall", "The Hall steps", "The Guild's steps. Unlicensed now, she comes in past the Wardens or not at all until Interlude A resolves.", null, "Warden ×2", new string[0], false, null, null)
                 .West("Halden_Mills_3", Ability.None)
                 .East("Halden_Hall_2", Ability.None);
@@ -281,7 +282,7 @@ namespace OWSBG.Core
                 .East("Halden_Orchard_2", Ability.None);
             R("Halden_Orchard_2", "Halden.OldOrchard", "The Old Orchard", "Isolde's cache in the roots; the Orchard Keeper; a gravestone with a crest on it. The flyer-tower rises from its wall; the road to the Edge begins here.", "Leaves", "", new[] { "isolde" }, false, null, null)
                 .West("Halden_Orchard_1", Ability.None)
-                .East("Greyfold.EdgeCamp", Ability.None, "isolde.cache")
+                .East("Greyfold_EdgeCamp_1", Ability.None, "isolde.cache")
                 .Up("Halden_Bastion_1", Ability.Talonhold | Ability.Inkthread);
             R("Halden_Bastion_1", "Halden.Bastion", "The flyer-tower", "A tower built for flyers: no stairs. Talonhold up the walls, Inkthread across the gaps. A desk on the top landing; the Crown's hall behind it (Interlude B).", null, "Warden", new[] { "maren" }, true, null, null)
                 .Down("Halden_Orchard_2", Ability.Talonhold | Ability.Inkthread)
@@ -300,6 +301,112 @@ namespace OWSBG.Core
                 .West("Halden_Observatory_1", Ability.None);
             R("Halden_Vault_1", "Halden.Vault", "The Vault", "Seven slots, reached from the Guildmaster's window; one empty (Pell counts them, plant 5.2).", null, "", new[] { "pell" }, false, null, null)
                 .Up("Halden_Bastion_3", Ability.None, "halden.vault_opened");
+            R("Windreach_Stones_1", "Windreach.NineStones", "The south road's end", "Out of Lowmarket's south gate onto the Steppe: grass to the horizon, sky most of the screen. The first standing stone, lichen on its north face.", "Waymark", "Warden (out of uniform: Hale's escort)", new string[0], false, null, null)
+                .West("Halden_Lowmarket_3", Ability.None, "act2.started")
+                .East("Windreach_Stones_2", Ability.None);
+            R("Windreach_Stones_2", "Windreach.NineStones", "The long walk", "Stones two to eight in the line the clans have walked since before the Guild; the stones are a map (the Nine Stones). Ink-swirl updrafts, too weak to ride yet.", "Fifth", "smudge ×2", new string[0], false, null, null)
+                .West("Windreach_Stones_1", Ability.None)
+                .East("Windreach_Stones_3", Ability.None);
+            R("Windreach_Stones_3", "Windreach.NineStones", "The ninth stone", "Where the route turns north. Surveyor Hale at dusk, sighting the stones one by one (6.9, optional); the camp's wagons are just east.", null, "", new string[0], false, "hale", null)
+                .West("Windreach_Stones_2", Ability.None)
+                .East("Windreach_Camp_1", Ability.None);
+            R("Windreach_Camp_1", "Windreach.LongGrassCamp", "The wagons", "The walking-wagons in a ring. One stays at the Long Grass wherever the camp has gone: the walkers' post, with the desk and the ledger.", "Wagons", "", new string[0], true, null, null)
+                .West("Windreach_Stones_3", Ability.None)
+                .East("Windreach_Camp_2", Ability.None);
+            R("Windreach_Camp_2", "Windreach.LongGrassCamp", "The fire ring", "The camp's first night (the Moving Camp). Idrenne tells where she was standing when she learned each thing. The camp moves on to the riverbed, then the high grass.", null, "", new[] { "idrenne" }, false, null, null)
+                .West("Windreach_Camp_1", Ability.None)
+                .East("Windreach_River_1", Ability.Wingbeat, null, true);
+            R("Windreach_River_1", "Windreach.DryRiver", "The far bank", "A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it).", null, "smudge", new string[0], false, null, null)
+                .West("Windreach_Camp_2", Ability.Wingbeat, null, true)
+                .East("Windreach_River_2", Ability.None);
+            R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried.", "Bed", "smudge ×2", new string[0], false, null, null)
+                .West("Windreach_River_1", Ability.None)
+                .East("Windreach_River_3", Ability.None);
+            R("Windreach_River_3", "Windreach.DryRiver", "The cut bank", "The river's old cliff. The Wind Gate is at the top, and only Talonhold climbs it.", null, "smudge", new string[0], false, null, null)
+                .West("Windreach_River_2", Ability.None)
+                .Up("Windreach_Gate_1", Ability.Talonhold);
+            R("Windreach_Gate_1", "Windreach.WindGate", "The leap", "The fledgling-leap on the cliff's lip: the clan sings, the young jump. Nobody has lived through it in forty years until Wren. Windmemory.", "Gate", "", new string[0], false, null, null)
+                .Down("Windreach_River_3", Ability.Talonhold)
+                .East("Windreach_Gate_2", Ability.Windmemory);
+            R("Windreach_Gate_2", "Windreach.WindGate", "The updrafts", "Ink-swirls to ride: the first glide course. North, the high grass; down the far side, a long glide into the Greyfold's white at the Mirror Pool.", null, "", new string[0], false, null, null)
+                .West("Windreach_Gate_1", Ability.Windmemory)
+                .East("Windreach_Fire_1", Ability.Windmemory)
+                .Down("Greyfold_Pool_1", Ability.Windmemory);
+            R("Windreach_Fire_1", "Windreach.IdrennesFire", "The high grass", "Grass over Wren's head; the camp's third night pitches here, and the clan walks her in.", null, "", new string[0], false, null, null)
+                .West("Windreach_Gate_2", Ability.Windmemory)
+                .East("Windreach_Fire_2", Ability.None);
+            R("Windreach_Fire_2", "Windreach.IdrennesFire", "Idrenne's Fire", "The hearth; the keystone is its cooking-stone. Idrenne says plainly how the clans do it (plant 9.2) and gives it up laughing. Surveying Windreach at all is decided here.", "Hearth", "", new[] { "idrenne" }, false, null, null)
+                .West("Windreach_Fire_1", Ability.None)
+                .Down("Windreach_Star_1", Ability.Windmemory);
+            R("Windreach_Star_1", "Windreach.FallenStar", "The crater rim", "A glide down from the hearth to the rim; the smiths' wagon keeps a desk.", "Rim", "", new string[0], true, null, null)
+                .Up("Windreach_Fire_2", Ability.Windmemory)
+                .East("Windreach_Star_2", Ability.None);
+            R("Windreach_Star_2", "Windreach.FallenStar", "The anvil-crater", "The Fallen Star, forty years the clans' anvil, the hearth's heat run into its iron. Lift the stone at the Fire and it wakes (6.10, optional).", null, "", new string[0], false, "fallen_star", null)
+                .West("Windreach_Star_1", Ability.None);
+            R("Greyfold_EdgeCamp_1", "Greyfold.EdgeCamp", "The orchard road's end", "The road from the Old Orchard stops at a Guild fence with no gate. Beyond it the paper is white; buildings show only at the edge of the eye.", null, "", new string[0], false, null, null)
+                .West("Halden_Orchard_2", Ability.None, "isolde.cache")
+                .East("Greyfold_EdgeCamp_2", Ability.None);
+            R("Greyfold_EdgeCamp_2", "Greyfold.EdgeCamp", "The Edge Camp", "The abandoned Guild outpost: tether-posts, a ledger nobody posts to, Isolde's initials cut in a beam. The hub; the last place colour reaches by itself.", "Outpost", "", new string[0], true, null, null)
+                .West("Greyfold_EdgeCamp_1", Ability.None)
+                .East("Greyfold_Edge", Ability.None);
+            R("Greyfold_Edge", "Greyfold.HalfCathedral", "The Edge", "The prologue's room, built (the greybox `Greyfold_Edge`): Isolde's desk; survey, bind, seal; then she walks in. Act 1 ends here too.", "HalfCathedral", "", new[] { "isolde" }, true, null, null)
+                .West("Greyfold_EdgeCamp_2", Ability.None)
+                .East("Greyfold_Cathedral_2", Ability.None);
+            R("Greyfold_Cathedral_2", "Greyfold.HalfCathedral", "The nave", "Half a cathedral, white; the Road That Stops runs down its nave. Thirty steps in, a grey chick. With Clarity, the bells ring (6.12).", null, "lost Remnant ×2", new[] { "marrow" }, false, "bells", null)
+                .West("Greyfold_Edge", Ability.None)
+                .East("Greyfold_Road_1", Ability.None);
+            R("Greyfold_Road_1", "Greyfold.RoadThatStops", "The road in", "Cobbles that fade a stride at a time. Platforms are drawn only inside Wren's lantern-radius; outside it, outlines.", null, "smudge ×2", new string[0], false, null, null)
+                .West("Greyfold_Cathedral_2", Ability.None)
+                .East("Greyfold_Road_2", Ability.None);
+            R("Greyfold_Road_2", "Greyfold.RoadThatStops", "The mileposts", "Mileposts for a road nobody finished, each one nearer to nothing.", "Milepost", "smudge, lost Remnant", new string[0], false, null, null)
+                .West("Greyfold_Road_1", Ability.None)
+                .East("Greyfold_Road_3", Ability.None);
+            R("Greyfold_Road_3", "Greyfold.RoadThatStops", "Where it stops", "The road ends mid-stride. She steps off and stays herself: Clarity. Pell, sent to watch, sees her come back (the act break).", null, "", new[] { "pell" }, false, null, null)
+                .West("Greyfold_Road_2", Ability.None)
+                .East("Greyfold_Pool_1", Ability.Clarity);
+            R("Greyfold_Pool_1", "Greyfold.MirrorPool", "The white shore", "A beach of white paper; the glide from the Wind Gate lands here from above. Colour only in her radius.", null, "lost Remnant, smudge", new string[0], false, null, null)
+                .Up("Windreach_Gate_2", Ability.Windmemory)
+                .West("Greyfold_Road_3", Ability.Clarity)
+                .East("Greyfold_Pool_2", Ability.None);
+            R("Greyfold_Pool_2", "Greyfold.MirrorPool", "The Mirror Pool", "Water that shows what is not on the bank: a grey chick in the reflection, none beside her.", "Pool", "", new[] { "marrow" }, false, null, null)
+                .West("Greyfold_Pool_1", Ability.None)
+                .East("Greyfold_Threshold_1", Ability.Clarity, "act2.threshold");
+            R("Greyfold_Threshold_1", "Greyfold.Threshold", "The Guild's line", "Tethers staked across the white, Wardens in a line, the Guild's field desk behind them. Halvard's third fight at the edge (6.3).", null, "Warden ×3", new[] { "halvard" }, true, "halvard_3", null)
+                .West("Greyfold_Pool_2", Ability.Clarity, "act2.threshold")
+                .East("Greyfold_Threshold_2", Ability.None);
+            R("Greyfold_Threshold_2", "Greyfold.Threshold", "The Threshold", "The line itself. Voss, going in himself at last (6.11); Pell, if the report was kept. On the Return, Marrow echoes him.", null, "", new[] { "voss", "pell", "marrow" }, false, "voss", null)
+                .West("Greyfold_Threshold_1", Ability.None)
+                .East("Greyfold_LastCamp_1", Ability.None, "greyfold.crossed");
+            R("Greyfold_LastCamp_1", "Greyfold.IsoldesLastCamp", "Isolde's Last Camp", "Just across the line: her tent, her lamp still lit, her complete atlas (reveal 5.2). Act 3 starts here; the Lantern leads on into the Blank.", "Atlas", "", new[] { "isolde" }, true, null, null)
+                .West("Greyfold_Threshold_2", Ability.None, "greyfold.crossed")
+                .East("Blank_Hollow_1", Ability.None, "act3.started");
+            R("Blank_Hollow_1", "Blank.ThessalyHollow", "The Lantern", "Inside. White, and colour blooming round Wren as she walks; the first island drifts up under her feet. A grey chick starts following.", null, "lost Remnant", new[] { "marrow" }, false, null, null)
+                .West("Greyfold_LastCamp_1", Ability.None, "act3.started")
+                .East("Blank_Hollow_2", Ability.None);
+            R("Blank_Hollow_2", "Blank.ThessalyHollow", "Thessaly Hollow", "Wren's birth village, grey. Ilse sees her first (reveal 5.3). Isolde, grey at the edges, cannot leave. The hub: a desk in Ilse's house.", null, "", new[] { "ilse", "isolde" }, true, null, null)
+                .West("Blank_Hollow_1", Ability.None)
+                .East("Blank_Hollow_3", Ability.None);
+            R("Blank_Hollow_3", "Blank.ThessalyHollow", "The drift", "The Hollow's far edge, where the islands of every place she left unanchored drift past (PRG-20). The capital lies east; Aury's light below.", null, "lost Remnant ×2", new string[0], false, null, null)
+                .West("Blank_Hollow_2", Ability.None)
+                .East("Blank_Capital_1", Ability.None)
+                .Down("Blank_Aury_2", Ability.Clarity, "act3.started");
+            R("Blank_Capital_1", "Blank.OldCapital", "The district's edge", "Streets of the old capital, half-drawn. A desk in the doorway of what was a Guild office.", null, "lost Remnant", new string[0], true, null, null)
+                .West("Blank_Hollow_3", Ability.None)
+                .East("Blank_Capital_2", Ability.None);
+            R("Blank_Capital_2", "Blank.OldCapital", "Corra's room", "A white room with a crayon floor. A child's drawing of her father, huge and wrong, keeps everyone out (6.13).", null, "", new string[0], false, "corras_drawing", null)
+                .West("Blank_Capital_1", Ability.None)
+                .East("Blank_Capital_3", Ability.None);
+            R("Blank_Capital_3", "Blank.OldCapital", "The mirror streets", "The district open: the capital's streets reversed, the Observatory's mirror-half at their end. A desk on its steps.", null, "lost Remnant ×2", new string[0], true, null, null)
+                .West("Blank_Capital_2", Ability.None)
+                .East("Blank_Capital_4", Ability.None);
+            R("Blank_Capital_4", "Blank.OldCapital", "The mirror-Observatory", "Corvin with the seventh keystone; he has drawn her a chair (reveals 5.4, 5.6). The choice laid out; the Archivist (6.14). Marrow echoes him.", null, "", new[] { "corvin", "marrow" }, false, "archivist", null)
+                .West("Blank_Capital_3", Ability.None);
+            R("Blank_Aury_1", "Blank.AurysLighthouse", "The tether's end", "From the Lantern Chain's third lighthouse by tether (Act 2): a causeway into the white, the light still turning.", null, "", new string[0], false, null, null)
+                .West("Saltmarrow.LanternChain", Ability.None, "saltmarrow.tether")
+                .East("Blank_Aury_2", Ability.None);
+            R("Blank_Aury_2", "Blank.AurysLighthouse", "Aury's lamp room", "Aury, who asks if you've eaten, the keystone in his wings. In Act 3 his island drifts to the Hollow, and Sable sits with him.", null, "", new[] { "aury", "sable" }, false, null, null)
+                .Up("Blank_Hollow_3", Ability.Clarity, "act3.started")
+                .West("Blank_Aury_1", Ability.None);
         }
     }
 }

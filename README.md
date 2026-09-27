@@ -25,6 +25,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/art-direction.md` | Ink-on-paper look, 2.5D definition, palettes, the `_Ink` fade state |
 | `docs/design/emberdown-verdance-rooms.md` | The two climbs room by room: 40 rooms, their exits and gates, generated from the same source as `RoomPlans` |
 | `docs/design/halden-rooms.md` | Halden Reach room by room: 21 rooms, the flyer-tower, the Vault and the dome, generated with `RoomPlans` |
+| `docs/design/windreach-greyfold-blank-rooms.md` | The last three regions room by room: Windreach's walk and glide, the Greyfold's road that runs out, the Blank's fixed islands (35 rooms; the paper map complete) |
 | `docs/design/death-and-retry.md` | Death, the return to the desk, and the smudge that holds bound memories |
 | `LastCartographer/` | The Unity 6 project (editor 6000.3.7f1) |
 | `logs/` | Batch-mode editor logs and the greybox screenshot |

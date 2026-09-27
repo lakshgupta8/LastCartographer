@@ -6,12 +6,13 @@ using OWSBG.Core;
 namespace OWSBG.Tests
 {
     /// <summary>
-    /// The climbs on paper (DES-09): Emberdown's and the Verdance's room plans agree with the macro map, the boss sheets,
-    /// the cast, and themselves.
+    /// The regions on paper (DES-09 to DES-11): every planned room agrees with the macro map, the boss sheets, the cast,
+    /// and itself. Saltmarrow is built and planned in its own spec; everything else is here.
     /// </summary>
     public class RoomPlanTests
     {
-        static readonly Region[] Planned = { Region.Emberdown, Region.Verdance, Region.Halden };
+        static readonly Region[] Planned = { Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach, Region.Greyfold, Region.Blank };
+        const Ability Climbs = Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread;
 
         [SetUp]
         public void SetUp() { RoomPlans.Reset(); RoomPlans.EnsureDefaults(); Bosses.Reset(); Cast.Reset(); }
@@ -21,7 +22,8 @@ namespace OWSBG.Tests
         [Test]
         public void EveryZoneHasTheMapsRoomsAndVantages()
         {
-            Assert.AreEqual(61, RoomPlans.All.Count, "twenty-one, nineteen and Halden's twenty-one");
+            Assert.AreEqual(96, RoomPlans.All.Count, "twenty-one, nineteen, twenty-one; Windreach fourteen, the Greyfold twelve, the Blank's nine fixed");
+            Assert.AreEqual(123, RoomPlans.All.Count + WorldGraph.ZonesOf(Region.Saltmarrow).Sum(z => z.Rooms), "with Saltmarrow's, the whole map");
             foreach (var z in PlannedZones)
             {
                 var rooms = RoomPlans.InZone(z.Id);
@@ -107,6 +109,11 @@ namespace OWSBG.Tests
             Check(Ability.Wingbeat | Ability.Talonhold, f => f == "isolde.cache", false, "Act 1's end");
             Check(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread, f => f == "isolde.cache" || f == "act2.started", false, "Act 2");
             Check(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread, f => f != "act3.started", false, "Act 2, everything but the dome");
+            Check(Climbs | Ability.Clarity, f => f == "isolde.cache" || f == "act2.started", false, "Act 2 with Clarity");
+            Check(Climbs | Ability.Windmemory, f => f == "act2.started", false, "the glide, without Clarity");
+            Check(Climbs | Ability.Windmemory | Ability.Clarity, f => f != "act3.started", false, "the climax");
+            Check(Ability.None, f => f == "saltmarrow.tether", false, "Aury's island by tether");
+            Check(Climbs | Ability.Windmemory | Ability.Clarity, f => true, false, "Act 3");
 
             // Halden: either climb reaches the Hall; the towers want both; the Vault is Act 2; the dome is Act 3.
             var ember = RoomPlans.ReachableRooms(Ability.Wingbeat | Ability.Talonhold);
@@ -128,9 +135,51 @@ namespace OWSBG.Tests
             Assert.IsTrue(wing.Contains("Verdance_Aldermere_2"), "the last day happens whether she has the thread or not");
             Assert.IsFalse(wing.Contains("Emberdown_Hollow_1"));
 
-            var all = RoomPlans.ReachableRooms(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread, f => true);
+            var all = RoomPlans.ReachableRooms(Climbs | Ability.Windmemory | Ability.Clarity, f => true);
             Assert.IsTrue(all.Contains("Halden_Observatory_2"));
             CollectionAssert.AreEquivalent(RoomPlans.All.Select(r => r.Id), all, "every room, in the end");
+        }
+
+        [Test]
+        public void TheLateRegionsOpenInTheStorysOrder()
+        {
+            // Act 1's end: the orchard road to the Edge, and the road in as far as it stops.
+            var act1 = RoomPlans.ReachableRooms(Ability.Wingbeat | Ability.Talonhold, f => f == "isolde.cache");
+            Assert.IsTrue(act1.Contains("Greyfold_Edge") && act1.Contains("Greyfold_Road_3"), "back to the Edge, and in, where Clarity is learned");
+            Assert.IsFalse(act1.Contains("Greyfold_Pool_1"), "no further without it");
+            Assert.IsFalse(act1.Contains("Windreach_Stones_1"), "Windreach is Act 2");
+
+            // Act 2: the Steppe to the Wind Gate's leap; beyond it, the glide.
+            var act2 = RoomPlans.ReachableRooms(Climbs | Ability.Clarity, f => f == "isolde.cache" || f == "act2.started");
+            Assert.IsTrue(act2.Contains("Windreach_Stones_3") && act2.Contains("Windreach_Camp_2") && act2.Contains("Windreach_Gate_1"), "the stones, the camp, the leap");
+            Assert.IsFalse(act2.Contains("Windreach_Gate_2") || act2.Contains("Windreach_Fire_2"), "the updrafts and the keystone want Windmemory");
+            Assert.IsTrue(act2.Contains("Greyfold_Pool_2"), "Clarity reaches the Mirror Pool");
+            Assert.IsFalse(act2.Contains("Greyfold_Threshold_1"), "the Threshold waits for the climax");
+            var glide = RoomPlans.ReachableRooms(Climbs | Ability.Windmemory, f => f == "act2.started");
+            Assert.IsTrue(glide.Contains("Windreach_Star_2") && glide.Contains("Greyfold_Pool_2"), "the Fallen Star, and the glide into the white");
+            Assert.IsFalse(glide.Contains("Greyfold_Road_3"), "but without Clarity the white road back is shut");
+
+            // The climax, the crossing, Act 3.
+            bool Upto(string f, string last) { var order = new[] { "act2.threshold", "greyfold.crossed", "act3.started" }; return System.Array.IndexOf(order, f) >= 0 ? System.Array.IndexOf(order, f) <= System.Array.IndexOf(order, last) : true; }
+            var kit = Climbs | Ability.Windmemory | Ability.Clarity;
+            var climax = RoomPlans.ReachableRooms(kit, f => Upto(f, "act2.threshold"));
+            Assert.IsTrue(climax.Contains("Greyfold_Threshold_2"));
+            Assert.IsFalse(climax.Contains("Greyfold_LastCamp_1"), "Isolde's camp is across the line, not beside the Edge");
+            var crossed = RoomPlans.ReachableRooms(kit, f => Upto(f, "greyfold.crossed"));
+            Assert.IsTrue(crossed.Contains("Greyfold_LastCamp_1"));
+            Assert.IsFalse(crossed.Contains("Blank_Hollow_1") || crossed.Contains("Halden_Observatory_1"), "her atlas starts Act 3");
+            var act3 = RoomPlans.ReachableRooms(kit, f => Upto(f, "act3.started"));
+            Assert.IsTrue(act3.Contains("Blank_Hollow_2") && act3.Contains("Blank_Capital_4") && act3.Contains("Blank_Aury_2"));
+
+            // Aury's lighthouse, by tether in Act 2: his island, and no further until she is inside.
+            var tether = RoomPlans.ReachableRooms(kit, f => f == "saltmarrow.tether" || f == "isolde.cache" || f == "act2.started");
+            Assert.IsTrue(tether.Contains("Blank_Aury_2"));
+            Assert.IsFalse(tether.Contains("Blank_Hollow_3"), "Clarity alone does not drift his island to the Hollow in Act 2");
+
+            // The Greyfold is drawn round her lantern; no room in the Blank is surveyed.
+            Assert.IsTrue(RoomPlans.InRegion(Region.Blank).All(r => r.Vantage == null), "the Blank has no vantages");
+            Assert.AreEqual("Greyfold_Edge/HalfCathedral", RoomPlans.Find("Greyfold_Edge").VantageId, "the built prologue room and its plan are the same room");
+            Assert.IsNotNull(Atlas.FindVantage("Greyfold_Edge/HalfCathedral"));
         }
 
         [Test]

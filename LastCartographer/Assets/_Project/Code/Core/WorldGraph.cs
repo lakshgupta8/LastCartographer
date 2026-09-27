@@ -209,17 +209,17 @@ namespace OWSBG.Core
             Add(G, "Threshold", "The Threshold", 2, 0, boss: "6.11 Voss at the Threshold, 6.3 Halvard (third)");
             Way("Greyfold.EdgeCamp", "Greyfold.HalfCathedral", note: "the prologue's edge");
             Way("Greyfold.HalfCathedral", "Greyfold.RoadThatStops", note: "Act 1's end: she steps in and stays herself");
-            Way("Greyfold.EdgeCamp", "Greyfold.IsoldesLastCamp", Ability.Clarity);
             Way("Greyfold.RoadThatStops", "Greyfold.MirrorPool", Ability.Clarity);
             Way("Greyfold.MirrorPool", "Greyfold.Threshold", Ability.Clarity, flag: "act2.threshold");
-            Way("Greyfold.Threshold", "Blank.ThessalyHollow", flag: "greyfold.crossed");
+            Way("Greyfold.Threshold", "Greyfold.IsoldesLastCamp", flag: "greyfold.crossed", note: "just across the line (DES-11): bible 7.3 step 1");
+            Way("Greyfold.IsoldesLastCamp", "Blank.ThessalyHollow", flag: "act3.started", note: "the Lantern: inside, colour follows her");
 
             // ---- The Blank (4.7): fixed islands; the rest is generated from WorldState (PRG-20).
             Add(B, "ThessalyHollow", "Thessaly Hollow", 3, 0, hub: true);
             Add(B, "OldCapital", "The Old Capital District", 4, 0, boss: "6.13 Corra, 6.14 The Archivist", keystone: true);
             Add(B, "AurysLighthouse", "Aury's Lighthouse", 2, 0, keystone: true);
             Way("Blank.ThessalyHollow", "Blank.OldCapital");
-            Way("Blank.ThessalyHollow", "Blank.AurysLighthouse", Ability.Clarity);
+            Way("Blank.ThessalyHollow", "Blank.AurysLighthouse", Ability.Clarity, flag: "act3.started", note: "his island drifts to the Hollow only once she is inside (DES-11)");
 
             // ---- The greybox rooms, placed on the map.
             _placeZones["Greyfold_Edge"] = "Greyfold.HalfCathedral";

@@ -16,7 +16,8 @@ Act 1   Shore → Quay → Reedmother / Merrow's End → Lantern Chain [Wingbeat
 Act 2   the other climb; Windreach [Windmemory] (from Lowmarket, act2.started); the flyer-towers
         (Talonhold + Inkthread); keystones; the Threshold (act2.threshold)
 
-Act 3   the Blank: Thessaly Hollow, the Old Capital; Aury's lighthouse by tether; generated islands
+Act 3   across the line: Isolde's Last Camp (act3.started) → the Blank: Thessaly Hollow, the Old Capital;
+        Aury's lighthouse (by tether from Act 2, joined to the Hollow in Act 3); generated islands
 ```
 Ability gates in order: **Wingbeat → (Talonhold or Inkthread) → the Plateau → the other → Windmemory → Clarity
 → the Sky.** Either climb reaches Halden; the flyer-towers need both. Windreach is Act 2 only.
@@ -29,7 +30,7 @@ Ability gates in order: **Wingbeat → (Talonhold or Inkthread) → the Plateau 
 | **Talonhold** shaft | the chimneys, the Wind Gate, the road to the Plateau | hard |
 | **Inkthread** anchor | the grove, the Overgrown Gate, the canopy road | hard |
 | **Windmemory** updraft | Idrenne's Fire, the Greyfold approach | hard |
-| **Clarity** fade | past the Road That Stops, Isolde's camp, Aury's island | hard |
+| **Clarity** fade | past the Road That Stops, the Threshold, Aury's island to the Hollow | hard |
 | **Story flag** | `isolde.cache`, `act2.started`, `act2.threshold`, `greyfold.crossed`, `saltmarrow.tether`, `emberdown.hollowvein_opened`, `act3.started`, `halden.vault_opened` | hard, never soft |
 
 Policy: only Wingbeat gaps are soft. Nothing that changes the story's order (the Plateau, the Edge, Windreach,
@@ -85,7 +86,7 @@ Rooms are targets for DES-08 through DES-11; vantages are the atlas's marks (48 
 | **The Greyfold** (12, 5) | | | |
 | The Edge Camp | 2 | 1 | **hub** |
 | The Half-Cathedral | 2 | 1 | the prologue; 6.12 |
-| Isolde's Last Camp | 1 | 1 | Act 3's first scene |
+| Isolde's Last Camp | 1 | 1 | Act 3's first scene; across the Threshold (`greyfold.crossed`), not beside the Edge Camp (DES-11) |
 | The Road That Stops | 3 | 1 | **Clarity** (Act 1's end) |
 | The Mirror Pool | 2 | 1 | |
 | The Threshold | 2 | 0 | 6.11 Voss (`act2.threshold`, then `greyfold.crossed`) |
@@ -120,7 +121,6 @@ full-playthrough matrix (PRO-05) will ask; both should be built on it.
 - **The seventh keystone.** The bible needs seven to remake the Atlas and calls Corvin's "the seventh", but places
   only six (4.1–4.7). The Greyfold has none. Either the Greyfold holds one (Isolde's camp is the natural place) or
   the Observatory's and Corvin's are two different stones; the bible should say which.
-- Room-by-room layouts per region (DES-08 to DES-11) and where each vantage stands.
 - Whether Windreach should also open from the Bone Bridge by sea (the Ferrymen) for a fourth Act 2 order.
 - The reward for a noticed sequence break (a line, a scrap, a `#still`-free variant).
 - How the moving camp (PRG-21) changes Windreach's links between its three sites.

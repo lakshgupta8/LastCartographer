@@ -161,7 +161,7 @@ namespace OWSBG.Core
             At("idrenne", Act2, "Windreach.IdrennesFire", "how the clans do it, plainly; the keystone, laughing", "Fire_Idrenne", writes: "windreach.fire.witnessed");
 
             Member("voss", "Guildmaster Aurelian Voss", "grey heron", "Meridian Guild", "titles; \"we\" for the Guild", "flinches at \"Halloway\"", "\"Corra\"");
-            At("voss", Act2, "Greyfold.Threshold", "the one speech; boss 6.11", "Threshold_Voss", writes: "act2.threshold");
+            At("voss", Act2, "Greyfold.Threshold", "the one speech; boss 6.11", "Threshold_Voss", writes: "greyfold.crossed");
             At("voss", Act3, "Halden.Observatory", "changed, or a statue", "Observatory_Voss");
 
             Member("corvin", "Corvin Halloway, the Archivist", "great owl", "the Remnant", "\"When I—\"", "self-correcting", "\"it wasn't my fault\"");

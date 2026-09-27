@@ -1,0 +1,251 @@
+using System.Collections.Generic;
+using OWSBG.Core;
+using OWSBG.Narrative;
+using OWSBG.World;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+
+namespace OWSBG.UI
+{
+    /// <summary>
+    /// The atlas: the pause screen (GDD 5, DES-02). M or gamepad Select opens the spread. The left page is the
+    /// map: every place by region, its vantages drawn (●), blank (○) or erased (✕), its fade stage and fate, and
+    /// the desks and lamps on the page. Standing at a desk or a lit lamp, the map also lists where Wren can
+    /// travel; ↑↓ picks and J goes. The right page hosts the journal (JournalView).
+    /// </summary>
+    public sealed class AtlasView : MonoBehaviour
+    {
+        [SerializeField] float _refreshSeconds = 0.25f;
+
+        public static AtlasView Instance { get; private set; }
+
+        public bool IsOpen { get; private set; }
+        public int Cursor { get; private set; }
+        public VisualElement Panel => _panel;
+        public IReadOnlyList<Waypoint> Destinations => _destinations;
+        public bool CanTravel => TravelPoint.Nearby != null && _destinations.Count > 0;
+
+        WrenController _wren;
+        JournalView _journal;
+        bool _wasFrozen, _built;
+        float _nextRefresh;
+        VisualElement _panel, _places, _travel, _journalHost;
+        Label _title;
+        readonly List<Waypoint> _destinations = new List<Waypoint>();
+
+        void Awake() { Instance = this; }
+        void OnDestroy() { if (Instance == this) Instance = null; }
+
+        public void Toggle()
+        {
+            if (IsOpen) Close(); else Open(FindFirstObjectByType<WrenController>());
+        }
+
+        public void Open(WrenController wren)
+        {
+            _wren = wren;
+            if (wren != null) { _wasFrozen = wren.Frozen; wren.Frozen = true; }
+            IsOpen = true;
+            Cursor = 0;
+            if (_journal != null) _journal.Open(null);
+            Refresh();
+        }
+
+        public void Close()
+        {
+            if (!IsOpen) return;
+            IsOpen = false;
+            if (_journal != null) _journal.Close();
+            if (_wren != null) _wren.Frozen = _wasFrozen;
+            if (_built) InkTheme.Show(_panel, false);
+        }
+
+        public void Move(int dir)
+        {
+            int n = _destinations.Count;
+            if (n == 0) return;
+            Cursor = (Cursor + dir + n) % n;
+            Refresh();
+        }
+
+        /// <summary>J on a destination: close the atlas and go. False when there is nowhere to go from here.</summary>
+        public bool Confirm()
+        {
+            if (!IsOpen || !CanTravel || Cursor >= _destinations.Count) return false;
+            var to = _destinations[Cursor];
+            if (!FastTravel.CanTravel(GameState.World, to)) return false;
+            Close();
+            StartCoroutine(FastTravel.Go(to));
+            return true;
+        }
+
+        void Update()
+        {
+            if (!_built && Build() && IsOpen) Refresh();
+            var k = Keyboard.current;
+            var g = Gamepad.current;
+            bool toggle = (k != null && k.mKey.wasPressedThisFrame) || (g != null && g.selectButton.wasPressedThisFrame);
+            bool close = (k != null && k.escapeKey.wasPressedThisFrame) || (g != null && g.buttonEast.wasPressedThisFrame);
+            if (IsOpen)
+            {
+                if (toggle || close) { Close(); return; }
+                bool up = (k != null && (k.upArrowKey.wasPressedThisFrame || k.wKey.wasPressedThisFrame)) || (g != null && (g.dpad.up.wasPressedThisFrame || g.leftStick.up.wasPressedThisFrame));
+                bool down = (k != null && (k.downArrowKey.wasPressedThisFrame || k.sKey.wasPressedThisFrame)) || (g != null && (g.dpad.down.wasPressedThisFrame || g.leftStick.down.wasPressedThisFrame));
+                bool confirm = (k != null && (k.jKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame || k.enterKey.wasPressedThisFrame)) || (g != null && g.buttonSouth.wasPressedThisFrame);
+                if (up) Move(-1);
+                if (down) Move(1);
+                if (confirm) Confirm();
+                if (Time.unscaledTime >= _nextRefresh) { _nextRefresh = Time.unscaledTime + _refreshSeconds; Refresh(); }
+                return;
+            }
+            if (!toggle || FastTravel.IsTravelling) return;
+            if (DialogueService.Instance != null && DialogueService.Instance.IsRunning) return;
+            var wren = FindFirstObjectByType<WrenController>();
+            if (wren != null && wren.Frozen) return;   // a desk, ledger or cutscene owns the screen
+            Open(wren);
+        }
+
+        bool Build()
+        {
+            var ui = UiRoot.Instance;
+            if (ui == null || !ui.IsReady || ui.Desk == null) return false;
+            _panel = InkTheme.Panel("atlas");
+            _panel.style.position = Position.Absolute;
+            _panel.style.left = new Length(50, LengthUnit.Percent);
+            _panel.style.top = new Length(50, LengthUnit.Percent);
+            _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
+            _panel.style.width = 1500;
+            _panel.style.maxWidth = new Length(96, LengthUnit.Percent);
+            _panel.style.maxHeight = new Length(92, LengthUnit.Percent);
+            _panel.style.flexDirection = FlexDirection.Row;
+
+            var map = new VisualElement { name = "map", pickingMode = PickingMode.Ignore };
+            map.style.flexGrow = 1; map.style.flexBasis = 0;
+            map.style.paddingRight = 24;
+            map.style.borderRightWidth = 1; map.style.borderRightColor = InkTheme.InkFaint;
+            _title = InkTheme.Text("title", "Atlas", 30, InkTheme.Wash, FontStyle.Bold);
+            _title.style.marginBottom = 14;
+            _places = new VisualElement { name = "places", pickingMode = PickingMode.Ignore };
+            _travel = new VisualElement { name = "travel", pickingMode = PickingMode.Ignore };
+            _travel.style.marginTop = 16;
+            var hint = InkTheme.Text("hint", "↑↓ destination    J travel    M / Esc close", 15, InkTheme.Dim);
+            hint.style.marginTop = 14;
+            map.Add(_title); map.Add(_places); map.Add(_travel); map.Add(hint);
+
+            _journalHost = new VisualElement { name = "journal-host", pickingMode = PickingMode.Ignore };
+            _journalHost.style.width = 640;
+            _journalHost.style.paddingLeft = 24;
+            _panel.Add(map); _panel.Add(_journalHost);
+            InkTheme.Show(_panel, false);
+            ui.Desk.Add(_panel);
+
+            _journal = GetComponent<JournalView>();
+            if (_journal != null) _journal.AttachTo(_journalHost);
+            _built = true;
+            return true;
+        }
+
+        public void Refresh()
+        {
+            if (!_built) return;
+            InkTheme.Show(_panel, IsOpen);
+            if (!IsOpen) return;
+            var w = GameState.World;
+            _places.Clear();
+            string region = null;
+            string here = Room.Current != null ? Room.Current.RoomId : "";
+            foreach (var place in Atlas.AllPlaces)
+            {
+                if (place.Region != region)
+                {
+                    region = place.Region;
+                    var head = InkTheme.Text("region", region, 16, InkTheme.Dim, FontStyle.Bold);
+                    head.style.marginTop = 6; head.style.marginBottom = 4;
+                    _places.Add(head);
+                }
+                _places.Add(PlaceEntry(w, place, place.Id == here));
+            }
+
+            _travel.Clear();
+            _destinations.Clear();
+            var from = TravelPoint.Nearby;
+            if (from == null)
+            {
+                _travel.Add(InkTheme.Text("travel-head", "Travel from a desk or a lit lamp.", 16, InkTheme.Dim, FontStyle.Italic));
+                return;
+            }
+            _destinations.AddRange(Atlas.Destinations(w, from.WaypointId));
+            if (Cursor >= _destinations.Count) Cursor = 0;
+            if (_destinations.Count == 0)
+            {
+                _travel.Add(InkTheme.Text("travel-head", "From " + from.DisplayName + ": nowhere else is drawn yet.", 16, InkTheme.Dim, FontStyle.Italic));
+                return;
+            }
+            _travel.Add(InkTheme.Text("travel-head", "From " + from.DisplayName + ":", 16, InkTheme.Dim, FontStyle.Bold));
+            for (int i = 0; i < _destinations.Count; i++)
+            {
+                var d = _destinations[i];
+                bool sel = i == Cursor;
+                var row = InkTheme.Row("dest-" + d.Id);
+                row.AddToClassList("atlas-dest");
+                row.EnableInClassList("selected", sel);
+                InkTheme.SetPadding(row, 4f, 10f);
+                InkTheme.SetRadius(row, 4f);
+                row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
+                var marker = InkTheme.Text("marker", sel ? "▸" : "", 20, InkTheme.Wash);
+                marker.style.width = 24;
+                var name = InkTheme.Text("name", (d.Kind == WaypointKind.Lamp ? "☼ " : "▣ ") + d.Name, 19, InkTheme.Ink);
+                name.style.flexGrow = 1;
+                var where = InkTheme.Text("where", Atlas.PlaceName(d.Place), 15, InkTheme.Dim);
+                row.Add(marker); row.Add(name); row.Add(where);
+                _travel.Add(row);
+            }
+        }
+
+        VisualElement PlaceEntry(WorldState w, AtlasPlace place, bool here)
+        {
+            bool drawn = Atlas.IsDrawn(w, place.Id);
+            bool erased = Atlas.IsErased(w, place.Id);
+            var box = new VisualElement { name = "place-" + place.Id, pickingMode = PickingMode.Ignore };
+            box.AddToClassList("atlas-place");
+            box.style.marginBottom = 8;
+            var head = InkTheme.Row("head");
+            var name = InkTheme.Text("name", place.Name, 21, drawn ? InkTheme.Ink : InkTheme.Dim, FontStyle.Bold);
+            head.Add(name);
+            if (here)
+            {
+                var mark = InkTheme.Text("here", "  · here", 15, InkTheme.Ochre);
+                head.Add(mark);
+            }
+            box.Add(head);
+
+            var marks = new System.Text.StringBuilder();
+            foreach (var v in Atlas.VantagesOf(place.Id))
+            {
+                if (marks.Length > 0) marks.Append("    ");
+                marks.Append(w.IsErased(v.Id) ? "✕ " : w.IsSurveyed(v.Id) ? "● " : "○ ").Append(v.Name);
+            }
+            if (marks.Length == 0) marks.Append("no vantage here");
+            var vantages = InkTheme.Text("vantages", marks.ToString(), 16, drawn ? InkTheme.Ink : InkTheme.Dim);
+            vantages.style.marginLeft = 12;
+            box.Add(vantages);
+
+            var status = new System.Text.StringBuilder();
+            int stage = FadeStages.Get(w, place.Id);
+            status.Append(erased ? "erased. Draw it again." : FadeStages.Describe(stage));
+            var fate = Places.FateOf(w, place.Id);
+            if (fate != PlaceFate.Unwritten) status.Append(" · ").Append(Places.Describe(fate));
+            foreach (var wp in Atlas.WaypointsOf(place.Id))
+            {
+                if (!Atlas.IsKnown(w, wp.Id)) continue;
+                status.Append(" · ").Append(wp.Kind == WaypointKind.Lamp ? "☼ " : "▣ ").Append(wp.Name);
+                if (!Atlas.CanTravelTo(w, wp)) status.Append(" (off the page)");
+            }
+            var line = InkTheme.Text("status", status.ToString(), 15, erased ? InkTheme.Ochre : InkTheme.Dim);
+            line.style.marginLeft = 12;
+            box.Add(line);
+            return box;
+        }
+    }
+}

@@ -25,6 +25,7 @@ namespace OWSBG.World
         [SerializeField] string _placeId;
         [SerializeField] List<Layer> _layers = new List<Layer>();
         [SerializeField] float _seconds = 2.5f;
+        [SerializeField] float _eraseSeconds = 0.8f;
         [SerializeField] Color _paper = new Color(0.93f, 0.89f, 0.80f);
 
         static readonly int InkId = Shader.PropertyToID("_Ink");
@@ -87,7 +88,9 @@ namespace OWSBG.World
             float target = TargetInk;
             if (Mathf.Abs(Ink - target) > 0.0005f)
             {
-                Ink = Mathf.MoveTowards(Ink, target, Time.deltaTime / Mathf.Max(0.01f, _seconds));
+                // A bell wipes the page quickly; ink comes back at the drawing pace.
+                float seconds = Ink > target && FadeStages.IsErased(GameState.World, _placeId) ? _eraseSeconds : _seconds;
+                Ink = Mathf.MoveTowards(Ink, target, Time.deltaTime / Mathf.Max(0.01f, seconds));
                 Apply();
             }
         }

@@ -94,6 +94,11 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("anchor", place => Decide(place, PlaceFate.Anchored));
             runner.AddCommandHandler<string>("hold", place => Decide(place, PlaceFate.Held));
             runner.AddCommandHandler<string>("release", place => Decide(place, PlaceFate.Released));
+            runner.AddCommandHandler<string>("erase", place =>
+            {
+                if (!Atlas.Erase(GameState.World, place))
+                    Debug.LogWarning("[OWSBG] <<erase " + place + ">> refused: already erased or anchored");
+            });
             runner.AddCommandHandler<string, string>("commission", (id, verb) =>
             {
                 if (!Commissions.Apply(GameState.World, id, verb))
@@ -135,6 +140,14 @@ namespace OWSBG.Narrative
 
         [YarnFunction("fade_stage")]
         public static float FadeStageOf(string place) => FadeStages.Get(GameState.World, place);
+
+        /// <summary>A Cantor's bell has wiped the place and nobody has drawn it since.</summary>
+        [YarnFunction("erased")]
+        public static bool IsErased(string place) => Atlas.IsErased(GameState.World, place);
+
+        /// <summary>At least one vantage of the place is on the page.</summary>
+        [YarnFunction("drawn")]
+        public static bool IsDrawn(string place) => Atlas.IsDrawn(GameState.World, place);
 
         [YarnFunction("commission_is")]
         public static bool CommissionIs(string id, string state) => CommissionStateOf(id) == (state ?? "").Trim().ToLowerInvariant();

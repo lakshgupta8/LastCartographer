@@ -6,7 +6,8 @@ namespace OWSBG.World
 {
     /// <summary>
     /// A survey spot (bible 10, PRG-10). Stand in the trigger and hold Survey; after HoldSeconds the
-    /// vantage is inked into the atlas (WorldState.SurveyedVantages). Ink refills slowly here.
+    /// vantage is inked into the atlas (Atlas.Survey). Re-surveying an erased place brings its ink back.
+    /// Ink refills slowly here.
     /// </summary>
     [RequireComponent(typeof(Collider2D))]
     public sealed class VantagePoint : MonoBehaviour
@@ -28,6 +29,12 @@ namespace OWSBG.World
         float _refillT;
 
         void Reset() { GetComponent<Collider2D>().isTrigger = true; _vantageId = gameObject.scene.name + "/" + name; }
+
+        void Awake()
+        {
+            if (!string.IsNullOrEmpty(_vantageId) && Atlas.FindVantage(_vantageId) == null)
+                Atlas.RegisterVantage(new AtlasVantage { Id = _vantageId, Name = _displayName });
+        }
 
         void OnTriggerEnter2D(Collider2D other)
         {
@@ -64,7 +71,14 @@ namespace OWSBG.World
             if (Progress >= 1f)
             {
                 Progress = 0f;
-                if (GameState.World.MarkSurveyed(_vantageId)) Surveyed?.Invoke(this);
+                var w = GameState.World;
+                string place = Atlas.PlaceOf(_vantageId);
+                bool recovering = Atlas.IsErased(w, place);
+                if (Atlas.Survey(w, _vantageId))
+                {
+                    Captions.Show(recovering ? "Drawn again: " + Atlas.PlaceName(place) : "Drawn: " + Atlas.VantageName(_vantageId), 2.5f);
+                    Surveyed?.Invoke(this);
+                }
             }
         }
     }

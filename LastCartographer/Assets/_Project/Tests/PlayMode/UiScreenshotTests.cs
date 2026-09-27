@@ -13,7 +13,7 @@ namespace OWSBG.Tests
 {
     /// <summary>
     /// Renders the shipped scene with the atlas UI composited over the camera and writes PNGs to
-    /// logs/ (ui-hud.png, ui-dialogue.png, ui-desk.png, ui-ledger.png, ui-journal.png). A visual check for headless runs; the only
+    /// logs/ (ui-hud.png, ui-dialogue.png, ui-desk.png, ui-ledger.png, ui-atlas.png). A visual check for headless runs; the only
     /// assertion is that the files were written.
     /// </summary>
     public class UiScreenshotTests
@@ -98,12 +98,21 @@ namespace OWSBG.Tests
             page.SetRow(1);
             yield return Capture(cam, camRt, uiRt, "ui-ledger.png");
             page.Close();
+            // The atlas spread: stand at the desk so the travel list shows, with the lamp lit and the quay drawn.
+            var world = OWSBG.Core.GameState.World;
+            OWSBG.Core.Atlas.Survey(world, "Saltmarrow_A/Reedmother");
+            OWSBG.Core.Atlas.Survey(world, "Saltmarrow_Lighthouse/Lamp");
+            OWSBG.Core.Atlas.Discover(world, "lamp.Saltmarrow_Lighthouse");
+            OWSBG.Core.FadeStages.Advance(world, "Saltmarrow_B", 2);
+            wren.Teleport(new Vector2(-4.5f, 0f));
+            for (int i = 0; i < 30 && TravelPoint.Nearby == null; i++) yield return new WaitForFixedUpdate();
+            var atlas = ui.GetComponent<AtlasView>();
             var journal = ui.GetComponent<JournalView>();
-            journal.Toggle();
+            atlas.Toggle();
             yield return null;
-            Assert.IsTrue(journal.IsOpen);
-            yield return Capture(cam, camRt, uiRt, "ui-journal.png");
-            journal.Toggle();
+            Assert.IsTrue(atlas.IsOpen && journal.IsOpen, "the journal opens on the atlas's right page");
+            yield return Capture(cam, camRt, uiRt, "ui-atlas.png");
+            atlas.Toggle();
 
             Object.Destroy(uiRt); Object.Destroy(camRt);
             Assert.IsTrue(File.Exists(Path.Combine(OutDir, "ui-desk.png")));

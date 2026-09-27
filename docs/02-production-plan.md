@@ -62,7 +62,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | ID | Task | M | Ref | after |
 |---|---|---|---|---|
 | DES-01 `[x]` | Game design overview | M0 | GDD | NAR-01 |
-| DES-02 `[ ]` | Survey spec: vantage points, atlas inking animation, fast travel, erasure/re-survey | M0 | SB-10 | DES-01 |
+| DES-02 `[~]` | Survey spec: vantage points, atlas inking animation, fast travel, erasure/re-survey; v1 in `docs/design/survey.md`, the page's inking animation and line-of-sight vantages open | M0 | SB-10 | DES-01 |
 | DES-03 `[~]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns; v1 in `docs/design/anchoring.md`, bind requirement and licence rules open | M0 | SB-1.3, 10 | DES-02 |
 | DES-04 `[~]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage); v1 in `docs/design/fade-stages.md`, per-region curves open | M0 | SB-10, ART-3 | DES-01 |
 | DES-05 `[ ]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades | M1 | CMB-6 | DES-01 |
@@ -113,9 +113,9 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-07 `[~]` | Room system: additive scenes, transitions, neighbour preload, Addressables (rooms are addressables in one bundle each; neighbour bundles kept resident; Build Settings fallback; content build entry point, no CI yet) | M0 | Engine | PRG-01 |
 | PRG-08 `[~]` | Dialogue runtime: Yarn Spinner, `<<flag>>`, `<<commission>>`, `<<fade>>`, `<<anchor>>`, dialogue UI | M0 | SB-11 | PRG-01 |
 | PRG-09 `[~]` | `WorldState` + save/load (JSON, autosave at desks) | M0 | SB-10 | PRG-01 |
-| PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure | M1 | DES-02 | PRG-08 |
+| PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure (Atlas store, atlas page as pause screen, Cantor bell erasure and recovery by re-survey, travel points at desks and lit lamps; page inking animation pending) | M1 | DES-02 | PRG-08 |
 | PRG-11 `[~]` | Drafting desk: rest, respawn, Charter/Instrument swap (placeholder IMGUI desk menu), save | M1 | GDD 6 | PRG-09 |
-| PRG-12 `[~]` | Commissions ledger runtime and journal (state machine in WorldState, tracker, ledger page, journal + toasts, Yarn command and functions, Saltmarrow greybox set; atlas page pending) | M1 | DES-06 | PRG-09 |
+| PRG-12 `[~]` | Commissions ledger runtime and journal (state machine in WorldState, tracker, ledger page, journal + toasts, Yarn command and functions, Saltmarrow greybox set; journal hosted on the atlas page) | M1 | DES-06 | PRG-09 |
 | PRG-13 `[~]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner (Places store, HeldState grade lock + Wardens, desk place row, Yarn verbs; NPC schedule loops are PRG-15) | M2 | DES-03 | PRG-10 |
 | PRG-14 `[~]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement (FadeStages + FadeGroup per room, `<<fade>>`; the Remnant look and audio pending) | M2 | DES-04 | PRG-03 |
 | PRG-15 `[ ]` | NPC schedules and hub life (NavMesh, `#still` loops) | M2 | SB-5.1 | PRG-07 |

@@ -368,6 +368,7 @@ namespace OWSBG.Setup
             uiGo.AddComponent<OWSBG.UI.BossView>();
             uiGo.AddComponent<OWSBG.UI.LedgerView>();
             uiGo.AddComponent<OWSBG.UI.JournalView>();
+            uiGo.AddComponent<OWSBG.UI.AtlasView>();
             uiGo.AddComponent<OWSBG.UI.PromptView>();
             uiGo.AddComponent<OWSBG.UI.FadeView>();
 
@@ -569,6 +570,9 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.81f, 0.74f), 16f);
 
             MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Greybox_Dotha", new Color(0.36f, 0.40f, 0.34f));
+            MakeVantage(room, "Tetherpost", "Saltmarrow_B/Tetherpost", new Vector2(2f, 0f));
+            // A Cantor over the east end: its bell erases Merrow's End until the tether-post is drawn again.
+            MakeEnemy<Cantor>(room, "Cantor_1", new Vector2(13f, 2.6f), new Vector2(0.8f, 0.9f));
             MakeHeldState(room, new Vector2(-5f, 0.9f), new Vector2(14f, 0.9f));
 
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
@@ -603,6 +607,8 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Farther_Sea", 16f, 6f, new Color(0.80f, 0.80f, 0.76f), 16f);
 
             MakeDesk(room, new Vector2(-11f, 0f));
+            // The lamp itself, lit once the Lamp-Keeper is beaten (her beacon vantage): a travel point.
+            MakeLamp(room, "Lamp", new Vector2(3f, 0f), "lamp.Saltmarrow_Lighthouse", "the fourth lamp", "Saltmarrow_Lighthouse/Lamp");
             MakeSpawn(room, "Start", new Vector2(-12.5f, 0f));
             MakeSpawn(room, "West", new Vector2(-14.5f, 0f));
             MakeTransition(room, "To_B", new Vector2(-15.6f, 4f), new Vector2(0.8f, 10f),
@@ -1163,6 +1169,15 @@ namespace OWSBG.Setup
             var so = new SerializedObject(desk);
             so.FindProperty("_prompt").stringValue = "Rest";
             so.ApplyModifiedPropertiesWithoutUndo();
+            // Every desk is a travel point (DES-02).
+            var tp = go.AddComponent<TravelPoint>();
+            var known = Atlas.FindWaypoint("desk." + room.RoomId);
+            var tso = new SerializedObject(tp);
+            tso.FindProperty("_waypointId").stringValue = "desk." + room.RoomId;
+            tso.FindProperty("_kind").enumValueIndex = (int)WaypointKind.Desk;
+            tso.FindProperty("_displayName").stringValue = known != null ? known.Name : "the desk";
+            tso.FindProperty("_spawn").stringValue = "Desk";
+            tso.ApplyModifiedPropertiesWithoutUndo();
 
             var table = GameObject.CreatePrimitive(PrimitiveType.Cube);
             table.name = "Table";
@@ -1172,6 +1187,38 @@ namespace OWSBG.Setup
             table.transform.localScale = new Vector3(1.4f, 0.9f, 0.8f);
             table.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Desk", new Color(0.42f, 0.30f, 0.20f));
             MakeSpawn(room, "Desk", pos);
+        }
+
+        // A lamp: a travel point that lights once its vantage is drawn, with a glow that shows it.
+        static void MakeLamp(Room room, string name, Vector2 pos, string waypointId, string displayName, string litByVantage)
+        {
+            var go = new GameObject("Lamp_" + name) { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(3f, 2f);
+            col.offset = new Vector2(0f, 1f);
+
+            var glow = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            glow.name = "Glow";
+            Object.DestroyImmediate(glow.GetComponent<Collider>());
+            glow.transform.SetParent(go.transform, false);
+            glow.transform.localPosition = new Vector3(0f, 1.3f, 0.5f);
+            glow.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+            var glowR = glow.GetComponent<MeshRenderer>();
+            glowR.sharedMaterial = MakeLitMaterial("M_Greybox_Glow", new Color(0.95f, 0.75f, 0.35f));
+
+            var tp = go.AddComponent<TravelPoint>();
+            var so = new SerializedObject(tp);
+            so.FindProperty("_waypointId").stringValue = waypointId;
+            so.FindProperty("_kind").enumValueIndex = (int)WaypointKind.Lamp;
+            so.FindProperty("_displayName").stringValue = displayName;
+            so.FindProperty("_spawn").stringValue = name;
+            so.FindProperty("_litByVantage").stringValue = litByVantage;
+            so.FindProperty("_glow").objectReferenceValue = glowR;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            MakeSpawn(room, name, pos);
         }
 
         // The hub's Commissions board: a paper sheet on a post, and a trigger.

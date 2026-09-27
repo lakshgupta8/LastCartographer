@@ -14,6 +14,10 @@ namespace OWSBG.Core
         public Dictionary<string, int> Flags = new Dictionary<string, int>();
         public HashSet<string> AnchoredPlaces = new HashSet<string>();
         public HashSet<string> SurveyedVantages = new HashSet<string>();
+        /// <summary>Drawn vantages a Cantor's bell has wiped from the page; re-surveying clears them (DES-02).</summary>
+        public HashSet<string> ErasedVantages = new HashSet<string>();
+        /// <summary>Desks stood at and lamps lit: the atlas's travel points (Atlas).</summary>
+        public HashSet<string> Waypoints = new HashSet<string>();
         public List<string> BoundMemories = new List<string>();
         /// <summary>Yarn "$" variables that are not booleans (booleans live in Flags).</summary>
         public Dictionary<string, float> Numbers = new Dictionary<string, float>();
@@ -29,13 +33,30 @@ namespace OWSBG.Core
 
         public event Action<string, int> FlagChanged;
         public event Action<string> VantageSurveyed;
+        public event Action<string> VantageErased;
 
-        public bool IsSurveyed(string vantageId) => SurveyedVantages.Contains(vantageId);
+        /// <summary>On the page now: drawn and not erased.</summary>
+        public bool IsSurveyed(string vantageId) => SurveyedVantages.Contains(vantageId) && !ErasedVantages.Contains(vantageId);
+        /// <summary>Drawn at some point, erased or not (story gates that should not undo themselves).</summary>
+        public bool IsEverSurveyed(string vantageId) => SurveyedVantages.Contains(vantageId);
+        public bool IsErased(string vantageId) => ErasedVantages.Contains(vantageId);
 
+        /// <summary>Draw a vantage: true when it was blank or erased.</summary>
         public bool MarkSurveyed(string vantageId)
         {
-            if (string.IsNullOrEmpty(vantageId) || !SurveyedVantages.Add(vantageId)) return false;
+            if (string.IsNullOrEmpty(vantageId)) return false;
+            bool added = SurveyedVantages.Add(vantageId);
+            bool redrawn = ErasedVantages.Remove(vantageId);
+            if (!added && !redrawn) return false;
             VantageSurveyed?.Invoke(vantageId);
+            return true;
+        }
+
+        /// <summary>Wipe a drawn vantage from the page (a Cantor's bell). True when it was on the page.</summary>
+        public bool MarkErased(string vantageId)
+        {
+            if (string.IsNullOrEmpty(vantageId) || !SurveyedVantages.Contains(vantageId) || !ErasedVantages.Add(vantageId)) return false;
+            VantageErased?.Invoke(vantageId);
             return true;
         }
 

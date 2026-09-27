@@ -9,9 +9,10 @@ using UnityEngine.UIElements;
 namespace OWSBG.UI
 {
     /// <summary>
-    /// The journal (the atlas's right-hand page, PRG-12): M or gamepad Select toggles it. Lists taken and
-    /// fulfilled commissions with their steps, then the closed ones, and the vellum-scrap count. Also owns the
-    /// small caption that announces ledger changes ("Commission taken · Lantern Chain").
+    /// The journal (the atlas's right-hand page, PRG-12). Lists taken and fulfilled commissions with their
+    /// steps, then the closed ones, and the vellum-scrap count. Also owns the small caption that announces
+    /// ledger changes ("Commission taken · Lantern Chain"). With an AtlasView on the same object it is hosted
+    /// on the atlas spread and opens with it; alone, M or gamepad Select toggles it.
     /// </summary>
     public sealed class JournalView : MonoBehaviour
     {
@@ -19,13 +20,15 @@ namespace OWSBG.UI
 
         public bool IsOpen { get; private set; }
         public VisualElement Panel => _panel;
+        /// <summary>Drawn inside the atlas spread rather than as its own page.</summary>
+        public bool IsHosted => _host != null;
         public string ToastText => _toast != null ? _toast.text : _pendingToast;
         public bool IsToastShowing => _toastLeft > 0f;
 
         WrenController _wren;
         bool _wasFrozen, _built;
-        VisualElement _panel, _open, _closed;
-        Label _title, _empty, _scraps, _toast;
+        VisualElement _panel, _open, _closed, _host;
+        Label _title, _empty, _scraps, _toast, _hint;
         string _pendingToast;
         float _toastLeft;
 
@@ -58,7 +61,31 @@ namespace OWSBG.UI
 
         public void Toggle()
         {
+            if (IsHosted && AtlasView.Instance != null) { AtlasView.Instance.Toggle(); return; }
             if (IsOpen) Close(); else Open(FindFirstObjectByType<WrenController>());
+        }
+
+        /// <summary>Draw on the atlas's right page: no frame, no own position, opened by the atlas.</summary>
+        public void AttachTo(VisualElement host)
+        {
+            _host = host;
+            if (_built) Host();
+        }
+
+        void Host()
+        {
+            _panel.RemoveFromHierarchy();
+            _panel.style.position = Position.Relative;
+            _panel.style.left = new StyleLength(StyleKeyword.Auto);
+            _panel.style.top = new StyleLength(StyleKeyword.Auto);
+            _panel.style.translate = new StyleTranslate(StyleKeyword.None);
+            _panel.style.width = new Length(100, LengthUnit.Percent);
+            _panel.style.maxWidth = new StyleLength(StyleKeyword.None);
+            _panel.style.backgroundColor = new Color(0f, 0f, 0f, 0f);
+            InkTheme.SetBorder(_panel, new Color(0f, 0f, 0f, 0f), 0f);
+            InkTheme.SetPadding(_panel, 0f, 0f);
+            InkTheme.Show(_hint, false);
+            _host.Add(_panel);
         }
 
         public void Open(WrenController wren)
@@ -89,6 +116,7 @@ namespace OWSBG.UI
                 _toastLeft -= Time.unscaledDeltaTime;
                 if (_toastLeft <= 0f && _built) InkTheme.Show(_toast, false);
             }
+            if (IsHosted) return;   // the atlas owns the keys
 
             var k = Keyboard.current;
             var g = Gamepad.current;
@@ -125,11 +153,11 @@ namespace OWSBG.UI
             _closed.style.marginTop = 12;
             _scraps = InkTheme.Text("scraps", "", 16, InkTheme.Wash);
             _scraps.style.marginTop = 16;
-            var hint = InkTheme.Text("hint", "M / Esc close", 15, InkTheme.Dim);
-            hint.style.marginTop = 12;
-            _panel.Add(_title); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(hint);
+            _hint = InkTheme.Text("hint", "M / Esc close", 15, InkTheme.Dim);
+            _hint.style.marginTop = 12;
+            _panel.Add(_title); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(_hint);
             InkTheme.Show(_panel, false);
-            ui.Desk.Add(_panel);
+            if (_host != null) Host(); else ui.Desk.Add(_panel);
 
             _toast = InkTheme.Text("journal-toast", "", 21, InkTheme.Ink, FontStyle.Italic);
             _toast.style.position = Position.Absolute;

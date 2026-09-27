@@ -58,7 +58,7 @@ and pressing Play inside any room scene bootstraps the persistent scene for you.
 | Use Instrument (selected slot) | I | right stick press |
 | Select next Instrument slot | Tab | left stick press |
 | Survey (hold at a vantage) | Q | North |
-| Journal (commissions, scraps) | M | Select |
+| Atlas (map, journal, travel) | M | Select |
 
 Forward strikes chain into the Charter's three-hit combo when pressed within 18 frames of the last swing.
 Every base Charter and every Instrument is owned from the start in the greybox; the desk menu swaps them.
@@ -70,9 +70,12 @@ Room A also has the first world interactions. Stand in front of something and pr
 - the paper sheet on a post between Sable and the desk is the **Commissions ledger**: the coast's side-quests. Read it (up) to see what is posted, J takes one, and once the journal (M) shows it fulfilled, J at the board turns it in for vellum scraps. Three post from the start; Dotha's posts after you meet Sable and the Tether-Widows after the Lamp-Keeper;
 - the small table is a drafting desk: restores masks and Instrument uses, sets the respawn point, saves to `saves/slot0.json`, and opens the desk menu (row 0 swaps the Charter with ◂ ▸ or 1-3; the rows below swap what sits in each Instrument slot; J leaves);
 - the light brown slab up on the left wall is a weak floor (a plumb weight breaks it; the quill only scratches it) and the faint slab on the far right is a hidden platform (a Field lantern draws it for ten seconds);
-- the blue post on the right is a vantage point: hold **Q** on it to survey it (Sable notices afterwards).
+- the blue post on the right is a vantage point: hold **Q** on it to survey it (Sable notices afterwards, and the atlas page marks it drawn).
 
 Room B's west end has Dotha, the last elder of Merrow's End. She only talks properly once her commission is taken; her decision seeds an island in the Blank (`blank.island.Merrows_End`). The design is in `docs/design/commissions.md`.
+Room B also has the tether-post vantage and, over its east end, a **Cantor**: a pale dove with a bell. Its bell rises (the telegraph), then tolls: a mask if you are under it, and Merrow's End is **erased**, the reeds going to paper and the tether-post leaving your atlas until you draw it again. A hit during the ring stops the bell; the forward Flourish reaches it.
+
+The survey loop (`docs/design/survey.md`): **M** opens the atlas, the pause screen. The left page is the map: each place with its vantages drawn (●), blank (○) or erased (✕), its fade stage and fate, and the desks and lamps you have stood at. Standing at a desk or a lit lamp, the page lists where you can **travel** (↑↓ then J): any known desk or lamp whose place is drawn. The lamp under the Lamp-Keeper's perch lights when she is beaten. The right page is the journal.
 
 The look (art-direction doc): `OWSBG/InkSprite` is the lit, alpha-clipped sprite shader with the two-step shadow ramp and the
 `_Ink` state; two full-screen passes sit on the URP renderer (`Settings/Rendering/URP_Renderer.asset`): **ForegroundBlur**
@@ -98,16 +101,16 @@ Cutscenes (`Assets/_Project/Data/Cutscenes/*.playable`, built by the setup scrip
 `ActorMoveClip` walks an actor, `PaperFadeClip` drives the screen fade, `DialogueNodeClip` starts a Yarn node and holds the
 timeline until it ends; an optional Cinemachine shot takes over while it plays and Wren is frozen throughout.
 
-The HUD, dialogue page, desk page and boss bar are one UI Toolkit document (`UI` object in the persistent
+The HUD, dialogue page, desk page, atlas spread and boss bar are one UI Toolkit document (`UI` object in the persistent
 scene; `Assets/_Project/Code/UI`), built in code on the paper-and-ink palette until the UI art (ENV-11) lands.
 
-Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it), `<<fade place stage>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`, `fade_stage("place")`.
+Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it), `<<fade place stage>>`, `<<anchor|hold|release place>>`, `<<erase place>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`, `fade_stage("place")`, `place_fate("place")`, `erased("place")`, `drawn("place")`.
 
 ## Verifying headless
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-journal.png` with the UI composited over the camera, for a headless visual check.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, the survey loop and fast travel, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-atlas.png` with the UI composited over the camera, for a headless visual check.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

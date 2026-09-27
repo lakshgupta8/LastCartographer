@@ -52,11 +52,13 @@ namespace OWSBG.Core
         [Serializable]
         sealed class SaveData
         {
-            public int version = 2;
+            public int version = 3;
             public List<string> flagKeys = new List<string>();
             public List<int> flagValues = new List<int>();
             public List<string> anchoredPlaces = new List<string>();
             public List<string> surveyedVantages = new List<string>();
+            public List<string> erasedVantages = new List<string>();
+            public List<string> waypoints = new List<string>();
             public List<string> boundMemories = new List<string>();
             public List<string> numberKeys = new List<string>();
             public List<float> numberValues = new List<float>();
@@ -80,6 +82,8 @@ namespace OWSBG.Core
                 foreach (var kv in w.Flags) { d.flagKeys.Add(kv.Key); d.flagValues.Add(kv.Value); }
                 d.anchoredPlaces.AddRange(w.AnchoredPlaces);
                 d.surveyedVantages.AddRange(w.SurveyedVantages);
+                d.erasedVantages.AddRange(w.ErasedVantages);
+                d.waypoints.AddRange(w.Waypoints);
                 d.boundMemories.AddRange(w.BoundMemories);
                 foreach (var kv in w.Numbers) { d.numberKeys.Add(kv.Key); d.numberValues.Add(kv.Value); }
                 foreach (var kv in w.Strings) { d.stringKeys.Add(kv.Key); d.stringValues.Add(kv.Value); }
@@ -103,6 +107,8 @@ namespace OWSBG.Core
                 for (int i = 0; i < flagKeys.Count && i < flagValues.Count; i++) w.Flags[flagKeys[i]] = flagValues[i];
                 foreach (var p in anchoredPlaces) w.AnchoredPlaces.Add(p);
                 foreach (var v in surveyedVantages) w.SurveyedVantages.Add(v);
+                foreach (var v in erasedVantages) w.ErasedVantages.Add(v);
+                foreach (var p in waypoints) w.Waypoints.Add(p);
                 w.BoundMemories.AddRange(boundMemories);
                 for (int i = 0; i < numberKeys.Count && i < numberValues.Count; i++) w.Numbers[numberKeys[i]] = numberValues[i];
                 for (int i = 0; i < stringKeys.Count && i < stringValues.Count; i++) w.Strings[stringKeys[i]] = stringValues[i];

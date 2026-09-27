@@ -6,7 +6,8 @@ namespace OWSBG.Core
     /// Fade stages per place (bible 10, docs/design/fade-stages.md, PRG-14). A place is a room id or a
     /// named sub-zone; its stage is the int flag "fade.&lt;place&gt;", 0 (fully drawn) to 4 (blank paper).
     /// Stages only advance, and only from story beats (Yarn's &lt;&lt;fade&gt;&gt; or code); never on a clock.
-    /// Anchored places do not fade. Restore is the one way back and belongs to re-surveying after erasure.
+    /// Anchored places do not fade. Erasure (a Cantor's bell, DES-02) is the one thing that blanks a place
+    /// outside a story beat; it remembers the stage it took, and Recover (re-surveying) brings it back.
     /// </summary>
     public static class FadeStages
     {
@@ -14,8 +15,12 @@ namespace OWSBG.Core
         public const string Prefix = "fade.";
 
         public static event Action<string, int> Changed;
+        public static event Action<string> Erased;
+        public static event Action<string> Recovered;
 
         public static string Key(string place) => Prefix + place;
+        /// <summary>Set while erased: the stage the place had, plus one (so 0 means not erased).</summary>
+        public static string ErasedKey(string place) => Prefix + place + ".erased";
 
         public static int Get(WorldState w, string place) => Clamp(w.Get(Key(place)));
 
@@ -33,10 +38,40 @@ namespace OWSBG.Core
             return true;
         }
 
-        /// <summary>Bring ink back (re-survey after a Cantor's erasure). False when not a step back.</summary>
+        /// <summary>A Cantor's bell: the ink goes blank now, the stage it had is kept for Recover. False when
+        /// already erased or anchored (the Guild's seal holds against a field bell).</summary>
+        public static bool Erase(WorldState w, string place)
+        {
+            if (string.IsNullOrEmpty(place) || IsErased(w, place)) return false;
+            if (Places.FateOf(w, place) == PlaceFate.Anchored || w.AnchoredPlaces.Contains(place)) return false;
+            w.Set(ErasedKey(place), Get(w, place) + 1);
+            w.Set(Key(place), Max);
+            Erased?.Invoke(place);
+            Changed?.Invoke(place, Max);
+            return true;
+        }
+
+        public static bool IsErased(WorldState w, string place) => !string.IsNullOrEmpty(place) && w.Get(ErasedKey(place)) > 0;
+
+        /// <summary>The stage an erased place will come back to.</summary>
+        public static int StageBeforeErasure(WorldState w, string place) => Clamp(w.Get(ErasedKey(place)) - 1);
+
+        /// <summary>Re-surveyed: the ink returns to the stage it had. False when not erased.</summary>
+        public static bool Recover(WorldState w, string place)
+        {
+            if (!IsErased(w, place)) return false;
+            int stage = StageBeforeErasure(w, place);
+            w.Set(ErasedKey(place), 0);
+            w.Set(Key(place), stage);
+            Recovered?.Invoke(place);
+            Changed?.Invoke(place, stage);
+            return true;
+        }
+
+        /// <summary>Bring ink back a step by story fiat. False when not a step back, or erased (use Recover).</summary>
         public static bool Restore(WorldState w, string place, int stage)
         {
-            if (string.IsNullOrEmpty(place)) return false;
+            if (string.IsNullOrEmpty(place) || IsErased(w, place)) return false;
             stage = Clamp(stage);
             if (stage >= Get(w, place)) return false;
             w.Set(Key(place), stage);

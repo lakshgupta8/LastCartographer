@@ -119,7 +119,7 @@ namespace OWSBG.Core
             Add(S, "Shore", "The Shore", 1, 1);
             Add(S, "Quay", "The Drowned Quay", 3, 1, hub: true);
             Add(S, "Reedmother", "Reedmother's Roots", 4, 2);
-            Add(S, "IrisFields", "The Pale Iris Fields", 3, 1);
+            Add(S, "IrisFields", "The Pale Iris Fields", 3, 1, boss: "6.2 Reedmother's Brood (optional)");
             Add(S, "MerrowsEnd", "Merrow's End", 3, 1, decision: "anchor / hold (needs Emberdown) / release");
             Add(S, "LanternChain", "The Lantern Chain", 7, 3, boss: "6.1 The Lamp-Keeper", grants: Ability.Wingbeat);
             Add(S, "SaltChapel", "The Salt Chapel", 3, 1, boss: "6.3 Halvard (first hunt)");
@@ -134,7 +134,7 @@ namespace OWSBG.Core
             Way("Saltmarrow.LanternChain", "Blank.AurysLighthouse", flag: "saltmarrow.tether", note: "the faded third lighthouse, by tether");
 
             // ---- Emberdown (4.2): the climb by the old way.
-            Add(E, "FurnaceStair", "The Furnace Stair", 3, 1);
+            Add(E, "FurnaceStair", "The Furnace Stair", 3, 1, boss: "6.5 Brann, in the furnace");
             Add(E, "KettilsRest", "Kettil's Rest", 3, 1, hub: true);
             Add(E, "RollCallBell", "The Roll-Call Bell", 2, 1);
             Add(E, "NineChimneys", "The Nine Chimneys", 4, 2, grants: Ability.Talonhold);
@@ -157,7 +157,7 @@ namespace OWSBG.Core
             Add(V, "LanternGrove", "The Lantern Grove", 4, 2);
             Add(V, "SunkenLibrary", "The Sunken Library", 2, 1);
             Add(V, "Aldermere", "Aldermere", 3, 1, boss: "6.6 The Choir (optional)", decision: "attend the last day / stop it");
-            Add(V, "OvergrownGate", "The Overgrown Gate", 2, 1);
+            Add(V, "OvergrownGate", "The Overgrown Gate", 2, 1, boss: "6.7 The Gatekeeper");
             Way("Saltmarrow.IrisFields", "Verdance.OldRoad", Ability.Wingbeat, soft: true, note: "the iris gap");
             Way("Verdance.OldRoad", "Verdance.QuietHouse");
             Way("Verdance.QuietHouse", "Verdance.RootChapel", note: "Teodor teaches Inkthread");
@@ -168,12 +168,12 @@ namespace OWSBG.Core
             Way("Verdance.OvergrownGate", "Halden.PaperMills", Ability.Inkthread, note: "the canopy road to the Plateau");
 
             // ---- Halden Reach (4.4): the Citadel, mid-game hub of Act 2.
-            Add(H, "SevenBridges", "The Seven Bridges", 4, 2);
+            Add(H, "SevenBridges", "The Seven Bridges", 4, 2, boss: "6.3 Halvard (second hunt)");
             Add(H, "PaperMills", "The Paper Mills", 3, 1);
             Add(H, "Lowmarket", "Lowmarket", 3, 1, decision: "the Paper Mill Strike");
             Add(H, "JourneymansHall", "The Journeyman's Hall", 3, 1, hub: true);
             Add(H, "OldOrchard", "The Old Orchard", 2, 1);
-            Add(H, "Bastion", "The Bastion", 3, 1, boss: "6.8 Pell's minder (if sent)");
+            Add(H, "Bastion", "The Bastion", 3, 1, boss: "6.8 Oriel (if Pell's report is sent)");
             Add(H, "Observatory", "The Observatory", 2, 1, boss: "6.15 The Complete Survey", keystone: true);
             Add(H, "Vault", "The Vault", 1, 0);
             Way("Halden.SevenBridges", "Halden.PaperMills");
@@ -187,7 +187,7 @@ namespace OWSBG.Core
             Way("Halden.Lowmarket", "Windreach.NineStones", flag: "act2.started", note: "the south road");
 
             // ---- Windreach (4.5): the proof.
-            Add(W, "NineStones", "The Nine Stones", 3, 2);
+            Add(W, "NineStones", "The Nine Stones", 3, 2, boss: "6.9 Surveyor Hale (optional)");
             Add(W, "LongGrassCamp", "The Long Grass Camp", 2, 1, hub: true);
             Add(W, "DryRiver", "The Dry River", 3, 1);
             Add(W, "WindGate", "The Wind Gate", 2, 1, grants: Ability.Windmemory);
@@ -206,7 +206,7 @@ namespace OWSBG.Core
             Add(G, "IsoldesLastCamp", "Isolde's Last Camp", 1, 1);
             Add(G, "RoadThatStops", "The Road That Stops", 3, 1, grants: Ability.Clarity);
             Add(G, "MirrorPool", "The Mirror Pool", 2, 1);
-            Add(G, "Threshold", "The Threshold", 2, 0, boss: "6.11 Voss at the Threshold");
+            Add(G, "Threshold", "The Threshold", 2, 0, boss: "6.11 Voss at the Threshold, 6.3 Halvard (third)");
             Way("Greyfold.EdgeCamp", "Greyfold.HalfCathedral", note: "the prologue's edge");
             Way("Greyfold.HalfCathedral", "Greyfold.RoadThatStops", note: "Act 1's end: she steps in and stays herself");
             Way("Greyfold.EdgeCamp", "Greyfold.IsoldesLastCamp", Ability.Clarity);

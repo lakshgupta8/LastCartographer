@@ -661,13 +661,13 @@ namespace OWSBG.Setup
             bossSo.FindProperty("_maxHealth").intValue = 24;
             bossSo.FindProperty("_contactDamage").intValue = 1;
             bossSo.FindProperty("_hurtstunFrames").intValue = 3;
-            bossSo.FindProperty("_bossName").stringValue = "The Lamp-Keeper";
-            bossSo.FindProperty("_tier").intValue = 1;
+            // Name, tier and the three lines come from her sheet (NAR-06, docs/story/boss-sheets.md).
+            var sheet = Bosses.Find("lamp_keeper");
+            bossSo.FindProperty("_bossName").stringValue = sheet.Name;
+            bossSo.FindProperty("_tier").intValue = sheet.Tier;
             var lines = bossSo.FindProperty("_phaseLines");
             lines.arraySize = 3;
-            lines.GetArrayElementAtIndex(0).stringValue = "The light stays.";
-            lines.GetArrayElementAtIndex(1).stringValue = "I remember the light. I remember nothing else.";
-            lines.GetArrayElementAtIndex(2).stringValue = "If it goes out, I go with it.";
+            for (int i = 0; i < 3; i++) lines.GetArrayElementAtIndex(i).stringValue = sheet.Lines[i];
             bossSo.ApplyModifiedPropertiesWithoutUndo();
 
             // The arena zone between the doors.

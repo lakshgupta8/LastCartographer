@@ -37,7 +37,8 @@ namespace OWSBG.World
 
         public ArenaState State { get; private set; }
         public Boss Boss => _boss;
-        public string FlagKey => "boss." + _bossId + ".defeated";
+        public string BossId => _bossId;
+        public string FlagKey => Bosses.FlagKey(_bossId);
         public bool IsDefeated => GameState.World.Is(FlagKey);
         public float IntroSeconds { get => _introSeconds; set => _introSeconds = value; }
         public float RetryIntroSeconds { get => _retryIntroSeconds; set => _retryIntroSeconds = value; }

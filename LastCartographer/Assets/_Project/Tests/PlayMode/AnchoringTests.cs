@@ -164,7 +164,7 @@ namespace OWSBG.Tests
             yield return null;
             int fateRow = menu.FateRow;
             Assert.AreEqual(1 + GameState.World.Equipment.SlotCount, fateRow, "the place row sits under the slots");
-            Assert.AreEqual(fateRow + 1, menu.Panel.Q("rows").childCount);
+            Assert.AreEqual(menu.RowCount, menu.Panel.Q("rows").childCount);
             menu.SetRow(fateRow);
             Assert.IsFalse(menu.CanSeal, "unsurveyed: nothing to seal");
             menu.Step(1);

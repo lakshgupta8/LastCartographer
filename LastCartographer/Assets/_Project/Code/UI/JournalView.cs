@@ -195,7 +195,7 @@ namespace OWSBG.UI
                 head.style.marginBottom = 4;
                 _closed.Insert(0, head);
             }
-            _scraps.text = "Vellum scraps: " + Commissions.Scraps(w);
+            _scraps.text = "Vellum scraps: " + Commissions.Scraps(w) + "     Iris seeds: " + Economy.Seeds(w);
         }
 
         VisualElement Entry(CommissionDef def, CommissionState state)

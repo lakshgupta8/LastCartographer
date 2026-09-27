@@ -19,6 +19,10 @@ namespace OWSBG.UI
         public int Row { get; private set; }
         /// <summary>Index of the place row (after the Charter and the slots).</summary>
         public int FateRow => 1 + GameState.World.Equipment.SlotCount;
+        /// <summary>Vellum rows (DES-05): masks, then the belt's fourth loop.</summary>
+        public int MaskRow => FateRow + 1;
+        public int BeltRow => FateRow + 2;
+        public int RowCount => BeltRow + 1;
         public string PlaceId => Room.Current != null ? Room.Current.RoomId : "";
         public PlaceFate Proposed { get; private set; }
         /// <summary>A place, not yet decided, with every vantage in it surveyed.</summary>
@@ -82,7 +86,7 @@ namespace OWSBG.UI
             if (!IsOpen) return;
             var k = Keyboard.current;
             var g = Gamepad.current;
-            int rows = FateRow + 1;
+            int rows = RowCount;
             bool up = (k != null && (k.upArrowKey.wasPressedThisFrame || k.wKey.wasPressedThisFrame)) || (g != null && (g.dpad.up.wasPressedThisFrame || g.leftStick.up.wasPressedThisFrame));
             bool down = (k != null && (k.downArrowKey.wasPressedThisFrame || k.sKey.wasPressedThisFrame)) || (g != null && (g.dpad.down.wasPressedThisFrame || g.leftStick.down.wasPressedThisFrame));
             bool left = (k != null && (k.leftArrowKey.wasPressedThisFrame || k.aKey.wasPressedThisFrame)) || (g != null && (g.dpad.left.wasPressedThisFrame || g.leftStick.left.wasPressedThisFrame));
@@ -107,6 +111,7 @@ namespace OWSBG.UI
             else if (confirm)
             {
                 if (Row == FateRow && CanSeal && Proposed != PlaceFate.Unwritten) Confirm();
+                else if (Row == MaskRow || Row == BeltRow) Confirm();
                 else Close();
             }
             else if (changed) Refresh();
@@ -126,9 +131,16 @@ namespace OWSBG.UI
             if (index >= 0 && index < owned.Count) GameState.World.Equipment.SetCharter(owned[index]);
         }
 
-        /// <summary>Seal the proposed fate on the place row. False when nothing can be sealed.</summary>
+        /// <summary>Seal the proposed fate on the place row, or buy on the vellum rows. False when nothing happens.</summary>
         public bool Confirm()
         {
+            if (Row == MaskRow || Row == BeltRow)
+            {
+                bool bought = Row == MaskRow ? Economy.BuyMask(GameState.World) : Economy.BuySlot(GameState.World);
+                if (bought) GameState.Save();
+                Refresh();
+                return bought;
+            }
             if (Row != FateRow || !CanSeal || Proposed == PlaceFate.Unwritten) return false;
             bool ok = Places.Decide(GameState.World, PlaceId, Proposed);
             if (ok) GameState.Save();
@@ -142,6 +154,7 @@ namespace OWSBG.UI
         public void Step(int dir)
         {
             var e = GameState.World.Equipment;
+            if (Row == MaskRow || Row == BeltRow) return;
             if (Row == FateRow)
             {
                 if (!CanSeal) return;
@@ -187,7 +200,7 @@ namespace OWSBG.UI
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
             _blurb.style.marginTop = 10;
-            var hint = InkTheme.Text("hint", "↑↓ row    ◂▸ change    1-3 Charter    J seal / leave    Esc leave", 15, InkTheme.Dim);
+            var hint = InkTheme.Text("hint", "↑↓ row    ◂▸ change    1-3 Charter    J seal / buy / leave    Esc leave", 15, InkTheme.Dim);
             hint.style.marginTop = 18;
             _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(hint);
             InkTheme.Show(_panel, false);
@@ -214,13 +227,33 @@ namespace OWSBG.UI
                 _rows.Add(MakeRow(i + 1, "Slot " + (i + 1), name, uses));
             }
             _rows.Add(MakeRow(FateRow, "Place", FateValue(out bool arrows), "", arrows));
+            _rows.Add(MakeRow(MaskRow, "Masks", MaskValue(), Economy.Scraps(GameState.World) + " scraps", false));
+            _rows.Add(MakeRow(BeltRow, "Belt", BeltValue(), "", false));
             if (Row == 0) _blurb.text = profile != null ? profile.Blurb : "";
             else if (Row == FateRow) _blurb.text = FateBlurb();
+            else if (Row == MaskRow) _blurb.text = Economy.MasksFull(GameState.World) ? "The cowl holds nine. It will not take a tenth." : "Vellum stitched into the cowl. One more mask, and it is whole at once.";
+            else if (Row == BeltRow) _blurb.text = GameState.World.Equipment.FourthSlotUnlocked ? "Four loops. A Guild belt." : "A fourth loop on the belt: one more Instrument carried.";
             else
             {
                 var s = e.Slots[Row - 1];
                 _blurb.text = s.IsEmpty ? "An empty loop on the belt." : InstrumentInfo.Of(s.Kind).Blurb;
             }
+        }
+
+        string MaskValue()
+        {
+            var w = GameState.World;
+            var vitals = _wren != null ? _wren.GetComponent<WrenVitals>() : null;
+            int masks = vitals != null ? vitals.MaxMasks : 5 + Economy.MaskUpgrades(w);
+            if (Economy.MasksFull(w)) return masks + " masks · full";
+            return masks + " masks · " + Economy.MaskUpgradeCost + " scraps for one more";
+        }
+
+        string BeltValue()
+        {
+            var w = GameState.World;
+            if (w.Equipment.FourthSlotUnlocked) return "four loops";
+            return "three loops · " + Economy.SlotUpgradeCost + " scraps for a fourth";
         }
 
         static string Verb(PlaceFate f) => f == PlaceFate.Anchored ? "anchor" : f == PlaceFate.Held ? "hold" : f == PlaceFate.Released ? "release" : "unwritten";

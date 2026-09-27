@@ -100,6 +100,7 @@ namespace OWSBG.Narrative
                 else Debug.LogWarning("[OWSBG] <<clock " + phase + ">>: not a phase of the day");
             });
             runner.AddCommandHandler("sleep", () => DayClock.Sleep(GameState.World));
+            runner.AddCommandHandler<string>("shop", hub => Shops.Request(hub));
             runner.AddCommandHandler<string>("erase", place =>
             {
                 if (!Atlas.Erase(GameState.World, place))
@@ -157,6 +158,9 @@ namespace OWSBG.Narrative
 
         [YarnFunction("day")]
         public static float DayCount() => DayClock.Day(GameState.World);
+
+        [YarnFunction("seeds")]
+        public static float SeedCount() => Economy.Seeds(GameState.World);
 
         /// <summary>A Cantor's bell has wiped the place and nobody has drawn it since.</summary>
         [YarnFunction("erased")]

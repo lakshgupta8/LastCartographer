@@ -63,6 +63,8 @@ namespace OWSBG.World
         public LayerMask groundMask;
         [Tooltip("Greybox: own every Instrument from the start, with the first three equipped.")]
         [SerializeField] bool _unlockAllForGreybox = true;
+        [Tooltip("With unlock-all off: own the starting kit (compass-dart, plumb weight, sighting lens); the rest is bought (DES-05).")]
+        [SerializeField] bool _starterKit = true;
 
         public Equipment Equipment => _bound ?? GameState.World.Equipment;
         public int SelectedSlot => Equipment.SelectedSlot;
@@ -106,9 +108,15 @@ namespace OWSBG.World
         void Rebind()
         {
             _bound = GameState.World.Equipment;
-            if (_unlockAllForGreybox)
+            if (_unlockAllForGreybox || _starterKit)
             {
-                foreach (var info in InstrumentInfo.All) _bound.OwnedInstruments.Add(info.Kind);
+                if (_unlockAllForGreybox) foreach (var info in InstrumentInfo.All) _bound.OwnedInstruments.Add(info.Kind);
+                else
+                {
+                    _bound.OwnedInstruments.Add(InstrumentKind.CompassDart);
+                    _bound.OwnedInstruments.Add(InstrumentKind.PlumbWeight);
+                    _bound.OwnedInstruments.Add(InstrumentKind.SightingLens);
+                }
                 if (_bound.Slots[0].IsEmpty && _bound.Slots[1].IsEmpty && _bound.Slots[2].IsEmpty)
                 {
                     Equip(0, InstrumentKind.CompassDart);

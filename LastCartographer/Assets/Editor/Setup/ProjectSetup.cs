@@ -371,6 +371,7 @@ namespace OWSBG.Setup
             uiGo.AddComponent<OWSBG.UI.LedgerView>();
             uiGo.AddComponent<OWSBG.UI.JournalView>();
             uiGo.AddComponent<OWSBG.UI.AtlasView>();
+            uiGo.AddComponent<OWSBG.UI.ShopView>();
             uiGo.AddComponent<OWSBG.UI.PromptView>();
             uiGo.AddComponent<OWSBG.UI.FadeView>();
 
@@ -393,6 +394,7 @@ namespace OWSBG.Setup
             sysGo.AddComponent<PlayerRespawn>();
             sysGo.AddComponent<CommissionTracker>();
             sysGo.AddComponent<DayCycle>();
+            sysGo.AddComponent<IrisSeedDrops>();
 
             // Room manager.
             var rmGo = new GameObject("RoomManager");
@@ -473,6 +475,11 @@ namespace OWSBG.Setup
             svSo.FindProperty("_inkMaterial").objectReferenceValue = MakeLitMaterial("M_Ink_Black", new Color(0.06f, 0.06f, 0.08f));
             svSo.ApplyModifiedPropertiesWithoutUndo();
             var belt = go.AddComponent<InstrumentBelt>();
+            // The shipped Wren starts with the kit; Sable sells the rest (DES-05). Tests keep unlock-all on their own belts.
+            var beltSo = new SerializedObject(belt);
+            beltSo.FindProperty("_unlockAllForGreybox").boolValue = false;
+            beltSo.FindProperty("_starterKit").boolValue = true;
+            beltSo.ApplyModifiedPropertiesWithoutUndo();
             belt.hitMask = LayerMask.GetMask("Hittable", "Enemy");
             belt.groundMask = LayerMask.GetMask("Ground");
             go.AddComponent<CharterSet>();   // after the components it drives; profiles default in Awake
@@ -518,6 +525,7 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Fore_Reeds", -4f, -2.6f, new Color(0.30f, 0.33f, 0.24f), 1.6f);
 
             MakeDummy(room, new Vector2(4f, 0.6f));
+            MakeSeeds(room, new Vector2(7f, 5.9f), 2);   // on the high platform, past the crab
             MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Greybox_Sable", new Color(0.16f, 0.18f, 0.22f));
             var sable = MakeSchedule(room, "Sable_Greybox");
             sable.AddPost(DayPhase.Dawn, new Vector2(-9.5f, 0f), "", "mending nets", 1);
@@ -949,6 +957,7 @@ namespace OWSBG.Setup
             public readonly List<(string name, Vector2 c, Vector2 s, string target, string spawn)> Exits = new List<(string, Vector2, Vector2, string, string)>();
             public readonly List<(string name, Vector2 pos)> Vantages = new List<(string, Vector2)>();
             public readonly List<(System.Type type, string name, Vector2 pos, Vector2 size)> Enemies = new List<(System.Type, string, Vector2, Vector2)>();
+            public readonly List<(Vector2 pos, int n)> Seeds = new List<(Vector2, int)>();
 
             public RoomRecipe(string id) { Id = id; }
             public RoomRecipe Tall() { Bounds = new Rect(-20f, -3f, 40f, 19f); return this; }
@@ -966,6 +975,7 @@ namespace OWSBG.Setup
             public RoomRecipe Crab(float x, float y) { Enemies.Add((typeof(MarshCrab), "Crab_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.7f))); return this; }
             public RoomRecipe Skimmer(float x, float y) { Enemies.Add((typeof(ReedSkimmer), "Skimmer_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.5f))); return this; }
             public RoomRecipe Smudge(float x) { Enemies.Add((typeof(Smudge), "Smudge_" + Enemies.Count, new Vector2(x, 1.5f), new Vector2(1.1f, 1.1f))); return this; }
+            public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
             public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
         }
 
@@ -979,7 +989,7 @@ namespace OWSBG.Setup
             {
                 new RoomRecipe("Saltmarrow_Shore") { SeaWest = true }
                     .Floor(-20f, 20f).Plat(-8f, 0.6f, 2.4f).Vantage("Tideline", -8f, 0.9f)
-                    .Crab(6f).Smudge(-3f)
+                    .Crab(6f).Smudge(-3f).Seed(-12f, 0.5f, 2)
                     .East(Scene(A)),
                 new RoomRecipe("Saltmarrow_Stilts").Tall()
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(-5f, 5f, 3f).Plat(0f, 7.5f, 3f).Plat(5f, 10f, 3f).Plat(0f, 12f, 4f)
@@ -987,7 +997,7 @@ namespace OWSBG.Setup
                     .West(Scene(A)).East(Scene("Saltmarrow_Boardwalk")).Up(Scene("Saltmarrow_Roots_1"), 0f, 12.3f),
                 new RoomRecipe("Saltmarrow_Boardwalk")
                     .Floor(-20f, -6f).Floor(-2f, 8f).Floor(12f, 20f).Shallows(-6f, -2f).Shallows(8f, 12f)
-                    .Crab(3f).Crab(15f).Smudge(-12f)
+                    .Crab(3f).Crab(15f).Smudge(-12f).Seed(-4f, -2f, 3).Seed(10f, -2f, 2)
                     .West(Scene("Saltmarrow_Stilts")).East(Scene(B)),
                 new RoomRecipe("Saltmarrow_Tetherline")
                     .Floor(-20f, 20f).Plat(-8f, 3f, 2.5f).Plat(0f, 4f, 2.5f).Plat(8f, 3f, 2.5f)
@@ -1007,7 +1017,7 @@ namespace OWSBG.Setup
                     .West(Scene("Saltmarrow_Chain_1")).East(Scene("Saltmarrow_Chain_3")),
                 new RoomRecipe("Saltmarrow_Chain_3") { Faded = true }
                     .Floor(-20f, 20f).Plat(-4f, 2.5f, 3f).Plat(2f, 4.5f, 3f)
-                    .Smudge(-8f).Smudge(8f)
+                    .Smudge(-8f).Smudge(8f).Seed(2f, 5.3f, 3)
                     .West(Scene("Saltmarrow_Chain_2")).East(Scene(C)),
                 new RoomRecipe("Saltmarrow_Roots_1")
                     .Floor(-20f, -2f).Floor(2f, 20f).Plat(8f, 3f, 3f).Plat(13f, 6f, 3f)
@@ -1023,7 +1033,7 @@ namespace OWSBG.Setup
                     .Down(Scene("Saltmarrow_Roots_2"), 2f).East(Scene("Saltmarrow_Roots_4")),
                 new RoomRecipe("Saltmarrow_Roots_4")
                     .Floor(-20f, 20f).Plat(0f, 3f, 3f).Plat(5f, 6f, 3f).Plat(10f, 9f, 4f).Vantage("Crown", 10f, 9.3f)
-                    .Crab(-6f).Skimmer(5f, 8f)
+                    .Crab(-6f).Skimmer(5f, 8f).Seed(12f, 9.8f, 5)
                     .West(Scene("Saltmarrow_Roots_3")),
             };
         }
@@ -1055,6 +1065,7 @@ namespace OWSBG.Setup
             foreach (var s in r.Spawns) MakeSpawn(room, s.name, s.pos);
             foreach (var e in r.Exits) MakeTransition(room, e.name, e.c, e.s, e.target, e.spawn);
             foreach (var v in r.Vantages) MakeVantage(room, v.name, r.Id + "/" + v.name, v.pos);
+            foreach (var sd in r.Seeds) MakeSeeds(room, sd.pos, sd.n);
             foreach (var e in r.Enemies)
             {
                 if (e.type == typeof(MarshCrab)) MakeEnemy<MarshCrab>(room, e.name, e.pos, e.size);
@@ -1065,6 +1076,24 @@ namespace OWSBG.Setup
             MakeFadeGroup(room);
             EditorSceneManager.SaveScene(scene, RoomPath(r.Id));
             Debug.Log("[OWSBG] saved " + RoomPath(r.Id));
+        }
+
+        // Iris seeds lying about (DES-05): a small sphere and a trigger.
+        static void MakeSeeds(Room room, Vector2 pos, int n)
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            go.name = "IrisSeeds_" + n;
+            go.layer = LayerMask.NameToLayer("Trigger");
+            Object.DestroyImmediate(go.GetComponent<Collider>());
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y + 0.4f, 0f);
+            go.transform.localScale = Vector3.one * 0.35f;
+            var c = go.AddComponent<CircleCollider2D>();
+            c.isTrigger = true;
+            c.radius = 1.6f;
+            go.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Seed", new Color(0.93f, 0.76f, 0.34f));
+            var seed = go.AddComponent<IrisSeed>();
+            seed.Count = n;
         }
 
         // The sea-fade: the Edge's white sheets, mirrored to the west (the horizon dissolves to white).
@@ -1479,7 +1508,8 @@ namespace OWSBG.Setup
         {
             // OWSBG_SHOT_ROOM=A|B|C picks the room; OWSBG_SHOT_FOCUS="x,y" the point to frame (defaults: A, Wren).
             var roomKey = System.Environment.GetEnvironmentVariable("OWSBG_SHOT_ROOM") ?? "A";
-            var roomPath = roomKey == "B" ? RoomBScenePath : roomKey == "C" ? RoomCScenePath : roomKey == "E" ? RoomEdgeScenePath : RoomAScenePath;
+            var roomPath = roomKey == "B" ? RoomBScenePath : roomKey == "C" ? RoomCScenePath : roomKey == "E" ? RoomEdgeScenePath
+                         : roomKey == "A" ? RoomAScenePath : RoomPath(roomKey);   // or any recipe room id, e.g. Saltmarrow_Stilts
             EditorSceneManager.OpenScene(PersistentScenePath, OpenSceneMode.Single);
             EditorSceneManager.OpenScene(roomPath, OpenSceneMode.Additive);
             var cam = Camera.main;

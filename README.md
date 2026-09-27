@@ -67,7 +67,12 @@ and pressing Play inside any room scene bootstraps the persistent scene for you.
 | Atlas (map, journal, travel) | M | Select |
 
 Forward strikes chain into the Charter's three-hit combo when pressed within 18 frames of the last swing.
-Every base Charter and every Instrument is owned from the start in the greybox; the desk menu swaps them.
+Every base Charter is owned from the start in the greybox; the desk menu swaps them. Wren starts with three Instruments (compass-dart, plumb weight, sighting lens) and buys the rest.
+
+The economy (`docs/design/economy.md`): enemies drop **iris seeds** (✿ on the HUD) and a few lie about the rooms; ask Sable
+what she is selling and her table opens (↑↓, J buys, Esc leaves): the field lantern, iris tincture, wax seal and tether-hook,
+half again dearer if the iris fields burn. **Vellum scraps** (from commissions and the Lamp-Keeper) buy masks and the fourth
+belt slot at any desk: the desk's Masks and Belt rows, J to buy.
 
 Wingbeat and Talonhold are pre-unlocked in the greybox for feel-testing (`AbilitySet` on the Wren object).
 
@@ -75,7 +80,7 @@ Room A also has the first world interactions. Stand in front of something and pr
 - the dark bird on the left is a stand-in Sable: a Yarn conversation on the paper page (1-3 or arrows, J to confirm);
 - the paper sheet on a post between Sable and the desk is the **Commissions ledger**: the coast's side-quests. Read it (up) to see what is posted, J takes one, and once the journal (M) shows it fulfilled, J at the board turns it in for vellum scraps. Three post from the start; Dotha's posts after you meet Sable and the Tether-Widows after the Lamp-Keeper;
 - the small table is a drafting desk: restores masks and Instrument uses, sets the respawn point, sleeps to the next dawn, saves to `saves/slot0.json`, and opens the desk menu (row 0 swaps the Charter with ◂ ▸ or 1-3; the rows below swap what sits in each Instrument slot; J leaves);
-- the light brown slab up on the left wall is a weak floor (a plumb weight breaks it; the quill only scratches it) and the faint slab on the far right is a hidden platform (a Field lantern draws it for ten seconds);
+- the light brown slab up on the left wall is a weak floor (a plumb weight breaks it; the quill only scratches it) and the faint slab on the far right is a hidden platform (a Field lantern draws it for ten seconds; Sable sells the lantern);
 - the blue post on the right is a vantage point: hold **Q** on it to survey it (Sable notices afterwards, and the atlas page marks it drawn).
 
 Room B's west end has Dotha, the last elder of Merrow's End. She only talks properly once her commission is taken; her decision seeds an island in the Blank (`blank.island.Merrows_End`). The design is in `docs/design/commissions.md`.
@@ -114,13 +119,13 @@ timeline until it ends; an optional Cinemachine shot takes over while it plays a
 The HUD, dialogue page, desk page, atlas spread and boss bar are one UI Toolkit document (`UI` object in the persistent
 scene; `Assets/_Project/Code/UI`), built in code on the paper-and-ink palette until the UI art (ENV-11) lands.
 
-Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it), `<<fade place stage>>`, `<<anchor|hold|release place>>`, `<<erase place>>`, `<<clock dawn|day|dusk|night>>`, `<<sleep>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`, `fade_stage("place")`, `place_fate("place")`, `erased("place")`, `drawn("place")`, `phase()`, `phase_in("place")`, `day()`.
+Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it), `<<fade place stage>>`, `<<anchor|hold|release place>>`, `<<erase place>>`, `<<clock dawn|day|dusk|night>>`, `<<sleep>>`, `<<shop hub>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`, `fade_stage("place")`, `place_fate("place")`, `erased("place")`, `drawn("place")`, `phase()`, `phase_in("place")`, `day()`, `seeds()`.
 
 ## Verifying headless
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, the survey loop and fast travel, hub schedules, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-atlas.png` with the UI composited over the camera, for a headless visual check.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, the survey loop and fast travel, hub schedules, the economy, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-atlas.png` with the UI composited over the camera, for a headless visual check.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

@@ -1,4 +1,5 @@
 using System;
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -20,7 +21,8 @@ namespace OWSBG.World
         int _invulnLeft;
 
         public int MaxMasks => _maxMasks;
-        public int BaseMaxMasks => _baseMaxMasks > 0 ? _baseMaxMasks : _maxMasks;
+        /// <summary>The serialized base plus vellum upgrades (DES-05); Charter passives apply on top.</summary>
+        public int BaseMaxMasks => (_baseMaxMasks > 0 ? _baseMaxMasks : _maxMasks) + Economy.MaskUpgrades(GameState.World);
         int _baseMaxMasks = -1;
 
         /// <summary>Charter passive: Warden +1 mask, Drifter capped at 4. Current masks are clamped, never refilled.</summary>
@@ -46,6 +48,17 @@ namespace OWSBG.World
             _ink = GetComponent<Inkwell>();
             _ctrl = GetComponent<WrenController>();
             if (_baseMaxMasks < 0) _baseMaxMasks = _maxMasks;
+        }
+
+        void OnEnable() { Economy.MaskBought += OnMaskBought; }
+        void OnDisable() { Economy.MaskBought -= OnMaskBought; }
+
+        /// <summary>A vellum cache stitched in at the desk: one more mask, and it is full.</summary>
+        void OnMaskBought(int upgrades)
+        {
+            SetMaxMasks(_maxMasks + 1);
+            _masks = Mathf.Min(_maxMasks, _masks + 1);
+            MasksChanged?.Invoke(_masks);
         }
 
         void FixedUpdate()

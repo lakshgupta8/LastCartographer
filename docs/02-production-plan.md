@@ -65,7 +65,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | DES-02 `[~]` | Survey spec: vantage points, atlas inking animation, fast travel, erasure/re-survey; v1 in `docs/design/survey.md`, the page's inking animation and line-of-sight vantages open | M0 | SB-10 | DES-01 |
 | DES-03 `[~]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns; v1 in `docs/design/anchoring.md`, bind requirement and licence rules open | M0 | SB-1.3, 10 | DES-02 |
 | DES-04 `[~]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage); v1 in `docs/design/fade-stages.md`, per-region curves open | M0 | SB-10, ART-3 | DES-01 |
-| DES-05 `[ ]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades | M1 | CMB-6 | DES-01 |
+| DES-05 `[~]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades; v1 in `docs/design/economy.md` with seeds, drops, Sable's shop, desk mask and belt upgrades in the greybox; quill upgrades and caches open | M1 | CMB-6 | DES-01 |
 | DES-06 `[~]` | Commissions system spec (ledger, states, rewards, Blank-island flags); v1 in `docs/design/commissions.md`, failure and expiry rules open | M1 | SB-8 | DES-01 |
 | DES-07 `[~]` | World macro map: region graph, room counts, ability gates, sequence-break policy; v1 in `docs/design/world-map.md` and as data (`WorldGraph`, reachability tests); per-region layouts are DES-08–11 | M0 | SB-4.0 | DES-01 |
 | DES-08 `[~]` | Saltmarrow room-by-room level design (paper maps, vantage points, gauntlet); v1 for the slice in `docs/design/saltmarrow-rooms.md`, built as recipe rooms in the greybox (16 rooms); the rest of the coast sketched | M0 | SB-4.1 | DES-07 |

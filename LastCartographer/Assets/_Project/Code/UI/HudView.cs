@@ -18,7 +18,7 @@ namespace OWSBG.UI
         CharterSet _charters;
         InstrumentBelt _belt;
         VisualElement _root, _masks, _pips, _slots;
-        Label _charter, _death;
+        Label _charter, _death, _seeds;
         float _nextRefresh;
         bool _built;
 
@@ -60,6 +60,10 @@ namespace OWSBG.UI
 
             _slots = InkTheme.Row("hud-slots");
             _root.Add(_slots);
+
+            _seeds = InkTheme.Text("hud-seeds", "", 16, InkTheme.Ochre);
+            _seeds.style.marginTop = 6;
+            _root.Add(_seeds);
 
             _death = InkTheme.Text("hud-death", "the ink runs out", 34, InkTheme.Ink, FontStyle.Italic);
             _death.style.position = Position.Absolute;
@@ -122,6 +126,7 @@ namespace OWSBG.UI
                 }
             }
 
+            _seeds.text = "✿ " + Economy.Seeds(GameState.World);
             InkTheme.Show(_death, _vitals.IsDead);
         }
 

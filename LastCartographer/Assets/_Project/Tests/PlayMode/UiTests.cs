@@ -173,7 +173,8 @@ Sable: Everything here has a price.
             Assert.IsTrue(_ctrl!.Frozen);
             Assert.IsNotNull(_menu.Panel);
             Assert.AreEqual(DisplayStyle.Flex, _menu.Panel.style.display.value);
-            Assert.AreEqual(5, _menu.Panel.Q("rows").childCount, "Charter row, three slots, the place");
+            Assert.AreEqual(_menu.RowCount, _menu.Panel.Q("rows").childCount, "Charter row, three slots, the place, masks, belt");
+            Assert.AreEqual(7, _menu.RowCount);
             Assert.IsTrue(_menu.Panel.Q("rows")[0].ClassListContains("selected"));
 
             _menu.Step(1);

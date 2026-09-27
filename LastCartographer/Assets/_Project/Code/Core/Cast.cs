@@ -91,11 +91,11 @@ namespace OWSBG.Core
 
             // ---- The five (character-bibles.md §1–5) ------------------------------------------------------------------
             Member("pell", "Pell", "jackdaw", "Meridian Guild", "lists, shortening", "\"which, technically, means...\"", "anything unkind", plain: true);
-            At("pell", Act1, "Greyfold.RoadThatStops", "the act break: sent to watch, sees her step in and come back", "Edge_Pell_Watch", writes: "pell.saw_her_cross");
+            At("pell", Act1, "Greyfold.RoadThatStops", "the act break: sent to watch, sees her step in and come back", "Edge_Pell_Watch", staged: true, writes: "pell.saw_her_cross, act2.started, ability.clarity");
             At("pell", Act2, "Halden.JourneymansHall", "the minder; Interlude A, the report", "Hall_Pell_Minder", staged: true, writes: "pell.report_read, pell.report_sent");
             At("pell", Act2, "Halden.Vault", "the empty slot (plant 5.2)", "Vault_Pell_Slot", staged: true, writes: "halden.vault.pell_counted");
             At("pell", Act2, "Halden.Bastion", "Voss's office by the flyer-tower: the drawing (plant 5.5)", "Office_Pell_Drawing", staged: true, writes: "halden.office.pell_ledgers");
-            At("pell", Act2, "Greyfold.Threshold", "if the report was not sent: comes to see her cross", "Threshold_Pell_Cross", writes: "pell.at_threshold");
+            At("pell", Act2, "Greyfold.Threshold", "if the report was not sent: comes to see her cross", "Threshold_Pell_Cross", staged: true, writes: "pell.at_threshold");
             At("pell", Act3, "Halden.Observatory", "the Return: holds the frame's door; the last list", "Observatory_Pell_Return", writes: "pell.last_list");
             At("pell", Epilogue, "Halden.JourneymansHall", "the epilogue walk, by ending", "Epilogue_Pell");
 
@@ -128,7 +128,7 @@ namespace OWSBG.Core
 
             Member("marrow", "Marrow", "grey chick, unreadable", "none", "echoes", "one original word per island, four in all", "a word that is not the scene's");
             At("marrow", Prologue, "Greyfold.HalfCathedral", "glimpsed in the white at the thirtieth step, silent");
-            At("marrow", Act2, "Greyfold.MirrorPool", "in the pool's reflection and not on the bank; one echo", "MirrorPool_Marrow", writes: "marrow.seen_in_pool");
+            At("marrow", Act2, "Greyfold.MirrorPool", "in the pool's reflection and not on the bank; one echo", "MirrorPool_Marrow", staged: true, writes: "marrow.seen_in_pool");
             At("marrow", Act3, "Blank.ThessalyHollow", "following, from the Lantern on; Ilse does not know it; first word", "Blank_Marrow_Follow", writes: "marrow.following, marrow.words=1");
             At("marrow", Act3, "Blank.OldCapital", "echoes Corvin; second word", "Capital_Marrow_Word", writes: "marrow.words=2");
             At("marrow", Act3, "Greyfold.Threshold", "the Return: echoes Voss; third word", "Threshold_Marrow", writes: "marrow.words=3");
@@ -144,7 +144,7 @@ namespace OWSBG.Core
             Member("halvard", "Warden-Sergeant Halvard", "heron", "Meridian Guild", "paces and counts", "enters silence as a plea", "her first name");
             At("halvard", Act1, "Saltmarrow.LanternChain", "the first hunt: three paces, the count, unlicensed (staged in the fourth lighthouse; the bible's Salt Chapel)", "Lighthouse_Halvard_Hunt", staged: true, writes: "act1.halvard_met, act1.unlicensed");
             At("halvard", Act2, "Halden.SevenBridges", "the second hunt, new kit", "Bridges_Halvard_Hunt", staged: true, writes: "act2.halvard_second");
-            At("halvard", Act2, "Greyfold.Threshold", "the third, beside Voss", "Threshold_Halvard", writes: "act2.halvard_third");
+            At("halvard", Act2, "Greyfold.Threshold", "the third, beside Voss", "Threshold_Halvard", staged: true, writes: "act2.halvard_third");
 
             Member("dotha", "Dotha", "(last elder of Merrow's End)", "Merrow's End", "the songs, counted down", "never asks twice", "\"please\"");
             At("dotha", Act1, "Saltmarrow.MerrowsEnd", "her last season: nine songs of eleven; three ways", "Merrow_Dotha", staged: true, writes: "saltmarrow.dotha.*");
@@ -168,7 +168,7 @@ namespace OWSBG.Core
             At("hale", Act2, "Windreach.NineStones", "the ninth stone at dusk: stop him, let him finish, or hold the staff; boss 6.9", "Stones_Hale", staged: true, writes: "windreach.hale.decided, windreach.hale.finished / windreach.hale.pages");
 
             Member("voss", "Guildmaster Aurelian Voss", "grey heron", "Meridian Guild", "titles; \"we\" for the Guild", "flinches at \"Halloway\"", "\"Corra\"");
-            At("voss", Act2, "Greyfold.Threshold", "the one speech; boss 6.11", "Threshold_Voss", writes: "greyfold.crossed");
+            At("voss", Act2, "Greyfold.Threshold", "the one speech; boss 6.11", "Threshold_Voss", staged: true, writes: "greyfold.crossed");
             At("voss", Act3, "Halden.Observatory", "changed, or a statue", "Observatory_Voss");
 
             Member("corvin", "Corvin Halloway, the Archivist", "great owl", "the Remnant", "\"When I—\"", "self-correcting", "\"it wasn't my fault\"");

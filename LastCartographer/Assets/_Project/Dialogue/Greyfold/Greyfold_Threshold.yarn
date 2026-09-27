@@ -1,0 +1,120 @@
+// The Threshold (bible 7.2 climax, 6.3, 6.11; character-bibles.md §1, §8). Two rooms: the Guild's line (Threshold_1),
+// where Halvard fights a third time and stops counting, and the line itself (Threshold_2), where Voss gives the
+// game's one speech. He brought tethers to go in himself at last; he has stood here since dawn and not stepped.
+// His speech reads what Wren has done: Pell's report, the audience, the stones she carries, the Steppe's survey.
+// Voss: formal, exact, titles, "we" for the Guild; flinches at "Halloway"; does not say "Corra".
+
+title: Threshold_Halvard
+---
+<<if has_flag("act2.halvard_third")>>
+    Halvard: A survey. I entered it as a survey. The first I've written. #still
+    <<stop>>
+<<endif>>
+<<if has_flag("boss.halvard_3.defeated")>>
+    Halvard: Go. I'll enter it as a survey.
+    Halvard: Wardens. Lances down. This is a survey now. Nobody counts her.
+    <<flag act2.halvard_third 1>>
+    <<stop>>
+<<endif>>
+Halvard: The count ends here, journeyman.
+<<if has_flag("act2.halvard_second")>>
+    Halvard: Three paces at the lighthouse. Four on the bridges. None here. I counted every one.
+<<else>>
+    Halvard: The bridges missed you. The line will not.
+<<endif>>
+-> Count me, then.
+    Halvard: One. That's all you were to them. One.
+    <<voice warden greyfold>>
+-> You don't want to be here.
+    Halvard: No. I want to be home, counting gulls. Lance up.
+    <<voice surveyor greyfold>>
+-> ...
+    Halvard: Silence. You learned that from me. Good.
+    <<voice drift greyfold>>
+<<flag threshold.halvard.spoken 1>>
+===
+
+title: Threshold_Voss
+---
+<<if has_flag("boss.voss.defeated")>>
+    <<if has_flag("greyfold.crossed")>>
+        Voss: Go, journeyman. The line is yours now. #still
+    <<else>>
+        Voss: Take it in. Tell her— no. Nothing. Go. #plant:5.5
+        Voss: I will be here. I have been here forty-one years. A little longer costs nothing.
+        <<flag greyfold.crossed 1>>
+    <<endif>>
+    <<stop>>
+<<endif>>
+<<if has_flag("threshold.voss.spoken")>>
+    Voss: We are past speeches, journeyman. Take up your quill.
+    <<stop>>
+<<endif>>
+Voss: Journeyman Halloway. This is as far as the map goes. #plant:5.4
+<<if has_flag("pell.report_sent")>>
+    Voss: Your minder writes well. I have read the report four times.
+<<elseif has_flag("pell.report_kept")>>
+    Voss: Your minder filed nothing on you. Pell has not once filed late. We noticed.
+<<endif>>
+<<if flag("halden.maren.decided") == 1>>
+    Voss: The Crown tells me you will make Halden permanent. Then help us hold it.
+<<elseif flag("halden.maren.decided") == 2>>
+    Voss: The Queen-Regent says you refused her. So have we, often.
+<<elseif flag("halden.maren.decided") == 3>>
+    Voss: You told the Queen-Regent about the boy. That was not yours to tell. #plant:5.1
+<<endif>>
+<<if keystones() >= 3>>
+    Voss: Three stones. More. You have emptied half of Aurenne into your pack.
+<<elseif keystones() >= 1>>
+    Voss: You carry the kingdom's stones. They belong in the Vault, in the slots we keep.
+<<else>>
+    Voss: You carry no stones. Good. Then we have nothing to take from you.
+<<endif>>
+<<if has_flag("windreach.hale.finished")>>
+    Voss: Hale's survey of the Steppe is on my desk. Even the clans hold still for paper.
+<<elseif has_flag("boss.hale.defeated")>>
+    Voss: Hale came home without his lens. He will not say why. We did not ask.
+<<endif>>
+Voss: Forty-one years we have held this line. Not one more town has gone into the white.
+Voss: I brought tethers today. Forty. I meant to go in myself, this morning.
+Voss: I have stood here since dawn. I cannot say why I have not. #plant:5.5
+Voss: So nobody crosses. Not you. Not with the kingdom's stones. We hold. That is what we are for.
+-> Come in with me.
+    Voss: No. Somebody must hold the line.
+    <<voice drift greyfold>>
+-> Who's in there you won't see?
+    Voss: Nobody. Nothing. Take up your quill, journeyman. #plant:5.5
+    <<voice surveyor greyfold>>
+-> Stand aside, Guildmaster.
+    Voss: Then we will see which of us the map remembers.
+    <<voice warden greyfold>>
+<<flag threshold.voss.spoken 1>>
+===
+
+title: Threshold_Pell_Cross
+---
+<<if not has_flag("pell.report_kept")>>
+    Threshold: The Wardens' line, broken. Tethers dropped on the white. Nobody from the Hall came.
+    <<stop>>
+<<endif>>
+<<if not has_flag("boss.voss.defeated")>>
+    Pell: He's right there. Which, technically, means you're not across yet. I'll wait. I'm good at it.
+    <<stop>>
+<<endif>>
+<<if has_flag("pell.at_threshold")>>
+    Pell: Go on. I'm writing. I'm a fast writer. #still
+    <<stop>>
+<<endif>>
+Pell: Three things. Your name. Isolde's. And whoever's in there.
+Pell: Go on. I'll write it down.
+-> Write it plainly.
+    Pell: I only know how to write it plainly. That was the whole problem, once.
+    <<voice surveyor greyfold>>
+-> Come with me.
+    Pell: I can't. Someone has to be here when you come back. It's going to be me.
+    <<voice warden greyfold>>
+-> ...
+    Pell: Yes. Fine. That too. I'll write the silence down.
+    <<voice drift greyfold>>
+<<flag pell.at_threshold 1>>
+===

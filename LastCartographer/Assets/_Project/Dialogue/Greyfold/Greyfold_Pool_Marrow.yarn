@@ -1,0 +1,24 @@
+// The Mirror Pool (Pool_2; character-bibles.md §5). Marrow's one echo in Act 2: a grey chick in the reflection and
+// not on the bank. It says back Wren's own last chosen line, in her words. Nothing else. Marrow's lines are copies;
+// the #echo tag keeps localisation identical.
+
+title: MirrorPool_Marrow
+---
+<<if has_flag("marrow.seen_in_pool")>>
+    Pool: Only Wren in the water now, in colour. #still
+    <<stop>>
+<<endif>>
+Pool: Water flat as paper. Wren in it, in colour.
+Pool: Behind her, in the water, a grey chick. On the bank behind her, nothing.
+-> Who's there?
+    Marrow: Who's there? #echo:wren
+    <<voice surveyor greyfold>>
+-> You're not on the bank.
+    Marrow: Not on the bank. #echo:wren
+    <<voice warden greyfold>>
+-> ...
+    Marrow: ... #echo:wren
+    <<voice drift greyfold>>
+Pool: A ripple. The chick is gone. The water shows only her.
+<<flag marrow.seen_in_pool 1>>
+===

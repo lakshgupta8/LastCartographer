@@ -1,0 +1,27 @@
+// The Edge Camp (EdgeCamp_2), the abandoned Guild outpost. Act 2 calls its climax here (bible 7.2): once Interlude A
+// is decided, a notice is nailed over the old ledger. Voss is going in himself at dawn. Reading it opens the way
+// from the Mirror Pool to the Threshold (`act2.threshold`, the map's gate).
+
+title: EdgeCamp_Notice
+---
+<<if not has_flag("pell.report_decided")>>
+    Ledger: A Guild ledger, forty-one years unposted. The last entry reads "Survey the Threshold." Unsigned.
+    <<stop>>
+<<endif>>
+<<if has_flag("act2.threshold")>>
+    Notice: By order of the Guildmaster. The Threshold is closed. #still
+    <<stop>>
+<<endif>>
+Notice: By order of the Guildmaster. The Threshold is closed from today.
+Notice: The Guild enters it at dawn. Journeymen will stand at the line. A. Voss.
+<<if has_flag("pell.report_kept")>>
+    Notice: Underneath, in a smaller hand: I'll be there after. Don't wait. P.
+<<endif>>
+-> He's going in himself?
+    <<voice surveyor greyfold>>
+-> Then I'll be at the line.
+    <<voice warden greyfold>>
+-> ...
+    <<voice drift greyfold>>
+<<flag act2.threshold 1>>
+===

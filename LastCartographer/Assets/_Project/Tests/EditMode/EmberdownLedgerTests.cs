@@ -88,6 +88,12 @@ namespace OWSBG.Tests
                                       "windreach.fire.witnessed", "windreach.survey.decided", "keystone.windreach", "windreach.star.woken",
                                       "windreach.hale.finished", "windreach.hale.pages", "windreach.hale.decided" })
                 Assert.IsTrue(written.Contains(f), f + " is written by a script");
+            // The Greyfold's Act 1 end and Act 2 climax (NAR-11): every flag the map's gates wait on is written.
+            foreach (var f in new[] { "act2.started", "pell.saw_her_cross", "act2.threshold", "marrow.seen_in_pool", "act2.halvard_third",
+                                      "greyfold.crossed", "pell.at_threshold", "keystone.hollowvein" })
+                Assert.IsTrue(written.Contains(f), f + " is written by a script");
+            foreach (var l in WorldGraph.Links.Where(l => l.Flag != null && !l.Flag.StartsWith("act3.") && l.Flag != "saltmarrow.tether"))
+                Assert.IsTrue(written.Contains(l.Flag), "the map's gate " + l.Flag + " (" + l.From + " – " + l.To + ") is opened by a script");
             // The arcs' own beats are all written.
             foreach (var f in new[] { "verdance.teodor.met", "verdance.teodor.thread", "verdance.grove.vigil", "verdance.aldermere.attended",
                                       "verdance.aldermere.stopped", "teodor.keystone_given", "teodor.refused", "keystone.quiet_house",

@@ -196,6 +196,10 @@ namespace OWSBG.Narrative
         [YarnFunction("voice_in")]
         public static float VoiceIn(string scope, string kind) => Voices.TryParse(kind, out var v) ? Voices.Count(GameState.World, v, scope) : 0f;
 
+        /// <summary>How many keystones Wren carries (Voss counts them at the Threshold).</summary>
+        [YarnFunction("keystones")]
+        public static float KeystoneCount() => Keystones.Count(GameState.World);
+
         /// <summary>The Guild's count has come in: she is missing, and missing carries no licence.</summary>
         [YarnFunction("unlicensed")]
         public static bool IsUnlicensed() => Licence.IsUnlicensed(GameState.World);

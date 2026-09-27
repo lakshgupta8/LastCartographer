@@ -20,6 +20,7 @@ namespace OWSBG.World
 
         public bool IsRespawning => _respawning;
         public event Action Respawned;
+        public event Action WaxSealUsed;
 
         void Start() { Bind(); }
 
@@ -50,7 +51,21 @@ namespace OWSBG.World
             var room = string.IsNullOrEmpty(w.RespawnRoom) ? current : w.RespawnRoom;
             var spawn = string.IsNullOrEmpty(w.RespawnSpawn) ? "Start" : w.RespawnSpawn;
 
-            if (RoomManager.Instance != null && !string.IsNullOrEmpty(room) && room != current)
+            if (w.HasWaxSeal)
+            {
+                // Wax seal (combat doc 6): a one-shot respawn at a world position, consumed now.
+                var sealRoom = w.WaxSealRoom;
+                var sealPos = new Vector2(w.WaxSealX, w.WaxSealY);
+                w.WaxSealRoom = null;
+                if (RoomManager.Instance != null && sealRoom != current && !string.IsNullOrEmpty(current))
+                {
+                    RoomManager.Instance.Transition(sealRoom, spawn);
+                    while (RoomManager.Instance.IsTransitioning) yield return null;
+                }
+                _wren.Teleport(sealPos);
+                WaxSealUsed?.Invoke();
+            }
+            else if (RoomManager.Instance != null && !string.IsNullOrEmpty(room) && room != current)
             {
                 RoomManager.Instance.Transition(room, spawn);
                 while (RoomManager.Instance.IsTransitioning) yield return null;

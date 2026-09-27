@@ -20,6 +20,20 @@ namespace OWSBG.World
         int _invulnLeft;
 
         public int MaxMasks => _maxMasks;
+        public int BaseMaxMasks => _baseMaxMasks > 0 ? _baseMaxMasks : _maxMasks;
+        int _baseMaxMasks = -1;
+
+        /// <summary>Charter passive: Warden +1 mask, Drifter capped at 4. Current masks are clamped, never refilled.</summary>
+        public void SetMaxMasks(int max)
+        {
+            if (_baseMaxMasks < 0) _baseMaxMasks = _maxMasks;
+            max = Mathf.Max(1, max);
+            if (max == _maxMasks) return;
+            _maxMasks = max;
+            if (_masks > _maxMasks) _masks = _maxMasks;
+            MasksChanged?.Invoke(_masks);
+        }
+        public void ResetMaxMasks() { if (_baseMaxMasks > 0) SetMaxMasks(_baseMaxMasks); }
         public int Masks => _masks;
         public bool IsBinding => _bindHeld > 0f;
         public bool IsDead => _masks <= 0;
@@ -31,6 +45,7 @@ namespace OWSBG.World
         {
             _ink = GetComponent<Inkwell>();
             _ctrl = GetComponent<WrenController>();
+            if (_baseMaxMasks < 0) _baseMaxMasks = _maxMasks;
         }
 
         void FixedUpdate()

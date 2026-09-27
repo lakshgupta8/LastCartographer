@@ -46,6 +46,9 @@ namespace OWSBG.World
         public int hitstopFrames = 2;
         public LayerMask hitMask;
 
+        /// <summary>The neutral-direction Flourish. Set by the Charter (Surveyor Crosshatch, Warden Blot, Drifter Longstroke).</summary>
+        public FlourishKind DefaultKind { get; set; } = FlourishKind.Crosshatch;
+
         public FlourishKind Current { get; private set; }
         public bool IsBusy => Current != FlourishKind.None;
         public event Action<FlourishKind> Performed;
@@ -74,11 +77,7 @@ namespace OWSBG.World
             if (Current == FlourishKind.None)
             {
                 if (_ctrl.Input == null || !_ctrl.Input.ConsumeFlourish()) return;
-                var move = _ctrl.Input.Move;
-                var kind = move.y > 0.5f ? FlourishKind.Blot
-                         : Mathf.Abs(move.x) > 0.5f ? FlourishKind.Longstroke
-                         : FlourishKind.Crosshatch;
-                TryPerform(kind);
+                TryPerform(PickKind(_ctrl.Input.Move));
                 return;
             }
 
@@ -119,6 +118,14 @@ namespace OWSBG.World
                     if (_frame >= blotStartup + recoveryFrames) End();
                     break;
             }
+        }
+
+        /// <summary>Neutral is the Charter default; up is Blot and forward is Longstroke unless that is the default, then Crosshatch.</summary>
+        public FlourishKind PickKind(Vector2 move)
+        {
+            if (move.y > 0.5f) return DefaultKind == FlourishKind.Blot ? FlourishKind.Crosshatch : FlourishKind.Blot;
+            if (Mathf.Abs(move.x) > 0.5f) return DefaultKind == FlourishKind.Longstroke ? FlourishKind.Crosshatch : FlourishKind.Longstroke;
+            return DefaultKind;
         }
 
         public bool TryPerform(FlourishKind kind)

@@ -85,8 +85,8 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CMB-03 `[~]` | Inkwell + Bind | M0 | CMB-2.2, 4 | CMB-02 |
 | CMB-04 `[~]` | Wingbeat, Talonhold, Inkthread, Windmemory implementations with ability gating | M1–M2 | CMB-3 | CMB-01 |
 | CMB-05 `[~]` | Flourishes: Crosshatch, Longstroke, Blot | M1 | CMB-4 | CMB-03 |
-| CMB-06 `[ ]` | Charters (3 base) with combo rewrites and silhouettes | M2 | CMB-5 | CMB-05 |
-| CMB-07 `[ ]` | Instruments (7) and slot system | M2 | CMB-6 | CMB-03 |
+| CMB-06 `[~]` | Charters (3 base) with combo rewrites and silhouettes (greybox: combo, passives, default Flourish, tint; silhouettes await CHR art) | M2 | CMB-5 | CMB-05 |
+| CMB-07 `[~]` | Instruments (7) and slot system (greybox effects for all 7; Compass-dart marks await Inkthread, tether-hook is a marker) | M2 | CMB-6 | CMB-03 |
 | CMB-08 `[~]` | Enemy framework: state machine, telegraphs, "answer" tagging, families | M1 | CMB-7 | CMB-02 |
 | CMB-09 `[~]` | Enemy roster: 12 for M1, 40 by M3 | M1–M3 | CMB-7 | CMB-08 |
 | CMB-10 `[ ]` | Boss framework: phases, arena states, intro/outro Timeline, retry loop under 8 s | M1 | CMB-8 | CMB-08 |
@@ -114,7 +114,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-08 `[~]` | Dialogue runtime: Yarn Spinner, `<<flag>>`, `<<commission>>`, `<<fade>>`, `<<anchor>>`, dialogue UI | M0 | SB-11 | PRG-01 |
 | PRG-09 `[~]` | `WorldState` + save/load (JSON, autosave at desks) | M0 | SB-10 | PRG-01 |
 | PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure | M1 | DES-02 | PRG-08 |
-| PRG-11 `[~]` | Drafting desk: rest, respawn, Charter/Instrument swap, save | M1 | GDD 6 | PRG-09 |
+| PRG-11 `[~]` | Drafting desk: rest, respawn, Charter/Instrument swap (placeholder IMGUI desk menu), save | M1 | GDD 6 | PRG-09 |
 | PRG-12 `[ ]` | Commissions ledger runtime and journal | M1 | DES-06 | PRG-09 |
 | PRG-13 `[ ]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner | M2 | DES-03 | PRG-10 |
 | PRG-14 `[ ]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement | M2 | DES-04 | PRG-03 |

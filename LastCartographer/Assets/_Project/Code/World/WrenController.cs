@@ -47,6 +47,10 @@ namespace OWSBG.World
 
         public IWrenInput Input { get; set; }
         public AbilitySet Abilities { get; set; }
+        /// <summary>Charter passives: Wingbeat distance multiplier and extra dashes per airtime.</summary>
+        public float DashScale { get; set; } = 1f;
+        public int ExtraAirDashes { get; set; }
+        public int DashesLeft => _dashCharges;
         /// <summary>While true (dialogue, cutscenes) input is ignored and Wren stops; gravity still applies.</summary>
         public bool Frozen { get; set; }
 
@@ -54,6 +58,7 @@ namespace OWSBG.World
         public bool IsGrounded => _grounded;
         public int Facing => _facing;
         public bool IsDashing => _dashFramesLeft > 0;
+        float DashDistance => dashDistance * DashScale;
         public bool IsClinging => _clinging;
         public int WallDirection => _wallDir;
         public bool IsInvulnerable => IsDashing && _dashElapsed >= dashInvulnStart && _dashElapsed <= dashInvulnEnd;
@@ -71,7 +76,7 @@ namespace OWSBG.World
         int _facing = 1;
         int _coyoteLeft, _apexLeft, _inputLock;
         bool _jumpCutApplied;
-        bool _dashAvailable = true;
+        int _dashCharges = 1;
         int _dashFramesLeft, _dashElapsed, _dashDir, _wallDir;
         float _clingTimer;
         float _gravity, _jumpVelocity, _minJumpVelocity, _pogoVelocity;
@@ -129,7 +134,7 @@ namespace OWSBG.World
         public void Pogo()
         {
             _vel.y = _pogoVelocity;
-            _dashAvailable = true;
+            _dashCharges = 1 + ExtraAirDashes;
             _dashFramesLeft = 0;
             _jumpCutApplied = true;
             _apexLeft = apexHangFrames;
@@ -145,6 +150,7 @@ namespace OWSBG.World
             {
                 // Drain buffered presses so nothing fires the moment dialogue ends.
                 Input.ConsumeJump(); Input.ConsumeDash(); Input.ConsumeAttack(); Input.ConsumeFlourish();
+                Input.ConsumeInstrument(); Input.ConsumeCycleInstrument();
             }
 
             _grounded = Probe(Vector2.down);
@@ -153,7 +159,7 @@ namespace OWSBG.World
             if (_grounded)
             {
                 _coyoteLeft = coyoteFrames;
-                _dashAvailable = true;
+                _dashCharges = 1 + ExtraAirDashes;
                 _clingTimer = 0f;
                 if (_vel.y < 0f) _vel.y = 0f;
             }
@@ -165,7 +171,7 @@ namespace OWSBG.World
             {
                 _dashFramesLeft--;
                 _dashElapsed++;
-                _vel = new Vector2(_dashDir * dashDistance / (dashFrames * dt), 0f);
+                _vel = new Vector2(_dashDir * DashDistance / (dashFrames * dt), 0f);
                 if (_dashFramesLeft == 0) _vel.x = _dashDir * runSpeed;
             }
             else
@@ -187,7 +193,7 @@ namespace OWSBG.World
                 {
                     _clinging = true;
                     _clingTimer += dt;
-                    _dashAvailable = true;
+                    _dashCharges = 1 + ExtraAirDashes;
                     _vel.y = _clingTimer < clingSeconds ? 0f : -slideSpeed;
                 }
 
@@ -232,14 +238,14 @@ namespace OWSBG.World
                 }
 
                 // Wingbeat: one per airtime; resets on ground, wall, or pogo.
-                if (_dashAvailable && Abilities != null && Abilities.Has(Ability.Wingbeat) && Input != null && Input.ConsumeDash())
+                if (_dashCharges > 0 && Abilities != null && Abilities.Has(Ability.Wingbeat) && Input != null && Input.ConsumeDash())
                 {
-                    _dashAvailable = false;
+                    _dashCharges--;
                     _dashFramesLeft = dashFrames;
                     _dashElapsed = 0;
                     _dashDir = Mathf.Abs(move.x) > 0.1f ? (move.x > 0f ? 1 : -1) : _facing;
                     _facing = _dashDir;
-                    _vel = new Vector2(_dashDir * dashDistance / (dashFrames * dt), 0f);
+                    _vel = new Vector2(_dashDir * DashDistance / (dashFrames * dt), 0f);
                     _apexLeft = 0;
                     Dashed?.Invoke();
                 }

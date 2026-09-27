@@ -78,6 +78,8 @@ namespace OWSBG.World
                 return;
             }
             if (Wren == null) Wren = FindFirstObjectByType<WrenController>();
+            if (MarkLeft > 0f) MarkLeft -= Time.fixedDeltaTime;
+            if (_staggerLeft > 0f) { _staggerLeft -= Time.fixedDeltaTime; Body.linearVelocity *= 0.8f; return; }
             if (HurtstunLeft > 0) { HurtstunLeft--; return; }
             Tick(Time.fixedDeltaTime);
             if (SlowLeft > 0f)
@@ -89,6 +91,22 @@ namespace OWSBG.World
         }
 
         public void ApplySlow(float seconds) { if (!IsDead) SlowLeft = Mathf.Max(SlowLeft, seconds); }
+
+        /// <summary>Compass-dart: marked enemies are Inkthread targets and draw a faint ring in the greybox.</summary>
+        public float MarkLeft { get; private set; }
+        public bool IsMarked => MarkLeft > 0f;
+        public void Mark(float seconds) { if (!IsDead) MarkLeft = Mathf.Max(MarkLeft, seconds); }
+
+        /// <summary>Sighting lens parry: stop for a while (contact damage off, behaviour paused).</summary>
+        public bool IsStaggered => _staggerLeft > 0f;
+        float _staggerLeft;
+        public void Stagger(float seconds)
+        {
+            if (IsDead) return;
+            _staggerLeft = Mathf.Max(_staggerLeft, seconds);
+            Body.linearVelocity = Vector2.zero;
+            _flashUntil = Time.time + 0.15f;
+        }
 
         /// <summary>Behaviour step, skipped during hurtstun and death.</summary>
         protected abstract void Tick(float dt);
@@ -104,7 +122,8 @@ namespace OWSBG.World
             _flashUntil = Time.time + 0.1f;
             HurtstunLeft = _hurtstunFrames;
             var away = hit.Direction.sqrMagnitude > 0f ? hit.Direction.normalized : Vector2.right;
-            Body.linearVelocity = new Vector2(away.x * _hitKnockback, Mathf.Max(Body.linearVelocity.y, away.y > 0f ? _hitKnockback : 2f));
+            float kb = _hitKnockback * hit.KnockbackOrDefault;
+            Body.linearVelocity = new Vector2(away.x * kb, Mathf.Max(Body.linearVelocity.y, away.y > 0f ? kb : 2f));
             WasHit?.Invoke(this, hit);
             if (Health == 0) Die();
             return true;
@@ -130,6 +149,8 @@ namespace OWSBG.World
             {
                 var vitals = _overlaps[i].GetComponentInParent<WrenVitals>();
                 if (vitals == null) continue;
+                var parry = vitals.GetComponent<InstrumentBelt>();
+                if (parry != null && parry.TryParry(this)) break;
                 vitals.Damage(_contactDamage, transform.position);
                 break;
             }
@@ -165,7 +186,9 @@ namespace OWSBG.World
         {
             if (Visual == null) return;
             Visual.GetPropertyBlock(_mpb);
-            _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? FlashColor : TintColor());
+            var tint = TintColor();
+            if (IsMarked) tint = Color.Lerp(tint, new Color(0.95f, 0.62f, 0.15f), 0.5f + 0.3f * Mathf.Sin(Time.time * 12f));
+            _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? FlashColor : tint);
             Visual.SetPropertyBlock(_mpb);
         }
 

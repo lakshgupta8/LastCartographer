@@ -20,6 +20,14 @@ namespace OWSBG.World
         public int damage = 1;
         public int hitstopFrames = 2;
         public LayerMask hitMask;
+        [Tooltip("Frames after a swing ends in which the next forward press continues the combo.")]
+        public int comboWindowFrames = 18;
+
+        /// <summary>The forward combo (combat doc 2.1 and 5). Set by the Charter; null means the base fields.</summary>
+        public ComboStep[] Combo { get; set; }
+        /// <summary>Index of the combo step the current or last forward swing used.</summary>
+        public int ComboIndex { get; private set; }
+        int _comboWindowLeft;
 
         public enum Phase { Idle, Startup, Active, Recovery }
         public Phase Current => _phase;
@@ -44,6 +52,9 @@ namespace OWSBG.World
                 gameObject.AddComponent<StrikeVisual>();   // scenes saved before the visual existed
         }
 
+        // Frame data of the swing in progress (a combo step for forward swings, the base fields otherwise).
+        float _reach, _thickness; int _active, _recovery, _damage; float _knockback = 1f;
+
         void FixedUpdate()
         {
             if (_ctrl.Frozen) { _phase = Phase.Idle; return; }
@@ -51,16 +62,14 @@ namespace OWSBG.World
 
             if (_phase == Phase.Idle)
             {
+                if (_comboWindowLeft > 0) _comboWindowLeft--;
                 if (_ctrl.Input != null && _ctrl.Input.ConsumeAttack())
                 {
                     var move = _ctrl.Input.Move;
                     if (move.y > 0.5f) _dir = Vector2.up;
                     else if (!_ctrl.IsGrounded && move.y < -0.5f) _dir = Vector2.down;
                     else _dir = new Vector2(_ctrl.Facing, 0f);
-                    _phase = Phase.Startup;
-                    _framesLeft = startupFrames;
-                    _hitThisSwing.Clear();
-                    Swung?.Invoke(_dir);
+                    BeginSwing();
                 }
                 return;
             }
@@ -71,17 +80,39 @@ namespace OWSBG.World
             if (_framesLeft > 0) return;
             switch (_phase)
             {
-                case Phase.Startup:  _phase = Phase.Active;   _framesLeft = activeFrames;   DoHits(); break;
-                case Phase.Active:   _phase = Phase.Recovery; _framesLeft = recoveryFrames; break;
-                case Phase.Recovery: _phase = Phase.Idle; break;
+                case Phase.Startup:  _phase = Phase.Active;   _framesLeft = _active;   DoHits(); break;
+                case Phase.Active:   _phase = Phase.Recovery; _framesLeft = _recovery; break;
+                case Phase.Recovery: _phase = Phase.Idle; _comboWindowLeft = comboWindowFrames; break;
             }
+        }
+
+        void BeginSwing()
+        {
+            bool forward = _dir.y == 0f;
+            int startup = startupFrames;
+            _reach = reach; _thickness = thickness; _active = activeFrames; _recovery = recoveryFrames; _damage = damage; _knockback = 1f;
+            if (forward && Combo != null && Combo.Length > 0)
+            {
+                ComboIndex = _comboWindowLeft > 0 ? (ComboIndex + 1) % Combo.Length : 0;
+                var s = Combo[ComboIndex];
+                _reach = s.Reach; _thickness = s.Thickness > 0f ? s.Thickness : thickness;
+                startup = s.Startup; _active = s.Active; _recovery = s.Recovery; _damage = s.Damage; _knockback = s.Knockback;
+            }
+            else ComboIndex = 0;
+            _comboWindowLeft = 0;
+            _phase = Phase.Startup;
+            _framesLeft = Mathf.Max(1, startup);
+            _hitThisSwing.Clear();
+            Swung?.Invoke(_dir);
         }
 
         public void GetHitbox(out Vector2 center, out Vector2 size)
         {
+            float r = _phase == Phase.Idle ? reach : _reach;
+            float t = _phase == Phase.Idle ? thickness : _thickness;
             var origin = _ctrl.Position + Vector2.up * originHeight;
-            center = origin + _dir * (reach * 0.5f);
-            size = _dir.x != 0f ? new Vector2(reach, thickness) : new Vector2(thickness, reach);
+            center = origin + _dir * (r * 0.5f);
+            size = _dir.x != 0f ? new Vector2(r, t) : new Vector2(t, r);
         }
 
         void DoHits()
@@ -95,10 +126,10 @@ namespace OWSBG.World
                 var h = _overlaps[i].GetComponentInParent<IHittable>();
                 if (h == null || _hitThisSwing.Contains(h)) continue;
                 _hitThisSwing.Add(h);
-                var info = new HitInfo { Damage = damage, Direction = _dir, Source = gameObject };
+                var info = new HitInfo { Damage = _damage, Direction = _dir, Source = gameObject, Knockback = _knockback };
                 if (!h.TakeHit(info)) continue;
                 landedAny = true;
-                _ink?.Add(1);
+                _ink?.AddFromHit(1);
                 Landed?.Invoke(h);
             }
             if (!landedAny) return;

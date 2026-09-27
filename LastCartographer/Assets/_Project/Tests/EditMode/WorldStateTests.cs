@@ -60,5 +60,45 @@ namespace OWSBG.Tests
             Assert.AreEqual("Greybox_Saltmarrow_A", back.RespawnRoom);
             Assert.AreEqual("Desk", back.RespawnSpawn);
         }
+
+        [Test]
+        public void EquipmentAndWaxSealRoundTrip()
+        {
+            var w = new WorldState();
+            var e = w.Equipment;
+            e.OwnedCharters.Add(CharterKind.Drifter);
+            Assert.IsTrue(e.SetCharter(CharterKind.Drifter));
+            Assert.IsFalse(e.SetCharter(CharterKind.Warden), "not owned");
+            e.OwnedInstruments.Add(InstrumentKind.PlumbWeight);
+            e.OwnedInstruments.Add(InstrumentKind.WaxSeal);
+            Assert.IsTrue(e.Equip(2, InstrumentKind.WaxSeal, 1));
+            Assert.IsTrue(e.Equip(1, InstrumentKind.PlumbWeight, 6));
+            Assert.IsTrue(e.Equip(2, InstrumentKind.PlumbWeight, 6), "moving to another slot swaps");
+            Assert.AreEqual(InstrumentKind.WaxSeal, e.Slots[1].Kind, "the displaced Instrument takes the old slot");
+            Assert.IsTrue(e.Equip(1, InstrumentKind.PlumbWeight, 6));
+            Assert.AreEqual(InstrumentKind.WaxSeal, e.Slots[2].Kind);
+            Assert.IsFalse(e.Equip(1, InstrumentKind.PlumbWeight, 6), "already there");
+            Assert.IsFalse(e.Equip(0, InstrumentKind.CompassDart, 12), "not owned");
+            Assert.IsTrue(e.Equip(2, InstrumentKind.None, 0), "clear a slot");
+            Assert.IsTrue(e.Slots[2].IsEmpty);
+            e.SetUses(1, 4);
+            e.SelectedSlot = 1;
+            w.WaxSealRoom = "Greybox_Saltmarrow_B";
+            w.WaxSealX = 3.5f; w.WaxSealY = -1f;
+
+            var back = GameState.FromJson(GameState.ToJson(w));
+            var be = back.Equipment;
+            Assert.AreEqual(CharterKind.Drifter, be.Charter);
+            Assert.IsTrue(be.OwnsCharter(CharterKind.Surveyor), "the starting Charter is always owned");
+            Assert.IsTrue(be.OwnsCharter(CharterKind.Drifter));
+            Assert.IsTrue(be.OwnsInstrument(InstrumentKind.WaxSeal));
+            Assert.AreEqual(InstrumentKind.PlumbWeight, be.Slots[1].Kind);
+            Assert.AreEqual(4, be.Slots[1].UsesLeft);
+            Assert.IsTrue(be.Slots[0].IsEmpty);
+            Assert.AreEqual(1, be.SelectedSlot);
+            Assert.IsTrue(back.HasWaxSeal);
+            Assert.AreEqual("Greybox_Saltmarrow_B", back.WaxSealRoom);
+            Assert.AreEqual(3.5f, back.WaxSealX, 0.001f);
+        }
     }
 }

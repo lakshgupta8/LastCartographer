@@ -52,7 +52,7 @@ namespace OWSBG.Core
         [Serializable]
         sealed class SaveData
         {
-            public int version = 1;
+            public int version = 2;
             public List<string> flagKeys = new List<string>();
             public List<int> flagValues = new List<int>();
             public List<string> anchoredPlaces = new List<string>();
@@ -64,6 +64,15 @@ namespace OWSBG.Core
             public List<string> stringValues = new List<string>();
             public string respawnRoom;
             public string respawnSpawn;
+            public string waxSealRoom;
+            public float waxSealX, waxSealY;
+            public string charter = "Surveyor";
+            public List<string> ownedCharters = new List<string>();
+            public List<string> ownedInstruments = new List<string>();
+            public List<string> slotKinds = new List<string>();
+            public List<int> slotUses = new List<int>();
+            public bool fourthSlot;
+            public int selectedSlot;
 
             public static SaveData From(WorldState w)
             {
@@ -76,6 +85,15 @@ namespace OWSBG.Core
                 foreach (var kv in w.Strings) { d.stringKeys.Add(kv.Key); d.stringValues.Add(kv.Value); }
                 d.respawnRoom = w.RespawnRoom;
                 d.respawnSpawn = w.RespawnSpawn;
+                d.waxSealRoom = w.WaxSealRoom;
+                d.waxSealX = w.WaxSealX; d.waxSealY = w.WaxSealY;
+                var e = w.Equipment;
+                d.charter = e.Charter.ToString();
+                foreach (var c in e.OwnedCharters) d.ownedCharters.Add(c.ToString());
+                foreach (var i in e.OwnedInstruments) d.ownedInstruments.Add(i.ToString());
+                foreach (var s in e.Slots) { d.slotKinds.Add(s.Kind.ToString()); d.slotUses.Add(s.UsesLeft); }
+                d.fourthSlot = e.FourthSlotUnlocked;
+                d.selectedSlot = e.SelectedSlot;
                 return d;
             }
 
@@ -90,6 +108,22 @@ namespace OWSBG.Core
                 for (int i = 0; i < stringKeys.Count && i < stringValues.Count; i++) w.Strings[stringKeys[i]] = stringValues[i];
                 w.RespawnRoom = respawnRoom;
                 w.RespawnSpawn = respawnSpawn;
+                w.WaxSealRoom = waxSealRoom;
+                w.WaxSealX = waxSealX; w.WaxSealY = waxSealY;
+                var e = w.Equipment;
+                if (Enum.TryParse(charter, out CharterKind ck)) e.Charter = ck;
+                e.OwnedCharters.Clear();
+                foreach (var c in ownedCharters) if (Enum.TryParse(c, out CharterKind k)) e.OwnedCharters.Add(k);
+                e.OwnedCharters.Add(CharterKind.Surveyor);
+                if (!e.OwnedCharters.Contains(e.Charter)) e.Charter = CharterKind.Surveyor;
+                foreach (var i in ownedInstruments) if (Enum.TryParse(i, out InstrumentKind k)) e.OwnedInstruments.Add(k);
+                for (int i = 0; i < e.Slots.Length && i < slotKinds.Count; i++)
+                {
+                    if (!Enum.TryParse(slotKinds[i], out InstrumentKind k)) continue;
+                    e.Slots[i] = new InstrumentSlot { Kind = k, UsesLeft = i < slotUses.Count ? slotUses[i] : 0 };
+                }
+                e.FourthSlotUnlocked = fourthSlot;
+                e.SelectedSlot = selectedSlot;
                 return w;
             }
         }

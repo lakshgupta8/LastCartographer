@@ -18,6 +18,10 @@ namespace OWSBG.Core
         bool ConsumeDash();
         bool ConsumeAttack();
         bool ConsumeFlourish();
+        /// <summary>Use the selected Instrument.</summary>
+        bool ConsumeInstrument();
+        /// <summary>Select the next Instrument slot.</summary>
+        bool ConsumeCycleInstrument();
         /// <summary>Age the buffers by one fixed frame. Called once per FixedUpdate by the controller.</summary>
         void Tick();
     }

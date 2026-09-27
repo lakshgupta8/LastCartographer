@@ -20,6 +20,12 @@ namespace OWSBG.Core
         public Dictionary<string, string> Strings = new Dictionary<string, string>();
         public string RespawnRoom;
         public string RespawnSpawn;
+        /// <summary>Wax seal: a one-shot respawn point at a world position, consumed on death.</summary>
+        public string WaxSealRoom;
+        public float WaxSealX, WaxSealY;
+        public bool HasWaxSeal => !string.IsNullOrEmpty(WaxSealRoom);
+        /// <summary>Charter and Instruments (combat doc 5 and 6).</summary>
+        public Equipment Equipment = new Equipment();
 
         public event Action<string, int> FlagChanged;
         public event Action<string> VantageSurveyed;

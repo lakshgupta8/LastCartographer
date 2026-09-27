@@ -361,6 +361,7 @@ namespace OWSBG.Setup
             var sysGo = new GameObject("PlayerSystems");
             sysGo.AddComponent<PlayerRespawn>();
             sysGo.AddComponent<OWSBG.UI.PlaceholderHud>();
+            sysGo.AddComponent<OWSBG.UI.DeskMenu>();
 
             // Room manager.
             var rmGo = new GameObject("RoomManager");
@@ -412,6 +413,10 @@ namespace OWSBG.Setup
             var svSo = new SerializedObject(strikeVisual);
             svSo.FindProperty("_inkMaterial").objectReferenceValue = MakeLitMaterial("M_Ink_Black", new Color(0.06f, 0.06f, 0.08f));
             svSo.ApplyModifiedPropertiesWithoutUndo();
+            var belt = go.AddComponent<InstrumentBelt>();
+            belt.hitMask = LayerMask.GetMask("Hittable", "Enemy");
+            belt.groundMask = LayerMask.GetMask("Ground");
+            go.AddComponent<CharterSet>();   // after the components it drives; profiles default in Awake
 
             // Visual: an InkSprite quad, 1.2 units tall.
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
@@ -446,6 +451,8 @@ namespace OWSBG.Setup
             MakeGround(room, "Platform_C", new Vector2(7f, 5.0f), new Vector2(4f, 0.6f), platMat);
             MakeGround(room, "Wall_L", new Vector2(-13f, 3f), new Vector2(1f, 8f), platMat);
             MakeGround(room, "Stilt_1", new Vector2(11f, 1.5f), new Vector2(0.4f, 3f), platMat);
+            MakeWeakFloor(room, "WeakFloor_1", new Vector2(-9f, 4.6f), new Vector2(3f, 0.5f));
+            MakeHiddenPlatform(room, "Hidden_1", new Vector2(16f, 3.2f), new Vector2(3f, 0.5f));
 
             MakePaperLayer(room, "Mid_Reeds", 3f, 0f, new Color(0.62f, 0.64f, 0.52f), 6f);
             MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f);
@@ -529,6 +536,24 @@ namespace OWSBG.Setup
             b.transform.localScale = new Vector3(size.x, size.y, 2f);
             b.GetComponent<MeshRenderer>().sharedMaterial = mat;
             b.AddComponent<BoxCollider2D>();   // unit box, scaled by the transform
+        }
+
+        // Ground that a plumb weight breaks (combat doc 6). Same shape as MakeGround, own material.
+        static void MakeWeakFloor(Room room, string name, Vector2 center, Vector2 size)
+        {
+            var mat = MakeLitMaterial("M_Greybox_WeakFloor", new Color(0.58f, 0.50f, 0.36f));
+            MakeGround(room, name, center, size, mat);
+            var go = room.transform.Find(name).gameObject;
+            go.AddComponent<WeakFloor>();
+        }
+
+        // A platform only a Field lantern draws. Ground layer; collider off until revealed.
+        static void MakeHiddenPlatform(Room room, string name, Vector2 center, Vector2 size)
+        {
+            var mat = MakeLitMaterial("M_Greybox_Hidden", new Color(0.52f, 0.46f, 0.36f));
+            MakeGround(room, name, center, size, mat);
+            var go = room.transform.Find(name).gameObject;
+            go.AddComponent<HiddenPlatform>();
         }
 
         static void MakePaperLayer(Room room, string name, float z, float y, Color color, float height)

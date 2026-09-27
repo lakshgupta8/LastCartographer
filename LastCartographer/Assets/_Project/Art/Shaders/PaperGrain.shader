@@ -34,6 +34,8 @@ Shader "OWSBG/FullScreen/PaperGrain"
             half4 _PaperTint;
             float _TintAmount;
             float _OWSBG_Held;   // global: 1 inside an anchored place (HeldState)
+            float _OWSBG_Dusk;   // global: warm cast at dusk and dawn (DayCycle)
+            float _OWSBG_Night;  // global: cool, darker at night (DayCycle)
 
             half Hash21(float2 p)
             {
@@ -58,6 +60,11 @@ Shader "OWSBG/FullScreen/PaperGrain"
                 // Anchored: the colour grade locks. Desaturate a third and cast toward brass-blue.
                 half3 locked = lerp(lum.xxx, col.rgb, 0.65h) * half3(0.93h, 0.97h, 1.05h);
                 col.rgb = lerp(col.rgb, locked, saturate(_OWSBG_Held));
+                // The hour: dusk warms the paper, night cools and darkens it (hub-life 2).
+                half3 dusk = col.rgb * half3(1.04h, 0.92h, 0.78h);
+                col.rgb = lerp(col.rgb, dusk, saturate(_OWSBG_Dusk) * 0.7h);
+                half3 night = col.rgb * half3(0.55h, 0.62h, 0.82h);
+                col.rgb = lerp(col.rgb, night, saturate(_OWSBG_Night) * 0.8h);
                 return col;
             }
             ENDHLSL

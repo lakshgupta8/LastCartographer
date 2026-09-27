@@ -5,8 +5,8 @@ using UnityEngine;
 namespace OWSBG.World
 {
     /// <summary>
-    /// The rest point (GDD 6, PRG-11): restores masks, sets the respawn point, saves. Charter and
-    /// Instrument swapping hang off the Rested event once those systems exist.
+    /// The rest point (GDD 6, PRG-11): restores masks, sets the respawn point, sleeps to the next dawn
+    /// (PRG-15), saves. The desk menu opens off the Rested event.
     /// </summary>
     public sealed class DraftingDesk : Interactable
     {
@@ -23,6 +23,7 @@ namespace OWSBG.World
             var w = GameState.World;
             w.RespawnRoom = RoomManager.Instance != null ? RoomManager.Instance.CurrentRoom : gameObject.scene.name;
             w.RespawnSpawn = _spawnName;
+            DayClock.Sleep(w);
             GameState.Save(_saveSlot);
             Rested?.Invoke(this);
         }

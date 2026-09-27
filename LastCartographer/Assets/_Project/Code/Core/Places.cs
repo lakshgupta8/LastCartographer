@@ -40,7 +40,8 @@ namespace OWSBG.Core
         {
             if (string.IsNullOrEmpty(place) || fate == PlaceFate.Unwritten || IsDecided(w, place)) return false;
             w.Set(Key(place), (int)fate);
-            if (fate == PlaceFate.Anchored) w.AnchoredPlaces.Add(place); else w.AnchoredPlaces.Remove(place);
+            if (fate == PlaceFate.Anchored) { w.AnchoredPlaces.Add(place); DayClock.Lock(w, place); }
+            else w.AnchoredPlaces.Remove(place);
             FateChanged?.Invoke(place, fate);
             return true;
         }

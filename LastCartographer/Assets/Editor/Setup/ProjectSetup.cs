@@ -390,6 +390,7 @@ namespace OWSBG.Setup
             var sysGo = new GameObject("PlayerSystems");
             sysGo.AddComponent<PlayerRespawn>();
             sysGo.AddComponent<CommissionTracker>();
+            sysGo.AddComponent<DayCycle>();
 
             // Room manager.
             var rmGo = new GameObject("RoomManager");
@@ -517,6 +518,11 @@ namespace OWSBG.Setup
 
             MakeDummy(room, new Vector2(4f, 0.6f));
             MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Greybox_Sable", new Color(0.16f, 0.18f, 0.22f));
+            var sable = MakeSchedule(room, "Sable_Greybox");
+            sable.AddPost(DayPhase.Dawn, new Vector2(-9.5f, 0f), "", "mending nets", 1);
+            sable.AddPost(DayPhase.Day, new Vector2(-9.5f, 0f), "", "mending nets", 1);
+            sable.AddPost(DayPhase.Dusk, new Vector2(-8.2f, 0f), "", "reading the ledger", 1);
+            sable.AddPost(DayPhase.Night, new Vector2(-12.2f, 0f), "Greybox_Sable_Night", "asleep under the stilts", -1);
             MakeVantage(room, "Reedmother", "Saltmarrow_A/Reedmother", new Vector2(14f, 0f));
             MakeDesk(room, new Vector2(-4.5f, 0f));
             MakeLedger(room, "Saltmarrow", new Vector2(-7f, 0f));
@@ -570,6 +576,11 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.81f, 0.74f), 16f);
 
             MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Greybox_Dotha", new Color(0.36f, 0.40f, 0.34f));
+            var dotha = MakeSchedule(room, "Dotha_Greybox");
+            dotha.AddPost(DayPhase.Dawn, new Vector2(-12f, 0f), "", "on her stoop", 1);
+            dotha.AddPost(DayPhase.Day, new Vector2(-12f, 0f), "", "on her stoop", 1);
+            dotha.AddPost(DayPhase.Dusk, new Vector2(0.5f, 0f), "Greybox_Dotha_Water", "singing to the water", 1);
+            dotha.AddPost(DayPhase.Night, new Vector2(-12f, 0f), "Greybox_Dotha_Night", "asleep", -1);
             MakeVantage(room, "Tetherpost", "Saltmarrow_B/Tetherpost", new Vector2(2f, 0f));
             // A Cantor over the east end: its bell erases Merrow's End until the tether-post is drawn again.
             MakeEnemy<Cantor>(room, "Cantor_1", new Vector2(13f, 2.6f), new Vector2(0.8f, 0.9f));
@@ -1131,6 +1142,14 @@ namespace OWSBG.Setup
         }
 
         // A survey spot: a trigger area plus a thin marker post.
+        // Where an NPC stands through the day (PRG-15); posts are added by the caller.
+        static NpcSchedule MakeSchedule(Room room, string npcName)
+        {
+            var npc = room.transform.Find(npcName);
+            if (npc == null) throw new System.InvalidOperationException("no NPC named " + npcName + " in " + room.RoomId);
+            return npc.gameObject.AddComponent<NpcSchedule>();
+        }
+
         static void MakeVantage(Room room, string name, string vantageId, Vector2 pos)
         {
             var go = new GameObject("Vantage_" + name) { layer = LayerMask.NameToLayer("Trigger") };

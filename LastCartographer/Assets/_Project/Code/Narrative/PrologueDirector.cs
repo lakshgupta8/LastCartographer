@@ -49,6 +49,7 @@ namespace OWSBG.Narrative
             if (w.Is(Sealed) && !w.Is(FirstSmudges)) { ReleaseSmudges(); yield break; }
             if (!w.Is(Started))
             {
+                DayClock.SetPhase(w, DayPhase.Dusk);   // the Edge at dusk (bible 7.0)
                 if (_arrive != null) _arrive.Play();
                 else _service?.StartNode("Prologue_Edge_Arrive");
             }

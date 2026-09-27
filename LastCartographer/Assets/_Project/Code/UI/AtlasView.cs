@@ -31,7 +31,7 @@ namespace OWSBG.UI
         bool _wasFrozen, _built;
         float _nextRefresh;
         VisualElement _panel, _places, _travel, _journalHost;
-        Label _title;
+        Label _title, _day;
         readonly List<Waypoint> _destinations = new List<Waypoint>();
 
         void Awake() { Instance = this; }
@@ -125,13 +125,15 @@ namespace OWSBG.UI
             map.style.paddingRight = 24;
             map.style.borderRightWidth = 1; map.style.borderRightColor = InkTheme.InkFaint;
             _title = InkTheme.Text("title", "Atlas", 30, InkTheme.Wash, FontStyle.Bold);
-            _title.style.marginBottom = 14;
+            _title.style.marginBottom = 2;
+            _day = InkTheme.Text("day", "", 16, InkTheme.Dim);
+            _day.style.marginBottom = 12;
             _places = new VisualElement { name = "places", pickingMode = PickingMode.Ignore };
             _travel = new VisualElement { name = "travel", pickingMode = PickingMode.Ignore };
             _travel.style.marginTop = 16;
             var hint = InkTheme.Text("hint", "↑↓ destination    J travel    M / Esc close", 15, InkTheme.Dim);
             hint.style.marginTop = 14;
-            map.Add(_title); map.Add(_places); map.Add(_travel); map.Add(hint);
+            map.Add(_title); map.Add(_day); map.Add(_places); map.Add(_travel); map.Add(hint);
 
             _journalHost = new VisualElement { name = "journal-host", pickingMode = PickingMode.Ignore };
             _journalHost.style.width = 640;
@@ -155,6 +157,8 @@ namespace OWSBG.UI
             _places.Clear();
             string region = null;
             string here = Room.Current != null ? Room.Current.RoomId : "";
+            _day.text = "Day " + DayClock.Day(w) + " · " + DayClock.Describe(DayClock.PhaseIn(w, here))
+                        + (DayClock.IsLocked(w, here) ? "  (held at this hour)" : "");
             foreach (var place in Atlas.AllPlaces)
             {
                 if (place.Region != region)

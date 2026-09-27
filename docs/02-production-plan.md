@@ -116,9 +116,9 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure (Atlas store, atlas page as pause screen, Cantor bell erasure and recovery by re-survey, travel points at desks and lit lamps; page inking animation pending) | M1 | DES-02 | PRG-08 |
 | PRG-11 `[~]` | Drafting desk: rest, respawn, Charter/Instrument swap (placeholder IMGUI desk menu), save | M1 | GDD 6 | PRG-09 |
 | PRG-12 `[~]` | Commissions ledger runtime and journal (state machine in WorldState, tracker, ledger page, journal + toasts, Yarn command and functions, Saltmarrow greybox set; journal hosted on the atlas page) | M1 | DES-06 | PRG-09 |
-| PRG-13 `[~]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner (Places store, HeldState grade lock + Wardens, desk place row, Yarn verbs; NPC schedule loops are PRG-15) | M2 | DES-03 | PRG-10 |
+| PRG-13 `[~]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner (Places store, HeldState grade lock + Wardens, desk place row, Yarn verbs; schedule loops and the locked hour in PRG-15) | M2 | DES-03 | PRG-10 |
 | PRG-14 `[~]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement (FadeStages + FadeGroup per room, `<<fade>>`; the Remnant look and audio pending) | M2 | DES-04 | PRG-03 |
-| PRG-15 `[ ]` | NPC schedules and hub life (NavMesh, `#still` loops) | M2 | SB-5.1 | PRG-07 |
+| PRG-15 `[~]` | NPC schedules and hub life (day clock with dawn/day/dusk/night, desk rest sleeps, per-phase posts and nodes, anchored hour lock and `#still` loops, hour tint; v1 in `docs/design/hub-life.md`; NavMesh / cross-room routes and shops open) | M2 | SB-5.1 | PRG-07 |
 | PRG-16 `[~]` | Cutscene pipeline: Timeline + Cinemachine + Yarn hooks (Cutscene object, actor-move / paper-fade / dialogue-node clips, `<<cutscene>>` waits, shot camera; boss intros still coroutines) | M1 | — | PRG-06 |
 | PRG-17 `[~]` | Death and smudge recovery | M1 | GDD 6 | PRG-09 |
 | PRG-18 `[ ]` | Clarity meter and lantern-radius rendering in the Blank | M3 | SB-4.7 | PRG-03 |

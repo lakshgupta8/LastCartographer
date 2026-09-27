@@ -94,6 +94,12 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("anchor", place => Decide(place, PlaceFate.Anchored));
             runner.AddCommandHandler<string>("hold", place => Decide(place, PlaceFate.Held));
             runner.AddCommandHandler<string>("release", place => Decide(place, PlaceFate.Released));
+            runner.AddCommandHandler<string>("clock", phase =>
+            {
+                if (DayClock.TryParse(phase, out var p)) DayClock.SetPhase(GameState.World, p);
+                else Debug.LogWarning("[OWSBG] <<clock " + phase + ">>: not a phase of the day");
+            });
+            runner.AddCommandHandler("sleep", () => DayClock.Sleep(GameState.World));
             runner.AddCommandHandler<string>("erase", place =>
             {
                 if (!Atlas.Erase(GameState.World, place))
@@ -140,6 +146,17 @@ namespace OWSBG.Narrative
 
         [YarnFunction("fade_stage")]
         public static float FadeStageOf(string place) => FadeStages.Get(GameState.World, place);
+
+        /// <summary>"dawn", "day", "dusk" or "night": the world's hour.</summary>
+        [YarnFunction("phase")]
+        public static string PhaseOfDay() => DayClock.Describe(DayClock.Phase(GameState.World));
+
+        /// <summary>The hour in a place: its locked hour when anchored.</summary>
+        [YarnFunction("phase_in")]
+        public static string PhaseIn(string place) => DayClock.Describe(DayClock.PhaseIn(GameState.World, place));
+
+        [YarnFunction("day")]
+        public static float DayCount() => DayClock.Day(GameState.World);
 
         /// <summary>A Cantor's bell has wiped the place and nobody has drawn it since.</summary>
         [YarnFunction("erased")]

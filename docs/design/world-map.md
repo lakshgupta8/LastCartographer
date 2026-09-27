@@ -118,9 +118,9 @@ third: Shore, Quay, Reedmother's Roots, Merrow's End, the Lantern Chain to the f
 full-playthrough matrix (PRO-05) will ask; both should be built on it.
 
 ## 6. Open
-- **The seventh keystone.** The bible needs seven to remake the Atlas and calls Corvin's "the seventh", but places
-  only six (4.1–4.7). The Greyfold has none. Either the Greyfold holds one (Isolde's camp is the natural place) or
-  the Observatory's and Corvin's are two different stones; the bible should say which.
+- ~~The seventh keystone.~~ Settled in NAR-13 (`docs/story/endings.md` §2): the seventh is the stone Isolde stole
+  from the Vault's sixth slot (5.2) and still carries in Thessaly Hollow. Seven homes: Aury, Hollowvein, the Quiet
+  House, Windreach, Isolde, Corvin, and the Observatory's own, which never leaves the frame.
 - Whether Windreach should also open from the Bone Bridge by sea (the Ferrymen) for a fourth Act 2 order.
 - The reward for a noticed sequence break (a line, a scrap, a `#still`-free variant).
 - How the moving camp (PRG-21) changes Windreach's links between its three sites.

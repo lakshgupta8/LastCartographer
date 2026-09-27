@@ -97,14 +97,14 @@ namespace OWSBG.Core
             At("pell", Act2, "Halden.Bastion", "Voss's office by the flyer-tower: the drawing (plant 5.5)", "Office_Pell_Drawing", staged: true, writes: "halden.office.pell_ledgers");
             At("pell", Act2, "Greyfold.Threshold", "if the report was not sent: comes to see her cross", "Threshold_Pell_Cross", staged: true, writes: "pell.at_threshold");
             At("pell", Act3, "Halden.Observatory", "the Return: holds the frame's door; the last list", "Observatory_Pell_Return", staged: true, writes: "pell.last_list");
-            At("pell", Epilogue, "Halden.JourneymansHall", "the epilogue walk, by ending", "Epilogue_Pell");
+            At("pell", Epilogue, "Halden.JourneymansHall", "the epilogue walk, by ending", "Epilogue_Pell", staged: true);
 
             Member("sable", "Sable", "cormorant", "the Ferrymen", "prices", "ends the conversation first", "\"I hope\"");
             At("sable", Act1, "Saltmarrow.Quay", "the quay: the Guild's haste, the board, the reed, the whale, the widow, the shop, Halvard, Aury", "Quay_Sable", staged: true, writes: "saltmarrow.sable.*, saltmarrow.bone_bridge.heard, saltmarrow.widow.decided");
             At("sable", Act1, "Saltmarrow.BoneBridge", "the whale's step: she rows Wren under and does not sing along", "BoneBridge_Sable", writes: "saltmarrow.bone_bridge.rowed");
             At("sable", Act2, "Saltmarrow.LanternChain", "the tether to the third lighthouse; she rows it herself", "Chain_Sable_Tether", writes: "sable.tether_sold, saltmarrow.tether");
             At("sable", Act3, "Blank.AurysLighthouse", "sits with Aury; talks prices; does not tell him", "Aury_Sable", writes: "sable.aury_told, blank.aury.knows");
-            At("sable", Epilogue, "Saltmarrow.Quay", "prices, by ending", "Epilogue_Sable");
+            At("sable", Epilogue, "Saltmarrow.Quay", "prices, by ending", "Epilogue_Sable", staged: true);
 
             Member("runa", "Runa", "capercaillie", "the Holdfast", "counting people out loud, sung", "\"we\" for her town even alone", "\"I don't know how\"");
             At("runa", Act1, "Emberdown.RollCallBell", "counted in: \"stranger, one\"", "Bell_Runa_Count", staged: true, writes: "emberdown.runa.counted");
@@ -113,8 +113,8 @@ namespace OWSBG.Core
             At("runa", Act1, "Emberdown.CinderBaths", "the debate: she sings the surveyor's numbers back", "Baths_Runa_Debate", staged: true, writes: "emberdown.debate.heard");
             At("runa", Act1, "Emberdown.Hollowvein", "the long roll-call down, or leave it buried", "Hollowvein_Runa_Walk", staged: true, writes: "emberdown.hollowvein.walked / .buried");
             At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place", "Bell_Runa_Named", staged: true, writes: "runa.named_wren");
-            At("runa", Act3, "Halden.Observatory", "the true ending's chorus: she leads the roll-call round the Blank", "Observatory_Runa_Chorus", writes: "ending.chorus_led");
-            At("runa", Epilogue, "Emberdown.KettilsRest", "the epilogue, by ending", "Epilogue_Runa");
+            At("runa", Act3, "Halden.Observatory", "the true ending's chorus: she leads the roll-call round the Blank", "Observatory_Runa_Chorus", staged: true, writes: "ending.chorus_led");
+            At("runa", Epilogue, "Emberdown.KettilsRest", "the epilogue, by ending", "Epilogue_Runa", staged: true);
 
             Member("teodor", "Brother Teodor Ashe", "mourning dove", "the Unwriters", "the faded in the present tense", "asks permission before a hard sentence", "a raised voice");
             At("teodor", Act1, "Verdance.QuietHouse", "first meeting: the reeds have told him; the vigil's invitation", "QuietHouse_Teodor", staged: true, writes: "verdance.teodor.met");
@@ -123,8 +123,8 @@ namespace OWSBG.Core
             At("teodor", Act1, "Verdance.SunkenLibrary", "Ansel's page: he will not turn it for you", "Library_Teodor_Ansel", staged: true, writes: "verdance.library.teodor_asked");
             At("teodor", Act1, "Verdance.Aldermere", "the last day: attend, or stop it", "Aldermere_Teodor", staged: true, writes: "verdance.aldermere.attended / .stopped");
             At("teodor", Act2, "Verdance.QuietHouse", "the keystone: say why", "QuietHouse_Teodor_Keystone", staged: true, writes: "teodor.keystone_given / teodor.refused");
-            At("teodor", Act3, "Halden.Observatory", "the Unwritten: he dissolves the keystones, naming their places", "Observatory_Teodor_Unwritten", writes: "ending.unwritten");
-            At("teodor", Epilogue, "Verdance.QuietHouse", "the epilogue, by ending", "Epilogue_Teodor");
+            At("teodor", Act3, "Halden.Observatory", "the Unwritten: he dissolves the keystones, naming their places", "Observatory_Teodor_Unwritten", staged: true, writes: "ending.unwritten");
+            At("teodor", Epilogue, "Verdance.QuietHouse", "the epilogue, by ending", "Epilogue_Teodor", staged: true);
 
             Member("marrow", "Marrow", "grey chick, unreadable", "none", "echoes", "one original word per island, four in all", "a word that is not the scene's");
             At("marrow", Prologue, "Greyfold.HalfCathedral", "glimpsed in the white at the thirtieth step, silent");
@@ -132,7 +132,7 @@ namespace OWSBG.Core
             At("marrow", Act3, "Blank.ThessalyHollow", "following, from the Lantern on; Ilse does not know it; first word", "Blank_Marrow_Follow", staged: true, writes: "marrow.following, marrow.words=1");
             At("marrow", Act3, "Blank.OldCapital", "echoes Corvin; second word", "Capital_Marrow_Word", staged: true, writes: "marrow.words=2");
             At("marrow", Act3, "Greyfold.Threshold", "the Return: echoes Voss; third word", "Threshold_Marrow", staged: true, writes: "marrow.words=3");
-            At("marrow", Epilogue, "Blank.ThessalyHollow", "the verdict: its last original word, or none", "Epilogue_Marrow", writes: "marrow.words=4");
+            At("marrow", Epilogue, "Blank.ThessalyHollow", "the verdict: its last original word, or none", "Epilogue_Marrow", staged: true, writes: "marrow.words=4");
 
             // ---- The rest of the returning cast (§8), enough to place them ---------------------------------------------
             Member("isolde", "Isolde Marr", "(Wren's mentor)", "Meridian Guild", "questions instead of answers", "\"journeyman\" when proud, \"Wren\" when scared", "\"I'm sorry\"", plain: true);
@@ -170,7 +170,7 @@ namespace OWSBG.Core
             Member("voss", "Guildmaster Aurelian Voss", "grey heron", "Meridian Guild", "titles; \"we\" for the Guild", "flinches at \"Halloway\"", "\"Corra\"");
             At("voss", Act2, "Greyfold.Threshold", "the one speech; boss 6.11", "Threshold_Voss", staged: true, writes: "greyfold.crossed");
             At("voss", Act3, "Greyfold.Threshold", "the Return: still at the line; Corra's memory, if she carries it, and the one word", "Return_Voss", staged: true, writes: "return.voss.met, voss.changed");
-            At("voss", Act3, "Halden.Observatory", "changed, or a statue", "Observatory_Voss");
+            At("voss", Act3, "Halden.Observatory", "changed, or a statue", "Observatory_Voss", staged: true, writes: "ending.voss_coda");
 
             Member("corvin", "Corvin Halloway, the Archivist", "great owl", "the Remnant", "\"When I—\"", "self-correcting", "\"it wasn't my fault\"");
             At("corvin", Act3, "Blank.OldCapital", "the mirror-Observatory; reveals 5.4 and 5.6; boss 6.14", "Capital_Corvin", staged: true, writes: "corvin.stance, keystone.archivist, ending.rest_offered");

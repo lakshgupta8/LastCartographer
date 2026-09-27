@@ -10,7 +10,7 @@ namespace OWSBG.Tests
         [Test]
         public void EveryHomeIsAKeystoneOnTheMapOrABossWhoHoldsOne()
         {
-            Assert.AreEqual(6, Keystones.Homes.Length, "six named homes; the seventh is open (world-map.md §6)");
+            Assert.AreEqual(7, Keystones.Homes.Length, "seven homes, Isolde's the seventh");
             Assert.AreEqual(Keystones.Homes.Length, Keystones.Homes.Distinct().Count());
             Assert.AreEqual(WorldGraph.Zones.Count(z => z.Keystone), Keystones.Homes.Length, "one home per keystone zone");
             var w = new WorldState();
@@ -21,6 +21,8 @@ namespace OWSBG.Tests
             Assert.AreEqual(2, Keystones.Count(w), "only the named homes count");
             Assert.IsTrue(Keystones.Has(w, "windreach"));
             Assert.Less(Keystones.Count(w), Keystones.OpenWorldNeeds);
+            w.Set(Keystones.FlagKey(Keystones.InTheFrame), true);
+            Assert.AreEqual(2, Keystones.Count(w), "the frame's own stone is not carried");
         }
     }
 }

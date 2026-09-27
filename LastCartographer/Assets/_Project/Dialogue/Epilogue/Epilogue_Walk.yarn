@@ -1,0 +1,89 @@
+// The epilogue (bible 7.4, 9; character-bibles.md). A walk through Halden, then one outer region, then Marrow,
+// under thirty minutes. The walk's order is Endings.EpilogueWalk: Fixed goes to the quay, Open to Kettil's Rest,
+// the Unwritten to the Quiet House; the Rest goes from Halden straight to the Hollow.
+// Marrow's verdict is its last original word, or none. The last line is Wren's, in her atlas, by her most-used voice.
+
+title: Epilogue_Pell
+---
+<<if flag("ending.chosen") == 1>>
+    Pell: I sit the exam next spring. I know. It's always next spring. I sit it anyway. #still
+<<elseif flag("ending.chosen") == 2>>
+    Pell: I'm leaving the Plateau. Tomorrow. I've packed five things. Three. One.
+    Pell: Which, technically, means I'm ready.
+<<elseif flag("ending.chosen") == 3>>
+    Pell: I keep the Hall's ledger by hand now. Every place, every day. Somebody should write down what's still here.
+<<elseif flag("ending.chosen") == 4>>
+    Isolde: Again. Slower. Let the pen find the line; don't push it.
+    Hall: On the desk, open, an atlas in a journeyman's hand.
+    Pell: She's a good teacher. She keeps looking at the door.
+<<else>>
+    Pell: Nothing's happened yet. I'd know. I write everything down.
+<<endif>>
+===
+
+title: Epilogue_Sable
+---
+<<if flag("ending.chosen") == 1>>
+    Sable: Prices are the same. #still
+<<elseif flag("ending.chosen") == 2>>
+    Sable: Prices went up. Good. Things do.
+<<elseif flag("ending.chosen") == 3>>
+    Sable: One. Two. Three boats back. I'm counting again. Out loud. Don't tell anyone.
+<<else>>
+    Sable: Boat's in. You're early, or I'm late. Neither's free.
+<<endif>>
+===
+
+title: Epilogue_Runa
+---
+<<if flag("ending.chosen") == 1>>
+    Runa: Forty-two. Forty-two, Wren. Forty-two. #still
+<<elseif flag("ending.chosen") == 2>>
+    Runa: Forty-three! That's her, from Merrow's End. I'm teaching her the walk. She's terrible. We'll learn it walking.
+<<elseif flag("ending.chosen") == 3>>
+    Runa: Thirty-nine. We were forty-two. Thirty-nine. I keep counting. That's the point.
+<<else>>
+    Runa: Forty-two, Wren. Stand where I can count you.
+<<endif>>
+===
+
+title: Epilogue_Teodor
+---
+<<if flag("ending.chosen") == 1>>
+    Teodor: Aldermere was. The eleven were. I say it that way now. It is easier, and it is worse.
+<<elseif flag("ending.chosen") == 2>>
+    Teodor: The House teaches the thread now. To Guild journeymen. They are terrible at it. They are learning.
+<<elseif flag("ending.chosen") == 3>>
+    Teodor: I walk Aldermere's bounds every evening, alone. And it holds, cartographer. It holds.
+<<else>>
+    Teodor: Sit, cartographer. The House is quiet for that reason, and no other.
+<<endif>>
+===
+
+title: Epilogue_Marrow
+---
+<<if flag("ending.chosen") == 1>>
+    Ilse: The same bread. The same sunset. Every evening.
+    Hollow: The grey chick is grey no longer. It is bright, and beautiful.
+    Marrow: Same. #echo:ilse
+<<elseif flag("ending.chosen") == 2>>
+    Hollow: The Hollow in colour, slowly, grey still at the edges.
+    Hollow: The chick laughs.
+    Marrow: Skywalk.
+    <<flag marrow.words 4>>
+<<elseif flag("ending.chosen") == 3>>
+    Hollow: The chick fades, gently, holding Wren's wing. It is not afraid.
+    Marrow: Look.
+    <<flag marrow.words 4>>
+<<elseif flag("ending.chosen") == 4>>
+    Hollow: The Hollow, grey. No chick at the edge of the village.
+<<endif>>
+<<if dominant_voice() == "warden">>
+    Atlas: In Wren's hand, the last page: everyone I could, carried out.
+<<elseif dominant_voice() == "drift">>
+    Atlas: In Wren's hand, the last page, left blank. On purpose.
+<<else>>
+    Atlas: In Wren's hand, the last page: everything I saw, drawn true.
+<<endif>>
+<<flag epilogue.done 1>>
+===

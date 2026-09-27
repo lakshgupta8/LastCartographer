@@ -215,7 +215,7 @@ namespace OWSBG.Core
             Way("Greyfold.IsoldesLastCamp", "Blank.ThessalyHollow", flag: "act3.started", note: "the Lantern: inside, colour follows her");
 
             // ---- The Blank (4.7): fixed islands; the rest is generated from WorldState (PRG-20).
-            Add(B, "ThessalyHollow", "Thessaly Hollow", 3, 0, hub: true);
+            Add(B, "ThessalyHollow", "Thessaly Hollow", 3, 0, hub: true, keystone: true);   // Isolde carries the seventh (5.2; NAR-13)
             Add(B, "OldCapital", "The Old Capital District", 4, 0, boss: "6.13 Corra, 6.14 The Archivist", keystone: true);
             Add(B, "AurysLighthouse", "Aury's Lighthouse", 2, 0, keystone: true);
             Way("Blank.ThessalyHollow", "Blank.OldCapital");

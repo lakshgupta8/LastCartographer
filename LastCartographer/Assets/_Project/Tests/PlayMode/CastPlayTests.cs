@@ -62,8 +62,8 @@ namespace OWSBG.Tests
                 else { planned++; Assert.IsFalse(dialogue.NodeExists(a.Node), a.Node + " exists in the project but the cast data says it is not staged yet"); }
             }
             Assert.That(staged, Is.GreaterThanOrEqualTo(4));
-            Assert.That(planned, Is.GreaterThan(0), "the endings, the epilogues and the islands are still to write");
-            Assert.IsTrue(Cast.Appearances.Where(a => a.Act == Cast.Epilogue || a.Zone == "Halden.Observatory" && a.Character != "pell").All(a => !a.Staged), "the endings and the epilogues are NAR-13's");
+            Assert.That(planned, Is.GreaterThan(0), "Aury's island and Sable's tether are still to write");
+            Assert.IsTrue(Cast.Appearances.Where(a => a.Zone == "Blank.AurysLighthouse").All(a => !a.Staged), "the islands are NAR-14's");
 
             // The staged talkers in the loaded hub start on the cast's nodes.
             var talkers = Object.FindObjectsByType<NpcTalker>(FindObjectsInactive.Include, FindObjectsSortMode.None);

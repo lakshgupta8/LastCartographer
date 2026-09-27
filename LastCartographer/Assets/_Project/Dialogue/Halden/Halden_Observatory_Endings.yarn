@@ -1,0 +1,141 @@
+// The Observatory (Observatory_2; bible 7.3 step 6, 9). The frame of the shattered Atlas, and the choice. The frame
+// offers only the endings Wren has earned (Endings.IsOpen); the Rest is offered in the Blank, at Corvin's chair.
+// Unlabelled in-game. The Fixed World: the stones in. The Open World: the frame broken, Runa's chorus, the Complete
+// Survey (6.15), and one flight. The Unwritten: Teodor names the places as he lets them go. Voss's coda follows any.
+
+title: Observatory_Frame
+---
+<<if flag("ending.chosen") > 0>>
+    Frame: The frame, as she left it. #still
+    <<stop>>
+<<endif>>
+<<if not has_flag("act3.started")>>
+    Frame: The dome is shut.
+    <<stop>>
+<<endif>>
+Frame: The frame of the Great Atlas. Seven sockets, brass, a compass rose in each.
+Frame: One socket is full. The Observatory's own stone has not left it in forty-one years.
+<<if not ending_open("fixed") and not ending_open("open") and not ending_open("unwritten")>>
+    Frame: She stands at it a long time. Not yet. She doesn't know yet what she would do with it.
+    <<stop>>
+<<endif>>
+-> Remake it. All seven. <<if ending_open("fixed")>>
+    <<flag ending.chosen 1>>
+    <<jump Ending_Fixed>>
+-> Break it. Give them back. <<if ending_open("open")>>
+    <<flag ending.chosen 2>>
+    <<jump Observatory_Runa_Chorus>>
+-> Teodor. They're yours to let go. <<if ending_open("unwritten")>>
+    <<flag ending.chosen 3>>
+    <<jump Observatory_Teodor_Unwritten>>
+===
+
+title: Ending_Fixed
+---
+Frame: She sets them in, one by one. Aury's. Hollowvein's. The House's. The hearth's. Isolde's. Corvin's.
+Frame: The seventh socket closes. The Atlas is whole.
+Frame: Across Aurenne, nothing fades. The Remnant come back in colour, blinking.
+Frame: Nobody flies. The sky is in the Atlas, held, safe, for everyone.
+<<flag ending.fixed 1>>
+===
+
+title: Observatory_Runa_Chorus
+---
+Runa: Break it, then. And sing. Nobody holds the Blank alone. Nobody holds anything alone.
+Runa: Everyone she's met. In order. Here we go.
+<<if has_flag("saltmarrow.sable.talked")>>
+    Runa: Sable, of the quay, who rows for free.
+<<endif>>
+<<if has_flag("saltmarrow.dotha.met")>>
+    Runa: Dotha, of Merrow's End, nine songs of eleven.
+<<endif>>
+<<if has_flag("emberdown.kettil.met")>>
+    Runa: Kettil, who counts. Mother.
+<<endif>>
+<<if has_flag("verdance.teodor.met")>>
+    Runa: Teodor, who lets go.
+<<endif>>
+<<if has_flag("halden.hall.pell_minder")>>
+    Runa: Pell, who writes it down.
+<<endif>>
+<<if has_flag("windreach.idrenne.met")>>
+    Runa: Idrenne, who walks.
+<<endif>>
+<<if has_flag("blank.ilse.heard")>>
+    Runa: Ilse, of the Hollow.
+<<endif>>
+<<if has_flag("corra.decided")>>
+    Runa: Corra, who draws.
+<<endif>>
+<<if has_flag("return.voss.met")>>
+    Runa: Aurelian, at the line.
+<<endif>>
+Runa: Forty-two, Wren. Isolde. And whoever's in there.
+Runa: Now walk it. The whole white. We'll keep singing till you're round.
+<<flag ending.chorus_led 1>>
+Frame: The Atlas stirs in its frame. It wants her on the page.
+===
+
+title: Ending_Open_After
+---
+<<if not has_flag("boss.complete_survey.defeated")>>
+    Frame: The Atlas pulls at her, page by page. The singing holds her feet.
+    <<stop>>
+<<endif>>
+<<if has_flag("ending.open")>>
+    Frame: The empty frame. Birds on the rail, trying their wings. #still
+    <<stop>>
+<<endif>>
+Frame: The frame breaks. The stones go home, each carried by whoever lives there.
+Frame: The Blank folds in. The faded come back grey, and the colour comes over years.
+Frame: Anchoring stops working. So does fading. Birds begin, awkwardly, to remember.
+Frame: At the very end, from the Observatory's rail, Wren flies. Once. Briefly.
+<<grant Sky>>
+<<flag ending.open 1>>
+===
+
+title: Observatory_Teodor_Unwritten
+---
+Teodor: May I? Thank you, cartographer. I will name them. They are not gone. They are let go.
+<<if has_flag("keystone.hollowvein")>>
+    Teodor: Hollowvein is.
+<<endif>>
+Teodor: Aldermere is.
+<<if place_fate("Saltmarrow_B") == "released">>
+    Teodor: Merrow's End is.
+<<endif>>
+<<if has_flag("keystone.quiet_house")>>
+    Teodor: The Quiet House is.
+<<endif>>
+<<if has_flag("keystone.windreach")>>
+    Teodor: The Steppe is.
+<<endif>>
+<<if has_flag("keystone.aury")>>
+    Teodor: Aury's light is.
+<<endif>>
+<<if has_flag("keystone.isolde")>>
+    Teodor: Thessaly Hollow is.
+<<endif>>
+<<if has_flag("keystone.archivist")>>
+    Teodor: The old capital is.
+<<endif>>
+Teodor: There. Now nothing is held.
+Frame: Anchoring ends. Fading goes on. The world shrinks to what is lived in, walked, and named.
+<<flag ending.unwritten 1>>
+===
+
+title: Observatory_Voss
+---
+<<if flag("ending.chosen") == 0>>
+    Frame: The Guildmaster's chair, empty. His lance against the wall.
+    <<stop>>
+<<endif>>
+<<if has_flag("voss.changed")>>
+    Voss: Gone in to find her. Hold nothing for me. A. V.
+    Frame: The note is on his desk, in his exact hand, under the small drawing.
+<<else>>
+    Frame: A statue at the Observatory door that was not there before.
+    Frame: A grey heron in brass, facing the Greyfold. Nobody remembers commissioning it.
+<<endif>>
+<<flag ending.voss_coda 1>>
+===

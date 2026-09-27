@@ -119,7 +119,14 @@ Corvin: And the sky? Break the frame and it scatters. Nobody holds it whole agai
 title: Capital_Corvin_After
 ---
 <<if has_flag("capital.corvin.after")>>
-    Corvin: Go on. Draw it better than I did. #still
+    Corvin: Back? The chair is still here. Go on, then. Say it.
+    -> Let's finish your Survey. <<if flag("corvin.stance") != 1>>
+        Corvin: Good. Good. Bring them to the frame.
+        <<flag corvin.stance 1>>
+    -> Hear me out again. <<if flag("corvin.stance") != 2>>
+        <<jump Capital_Corvin_Argue>>
+    -> I'll sit. I'll draw with you. <<if ending_open("rest")>>
+        <<jump Ending_Rest>>
     <<stop>>
 <<endif>>
 Corvin: Then draw it better than I did. Go on.
@@ -139,6 +146,17 @@ Corvin: Then draw it better than I did. Go on.
     <<flag keystone.archivist 1>>
 <<endif>>
 <<flag capital.corvin.after 1>>
+===
+
+title: Ending_Rest
+---
+// The Cartographer's Rest (bible 9.4, secret): zero anchors, zero stones, and the chair. Isolde goes free in trade.
+Corvin: Sit. The chair is yours. I drew it before you were born.
+Corvin: Isolde can go. I'll have the white let go of her. That's the trade, if you like.
+Mirror: She sits in the mirror-Observatory and draws. Corvin draws beside her.
+Corvin: When I— no. Nothing. Draw.
+<<flag ending.chosen 4>>
+<<flag ending.rest 1>>
 ===
 
 title: Capital_Marrow_Word

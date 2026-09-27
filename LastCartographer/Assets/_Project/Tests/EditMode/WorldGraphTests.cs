@@ -90,7 +90,7 @@ namespace OWSBG.Tests
             Assert.That(WorldGraph.RoomCount(), Is.InRange(100, 140), "rooms");
             var grants = WorldGraph.Zones.Where(z => z.Grants != Ability.None).Select(z => z.Grants).ToList();
             CollectionAssert.AreEquivalent(new[] { Ability.Wingbeat, Ability.Talonhold, Ability.Inkthread, Ability.Windmemory, Ability.Clarity }, grants, "each ability lives in exactly one zone; the Sky is the ending's");
-            Assert.AreEqual(6, WorldGraph.Zones.Count(z => z.Keystone), "six keystones have a home in the bible (world-map.md, open: the seventh's)");
+            Assert.AreEqual(7, WorldGraph.Zones.Count(z => z.Keystone), "seven keystones, seven homes: the seventh is the one Isolde carries (NAR-13)");
             var ids = new HashSet<string>();
             foreach (var z in WorldGraph.Zones) Assert.IsTrue(ids.Add(z.Id), "duplicate zone " + z.Id);
         }

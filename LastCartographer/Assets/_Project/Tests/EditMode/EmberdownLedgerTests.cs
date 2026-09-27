@@ -95,6 +95,9 @@ namespace OWSBG.Tests
             foreach (var f in new[] { "act3.started", "blank.ilse.heard", "blank.isolde.found", "marrow.following", "corra.memory_carried",
                                       "corvin.stance", "keystone.archivist", "ending.rest_offered", "voss.changed", "return.voss.met", "pell.last_list" })
                 Assert.IsTrue(written.Contains(f), f + " is written by a script (NAR-12)");
+            foreach (var f in new[] { "ending.chosen", "ending.fixed", "ending.open", "ending.unwritten", "ending.rest", "ending.chorus_led",
+                                      "ending.voss_coda", "keystone.isolde", "marrow.words", "epilogue.done" })
+                Assert.IsTrue(written.Contains(f), f + " is written by a script (NAR-13)");
             foreach (var l in WorldGraph.Links.Where(l => l.Flag != null && l.Flag != "saltmarrow.tether"))
                 Assert.IsTrue(written.Contains(l.Flag), "the map's gate " + l.Flag + " (" + l.From + " – " + l.To + ") is opened by a script");
             // The arcs' own beats are all written.

@@ -82,11 +82,14 @@ namespace OWSBG.Tests
                 Assert.IsTrue(built || planned, a.Node + " has a room in " + a.Zone + ", built or planned, with " + a.Character + " in it");
             }
             CollectionAssert.AreEquivalent(new[] { "isolde", "sable", "dotha", "halvard", "runa", "kettil", "teodor", "pell", "maren", "idrenne", "hale", "marrow", "voss", "ilse", "corvin", "corra" }, staged.Select(a => a.Character).Distinct());
-            Assert.AreEqual(6, Cast.AppearancesOf("pell").Count(a => a.Staged), "Pell's Halden scenes (NAR-09), the act break and the Threshold (NAR-11), the last list (NAR-12)");
+            Assert.AreEqual(7, Cast.AppearancesOf("pell").Count(a => a.Staged), "Pell's Halden scenes (NAR-09), the act break and the Threshold (NAR-11), the last list (NAR-12), the epilogue (NAR-13)");
             Assert.IsTrue(Cast.AppearancesOf("marrow").Where(a => a.Node != null && a.Act <= Cast.Act3).All(a => a.Staged), "Marrow's echo and three words are written (NAR-12)");
-            Assert.IsFalse(Cast.Appearances.Any(a => a.Staged && a.Act == Cast.Epilogue), "the epilogues are NAR-13's");
-            Assert.AreEqual(6, Cast.AppearancesOf("runa").Count(a => a.Staged), "Runa's Emberdown scenes are written (NAR-07)");
-            Assert.AreEqual(6, Cast.AppearancesOf("teodor").Count(a => a.Staged), "Teodor's Verdance scenes are written (NAR-08)");
+            Assert.IsTrue(Cast.Appearances.Where(a => a.Act == Cast.Epilogue).All(a => a.Staged), "every epilogue scene is written (NAR-13)");
+            foreach (Ending e in System.Enum.GetValues(typeof(Ending)))
+                foreach (var node in Endings.EpilogueWalk(e))
+                    Assert.IsTrue(Cast.Appearances.Any(a => a.Node == node && a.Staged), e + "'s walk stops at a staged scene: " + node);
+            Assert.AreEqual(6, Cast.AppearancesOf("runa").Count(a => a.Staged && a.Zone.StartsWith("Emberdown.") && a.Act < Cast.Epilogue), "Runa's Emberdown scenes are written (NAR-07)");
+            Assert.AreEqual(6, Cast.AppearancesOf("teodor").Count(a => a.Staged && a.Zone.StartsWith("Verdance.") && a.Act < Cast.Epilogue), "Teodor's Verdance scenes are written (NAR-08)");
         }
     }
 }

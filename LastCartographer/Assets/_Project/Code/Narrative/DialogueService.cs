@@ -200,6 +200,10 @@ namespace OWSBG.Narrative
         [YarnFunction("dominant_voice")]
         public static string DominantVoice() => Voices.Dominant(GameState.World).ToString().ToLowerInvariant();
 
+        /// <summary>Whether an ending ("fixed", "open", "unwritten", "rest") is open to her now (Endings.IsOpen).</summary>
+        [YarnFunction("ending_open")]
+        public static bool EndingOpen(string name) => Endings.TryParse(name, out var e) && Endings.IsOpen(GameState.World, e);
+
         /// <summary>How many keystones Wren carries (Voss counts them at the Threshold).</summary>
         [YarnFunction("keystones")]
         public static float KeystoneCount() => Keystones.Count(GameState.World);

@@ -33,7 +33,16 @@ Ilse: My father holds this place. He held on too hard, once. Ask him what it cos
 title: Hollow_Isolde
 ---
 <<if has_flag("blank.isolde.found")>>
-    Isolde: Go on, journeyman. I'm not going anywhere. That's the problem. #still
+    <<if has_flag("keystone.isolde")>>
+        Isolde: Go on, journeyman. I'm not going anywhere. That's the problem. #still
+    <<else>>
+        Isolde: Still carrying his stone. The sixth slot's. Want it now?
+        -> I'll carry it.
+            Isolde: Heavier than it looks. Don't tell Teodor I said that. He'll say it first.
+            <<flag keystone.isolde 1>>
+        -> Not yet.
+            Isolde: Stubborn. Good.
+    <<endif>>
     <<stop>>
 <<endif>>
 Isolde: Journeyman. You crossed. Look at you.
@@ -48,6 +57,12 @@ Isolde: Did you read it? The atlas? Then you know what I took, and who it's for.
 -> ...
     Isolde: That's mine. You stole that from me. Keep it.
     <<voice drift blank>>
+Isolde: And this. The sixth slot's stone. Corvin's. I never got it to him.
+-> I'll carry it.
+    Isolde: Heavier than it looks. Don't tell Teodor I said that. He'll say it first.
+    <<flag keystone.isolde 1>>
+-> Keep it. Give it him yourself.
+    Isolde: Stubborn. Good. I'll hold it, then.
 <<flag blank.isolde.found 1>>
 ===
 

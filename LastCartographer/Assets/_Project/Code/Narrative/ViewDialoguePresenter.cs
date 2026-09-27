@@ -46,6 +46,9 @@ namespace OWSBG.Narrative
 
         void OnOptionClicked(int index) => _chosen = index;
 
+        /// <summary>False once the service has stopped the conversation, so no page outlives it.</summary>
+        static bool ServiceRunning => DialogueService.Instance == null || DialogueService.Instance.IsRunning;
+
         public override YarnTask OnDialogueStartedAsync()
         {
             View?.Clear();
@@ -67,7 +70,7 @@ namespace OWSBG.Narrative
             if (view == null) { IsShowingLine = false; return; }
             view.ShowLine(line.CharacterName ?? "", line.TextWithoutCharacterName.Text);
             await YarnTask.Yield();                       // swallow the press that started dialogue
-            while (!_advance && !token.IsNextContentRequested)
+            while (!_advance && !token.IsNextContentRequested && ServiceRunning)
             {
                 if (AdvancePressed()) break;
                 await YarnTask.Yield();
@@ -95,7 +98,7 @@ namespace OWSBG.Narrative
                 view.Highlight(_highlighted);
             }
             await YarnTask.Yield();
-            while (_chosen < 0 && !cancellationToken.IsNextContentRequested)
+            while (_chosen < 0 && !cancellationToken.IsNextContentRequested && ServiceRunning)
             {
                 int before = _highlighted;
                 PollOptionInput();

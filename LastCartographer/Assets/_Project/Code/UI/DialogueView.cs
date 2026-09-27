@@ -29,6 +29,7 @@ namespace OWSBG.UI
 
         void Update()
         {
+            if (_built && IsVisible && DialogueService.Instance != null && !DialogueService.Instance.IsRunning) { Clear(); return; }
             if (_built || !Build()) return;
             // Replay anything shown before the document was ready.
             if (_pendingTexts != null) { ShowOptions(_pendingTexts, _pendingAvail); if (_pendingHighlight >= 0) Highlight(_pendingHighlight); }

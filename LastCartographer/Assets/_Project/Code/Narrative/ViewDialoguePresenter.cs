@@ -1,5 +1,4 @@
 #nullable enable
-using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Yarn.Unity;
@@ -7,63 +6,105 @@ using Yarn.Unity;
 namespace OWSBG.Narrative
 {
     /// <summary>
-    /// Placeholder dialogue box drawn with IMGUI until the atlas-and-ink UI (ENV-11) exists.
-    /// Advance: J / Space / Enter / click, or gamepad South/West. Options: 1-3 keys, d-pad, or click.
+    /// Yarn presenter that draws through the registered <see cref="IDialogueView"/>.
+    /// Advance: J / Space / Enter, or gamepad South/West. Options: 1-3 keys, up/down, d-pad, or a click.
+    /// Without a view (tests, tooling) lines pass straight through.
     /// </summary>
-    public sealed class ImguiDialoguePresenter : DialoguePresenterBase
+    public sealed class ViewDialoguePresenter : DialoguePresenterBase
     {
-        [SerializeField] int _fontSize = 22;
-
-        string? _speaker;
-        string? _text;
         DialogueOption[]? _options;
         int _highlighted;
         bool _advance;
         int _chosen = -1;
-        GUIStyle? _boxStyle, _textStyle, _nameStyle, _optionStyle;
+        IDialogueView? _bound;
 
-        public bool IsShowing => _text != null || _options != null;
+        public bool IsShowingLine { get; private set; }
+        public bool IsShowingOptions => _options != null;
+        public int Highlighted => _highlighted;
+
+        IDialogueView? View
+        {
+            get
+            {
+                var v = DialogueViews.Current;
+                if (v != _bound)
+                {
+                    if (_bound != null) _bound.OptionClicked -= OnOptionClicked;
+                    _bound = v;
+                    if (_bound != null) _bound.OptionClicked += OnOptionClicked;
+                }
+                return v;
+            }
+        }
+
+        void OnDisable() { if (_bound != null) { _bound.OptionClicked -= OnOptionClicked; _bound = null; } }
+
+        /// <summary>Tests and tooling: the same as pressing the advance button.</summary>
+        public void Advance() { _advance = true; }
+        /// <summary>Tests and tooling: pick an option by index.</summary>
+        public void Choose(int index) { _chosen = index; }
+
+        void OnOptionClicked(int index) => _chosen = index;
 
         public override YarnTask OnDialogueStartedAsync()
         {
-            _text = null; _options = null; _speaker = null;
+            View?.Clear();
             return YarnTask.CompletedTask;
         }
 
         public override YarnTask OnDialogueCompleteAsync()
         {
-            _text = null; _options = null; _speaker = null;
+            IsShowingLine = false; _options = null;
+            View?.Clear();
             return YarnTask.CompletedTask;
         }
 
         public override async YarnTask RunLineAsync(LocalizedLine line, LineCancellationToken token)
         {
-            _speaker = line.CharacterName;
-            _text = line.TextWithoutCharacterName.Text;
+            var view = View;
+            IsShowingLine = true;
             _advance = false;
+            if (view == null) { IsShowingLine = false; return; }
+            view.ShowLine(line.CharacterName ?? "", line.TextWithoutCharacterName.Text);
             await YarnTask.Yield();                       // swallow the press that started dialogue
             while (!_advance && !token.IsNextContentRequested)
             {
                 if (AdvancePressed()) break;
                 await YarnTask.Yield();
             }
-            _text = null;
-            _speaker = null;
+            IsShowingLine = false;
+            view.Clear();
         }
 
         public override async YarnTask<DialogueOption?> RunOptionsAsync(DialogueOption[] dialogueOptions, LineCancellationToken cancellationToken)
         {
+            var view = View;
             _options = dialogueOptions;
             _highlighted = 0;
             _chosen = -1;
+            if (view != null)
+            {
+                var texts = new string[dialogueOptions.Length];
+                var avail = new bool[dialogueOptions.Length];
+                for (int i = 0; i < dialogueOptions.Length; i++)
+                {
+                    texts[i] = dialogueOptions[i].Line.TextWithoutCharacterName.Text;
+                    avail[i] = dialogueOptions[i].IsAvailable;
+                }
+                view.ShowOptions(texts, avail);
+                view.Highlight(_highlighted);
+            }
             await YarnTask.Yield();
             while (_chosen < 0 && !cancellationToken.IsNextContentRequested)
             {
+                int before = _highlighted;
                 PollOptionInput();
+                if (_highlighted != before) view?.Highlight(_highlighted);
                 await YarnTask.Yield();
             }
             var picked = _chosen >= 0 && _chosen < dialogueOptions.Length ? dialogueOptions[_chosen] : null;
             _options = null;
+            view?.Clear();
             if (picked != null && !picked.IsAvailable) picked = null;
             return picked;
         }
@@ -74,10 +115,7 @@ namespace OWSBG.Narrative
             if (k != null && (k.jKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame || k.enterKey.wasPressedThisFrame))
                 return true;
             var g = Gamepad.current;
-            if (g != null && (g.buttonSouth.wasPressedThisFrame || g.buttonWest.wasPressedThisFrame))
-                return true;
-            var m = Mouse.current;
-            return m != null && m.leftButton.wasPressedThisFrame;
+            return g != null && (g.buttonSouth.wasPressedThisFrame || g.buttonWest.wasPressedThisFrame);
         }
 
         void PollOptionInput()
@@ -101,49 +139,6 @@ namespace OWSBG.Narrative
                 if (g.dpad.down.wasPressedThisFrame || g.leftStick.down.wasPressedThisFrame) _highlighted = (_highlighted + 1) % count;
                 if (g.buttonSouth.wasPressedThisFrame || g.buttonWest.wasPressedThisFrame) _chosen = _highlighted;
             }
-        }
-
-        void OnGUI()
-        {
-            if (!IsShowing) return;
-            EnsureStyles();
-            float w = Mathf.Min(Screen.width - 64f, 1100f);
-            float h = 180f;
-            var rect = new Rect((Screen.width - w) * 0.5f, Screen.height - h - 40f, w, h);
-            GUI.Box(rect, GUIContent.none, _boxStyle);
-
-            if (_text != null)
-            {
-                if (!string.IsNullOrEmpty(_speaker))
-                    GUI.Label(new Rect(rect.x + 24f, rect.y + 14f, w - 48f, 30f), _speaker, _nameStyle);
-                GUI.Label(new Rect(rect.x + 24f, rect.y + 50f, w - 48f, h - 60f), _text, _textStyle);
-                GUI.Label(new Rect(rect.xMax - 140f, rect.yMax - 32f, 120f, 24f), "J / Space  ▸", _nameStyle);
-            }
-            else if (_options != null)
-            {
-                float y = rect.y + 16f;
-                for (int i = 0; i < _options.Length; i++)
-                {
-                    var o = _options[i];
-                    var label = (i == _highlighted ? "▸ " : "   ") + (i + 1) + ".  " + o.Line.TextWithoutCharacterName.Text;
-                    var r = new Rect(rect.x + 24f, y, w - 48f, 34f);
-                    if (GUI.Button(r, label, _optionStyle) && o.IsAvailable) _chosen = i;
-                    y += 38f;
-                }
-            }
-        }
-
-        void EnsureStyles()
-        {
-            if (_boxStyle != null) return;
-            var paper = new Texture2D(1, 1);
-            paper.SetPixel(0, 0, new Color(0.96f, 0.93f, 0.85f, 0.96f));
-            paper.Apply();
-            _boxStyle = new GUIStyle(GUI.skin.box) { normal = { background = paper } };
-            var ink = new Color(0.08f, 0.08f, 0.11f);
-            _textStyle = new GUIStyle(GUI.skin.label) { fontSize = _fontSize, wordWrap = true, normal = { textColor = ink } };
-            _nameStyle = new GUIStyle(GUI.skin.label) { fontSize = _fontSize - 4, fontStyle = FontStyle.Bold, normal = { textColor = new Color(0.20f, 0.27f, 0.45f) } };
-            _optionStyle = new GUIStyle(GUI.skin.label) { fontSize = _fontSize - 2, normal = { textColor = ink }, hover = { textColor = new Color(0.20f, 0.27f, 0.45f) } };
         }
     }
 }

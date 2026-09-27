@@ -18,6 +18,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 namespace OWSBG.Setup
 {
@@ -31,6 +32,8 @@ namespace OWSBG.Setup
         const string InputAssetPath = Root + "/Settings/Input/WrenInput.inputactions";
         const string YarnProjectPath = Root + "/Dialogue/LastCartographer.yarnproject";
         const string PlaceholderTexPath = Root + "/Art/Characters/Placeholder_Wren.png";
+        const string UiThemePath = Root + "/Settings/UI/Resources/OWSBG_Theme.tss";
+        const string PanelSettingsPath = Root + "/Settings/UI/Resources/OWSBG_PanelSettings.asset";
 
         static readonly string[] Folders =
         {
@@ -346,10 +349,20 @@ namespace OWSBG.Setup
             vol.isGlobal = true;
             vol.sharedProfile = GetOrCreateVolumeProfile();
 
-            // Dialogue service with the placeholder on-screen presenter.
+            // The atlas UI: one UI Toolkit document with the HUD, dialogue page, desk page and boss bar.
+            var uiGo = new GameObject("UI");
+            var doc = uiGo.AddComponent<UIDocument>();
+            doc.panelSettings = EnsurePanelSettings();
+            uiGo.AddComponent<OWSBG.UI.UiRoot>();
+            uiGo.AddComponent<OWSBG.UI.HudView>();
+            uiGo.AddComponent<OWSBG.UI.DialogueView>();
+            uiGo.AddComponent<OWSBG.UI.DeskMenu>();
+            uiGo.AddComponent<OWSBG.UI.BossView>();
+
+            // Dialogue service drawing through the UI's dialogue view.
             var dlgGo = new GameObject("DialogueService");
             dlgGo.AddComponent<WorldStateVariableStorage>();
-            var presenter = dlgGo.AddComponent<ImguiDialoguePresenter>();
+            var presenter = dlgGo.AddComponent<ViewDialoguePresenter>();
             var service = dlgGo.AddComponent<DialogueService>();
             var yarnProject = AssetDatabase.LoadAssetAtPath<YarnProject>(YarnProjectPath);
             if (yarnProject == null) Debug.LogWarning("[OWSBG] Yarn project asset not found at " + YarnProjectPath);
@@ -360,12 +373,9 @@ namespace OWSBG.Setup
             pres.GetArrayElementAtIndex(0).objectReferenceValue = presenter;
             dsSo.ApplyModifiedPropertiesWithoutUndo();
 
-            // Death handling and placeholder HUD.
+            // Death handling.
             var sysGo = new GameObject("PlayerSystems");
             sysGo.AddComponent<PlayerRespawn>();
-            sysGo.AddComponent<OWSBG.UI.PlaceholderHud>();
-            sysGo.AddComponent<OWSBG.UI.DeskMenu>();
-            sysGo.AddComponent<OWSBG.UI.BossHud>();
 
             // Room manager.
             var rmGo = new GameObject("RoomManager");
@@ -379,6 +389,32 @@ namespace OWSBG.Setup
 
             EditorSceneManager.SaveScene(scene, PersistentScenePath);
             Debug.Log("[OWSBG] saved " + PersistentScenePath);
+        }
+
+        // UI Toolkit runtime panel: the default theme (fonts, base styles) and a 1080p-scaled panel.
+        static PanelSettings EnsurePanelSettings()
+        {
+            var dir = Path.GetDirectoryName(UiThemePath).Replace('\\', '/');
+            Directory.CreateDirectory(dir);
+            if (!File.Exists(UiThemePath))
+            {
+                File.WriteAllText(UiThemePath, "@import url(\"unity-theme://default\");\n");
+                AssetDatabase.ImportAsset(UiThemePath);
+            }
+            var theme = AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>(UiThemePath);
+            var ps = AssetDatabase.LoadAssetAtPath<PanelSettings>(PanelSettingsPath);
+            if (ps == null)
+            {
+                ps = ScriptableObject.CreateInstance<PanelSettings>();
+                AssetDatabase.CreateAsset(ps, PanelSettingsPath);
+            }
+            ps.themeStyleSheet = theme;
+            ps.scaleMode = PanelScaleMode.ScaleWithScreenSize;
+            ps.referenceResolution = new Vector2Int(1920, 1080);
+            ps.match = 0.5f;
+            EditorUtility.SetDirty(ps);
+            AssetDatabase.SaveAssets();
+            return ps;
         }
 
         static GameObject BuildWren()

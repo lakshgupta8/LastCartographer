@@ -57,10 +57,13 @@ Every base Charter and every Instrument is owned from the start in the greybox; 
 Wingbeat and Talonhold are pre-unlocked in the greybox for feel-testing (`AbilitySet` on the Wren object).
 
 Room A also has the first world interactions. Stand in front of something and press **up** (W or stick up) to use it:
-- the dark bird on the left is a stand-in Sable: a Yarn conversation with options (1-3 or arrows, J to confirm);
+- the dark bird on the left is a stand-in Sable: a Yarn conversation on the paper page (1-3 or arrows, J to confirm);
 - the small table is a drafting desk: restores masks and Instrument uses, sets the respawn point, saves to `saves/slot0.json`, and opens the desk menu (row 0 swaps the Charter with ◂ ▸ or 1-3; the rows below swap what sits in each Instrument slot; J leaves);
 - the light brown slab up on the left wall is a weak floor (a plumb weight breaks it; the quill only scratches it) and the faint slab on the far right is a hidden platform (a Field lantern draws it for ten seconds);
 - the blue post on the right is a vantage point: hold **Q** on it to survey it (Sable notices afterwards).
+
+The HUD, dialogue page, desk page and boss bar are one UI Toolkit document (`UI` object in the persistent
+scene; `Assets/_Project/Code/UI`), built in code on the paper-and-ink palette until the UI art (ENV-11) lands.
 
 Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`.
 
@@ -68,7 +71,7 @@ Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartogr
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller: landing, held and tapped jump heights, coyote time, dash distance and gating, and the down-strike pogo.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png` and `ui-desk.png` with the UI composited over the camera, for a headless visual check.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

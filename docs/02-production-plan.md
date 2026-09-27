@@ -164,7 +164,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | ENV-08 `[ ]` | Greyfold and Blank: white-out, lantern-radius, drifting islands | M3 | SB-4.6, 4.7 | PRG-18 |
 | ENV-09 `[ ]` | Hubs dressing: drafting desks, ledgers, shops | M2 | — | ENV-02 |
 | ENV-10 `[ ]` | Lighting and post per region | M4 | ART-5 | ENV-all |
-| ENV-11 `[ ]` | UI art: atlas book, masks, Inkwell, ledger, Charter/Instrument screens, fonts | M1–M2 | ART-6 | CHR-01 |
+| ENV-11 `[~]` | UI art: atlas book, masks, Inkwell, ledger, Charter/Instrument screens, fonts (UI Toolkit runtime layer in place: HUD, dialogue page, desk page, boss bar; art and fonts pending) | M1–M2 | ART-6 | CHR-01 |
 | ENV-12 `[ ]` | VFX: ink splashes, Flourish scribbles, Bind redraw, erasure, Blank edge | M2–M3 | ART-7 | PRG-03 |
 | ENV-13 `[ ]` | Key art, capsule, screenshots, trailer assets | M5 | — | all |
 

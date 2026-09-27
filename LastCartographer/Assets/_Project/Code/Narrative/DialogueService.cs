@@ -116,6 +116,7 @@ namespace OWSBG.Narrative
         public void Stop()
         {
             if (_runner != null && _runner.IsDialogueRunning) _runner.Stop().Forget();
+            DialogueViews.Current?.Clear();   // a stopped conversation leaves no page behind
         }
 
         void OnStart()

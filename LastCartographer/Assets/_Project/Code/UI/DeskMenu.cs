@@ -3,26 +3,28 @@ using OWSBG.Core;
 using OWSBG.World;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 namespace OWSBG.UI
 {
     /// <summary>
-    /// Placeholder drafting-desk screen (PRG-11) drawn with IMGUI until the atlas UI (ENV-11) exists.
-    /// Opens when Wren rests. Row 0 is the Charter (left/right or 1-3), the rows below are the
-    /// Instrument slots (left/right cycles what is in the slot). J / Space / Esc / East closes.
+    /// The drafting-desk page (PRG-11): opens when Wren rests. Row 0 is the Charter (left/right or
+    /// 1-3), the rows below are the Instrument slots (left/right cycles what sits there; a tool held
+    /// elsewhere swaps places). J / Space / Esc / East closes and saves.
     /// </summary>
     public sealed class DeskMenu : MonoBehaviour
     {
-        [SerializeField] int _fontSize = 22;
-
         public bool IsOpen { get; private set; }
         public int Row { get; private set; }
 
         WrenController _wren;
         CharterSet _charters;
         InstrumentBelt _belt;
-        GUIStyle _boxStyle, _textStyle, _titleStyle, _dimStyle;
-        bool _wasFrozen;
+        bool _wasFrozen, _built;
+        VisualElement _panel, _rows;
+        Label _title, _blurb;
+
+        public VisualElement Panel => _panel;
 
         void OnEnable() { DraftingDesk.Rested += OnRested; }
         void OnDisable() { DraftingDesk.Rested -= OnRested; }
@@ -43,6 +45,7 @@ namespace OWSBG.UI
             wren.Frozen = true;
             Row = 0;
             IsOpen = true;
+            Refresh();
         }
 
         public void Close()
@@ -51,10 +54,12 @@ namespace OWSBG.UI
             IsOpen = false;
             if (_wren != null) _wren.Frozen = _wasFrozen;
             GameState.Save();
+            if (_built) InkTheme.Show(_panel, false);
         }
 
         void Update()
         {
+            if (!_built && Build() && IsOpen) Refresh();
             if (!IsOpen) return;
             var k = Keyboard.current;
             var g = Gamepad.current;
@@ -66,17 +71,19 @@ namespace OWSBG.UI
             bool close = (k != null && (k.jKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame || k.escapeKey.wasPressedThisFrame || k.enterKey.wasPressedThisFrame))
                          || (g != null && (g.buttonEast.wasPressedThisFrame || g.buttonSouth.wasPressedThisFrame || g.startButton.wasPressedThisFrame));
 
-            if (up) Row = (Row + rows - 1) % rows;
-            if (down) Row = (Row + 1) % rows;
-            if (left) Step(-1);
-            if (right) Step(1);
+            bool changed = false;
+            if (up) { Row = (Row + rows - 1) % rows; changed = true; }
+            if (down) { Row = (Row + 1) % rows; changed = true; }
+            if (left) { Step(-1); changed = true; }
+            if (right) { Step(1); changed = true; }
             if (k != null)
             {
-                if (k.digit1Key.wasPressedThisFrame) PickCharter(0);
-                if (k.digit2Key.wasPressedThisFrame) PickCharter(1);
-                if (k.digit3Key.wasPressedThisFrame) PickCharter(2);
+                if (k.digit1Key.wasPressedThisFrame) { PickCharter(0); changed = true; }
+                if (k.digit2Key.wasPressedThisFrame) { PickCharter(1); changed = true; }
+                if (k.digit3Key.wasPressedThisFrame) { PickCharter(2); changed = true; }
             }
             if (close) Close();
+            else if (changed) Refresh();
         }
 
         List<CharterKind> OwnedCharters()
@@ -103,66 +110,91 @@ namespace OWSBG.UI
                 if (owned.Count == 0) return;
                 int i = Mathf.Max(0, owned.IndexOf(e.Charter));
                 e.SetCharter(owned[(i + dir + owned.Count) % owned.Count]);
+                Refresh();
                 return;
             }
             int slot = Row - 1;
             if (_belt == null || slot >= e.SlotCount) return;
-            // Choices: None, then every owned Instrument (one held elsewhere swaps places with this slot).
             var choices = new List<InstrumentKind> { InstrumentKind.None };
-            foreach (var info in InstrumentInfo.All)
-                if (e.OwnsInstrument(info.Kind)) choices.Add(info.Kind);
+            foreach (var info in InstrumentInfo.All) if (e.OwnsInstrument(info.Kind)) choices.Add(info.Kind);
             int cur = Mathf.Max(0, choices.IndexOf(e.Slots[slot].Kind));
             var next = choices[(cur + dir + choices.Count) % choices.Count];
             _belt.Equip(slot, next);
+            Refresh();
         }
 
-        void OnGUI()
-        {
-            if (!IsOpen) return;
-            EnsureStyles();
-            var e = GameState.World.Equipment;
-            float w = Mathf.Min(Screen.width - 64f, 760f);
-            float h = 120f + 44f * (1 + e.SlotCount) + 40f;
-            var rect = new Rect((Screen.width - w) * 0.5f, (Screen.height - h) * 0.5f, w, h);
-            GUI.Box(rect, GUIContent.none, _boxStyle);
-            float x = rect.x + 28f, y = rect.y + 18f;
-            GUI.Label(new Rect(x, y, w - 56f, 34f), "Drafting desk", _titleStyle);
-            y += 44f;
+        public void SetRow(int row) { Row = row; Refresh(); }
 
+        bool Build()
+        {
+            var ui = UiRoot.Instance;
+            if (ui == null || !ui.IsReady || ui.Desk == null) return false;
+            _panel = InkTheme.Panel("desk");
+            _panel.style.position = Position.Absolute;
+            _panel.style.left = new Length(50, LengthUnit.Percent);
+            _panel.style.top = new Length(50, LengthUnit.Percent);
+            _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
+            _panel.style.width = 760;
+            _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
+            _title = InkTheme.Text("title", "Drafting desk", 30, InkTheme.Wash, FontStyle.Bold);
+            _title.style.marginBottom = 14;
+            _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
+            _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
+            _blurb.style.marginTop = 10;
+            var hint = InkTheme.Text("hint", "↑↓ row    ◂▸ change    1-3 Charter    J / Esc leave", 15, InkTheme.Dim);
+            hint.style.marginTop = 18;
+            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(hint);
+            InkTheme.Show(_panel, false);
+            ui.Desk.Add(_panel);
+            _built = true;
+            return true;
+        }
+
+        public void Refresh()
+        {
+            if (!_built) return;
+            InkTheme.Show(_panel, IsOpen);
+            if (!IsOpen) return;
+            var e = GameState.World.Equipment;
+            _rows.Clear();
             var profile = _charters != null ? _charters.Current : null;
             string charterName = profile != null ? profile.DisplayName : e.Charter.ToString();
-            GUI.Label(new Rect(x, y, w - 56f, 30f), (Row == 0 ? "▸ " : "   ") + "Charter    ◂ " + charterName + " ▸", _textStyle);
-            y += 30f;
-            GUI.Label(new Rect(x + 28f, y, w - 84f, 26f), profile != null ? profile.Blurb : "", _dimStyle);
-            y += 40f;
-
+            _rows.Add(MakeRow(0, "Charter", charterName, ""));
             for (int i = 0; i < e.SlotCount; i++)
             {
                 var s = e.Slots[i];
                 string name = s.IsEmpty ? "(empty)" : InstrumentInfo.Of(s.Kind).Name;
-                string uses = s.IsEmpty ? "" : (s.UsesLeft < 0 ? "  ∞" : "  " + s.UsesLeft + "/" + InstrumentInfo.Of(s.Kind).Uses);
-                GUI.Label(new Rect(x, y, w - 56f, 30f), (Row == i + 1 ? "▸ " : "   ") + "Slot " + (i + 1) + "     ◂ " + name + uses + " ▸", _textStyle);
-                y += 30f;
-                if (Row == i + 1 && !s.IsEmpty)
-                {
-                    GUI.Label(new Rect(x + 28f, y, w - 84f, 26f), InstrumentInfo.Of(s.Kind).Blurb, _dimStyle);
-                }
-                y += 14f;
+                string uses = s.IsEmpty ? "" : (s.UsesLeft < 0 ? "∞" : s.UsesLeft + " / " + InstrumentInfo.Of(s.Kind).Uses);
+                _rows.Add(MakeRow(i + 1, "Slot " + (i + 1), name, uses));
             }
-            GUI.Label(new Rect(x, rect.yMax - 36f, w - 56f, 26f), "↑↓ row   ◂▸ change   1-3 Charter   J / Esc leave", _dimStyle);
+            if (Row == 0) _blurb.text = profile != null ? profile.Blurb : "";
+            else
+            {
+                var s = e.Slots[Row - 1];
+                _blurb.text = s.IsEmpty ? "An empty loop on the belt." : InstrumentInfo.Of(s.Kind).Blurb;
+            }
         }
 
-        void EnsureStyles()
+        VisualElement MakeRow(int index, string label, string value, string extra)
         {
-            if (_boxStyle != null) return;
-            var paper = new Texture2D(1, 1);
-            paper.SetPixel(0, 0, new Color(0.96f, 0.93f, 0.85f, 0.97f));
-            paper.Apply();
-            _boxStyle = new GUIStyle(GUI.skin.box) { normal = { background = paper } };
-            var ink = new Color(0.08f, 0.08f, 0.11f);
-            _textStyle = new GUIStyle(GUI.skin.label) { fontSize = _fontSize, normal = { textColor = ink } };
-            _titleStyle = new GUIStyle(GUI.skin.label) { fontSize = _fontSize + 6, fontStyle = FontStyle.Bold, normal = { textColor = new Color(0.20f, 0.27f, 0.45f) } };
-            _dimStyle = new GUIStyle(GUI.skin.label) { fontSize = _fontSize - 6, normal = { textColor = new Color(0.35f, 0.35f, 0.40f) } };
+            bool sel = index == Row;
+            var row = InkTheme.Row("row-" + index);
+            row.AddToClassList("desk-row");
+            row.EnableInClassList("selected", sel);
+            InkTheme.SetPadding(row, 6f, 10f);
+            InkTheme.SetRadius(row, 4f);
+            row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
+            var marker = InkTheme.Text("marker", sel ? "▸" : "", 22, InkTheme.Wash);
+            marker.style.width = 26;
+            var l = InkTheme.Text("label", label, 22, InkTheme.Dim);
+            l.style.width = 130;
+            var v = InkTheme.Text("value", "◂  " + value + "  ▸", 22, InkTheme.Ink);
+            v.style.flexGrow = 1;
+            var x = InkTheme.Text("extra", extra, 20, InkTheme.Wash, FontStyle.Bold);
+            x.style.width = 90;
+            x.style.unityTextAlign = TextAnchor.MiddleRight;
+            row.Add(marker); row.Add(l); row.Add(v); row.Add(x);
+            return row;
         }
     }
 }

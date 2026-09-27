@@ -107,12 +107,12 @@ namespace OWSBG.Core
             At("sable", Epilogue, "Saltmarrow.Quay", "prices, by ending", "Epilogue_Sable");
 
             Member("runa", "Runa", "capercaillie", "the Holdfast", "counting people out loud, sung", "\"we\" for her town even alone", "\"I don't know how\"");
-            At("runa", Act1, "Emberdown.RollCallBell", "counted in: \"stranger, one\"", "Bell_Runa_Count", writes: "emberdown.runa.counted");
-            At("runa", Act1, "Emberdown.NineChimneys", "Talonhold: the old way up", "Chimneys_Runa_Climb", writes: "emberdown.runa.climbed");
-            At("runa", Act1, "Emberdown.Overlook", "the Greyfold from the north (plant 4.6)", "Overlook_Runa", writes: "emberdown.overlook.seen");
-            At("runa", Act1, "Emberdown.CinderBaths", "the debate: she sings the surveyor's numbers back", "Baths_Runa_Debate", writes: "emberdown.debate.heard");
-            At("runa", Act1, "Emberdown.Hollowvein", "the long roll-call down, or leave it buried", "Hollowvein_Runa_Walk", writes: "emberdown.hollowvein.walked / .buried");
-            At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place", "Bell_Runa_Named", writes: "runa.named_wren");
+            At("runa", Act1, "Emberdown.RollCallBell", "counted in: \"stranger, one\"", "Bell_Runa_Count", staged: true, writes: "emberdown.runa.counted");
+            At("runa", Act1, "Emberdown.NineChimneys", "Talonhold: the old way up", "Chimneys_Runa_Climb", staged: true, writes: "emberdown.runa.climbed");
+            At("runa", Act1, "Emberdown.Overlook", "the Greyfold from the north (plant 4.6)", "Overlook_Runa", staged: true, writes: "emberdown.overlook.seen");
+            At("runa", Act1, "Emberdown.CinderBaths", "the debate: she sings the surveyor's numbers back", "Baths_Runa_Debate", staged: true, writes: "emberdown.debate.heard");
+            At("runa", Act1, "Emberdown.Hollowvein", "the long roll-call down, or leave it buried", "Hollowvein_Runa_Walk", staged: true, writes: "emberdown.hollowvein.walked / .buried");
+            At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place", "Bell_Runa_Named", staged: true, writes: "runa.named_wren");
             At("runa", Act3, "Halden.Observatory", "the true ending's chorus: she leads the roll-call round the Blank", "Observatory_Runa_Chorus", writes: "ending.chorus_led");
             At("runa", Epilogue, "Emberdown.KettilsRest", "the epilogue, by ending", "Epilogue_Runa");
 
@@ -150,8 +150,8 @@ namespace OWSBG.Core
             At("dotha", Act1, "Saltmarrow.MerrowsEnd", "her last season: nine songs of eleven; three ways", "Merrow_Dotha", staged: true, writes: "saltmarrow.dotha.*");
 
             Member("kettil", "Old Kettil", "capercaillie", "the Holdfast", "counting people", "proverbs, orders, laughter", "\"Guild\" without spitting");
-            At("kettil", Act1, "Emberdown.KettilsRest", "town-mother; the roll-call is hers by right and Runa's by voice", "Rest_Kettil");
-            At("kettil", Act1, "Emberdown.CinderBaths", "the debate, with real numbers", "Baths_Kettil_Debate");
+            At("kettil", Act1, "Emberdown.KettilsRest", "town-mother; the roll-call is hers by right and Runa's by voice", "Rest_Kettil", staged: true);
+            At("kettil", Act1, "Emberdown.CinderBaths", "the debate, with real numbers", "Baths_Kettil_Debate", staged: true);
 
             Member("idrenne", "Speaker Idrenne", "crane", "the Windreach Clans", "where she was standing when she learned it", "amused, unhurried", "\"always\" or \"never\"");
             At("idrenne", Act2, "Windreach.LongGrassCamp", "the moving camp: three nights", "Camp_Idrenne");

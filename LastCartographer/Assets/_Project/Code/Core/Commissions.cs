@@ -102,6 +102,19 @@ namespace OWSBG.Core
 
         public static bool Post(WorldState w, string id) => Move(w, id, CommissionState.Posted, CommissionState.Unknown);
 
+        /// <summary>Post every unknown commission at a hub whose posting flag (if any) is set; the ledger does this when opened.</summary>
+        public static int PostAvailable(WorldState w, string hub)
+        {
+            int n = 0;
+            foreach (var d in CommissionCatalog.AtHub(hub))
+            {
+                if (StateOf(w, d.Id) != CommissionState.Unknown) continue;
+                if (!string.IsNullOrEmpty(d.PostAfterFlag) && !w.Is(d.PostAfterFlag)) continue;
+                if (Post(w, d.Id)) n++;
+            }
+            return n;
+        }
+
         /// <summary>Take a posted commission. Steps already met (a vantage drawn earlier) fulfil it at once.</summary>
         public static bool Take(WorldState w, string id)
         {
@@ -273,6 +286,7 @@ namespace OWSBG.Core
             if (_defaults) return;
             _defaults = true;
             foreach (var d in Saltmarrow()) { _byId[d.Id] = d; _defs.Add(d); }
+            foreach (var d in Emberdown()) { _byId[d.Id] = d; _defs.Add(d); }
         }
 
         /// <summary>Bible 8.1, greybox-sized: each is finishable in the three greybox rooms.</summary>
@@ -326,6 +340,59 @@ namespace OWSBG.Core
                 Aftermath = "Whichever way it went, the tether-post has one fewer rope on it.",
                 Steps = new[] { CommissionStep.Flag("saltmarrow.widow.decided", "Answer the widow, through Sable") },
                 RewardScraps = 2, PostAfterFlag = "boss.lamp_keeper.defeated",
+            },
+        };
+        /// <summary>Bible 8.2: Kettil's Rest's ledger. Vantage steps name the planned rooms (RoomPlans, DES-09).</summary>
+        public static CommissionDef[] Emberdown() => new[]
+        {
+            new CommissionDef
+            {
+                Id = "emberdown.long_roll_call", Title = "The Long Roll-Call", Hub = "Emberdown", Poster = "The families of Hollowvein",
+                Brief = "Thirty-one under the pit-head, buried standing. The families want them up. Kettil wants the boards left on.",
+                Journal = "Hear the baths argue, learn the walk at the bell, and go to the pit-head. Runa will be there. Walk it down, or leave it.",
+                Aftermath = "Hollowvein is decided. Runa counts it every night now, one way or the other.",
+                Steps = new[] { CommissionStep.Flag("emberdown.hollowvein.decided", "Decide Hollowvein with Runa") },
+                RewardScraps = 3, BlankIsland = "Hollowvein", PostAfterFlag = "emberdown.runa.counted",
+            },
+            new CommissionDef
+            {
+                Id = "emberdown.ninth_chimney", Title = "The Ninth Chimney", Hub = "Emberdown", Poster = "Unsigned, in soot",
+                Brief = "Nine chimneys. The town built eight. Somebody lives at the top of the ninth and never comes down for supper.",
+                Journal = "Climb the ninth chimney and see who keeps it.",
+                Aftermath = "A Guild agent, a season into his posting. He has been there twenty-two years.",
+                Steps = new[]
+                {
+                    CommissionStep.Vantage("Emberdown_Chimneys_3/Ninth", "Survey the ninth chimney"),
+                    CommissionStep.Flag("emberdown.ninth.agent_met", "Meet whoever keeps it"),
+                },
+                RewardScraps = 2, Foreshadows = "5.1", RequiresAbility = Ability.Talonhold, PostAfterFlag = "emberdown.runa.climbed",
+            },
+            new CommissionDef
+            {
+                Id = "emberdown.debate", Title = "The Cinder Bath Debate", Hub = "Emberdown", Poster = "Kettil, loudly",
+                Brief = "A Guild surveyor is doing sums in the baths. Kettil is doing louder ones. Somebody neutral should listen.",
+                Journal = "The baths are past the chimneys. Listen to both of them.",
+                Aftermath = "Both were right. Neither has forgiven you for saying so.",
+                Steps = new[] { CommissionStep.Flag("emberdown.debate.heard", "Hear the debate at the baths") },
+                RewardScraps = 1, PostAfterFlag = "emberdown.kettil.met",
+            },
+            new CommissionDef
+            {
+                Id = "emberdown.furnace_rescue", Title = "Furnace Stair Rescue", Hub = "Emberdown", Poster = "The stair crew",
+                Brief = "A landing gave on the Furnace Stair. One of the crew is on the ledge below it. The furnace is lit.",
+                Journal = "The landings are on the stair, over the live furnaces. Get Hask off the ledge.",
+                Aftermath = "The stair crew counts nine again, and Wren.",
+                Steps = new[] { CommissionStep.Flag("emberdown.rescue.done", "Pull Hask off the ledge") },
+                RewardScraps = 2, RewardInstrument = InstrumentKind.PlumbWeight, PostAfterFlag = "emberdown.kettil.met",
+            },
+            new CommissionDef
+            {
+                Id = "emberdown.overlook", Title = "The Overlook", Hub = "Emberdown", Poster = "Runa",
+                Brief = "Runa wants to show you something from the ridge. She says it is bigger than it looks.",
+                Journal = "Over the baths and up the ridge. Stand at the overlook and look south.",
+                Aftermath = "The Greyfold, from outside. Runa has counted it since she was a chick.",
+                Steps = new[] { CommissionStep.Vantage("Emberdown_Overlook_2/Overlook", "Survey the overlook") },
+                RewardScraps = 1, Foreshadows = "4.6", RequiresAbility = Ability.Talonhold, PostAfterFlag = "emberdown.runa.climbed",
             },
         };
     }

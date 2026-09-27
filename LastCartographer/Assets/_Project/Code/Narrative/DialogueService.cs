@@ -106,6 +106,14 @@ namespace OWSBG.Narrative
                 var walk = BoundsWalk.Find(id);
                 if (walk == null || !walk.Begin()) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: no such walk here, or it is already walked");
             });
+            runner.AddCommandHandler<string>("grant", name =>
+            {
+                if (!Enum.TryParse(name, true, out Ability a) || a == Ability.None) { Debug.LogWarning("[OWSBG] <<grant " + name + ">>: no such ability"); return; }
+                var wren = FindFirstObjectByType<WrenController>();
+                var set = wren != null ? wren.GetComponent<AbilitySet>() : null;
+                if (set != null) set.Unlock(a);
+                else GameState.World.Set(AbilitySet.FlagKey(a), true);   // no Wren loaded: the flag restores it later
+            });
             runner.AddCommandHandler<string>("erase", place =>
             {
                 if (!Atlas.Erase(GameState.World, place))

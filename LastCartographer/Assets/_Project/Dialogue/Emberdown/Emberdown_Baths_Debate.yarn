@@ -1,0 +1,37 @@
+// The Cinder Bath Debate (bible 8.2): Kettil and a Guild surveyor argue with real numbers; both are right about
+// different things. Surveyor Lorne, crane, a careful man who believes his arithmetic. Runa sings his numbers
+// back as a roll-call and they stop being his. Baths_2.
+
+title: Baths_Kettil_Debate
+---
+<<if has_flag("emberdown.debate.heard")>>
+    Kettil: The crane's still doing sums in the steam. Let him. Warm water's free. #still
+    <<stop>>
+<<endif>>
+Lorne: Six hundred and twelve residents. Fade at the southern edge: one wingspan a year, rising.
+Lorne: Anchoring costs four hundred crowns a street. Kettil's Rest has fourteen streets. The Guild will lend it.
+Kettil: And in forty years the same six hundred and twelve. Not one more. Not one hatched. She spits.
+Lorne: Not one fewer, either. Merrow's End had nine hundred. Ask it how many it has now.
+Kettil: We hold ours by walking it. Every night. Nobody's gone missing on my count.
+Lorne: Nobody has gone missing on your count because it has never been tested. Hollowvein tested it.
+<<jump Baths_Runa_Debate>>
+===
+
+title: Baths_Runa_Debate
+---
+Runa: Six hundred and twelve. He's right.
+Runa: Six hundred and twelve, Kettil's Rest, one. Now sing them. Every one has a name.
+Lorne: That is not how numbers work.
+Runa: It's how ours work. Yours stay the same. Ours go up when a chick hatches and down when we bury someone.
+-> You're both right. About different things.
+    Lorne: That is the least satisfying thing anyone has said to me this year.
+    Kettil: Ha. Means it's true.
+    <<flag emberdown.debate.sided 3>>
+-> Your numbers never move, Lorne.
+    Lorne: Anchored ones do not. That is rather the point. I begin to see why it bothers you.
+    <<flag emberdown.debate.sided 1>>
+-> Merrow's End loses a song a season.
+    Kettil: Aye. And it never had a roll-call. We'll see if one can be taught.
+    <<flag emberdown.debate.sided 2>>
+<<flag emberdown.debate.heard 1>>
+===

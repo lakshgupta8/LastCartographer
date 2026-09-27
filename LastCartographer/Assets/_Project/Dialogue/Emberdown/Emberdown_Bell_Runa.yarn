@@ -1,0 +1,47 @@
+// Runa, capercaillie, Kettil's daughter (character-bibles.md §3). Her image: counting people, sung.
+// Voice: warm, loud, sings mid-sentence; "we" for her town even alone; never "I don't know how".
+// The bell (Bell_2): the nightly roll-call. She counts Wren in once as "stranger, one" and never again calls her
+// stranger. The lesson walk (bounds-walk.md, Kettil's Rest) is taught here.
+
+title: Bell_Runa_Count
+---
+<<if has_flag("emberdown.runa.counted")>>
+    <<jump Bell_Runa_Named>>
+<<endif>>
+Runa: Thirty-nine. Forty. Forty-one. Hold on.
+Runa: Forty-two, stranger, one. Stand where I can count you.
+-> I'm not staying.
+    Runa: Nobody's staying. We're counted anyway. That's the whole trick of it.
+-> Who taught you the song?
+    Runa: Mother. Before the smoke. She says the mine taught her. We don't ask the mine.
+-> ...
+    Runa: Quiet ones count too. Louder, next time. We'll learn you.
+<<flag emberdown.runa.counted 1>>
+Runa: The walk goes round the town on the beat. Every street a name, every name a step.
+Runa: Miss three and we start the verse again. Nobody's ever lost for missing. That's the kindness in it.
+-> Teach me.
+    Runa: Stand on the well-cap when I sing "well". We'll learn the rest walking.
+    <<flag holdfast.walk_learned 1>>
+    <<walk kettils_rest>>
+-> Another night.
+    Runa: Every night's another night. That's what the bell is for.
+===
+
+title: Bell_Runa_Named
+---
+<<if has_flag("emberdown.hollowvein.walked") or walked("Saltmarrow_B")>>
+    <<if not has_flag("runa.named_wren")>>
+        Runa: Forty-two, Wren. She's not always here. Doesn't matter. That's the point.
+        Runa: You held a place by walking it. Now we hold you the same way. Every night, your name.
+        <<flag runa.named_wren 1>>
+    <<else>>
+        Runa: Forty-two, Wren. Forty-three, whoever's next. We're counting up again. First time in years. #still
+    <<endif>>
+<<else>>
+    Runa: Forty-two, and you. The count's warmer with you in it.
+    <<if not walk_known()>>
+        Runa: The walk's still waiting for you. Stand on the well-cap when I sing "well".
+        <<flag holdfast.walk_learned 1>>
+    <<endif>>
+<<endif>>
+===

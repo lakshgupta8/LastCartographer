@@ -26,15 +26,7 @@ namespace OWSBG.World
         /// <summary>Post every unknown commission at this hub whose posting flag (if any) is set. Returns how many.</summary>
         public int PostAvailable()
         {
-            int n = 0;
-            var w = GameState.World;
-            foreach (var d in CommissionCatalog.AtHub(_hubId))
-            {
-                if (Commissions.StateOf(w, d.Id) != CommissionState.Unknown) continue;
-                if (!string.IsNullOrEmpty(d.PostAfterFlag) && !w.Is(d.PostAfterFlag)) continue;
-                if (Commissions.Post(w, d.Id)) n++;
-            }
-            return n;
+            return Commissions.PostAvailable(GameState.World, _hubId);
         }
 
         /// <summary>What the page lists: everything at this hub that has been posted, in catalogue order.</summary>

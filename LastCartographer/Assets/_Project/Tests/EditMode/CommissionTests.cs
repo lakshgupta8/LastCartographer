@@ -147,7 +147,7 @@ namespace OWSBG.Tests
         [Test]
         public void SaltmarrowSetIsFiveUniqueFinishableEntries()
         {
-            var all = CommissionCatalog.All;
+            var all = CommissionCatalog.AtHub("Saltmarrow");
             Assert.AreEqual(5, all.Count);
             var ids = new HashSet<string>();
             foreach (var d in all)

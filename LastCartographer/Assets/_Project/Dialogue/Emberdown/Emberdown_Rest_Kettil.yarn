@@ -1,0 +1,66 @@
+// Old Kettil, capercaillie, town-mother of Kettil's Rest (bible 3.4, character-bibles.md §8).
+// Voice (style guide 4): proverbs, orders, laughter; counts people out loud; never says "Guild" without spitting.
+// Her image: the count. Rooms: Rest_1 (the gate), Rest_2 (the square). State she reads: the count, Brann, the
+// debate, the walk, Hollowvein, the unlicensed flag.
+
+title: Rest_Kettil
+---
+<<if not has_flag("emberdown.kettil.met")>>
+    <<jump Rest_Kettil_First>>
+<<endif>>
+<<if has_flag("boss.brann.defeated") and not has_flag("emberdown.kettil.brann")>>
+    Kettil: The crane's gone down the stair. Counted him out myself. One, gone.
+    Kettil: The furnace is cold for good. A town that can't be anchored by force. Remember that, Wren.
+    <<flag emberdown.kettil.brann 1>>
+<<endif>>
+<<if has_flag("emberdown.hollowvein.walked")>>
+    Kettil: Thirty-one came up. We buried them in daylight. I counted every one, and I'll count them again tonight.
+<<elseif has_flag("emberdown.hollowvein.buried")>>
+    Kettil: The boards stay on. Some weights you carry by leaving them where they fell.
+<<elseif has_flag("emberdown.debate.heard") and walk_known() and not has_flag("emberdown.hollowvein_opened")>>
+    <<jump Rest_Kettil_Hollowvein>>
+<<else>>
+    Kettil: Six hundred and eleven at supper. Six hundred and twelve with you. Eat something.
+<<endif>>
+-> Who sings the roll-call?
+    Kettil: Runa. My voice went in the smoke. Hers came out of it louder. Up the bell stair.
+-> What's under the boards at the pit-head?
+    Kettil: Hollowvein. Thirty-one of ours. Ask me again when you've heard the baths argue.
+-> Nothing today.
+    Kettil: Then go and be counted somewhere else. Ha.
+===
+
+title: Rest_Kettil_First
+---
+Kettil: Halt at the gate. One, two, and a stranger. You're the stranger.
+Kettil: A stranger is a bird nobody remembers. Here, that's dangerous. For you, mostly.
+<<if unlicensed()>>
+    Kettil: And a cowl. A Guild cowl. She spits. Unlicensed, the reeds say. Better. Slightly.
+<<else>>
+    Kettil: And a cowl. A Guild cowl. She spits. Say you're not here to survey us.
+<<endif>>
+-> I'm here to go home. Halden.
+    Kettil: Up the chimneys and over the ridge. Runa can teach you the wall. If she likes you.
+-> The map sent me.
+    Kettil: Maps don't send. Birds with maps send. We know which ones.
+-> ...
+    Kettil: Quiet. Good. The quiet ones get counted last and remembered longest.
+Kettil: Supper's at dusk. Roll-call after, at the bell. Be there and you're one of the count.
+<<flag emberdown.kettil.met 1>>
+===
+
+title: Rest_Kettil_Hollowvein
+---
+Kettil: You heard the baths. You know the numbers. And the reeds say you know the walk.
+Kettil: Thirty-one under the pit-head. Buried standing. The families want them up.
+Kettil: I kept the boards on because what's down there broke the mine.
+-> Then let's bring them up.
+    Kettil: Runa leads. You follow her count. Miss a name and you start the verse again.
+    <<flag emberdown.hollowvein_opened 1>>
+-> What broke the mine, Kettil?
+    Kettil: A stone that wouldn't stay still. It hums. Ask it yourself, at the bottom.
+    <<flag emberdown.hollowvein_opened 1>>
+-> Leave the boards where they are.
+    Kettil: Aye. That's a count too. I'll tell the families you said it, not me.
+Kettil: The pit-head. Runa will be there before you.
+===

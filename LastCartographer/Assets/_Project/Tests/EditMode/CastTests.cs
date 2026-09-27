@@ -70,14 +70,19 @@ namespace OWSBG.Tests
         }
 
         [Test]
-        public void StagedScenesAreInBuiltRooms()
+        public void StagedScenesHaveAStage()
         {
+            // A written scene stands in a built greybox room, or in a planned room (DES-09) where its speaker stands.
             var builtZones = new HashSet<string>(Atlas.AllPlaces.Select(p => WorldGraph.ZoneOfPlace(p.Id)).Where(z => z != null));
             var staged = Cast.Appearances.Where(a => a.Staged).ToList();
-            Assert.That(staged.Count, Is.GreaterThanOrEqualTo(4), "Isolde, Sable, Dotha and Halvard are staged");
             foreach (var a in staged)
-                Assert.IsTrue(builtZones.Contains(a.Zone), a.Node + " is staged in a zone the greybox has a room for: " + a.Zone);
-            CollectionAssert.AreEquivalent(new[] { "isolde", "sable", "dotha", "halvard" }, staged.Select(a => a.Character).Distinct());
+            {
+                bool built = builtZones.Contains(a.Zone);
+                bool planned = RoomPlans.InZone(a.Zone).Any(r => r.Npcs.Contains(a.Character));
+                Assert.IsTrue(built || planned, a.Node + " has a room in " + a.Zone + ", built or planned, with " + a.Character + " in it");
+            }
+            CollectionAssert.AreEquivalent(new[] { "isolde", "sable", "dotha", "halvard", "runa", "kettil" }, staged.Select(a => a.Character).Distinct());
+            Assert.AreEqual(6, Cast.AppearancesOf("runa").Count(a => a.Staged), "Runa's Emberdown scenes are written (NAR-07)");
         }
     }
 }

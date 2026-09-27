@@ -1,0 +1,26 @@
+// Runa at the first chimney (Chimneys_1): Talonhold, "the old way up" (bible 4.2, character-bibles.md §3).
+// The chimney remembers who climbed it: the ability is a fragment of the sky coming back (plant 5.6).
+
+title: Chimneys_Runa_Climb
+---
+<<if has_flag("emberdown.runa.climbed")>>
+    Runa: Talon, talon, breathe. You know it now. The chimneys will know you back. #still
+    <<stop>>
+<<endif>>
+<<if not has_flag("emberdown.runa.counted")>>
+    Runa: I don't climb with strangers. Come to the bell at dusk. Get counted. Then we'll talk about walls.
+    <<stop>>
+<<endif>>
+Runa: Rope's for miners who've forgotten. We climb the old way. Talons in the stone.
+Runa: Talon, talon, breathe. Talon, talon, name. The chimney remembers who climbed it. #plant:5.6
+-> Birds used to fly up these.
+    Runa: They did. The chimneys still have the shape of it. We're only remembering the half we can.
+-> Show me.
+    Runa: Go first. I sing the holds, you take them. Nobody falls while I'm singing.
+-> ...
+    Runa: Good. Save your breath. You'll want it at the ninth.
+Runa: There. Look at you. On the wall like you were born to it.
+<<grant Talonhold>>
+<<flag emberdown.runa.climbed 1>>
+Runa: Nine chimneys up there. Only eight of them are ours. Nobody remembers building the ninth.
+===

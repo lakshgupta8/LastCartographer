@@ -1,0 +1,43 @@
+// The Long Roll-Call [B] (bible 8.2, 4.2): Hollowvein. The families want their dead up; Kettil kept the boards on
+// because the keystone under the mine is what broke it. At the pit-head (Rest_3): walk it down, or leave it buried.
+// Walked: the Collapse wakes on the fourth verse (boss 6.4); the walk's end plays Hollowvein_Runa_After.
+
+title: Hollowvein_Runa_Walk
+---
+<<if has_flag("emberdown.hollowvein.walked")>>
+    Runa: Thirty-one. Thirty-one. I said it. I said the number.
+    Runa: Every night I stopped the song before it. Not now. #still
+    <<stop>>
+<<endif>>
+<<if has_flag("emberdown.hollowvein.buried")>>
+    Runa: The boards stay. I'll still walk it alone, some nights. It doesn't hold. I know it doesn't. #still
+    <<stop>>
+<<endif>>
+<<if not walk_known()>>
+    Runa: You don't know the walk yet. Come to the bell. Nobody goes down there without the song.
+    <<stop>>
+<<endif>>
+Runa: Every year since, I've walked the bounds of Hollowvein. Alone. At night.
+Runa: It never held. You can't hold a place by yourself. I'm asking. First time.
+Runa: Thirty-one names. We'll learn the rest walking.
+-> Then we walk it down.
+    Runa: Four verses. Six names a verse. On the fourth, something wakes. Keep the beat anyway.
+    <<flag emberdown.hollowvein_opened 1>>
+    <<flag emberdown.hollowvein.chosen 1>>
+    <<walk hollowvein>>
+-> Leave them buried, Runa.
+    Runa: Aye. Aye. I'll tell the families. They'll count you anyway. That's what we do.
+    <<flag emberdown.hollowvein.buried 1>>
+    <<flag emberdown.hollowvein.decided 2>>
+-> ...
+    Runa: Take your time. They've waited twenty years. They're patient. I'm not. Ha.
+===
+
+title: Hollowvein_Runa_After
+---
+Runa: Thirty-one.
+Runa: Thirty-one came up. I said it. The families have them now.
+Runa: And there's a stone down there that hums. It's yours, if you want it. We don't.
+<<flag emberdown.hollowvein.walked 1>>
+<<flag emberdown.hollowvein.decided 1>>
+===

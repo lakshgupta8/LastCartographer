@@ -1,0 +1,33 @@
+// The Furnace Stair (bible 6.5, 8.2). Cinder Warden Brann, crane, twin lances: sent to anchor Kettil's Rest by force,
+// with the survey already written; he believes it a kindness. Stair_3, before his arena. And the Furnace Stair
+// Rescue's aftermath (Stair_2): Hask, a stair-crew miner, pulled off a landing over a live furnace.
+
+title: Stair_Brann
+---
+<<if has_flag("boss.brann.defeated")>>
+    <<stop>>
+<<endif>>
+Brann: Journeyman. You came up the stair. So will the anchoring crew, by dusk.
+Brann: Kettil's Rest is scheduled. Fourteen streets. The survey is already written. I only need to seal it.
+-> They didn't ask for it.
+    Brann: Merrow's End didn't ask either. Ask it now what it wishes it had asked for.
+-> Let them hold it themselves.
+    Brann: With a song. For how long? Until one voice goes? I have seen that happen.
+-> ...
+    Brann: I'll take that as a no. They all say no, at first. Then they thank us. Mostly.
+Brann: Stand aside, or stand in the furnace. It cools either way.
+<<flag emberdown.brann.met 1>>
+===
+
+title: Stair_Rescue
+---
+Hask: You pulled me off the landing. Nobody pulls anyone off the landing. The landing takes you.
+Hask: Stair crew counts nine. You made it nine again. Kettil will want your name.
+-> Wren.
+    Hask: Wren. I'll tell her. Nine and Wren.
+-> The landing's rotten. Someone should fix it.
+    Hask: Someone should. The Guild said they'd send someone. That was before I hatched.
+-> ...
+    Hask: Quiet. Aye. Nobody talks on the stair. Saves breath for the next step.
+<<flag emberdown.rescue.done 1>>
+===

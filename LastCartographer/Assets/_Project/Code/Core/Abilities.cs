@@ -16,6 +16,10 @@ namespace OWSBG.Core
         Sky        = 1 << 5,   // endgame flight
     }
 
+    /// <summary>
+    /// Wren's abilities. What she has learned is also written to the world as "ability.&lt;name&gt;" flags so it is saved,
+    /// and restored from them on enable and on load; the serialized field is what the greybox starts her with.
+    /// </summary>
     public sealed class AbilitySet : MonoBehaviour
     {
         [SerializeField] Ability _unlocked = Ability.None;
@@ -25,8 +29,25 @@ namespace OWSBG.Core
         public Ability Current => _unlocked;
         public bool Has(Ability a) => (_unlocked & a) == a;
 
+        public static string FlagKey(Ability a) => "ability." + a.ToString().ToLowerInvariant();
+
+        /// <summary>Every single ability whose flag is set in the world.</summary>
+        public static Ability FromWorld(WorldState w)
+        {
+            var have = Ability.None;
+            foreach (Ability a in Enum.GetValues(typeof(Ability)))
+                if (a != Ability.None && w.Is(FlagKey(a))) have |= a;
+            return have;
+        }
+
+        void OnEnable() { GameState.Loaded += Restore; Restore(); }
+        void OnDisable() { GameState.Loaded -= Restore; }
+        void Restore() { _unlocked |= FromWorld(GameState.World); }
+
         public void Unlock(Ability a)
         {
+            foreach (Ability one in Enum.GetValues(typeof(Ability)))
+                if (one != Ability.None && (a & one) == one) GameState.World.Set(FlagKey(one), true);
             if (Has(a)) return;
             _unlocked |= a;
             Unlocked?.Invoke(a);

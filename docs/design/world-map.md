@@ -74,7 +74,7 @@ Rooms are targets for DES-08 through DES-11; vantages are the atlas's marks (48 
 | The Old Orchard | 2 | 1 | Isolde's cache (`isolde.cache`) → the Edge |
 | The Bastion | 3 | 1 | flyer-towers (Talonhold + Inkthread); 6.8 |
 | The Observatory | 2 | 1 | Act 3 (`act3.started`); 6.15; **keystone** |
-| The Vault | 1 | 0 | `halden.vault_opened` |
+| The Vault | 1 | 0 | `halden.vault_opened`; below the Guildmaster's window in the Bastion (Act 2), not the dome (DES-10) |
 | **Windreach** (14, 7) | | | |
 | The Nine Stones | 3 | 2 | |
 | The Long Grass Camp | 2 | 1 | **hub** (moves between three sites, PRG-21) |

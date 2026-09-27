@@ -182,7 +182,7 @@ namespace OWSBG.Core
             Way("Halden.JourneymansHall", "Halden.OldOrchard");
             Way("Halden.OldOrchard", "Halden.Bastion", Ability.Talonhold | Ability.Inkthread, note: "the flyer-towers, no stairs");
             Way("Halden.Bastion", "Halden.Observatory", flag: "act3.started");
-            Way("Halden.Observatory", "Halden.Vault", flag: "halden.vault_opened");
+            Way("Halden.Bastion", "Halden.Vault", flag: "halden.vault_opened", note: "below the Guildmaster's window (DES-10): Act 2, so Pell can count the slots");
             Way("Halden.OldOrchard", "Greyfold.EdgeCamp", flag: "isolde.cache", note: "Act 1's end: back to the Edge");
             Way("Halden.Lowmarket", "Windreach.NineStones", flag: "act2.started", note: "the south road");
 

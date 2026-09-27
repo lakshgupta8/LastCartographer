@@ -94,7 +94,7 @@ namespace OWSBG.Core
             At("pell", Act1, "Greyfold.RoadThatStops", "the act break: sent to watch, sees her step in and come back", "Edge_Pell_Watch", writes: "pell.saw_her_cross");
             At("pell", Act2, "Halden.JourneymansHall", "the minder; Interlude A, the report", "Hall_Pell_Minder", writes: "pell.report_read, pell.report_sent");
             At("pell", Act2, "Halden.Vault", "the empty slot (plant 5.2)", "Vault_Pell_Slot", writes: "halden.vault.pell_counted");
-            At("pell", Act2, "Halden.Observatory", "Voss's office by the flyer-tower: the drawing (plant 5.5)", "Office_Pell_Drawing", writes: "halden.office.pell_ledgers");
+            At("pell", Act2, "Halden.Bastion", "Voss's office by the flyer-tower: the drawing (plant 5.5)", "Office_Pell_Drawing", writes: "halden.office.pell_ledgers");
             At("pell", Act2, "Greyfold.Threshold", "if the report was not sent: comes to see her cross", "Threshold_Pell_Cross", writes: "pell.at_threshold");
             At("pell", Act3, "Halden.Observatory", "the Return: holds the frame's door; the last list", "Observatory_Pell_Return", writes: "pell.last_list");
             At("pell", Epilogue, "Halden.JourneymansHall", "the epilogue walk, by ending", "Epilogue_Pell");

@@ -11,7 +11,7 @@ namespace OWSBG.Tests
     /// </summary>
     public class RoomPlanTests
     {
-        static readonly Region[] Planned = { Region.Emberdown, Region.Verdance };
+        static readonly Region[] Planned = { Region.Emberdown, Region.Verdance, Region.Halden };
 
         [SetUp]
         public void SetUp() { RoomPlans.Reset(); RoomPlans.EnsureDefaults(); Bosses.Reset(); Cast.Reset(); }
@@ -21,7 +21,7 @@ namespace OWSBG.Tests
         [Test]
         public void EveryZoneHasTheMapsRoomsAndVantages()
         {
-            Assert.AreEqual(40, RoomPlans.All.Count, "twenty-one and nineteen");
+            Assert.AreEqual(61, RoomPlans.All.Count, "twenty-one, nineteen and Halden's twenty-one");
             foreach (var z in PlannedZones)
             {
                 var rooms = RoomPlans.InZone(z.Id);
@@ -104,6 +104,19 @@ namespace OWSBG.Tests
             Check(Ability.Wingbeat | Ability.Talonhold, null, false, "the Emberdown climb");
             Check(Ability.Wingbeat | Ability.Talonhold, f => f == "emberdown.hollowvein_opened", false, "and the mine opened");
             Check(Ability.Wingbeat | Ability.Inkthread, null, false, "the Verdance climb");
+            Check(Ability.Wingbeat | Ability.Talonhold, f => f == "isolde.cache", false, "Act 1's end");
+            Check(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread, f => f == "isolde.cache" || f == "act2.started", false, "Act 2");
+            Check(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread, f => f != "act3.started", false, "Act 2, everything but the dome");
+
+            // Halden: either climb reaches the Hall; the towers want both; the Vault is Act 2; the dome is Act 3.
+            var ember = RoomPlans.ReachableRooms(Ability.Wingbeat | Ability.Talonhold);
+            var verd = RoomPlans.ReachableRooms(Ability.Wingbeat | Ability.Inkthread);
+            Assert.IsTrue(ember.Contains("Halden_Hall_2") && verd.Contains("Halden_Hall_2"), "either climb reaches the Hall");
+            Assert.IsTrue(ember.Contains("Halden_Orchard_2") && verd.Contains("Halden_Orchard_2"), "and the orchard's cache");
+            Assert.IsFalse(ember.Contains("Halden_Bastion_1") || verd.Contains("Halden_Bastion_1"), "the flyer-tower wants both");
+            var both = RoomPlans.ReachableRooms(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread, f => f == "halden.vault_opened");
+            Assert.IsTrue(both.Contains("Halden_Bastion_3") && both.Contains("Halden_Vault_1"), "the Guildmaster's window and the Vault, in Act 2");
+            Assert.IsFalse(both.Contains("Halden_Observatory_1"), "the dome waits for Act 3");
 
             var none = RoomPlans.ReachableRooms(Ability.None);
             Assert.IsEmpty(none, "without Wingbeat or a pogo the climbs are closed");
@@ -116,6 +129,7 @@ namespace OWSBG.Tests
             Assert.IsFalse(wing.Contains("Emberdown_Hollow_1"));
 
             var all = RoomPlans.ReachableRooms(Ability.Wingbeat | Ability.Talonhold | Ability.Inkthread, f => true);
+            Assert.IsTrue(all.Contains("Halden_Observatory_2"));
             CollectionAssert.AreEquivalent(RoomPlans.All.Select(r => r.Id), all, "every room, in the end");
         }
 

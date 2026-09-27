@@ -49,7 +49,7 @@ namespace OWSBG.Core
     }
 
     /// <summary>
-    /// Room-by-room plans for the regions not yet built (DES-09: Emberdown and the Verdance), as data so the spec
+    /// Room-by-room plans for the regions not yet built (DES-09 Emberdown and the Verdance, DES-10 Halden Reach), as data so the spec
     /// (`docs/design/emberdown-verdance-rooms.md`, generated from the same source) can be checked against the macro map
     /// (<see cref="WorldGraph"/>), the boss sheets and the cast. Pure data.
     /// </summary>
@@ -166,7 +166,7 @@ namespace OWSBG.Core
                 .East("Emberdown_Overlook_2", Ability.None);
             R("Emberdown_Overlook_2", "Emberdown.Overlook", "The overlook", "First sight of the Greyfold from outside: bigger than it looks. The road down to the Plateau's bridges.", "Overlook", "", new[] { "runa" }, true, null, null)
                 .West("Emberdown_Overlook_1", Ability.None)
-                .East("Halden.SevenBridges", Ability.Talonhold);
+                .East("Halden_Bridges_1", Ability.Talonhold);
             R("Emberdown_Hollow_1", "Emberdown.Hollowvein", "The adit", "Down from the pit-head behind the boards; the long roll-call starts at its first beam.", null, "", new[] { "runa" }, false, null, "hollowvein")
                 .Up("Emberdown_Rest_3", Ability.Talonhold, "emberdown.hollowvein_opened")
                 .Down("Emberdown_Hollow_2", Ability.None);
@@ -234,7 +234,72 @@ namespace OWSBG.Core
                 .East("Verdance_Gate_2", Ability.None);
             R("Verdance_Gate_2", "Verdance.OvergrownGate", "The Overgrown Gate", "The Gatekeeper's arena (6.7); beyond it, the canopy road to the Paper Mills.", "Gate", "", new string[0], false, "gatekeeper", null)
                 .West("Verdance_Gate_1", Ability.None)
-                .East("Halden.PaperMills", Ability.Inkthread);
+                .East("Halden_Mills_1", Ability.Inkthread);
+            R("Halden_Bridges_1", "Halden.SevenBridges", "The first bridge", "Off the Overlook road onto the Plateau: stone, copper gone green, always late afternoon. A toll-keeper counts coins, not birds.", null, "Warden ×2", new string[0], false, null, null)
+                .West("Emberdown_Overlook_2", Ability.Talonhold)
+                .East("Halden_Bridges_2", Ability.None);
+            R("Halden_Bridges_2", "Halden.SevenBridges", "The toll bridges", "Three bridges over the drop, tolled; the stair down to Lowmarket goes from the second.", "Tollhouse", "Warden, Cantor", new string[0], false, null, null)
+                .West("Halden_Bridges_1", Ability.None)
+                .East("Halden_Bridges_3", Ability.None)
+                .Down("Halden_Lowmarket_1", Ability.None);
+            R("Halden_Bridges_3", "Halden.SevenBridges", "The seventh bridge", "Under repair for forty years; a family is paid to stand on it (the Seventh Bridge). A desk in the repair hut.", "Seventh", "", new string[0], true, null, null)
+                .West("Halden_Bridges_2", Ability.None)
+                .East("Halden_Bridges_4", Ability.None);
+            R("Halden_Bridges_4", "Halden.SevenBridges", "The last span", "Halvard's second hunt (6.3): he cuts the span section by section. The mills are below it.", null, "", new[] { "halvard" }, false, "halvard_2", null)
+                .West("Halden_Bridges_3", Ability.None)
+                .Down("Halden_Mills_2", Ability.None);
+            R("Halden_Mills_1", "Halden.PaperMills", "The mill race", "Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air.", null, "Warden, smudge", new string[0], false, null, null)
+                .West("Verdance_Gate_2", Ability.Inkthread)
+                .East("Halden_Mills_2", Ability.None);
+            R("Halden_Mills_2", "Halden.PaperMills", "The drying lofts", "Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead.", "Lofts", "smudge ×2", new string[0], false, null, null)
+                .Up("Halden_Bridges_4", Ability.None)
+                .West("Halden_Mills_1", Ability.None)
+                .East("Halden_Mills_3", Ability.None);
+            R("Halden_Mills_3", "Halden.PaperMills", "The pulp yard", "The strike's picket line: the millworkers of Lowmarket have downed tools. The Hall steps are beyond.", null, "", new string[0], false, null, null)
+                .West("Halden_Mills_2", Ability.None)
+                .East("Halden_Hall_1", Ability.None);
+            R("Halden_Lowmarket_1", "Halden.Lowmarket", "The stair down", "Below the walls. The paint is thinner here, and so is everything else.", null, "smudge", new string[0], false, null, null)
+                .Up("Halden_Bridges_2", Ability.None)
+                .East("Halden_Lowmarket_2", Ability.None);
+            R("Halden_Lowmarket_2", "Halden.Lowmarket", "Lowmarket", "The district below the walls, fading; its notice board reads 'survey scheduled'. The strike hall, where the decision is made.", "Market", "", new string[0], true, null, null)
+                .West("Halden_Lowmarket_1", Ability.None)
+                .East("Halden_Lowmarket_3", Ability.None);
+            R("Halden_Lowmarket_3", "Halden.Lowmarket", "The south gate", "The south road to Windreach, barred until Act 2 opens it.", null, "Warden", new string[0], false, null, null)
+                .West("Halden_Lowmarket_2", Ability.None)
+                .East("Windreach.NineStones", Ability.None, "act2.started");
+            R("Halden_Hall_1", "Halden.JourneymansHall", "The Hall steps", "The Guild's steps. Unlicensed now, she comes in past the Wardens or not at all until Interlude A resolves.", null, "Warden ×2", new string[0], false, null, null)
+                .West("Halden_Mills_3", Ability.None)
+                .East("Halden_Hall_2", Ability.None);
+            R("Halden_Hall_2", "Halden.JourneymansHall", "The Journeyman's Hall", "The hub: desk, ledger, Wren's old room. Pell. Tam, who sits his exam next spring, eleven years running.", "Hall", "", new[] { "pell" }, true, null, null)
+                .West("Halden_Hall_1", Ability.None)
+                .East("Halden_Hall_3", Ability.None);
+            R("Halden_Hall_3", "Halden.JourneymansHall", "The exam rooms", "Rows of desks with the same papers on them (the Master's Exam, plant 5.1). The orchard door at the end.", null, "", new string[0], false, null, null)
+                .West("Halden_Hall_2", Ability.None)
+                .East("Halden_Orchard_1", Ability.None);
+            R("Halden_Orchard_1", "Halden.OldOrchard", "The orchard wall", "The only place in Halden with fallen leaves. Somebody rakes them.", null, "", new string[0], false, null, null)
+                .West("Halden_Hall_3", Ability.None)
+                .East("Halden_Orchard_2", Ability.None);
+            R("Halden_Orchard_2", "Halden.OldOrchard", "The Old Orchard", "Isolde's cache in the roots; the Orchard Keeper; a gravestone with a crest on it. The flyer-tower rises from its wall; the road to the Edge begins here.", "Leaves", "", new[] { "isolde" }, false, null, null)
+                .West("Halden_Orchard_1", Ability.None)
+                .East("Greyfold.EdgeCamp", Ability.None, "isolde.cache")
+                .Up("Halden_Bastion_1", Ability.Talonhold | Ability.Inkthread);
+            R("Halden_Bastion_1", "Halden.Bastion", "The flyer-tower", "A tower built for flyers: no stairs. Talonhold up the walls, Inkthread across the gaps. A desk on the top landing; the Crown's hall behind it (Interlude B).", null, "Warden", new string[0], true, null, null)
+                .Down("Halden_Orchard_2", Ability.Talonhold | Ability.Inkthread)
+                .Up("Halden_Bastion_2", Ability.None);
+            R("Halden_Bastion_2", "Halden.Bastion", "The drill-yard", "Oriel's arena if Pell's report was sent (6.8); otherwise an empty yard with chalk lines.", "Yard", "", new string[0], false, "oriel", null)
+                .Down("Halden_Bastion_1", Ability.None)
+                .East("Halden_Bastion_3", Ability.None);
+            R("Halden_Bastion_3", "Halden.Bastion", "The Guildmaster's window", "The tower's top window opens into Voss's office in the Observatory wing: the chick's drawing, framed (plant 5.5). The dome itself is shut.", null, "", new[] { "pell" }, false, null, null)
+                .West("Halden_Bastion_2", Ability.None)
+                .East("Halden_Observatory_1", Ability.None, "act3.started")
+                .Down("Halden_Vault_1", Ability.None, "halden.vault_opened");
+            R("Halden_Observatory_1", "Halden.Observatory", "The dome stair", "Act 3: the dome opens. A desk under the stair.", null, "Warden ×2", new string[0], true, null, null)
+                .West("Halden_Bastion_3", Ability.None, "act3.started")
+                .East("Halden_Observatory_2", Ability.None);
+            R("Halden_Observatory_2", "Halden.Observatory", "The frame", "The frame of the shattered Atlas; the keystone in it; the ending's choice and, in the true ending, the Complete Survey (6.15).", "Frame", "", new[] { "pell", "voss", "runa", "teodor" }, false, "complete_survey", null)
+                .West("Halden_Observatory_1", Ability.None);
+            R("Halden_Vault_1", "Halden.Vault", "The Vault", "Seven slots, reached from the Guildmaster's window; one empty (Pell counts them, plant 5.2).", null, "", new[] { "pell" }, false, null, null)
+                .Up("Halden_Bastion_3", Ability.None, "halden.vault_opened");
         }
     }
 }

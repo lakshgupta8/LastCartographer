@@ -46,7 +46,7 @@ straight down, because the long roll-call is walked downward (bounds-walk.md: Ho
 | **Baths_2** The baths | CinderBaths | The Cinder Bath Debate: Kettil and a Guild surveyor argue in real numbers, and Runa sings them back. | Baths | — | Kettil, Runa | W → Baths_1, E → Baths_3 |
 | **Baths_3** The vents | CinderBaths | Vents that breathe on a rhythm; the climb out to the ridge is a wall. | — | cave-bat ×2 | — | W → Baths_2, E → Overlook_1 [Talonhold] |
 | **Overlook_1** The ridge | Overlook | The highland's edge; the wind turns cold and the ash stops. | — | Warden (patrol, the road) | — | W → Baths_3 [Talonhold], E → Overlook_2 |
-| **Overlook_2** The overlook | Overlook | First sight of the Greyfold from outside: bigger than it looks. The road down to the Plateau's bridges. | Overlook | — | Runa, desk | W → Overlook_1, E → Halden.SevenBridges [Talonhold] |
+| **Overlook_2** The overlook | Overlook | First sight of the Greyfold from outside: bigger than it looks. The road down to the Plateau's bridges. | Overlook | — | Runa, desk | W → Overlook_1, E → Bridges_1 [Talonhold] |
 | **Hollow_1** The adit | Hollowvein | Down from the pit-head behind the boards; the long roll-call starts at its first beam. | — | — | Runa, walk: hollowvein | up → Rest_3 [Talonhold, `emberdown.hollowvein_opened`], down → Hollow_2 |
 | **Hollow_2** The first gallery | Hollowvein | Lamps on the walls, one for each name; the walk's second and third verses. | Gallery | smudge ×2 | walk: hollowvein | up → Hollow_1, down → Hollow_3 |
 | **Hollow_3** The flooded gallery | Hollowvein | Black water to the knee; a desk the miners left, still dry. | — | smudge | desk, walk: hollowvein | up → Hollow_2, down → Hollow_4 |
@@ -89,7 +89,7 @@ and below.
 | **Aldermere_2** The square | Aldermere | The last evening. Attend it, or try to stop it and the Choir sings over the square (6.6). | Square | — | Teodor, arena: choir | W → Aldermere_1, E → Aldermere_3 |
 | **Aldermere_3** The ash field | Aldermere | Where the village is already paper; the canopy road starts over it by thread. | — | Cantor, smudge | — | W → Aldermere_2, E → Gate_1 [Inkthread] |
 | **Gate_1** The approach | OvergrownGate | A desk under the roots, then the gate's roots as anchors up the wall. | — | skimmer | desk | W → Aldermere_3 [Inkthread], E → Gate_2 |
-| **Gate_2** The Overgrown Gate | OvergrownGate | The Gatekeeper's arena (6.7); beyond it, the canopy road to the Paper Mills. | Gate | — | arena: gatekeeper | W → Gate_1, E → Halden.PaperMills [Inkthread] |
+| **Gate_2** The Overgrown Gate | OvergrownGate | The Gatekeeper's arena (6.7); beyond it, the canopy road to the Paper Mills. | Gate | — | arena: gatekeeper | W → Gate_1, E → Mills_1 [Inkthread] |
 <!-- /table -->
 
 ## 3. Rules these plans follow

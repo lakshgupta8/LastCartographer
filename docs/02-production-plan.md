@@ -64,7 +64,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | DES-01 `[x]` | Game design overview | M0 | GDD | NAR-01 |
 | DES-02 `[ ]` | Survey spec: vantage points, atlas inking animation, fast travel, erasure/re-survey | M0 | SB-10 | DES-01 |
 | DES-03 `[ ]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns | M0 | SB-1.3, 10 | DES-02 |
-| DES-04 `[ ]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage) | M0 | SB-10, ART-3 | DES-01 |
+| DES-04 `[~]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage); v1 in `docs/design/fade-stages.md`, per-region curves open | M0 | SB-10, ART-3 | DES-01 |
 | DES-05 `[ ]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades | M1 | CMB-6 | DES-01 |
 | DES-06 `[~]` | Commissions system spec (ledger, states, rewards, Blank-island flags); v1 in `docs/design/commissions.md`, failure and expiry rules open | M1 | SB-8 | DES-01 |
 | DES-07 `[ ]` | World macro map: region graph, room counts, ability gates, sequence-break policy | M0 | SB-4.0 | DES-01 |
@@ -117,7 +117,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-11 `[~]` | Drafting desk: rest, respawn, Charter/Instrument swap (placeholder IMGUI desk menu), save | M1 | GDD 6 | PRG-09 |
 | PRG-12 `[~]` | Commissions ledger runtime and journal (state machine in WorldState, tracker, ledger page, journal + toasts, Yarn command and functions, Saltmarrow greybox set; atlas page pending) | M1 | DES-06 | PRG-09 |
 | PRG-13 `[ ]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner | M2 | DES-03 | PRG-10 |
-| PRG-14 `[ ]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement | M2 | DES-04 | PRG-03 |
+| PRG-14 `[~]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement (FadeStages + FadeGroup per room, `<<fade>>`; the Remnant look and audio pending) | M2 | DES-04 | PRG-03 |
 | PRG-15 `[ ]` | NPC schedules and hub life (NavMesh, `#still` loops) | M2 | SB-5.1 | PRG-07 |
 | PRG-16 `[~]` | Cutscene pipeline: Timeline + Cinemachine + Yarn hooks (Cutscene object, actor-move / paper-fade / dialogue-node clips, `<<cutscene>>` waits, shot camera; boss intros still coroutines) | M1 | — | PRG-06 |
 | PRG-17 `[~]` | Death and smudge recovery | M1 | GDD 6 | PRG-09 |

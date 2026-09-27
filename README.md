@@ -80,6 +80,10 @@ The look (art-direction doc): `OWSBG/InkSprite` is the lit, alpha-clipped sprite
 (after post-processing; static grain, stronger on light paper than on ink). Far layers blur through the volume's Gaussian DoF.
 Materials `Art/Materials/M_FS_*.mat` hold the knobs.
 
+Fading (`docs/design/fade-stages.md`): each room has a `FadeGroup` over its paper layers and ground, driven by the place's
+stage 0–4 in `WorldState` (`fade.<place>`). Stages advance only from story beats (`<<fade place stage>>`); anchored places hold.
+In the greybox, telling Dotha to let Merrow's End fade thins room B: the reeds wash toward paper as you walk back through.
+
 Rooms are Addressables (`Assets/AddressableAssetsData`, group **Rooms**, one bundle per room, address = scene name);
 only the persistent scene is a built-in scene. `RoomManager` loads a room by address, keeps the bundles of its neighbours
 (the targets of its transitions) resident, and releases the rest. Play mode reads from the AssetDatabase, so nothing has to be
@@ -92,7 +96,7 @@ timeline until it ends; an optional Cinemachine shot takes over while it plays a
 The HUD, dialogue page, desk page and boss bar are one UI Toolkit document (`UI` object in the persistent
 scene; `Assets/_Project/Code/UI`), built in code on the paper-and-ink palette until the UI art (ENV-11) lands.
 
-Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it); functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`.
+Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it), `<<fade place stage>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`, `fade_stage("place")`.
 
 ## Verifying headless
 ```

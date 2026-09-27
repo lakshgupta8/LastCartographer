@@ -20,6 +20,7 @@ namespace OWSBG.Narrative
     ///   &lt;&lt;bind_prompt memoryId&gt;&gt; offer a memory to bind (raises BindPrompt)
     ///   &lt;&lt;commission id verb&gt;&gt;  post | take | fulfil | close | fail a commission (PRG-12)
     ///   &lt;&lt;cutscene id&gt;&gt;          play a Cutscene and wait for it (PRG-16)
+    ///   &lt;&lt;fade place stage&gt;&gt;     advance a place's fade stage 0-4 (PRG-14); anchored places ignore it
     /// Functions: flag(key), has_flag(key), surveyed(id), commission_state(id), commission_is(id, state).
     /// </summary>
     public sealed class DialogueService : MonoBehaviour
@@ -88,6 +89,7 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("tutorial", name => Tutorial?.Invoke(name));
             runner.AddCommandHandler<string>("bind_prompt", id => BindPrompt?.Invoke(id));
             runner.AddCommandHandler("cutscene", (Func<string, YarnTask>)PlayCutsceneAsync);
+            runner.AddCommandHandler<string, int>("fade", (place, stage) => FadeStages.Advance(GameState.World, place, stage));
             runner.AddCommandHandler<string, string>("commission", (id, verb) =>
             {
                 if (!Commissions.Apply(GameState.World, id, verb))
@@ -116,6 +118,9 @@ namespace OWSBG.Narrative
         /// <summary>"unknown", "posted", "taken", "fulfilled", "closed" or "failed".</summary>
         [YarnFunction("commission_state")]
         public static string CommissionStateOf(string id) => Commissions.Describe(Commissions.StateOf(GameState.World, id));
+
+        [YarnFunction("fade_stage")]
+        public static float FadeStageOf(string place) => FadeStages.Get(GameState.World, place);
 
         [YarnFunction("commission_is")]
         public static bool CommissionIs(string id, string state) => CommissionStateOf(id) == (state ?? "").Trim().ToLowerInvariant();

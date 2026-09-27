@@ -542,6 +542,7 @@ namespace OWSBG.Setup
 
             MakeTransition(room, "To_B", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f),
                 Path.GetFileNameWithoutExtension(RoomBScenePath), "West");
+            MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomAScenePath);
             Debug.Log("[OWSBG] saved " + RoomAScenePath);
@@ -574,6 +575,7 @@ namespace OWSBG.Setup
                 Path.GetFileNameWithoutExtension(RoomAScenePath), "East");
             MakeTransition(room, "To_Lighthouse", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f),
                 Path.GetFileNameWithoutExtension(RoomCScenePath), "West");
+            MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomBScenePath);
             Debug.Log("[OWSBG] saved " + RoomBScenePath);
@@ -656,6 +658,7 @@ namespace OWSBG.Setup
             arSo.FindProperty("_introCutscene").objectReferenceValue = introCs;
             arSo.FindProperty("_arenaCamera").objectReferenceValue = arenaCam;
             arSo.ApplyModifiedPropertiesWithoutUndo();
+            MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomCScenePath);
             Debug.Log("[OWSBG] saved " + RoomCScenePath);
@@ -766,6 +769,7 @@ namespace OWSBG.Setup
             dso.FindProperty("_shoreScene").stringValue = Path.GetFileNameWithoutExtension(RoomAScenePath);
             dso.FindProperty("_shoreSpawn").stringValue = "Shore";
             dso.ApplyModifiedPropertiesWithoutUndo();
+            MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomEdgeScenePath);
             Debug.Log("[OWSBG] saved " + RoomEdgeScenePath);
@@ -948,6 +952,22 @@ namespace OWSBG.Setup
             AddressableAssetSettings.BuildPlayerContent(out var result);
             if (!string.IsNullOrEmpty(result.Error)) throw new System.Exception("[OWSBG] Addressables build failed: " + result.Error);
             Debug.Log("[OWSBG] Addressables built in " + result.Duration.ToString("0.0") + " s: " + result.OutputPath);
+        }
+
+        // The place's fade (PRG-14): paper layers drop at 4 (foreground at 3); ground washes but never drops.
+        static void MakeFadeGroup(Room room)
+        {
+            var group = room.gameObject.AddComponent<FadeGroup>();
+            group.PlaceId = room.RoomId;
+            foreach (Transform child in room.transform)
+            {
+                var r = child.GetComponent<MeshRenderer>();
+                if (r == null || !child.gameObject.activeSelf) continue;
+                if (child.name.StartsWith("Paper_")) group.AddLayer(r, child.name.StartsWith("Paper_Fore") ? 3 : 4);
+                else if (child.gameObject.layer == LayerMask.NameToLayer("Ground") && child.GetComponents<MonoBehaviour>().Length == 0)
+                    group.AddLayer(r, 5);
+            }
+            Debug.Log("[OWSBG] fade group " + room.RoomId + ": " + group.Layers.Count + " layers");
         }
 
         // ---- room helpers

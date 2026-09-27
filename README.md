@@ -20,6 +20,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/game-design-overview.md` | Pillars, loop, systems, scope |
 | `docs/design/combat-and-movement.md` | Wren's kit, Inkwell, Flourishes, Charters, Instruments, enemy and boss rules |
 | `docs/design/art-direction.md` | Ink-on-paper look, 2.5D definition, palettes, the `_Ink` fade state |
+| `docs/design/emberdown-verdance-rooms.md` | The two climbs room by room: 40 rooms, their exits and gates, generated from the same source as `RoomPlans` |
 | `docs/design/death-and-retry.md` | Death, the return to the desk, and the smudge that holds bound memories |
 | `LastCartographer/` | The Unity 6 project (editor 6000.3.7f1) |
 | `logs/` | Batch-mode editor logs and the greybox screenshot |

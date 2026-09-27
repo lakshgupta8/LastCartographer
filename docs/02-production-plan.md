@@ -69,7 +69,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | DES-06 `[~]` | Commissions system spec (ledger, states, rewards, Blank-island flags); v1 in `docs/design/commissions.md`, failure and expiry rules open | M1 | SB-8 | DES-01 |
 | DES-07 `[~]` | World macro map: region graph, room counts, ability gates, sequence-break policy; v1 in `docs/design/world-map.md` and as data (`WorldGraph`, reachability tests); per-region layouts are DES-08–11 | M0 | SB-4.0 | DES-01 |
 | DES-08 `[~]` | Saltmarrow room-by-room level design (paper maps, vantage points, gauntlet); v1 for the slice in `docs/design/saltmarrow-rooms.md`, built as recipe rooms in the greybox (16 rooms); the rest of the coast sketched | M0 | SB-4.1 | DES-07 |
-| DES-09 `[ ]` | Emberdown and Verdance room designs | M2 | SB-4.2, 4.3 | DES-07 |
+| DES-09 `[~]` | Emberdown and Verdance room designs; v1 in `docs/design/emberdown-verdance-rooms.md` and as data (`RoomPlans`, 40 rooms tested against the macro map, the boss sheets and the cast); recipes and Aldermere's after-state open | M2 | SB-4.2, 4.3 | DES-07 |
 | DES-10 `[ ]` | Halden room designs incl. flyer-towers | M2 | SB-4.4 | DES-07 |
 | DES-11 `[ ]` | Windreach, Greyfold, Blank room designs (drifting islands, lantern-radius platforms) | M3 | SB-4.5–4.7 | DES-07 |
 | DES-12 `[ ]` | Ending requirement matrix as flag logic; every ending reachable | M3 | SB-9 | NAR-13 |

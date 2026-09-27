@@ -42,7 +42,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | NAR-02 `[x]` | Dialogue style guide incl. cryptic-register rules | M0 | SB-11 | NAR-01 |
 | NAR-03 `[~]` | Prologue script (the Edge with Isolde) in Yarn; playable end to end in the greybox (arrive, survey, bind, seal, smudges, departure, shore); Isolde fighting beside Wren and the real Greyfold room are open | M0 | SB-7.0 | PRG-08 |
 | NAR-04 `[~]` | Saltmarrow arc: Sable, Dotha, the Lamp-Keeper, Halvard's first hunt; Commissions (5); v1 written and staged (`Saltmarrow_*.yarn`, `docs/story/saltmarrow-arc.md`); the widow's own voice and the Ferrymen's second voices open | M1 | SB-4.1, 8.1 | NAR-02 |
-| NAR-05 `[ ]` | Recurring-character bibles: Pell, Sable, Runa, Teodor, Marrow (where they appear on the map, what they say each time) | M1 | SB-6 | NAR-01 |
+| NAR-05 `[~]` | Recurring-character bibles: Pell, Sable, Runa, Teodor, Marrow (where they appear on the map, what they say each time); v1 in `docs/story/character-bibles.md` and as data (`Cast`, tested against the map and the Yarn project); Marrow's four words and Pell's species open | M1 | SB-6 | NAR-01 |
 | NAR-06 `[ ]` | Boss character sheets: reason, arena, three phase lines, aftermath, for all 15 | M1 | SB-6 | NAR-01, CMB-09 |
 | NAR-07 `[ ]` | Emberdown arc: Kettil, Runa, Hollowvein, the Cinder Bath Debate, Brann; Commissions | M2 | SB-4.2, 8.2 | NAR-05 |
 | NAR-08 `[ ]` | Verdance arc: Teodor, Aldermere, the Sunken Library, the Gatekeeper; Commissions | M2 | SB-4.3, 8.3 | NAR-05 |

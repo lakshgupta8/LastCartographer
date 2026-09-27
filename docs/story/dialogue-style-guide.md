@@ -24,7 +24,7 @@ Every choice set should, where natural, include one line from each. Not labelled
 | **Warden** | Protective, blunt, responsible | "Then I'll carry her out myself." |
 | **Drift** | Dreamy, empathetic, comfortable with not knowing | "Maybe it doesn't need a name yet." |
 
-## 4. Character voice sheet (short form; full bibles in NAR-05)
+## 4. Character voice sheet (short form; the full bibles are `character-bibles.md`)
 
 | Character | Rhythm | Tell | Never says |
 |---|---|---|---|

@@ -358,6 +358,8 @@ namespace OWSBG.Setup
             uiGo.AddComponent<OWSBG.UI.DialogueView>();
             uiGo.AddComponent<OWSBG.UI.DeskMenu>();
             uiGo.AddComponent<OWSBG.UI.BossView>();
+            uiGo.AddComponent<OWSBG.UI.LedgerView>();
+            uiGo.AddComponent<OWSBG.UI.JournalView>();
 
             // Dialogue service drawing through the UI's dialogue view.
             var dlgGo = new GameObject("DialogueService");
@@ -373,9 +375,10 @@ namespace OWSBG.Setup
             pres.GetArrayElementAtIndex(0).objectReferenceValue = presenter;
             dsSo.ApplyModifiedPropertiesWithoutUndo();
 
-            // Death handling.
+            // Death handling and the commission tracker.
             var sysGo = new GameObject("PlayerSystems");
             sysGo.AddComponent<PlayerRespawn>();
+            sysGo.AddComponent<CommissionTracker>();
 
             // Room manager.
             var rmGo = new GameObject("RoomManager");
@@ -503,6 +506,7 @@ namespace OWSBG.Setup
             MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Greybox_Sable", new Color(0.16f, 0.18f, 0.22f));
             MakeVantage(room, "Reedmother", "Saltmarrow_A/Reedmother", new Vector2(14f, 0f));
             MakeDesk(room, new Vector2(-4.5f, 0f));
+            MakeLedger(room, "Saltmarrow", new Vector2(-7f, 0f));
             MakeEnemy<MarshCrab>(room, "Crab_1", new Vector2(7f, 5.9f), new Vector2(0.9f, 0.7f));
             MakeEnemy<ReedSkimmer>(room, "Skimmer_1", new Vector2(9f, 4f), new Vector2(0.9f, 0.5f));
             MakeEnemy<Smudge>(room, "Smudge_1", new Vector2(-15.5f, 1.5f), new Vector2(1.1f, 1.1f));
@@ -535,6 +539,8 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Mid_Reeds", 3f, 0f, new Color(0.58f, 0.62f, 0.54f), 6f);
             MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.70f, 0.72f, 0.66f), 10f);
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.81f, 0.74f), 16f);
+
+            MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Greybox_Dotha", new Color(0.36f, 0.40f, 0.34f));
 
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
             MakeSpawn(room, "East", new Vector2(17f, 0f));
@@ -838,6 +844,38 @@ namespace OWSBG.Setup
             table.transform.localScale = new Vector3(1.4f, 0.9f, 0.8f);
             table.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Desk", new Color(0.42f, 0.30f, 0.20f));
             MakeSpawn(room, "Desk", pos);
+        }
+
+        // The hub's Commissions board: a paper sheet on a post, and a trigger.
+        static void MakeLedger(Room room, string hubId, Vector2 pos)
+        {
+            var go = new GameObject("Ledger_" + hubId) { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(1.6f, 1.8f);
+            col.offset = new Vector2(0f, 0.9f);
+            var ledger = go.AddComponent<CommissionLedger>();
+            var so = new SerializedObject(ledger);
+            so.FindProperty("_hubId").stringValue = hubId;
+            so.FindProperty("_prompt").stringValue = "Read";
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            post.name = "Post";
+            Object.DestroyImmediate(post.GetComponent<Collider>());
+            post.transform.SetParent(go.transform, false);
+            post.transform.localPosition = new Vector3(0f, 0.9f, 0.5f);
+            post.transform.localScale = new Vector3(0.12f, 1.8f, 0.12f);
+            post.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Desk", new Color(0.42f, 0.30f, 0.20f));
+            var sheet = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            sheet.name = "Sheet";
+            Object.DestroyImmediate(sheet.GetComponent<Collider>());
+            sheet.transform.SetParent(go.transform, false);
+            sheet.transform.localPosition = new Vector3(0f, 1.25f, 0.42f);
+            sheet.transform.localScale = new Vector3(0.9f, 1.1f, 0.05f);
+            sheet.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Ledger", new Color(0.90f, 0.85f, 0.70f));
         }
 
         static void MakeSpawn(Room room, string name, Vector2 pos)

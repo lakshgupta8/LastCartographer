@@ -50,6 +50,7 @@ and pressing Play inside any room scene bootstraps the persistent scene for you.
 | Use Instrument (selected slot) | I | right stick press |
 | Select next Instrument slot | Tab | left stick press |
 | Survey (hold at a vantage) | Q | North |
+| Journal (commissions, scraps) | M | Select |
 
 Forward strikes chain into the Charter's three-hit combo when pressed within 18 frames of the last swing.
 Every base Charter and every Instrument is owned from the start in the greybox; the desk menu swaps them.
@@ -58,20 +59,23 @@ Wingbeat and Talonhold are pre-unlocked in the greybox for feel-testing (`Abilit
 
 Room A also has the first world interactions. Stand in front of something and press **up** (W or stick up) to use it:
 - the dark bird on the left is a stand-in Sable: a Yarn conversation on the paper page (1-3 or arrows, J to confirm);
+- the paper sheet on a post between Sable and the desk is the **Commissions ledger**: the coast's side-quests. Read it (up) to see what is posted, J takes one, and once the journal (M) shows it fulfilled, J at the board turns it in for vellum scraps. Three post from the start; Dotha's posts after you meet Sable and the Tether-Widows after the Lamp-Keeper;
 - the small table is a drafting desk: restores masks and Instrument uses, sets the respawn point, saves to `saves/slot0.json`, and opens the desk menu (row 0 swaps the Charter with ◂ ▸ or 1-3; the rows below swap what sits in each Instrument slot; J leaves);
 - the light brown slab up on the left wall is a weak floor (a plumb weight breaks it; the quill only scratches it) and the faint slab on the far right is a hidden platform (a Field lantern draws it for ten seconds);
 - the blue post on the right is a vantage point: hold **Q** on it to survey it (Sable notices afterwards).
 
+Room B's west end has Dotha, the last elder of Merrow's End. She only talks properly once her commission is taken; her decision seeds an island in the Blank (`blank.island.Merrows_End`). The design is in `docs/design/commissions.md`.
+
 The HUD, dialogue page, desk page and boss bar are one UI Toolkit document (`UI` object in the persistent
 scene; `Assets/_Project/Code/UI`), built in code on the paper-and-ink palette until the UI art (ENV-11) lands.
 
-Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`.
+Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`.
 
 ## Verifying headless
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png` and `ui-desk.png` with the UI composited over the camera, for a headless visual check.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-journal.png` with the UI composited over the camera, for a headless visual check.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

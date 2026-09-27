@@ -13,7 +13,7 @@ namespace OWSBG.Tests
 {
     /// <summary>
     /// Renders the shipped scene with the atlas UI composited over the camera and writes PNGs to
-    /// logs/ (ui-hud.png, ui-dialogue.png, ui-desk.png). A visual check for headless runs; the only
+    /// logs/ (ui-hud.png, ui-dialogue.png, ui-desk.png, ui-ledger.png, ui-journal.png). A visual check for headless runs; the only
     /// assertion is that the files were written.
     /// </summary>
     public class UiScreenshotTests
@@ -83,6 +83,23 @@ namespace OWSBG.Tests
             menu.SetRow(2);
             yield return Capture(cam, camRt, uiRt, "ui-desk.png");
             menu.Close();
+
+            var ledger = Object.FindFirstObjectByType<CommissionLedger>();
+            Assert.IsNotNull(ledger, "room A has the Saltmarrow ledger");
+            var page = ui.GetComponent<LedgerView>();
+            ledger.Interact(wren.GetComponent<Interactor>());
+            yield return null;
+            Assert.IsTrue(page.IsOpen);
+            page.Confirm();                                     // take the first one so the journal has an entry
+            page.SetRow(1);
+            yield return Capture(cam, camRt, uiRt, "ui-ledger.png");
+            page.Close();
+            var journal = ui.GetComponent<JournalView>();
+            journal.Toggle();
+            yield return null;
+            Assert.IsTrue(journal.IsOpen);
+            yield return Capture(cam, camRt, uiRt, "ui-journal.png");
+            journal.Toggle();
 
             Object.Destroy(uiRt); Object.Destroy(camRt);
             Assert.IsTrue(File.Exists(Path.Combine(OutDir, "ui-desk.png")));

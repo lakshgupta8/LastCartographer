@@ -1,5 +1,6 @@
 // Greybox stand-in for Sable at the Drowned Quay. Cryptic register (style guide 6).
 // Real Saltmarrow writing is NAR-04; this exists so the dialogue pipeline can be felt in-engine.
+// She also carries two Commissions for the greybox: the Bone Bridge's second step and the Tether-Widows.
 
 title: Greybox_Sable
 ---
@@ -22,9 +23,36 @@ Sable: Quay's up the boardwalk. Everything there has a price. Including me.
 title: Greybox_Sable_Again
 ---
 Sable: Still here. Still lost.
+<<if commission_is("saltmarrow.tether_widows", "taken") and not has_flag("saltmarrow.widow.decided")>>
+    <<jump Greybox_Sable_Widow>>
+<<endif>>
 <<if surveyed("Saltmarrow_A/Reedmother")>>
     Sable: You drew the Reedmother. Hm. Maybe you are Guild after all.
+    <<if commission_is("saltmarrow.bone_bridge", "taken") and not has_flag("saltmarrow.bone_bridge.heard")>>
+        Sable: Whale sang while you were up there. Under the bridge. You hear it?
+        -> I heard it. It sounded like names.
+            Sable: Everyone says names. Nobody agrees whose. #plant:3.4
+            <<flag saltmarrow.bone_bridge.heard 1>>
+        -> I heard nothing.
+            Sable: Then you weren't listening. Go again. It'll wait. It's bones.
+    <<endif>>
 <<else>>
     Sable: There's a vantage by the old reed. Draw it, if you're what your cowl says.
 <<endif>>
+<<if not has_flag("greybox.sable.ledger")>>
+    Sable: Board by the desk is the ledger. People write what they want and can't say aloud. Read that far down, if you like.
+    <<flag greybox.sable.ledger 1>>
+<<endif>>
+===
+
+title: Greybox_Sable_Widow
+---
+Sable: The widow at the tether-post asked after you. First time she's asked after anyone.
+Sable: She means to go in after him. Rope's already round her waist.
+-> Talk her out of it.
+    Sable: I'll pass it on. She won't listen. They never do, and then they do.
+    <<flag saltmarrow.widow.decided 1>>
+-> Let her go. Somebody should go with her.
+    Sable: Then it's you. I'll hold the other end. I've held worse.
+    <<flag saltmarrow.widow.decided 2>>
 ===

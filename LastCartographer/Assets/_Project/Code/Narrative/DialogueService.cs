@@ -18,6 +18,8 @@ namespace OWSBG.Narrative
     ///   &lt;&lt;survey_hint&gt;&gt;         tutorial hook (raises Tutorial "survey")
     ///   &lt;&lt;tutorial name&gt;&gt;       tutorial hook (raises Tutorial name)
     ///   &lt;&lt;bind_prompt memoryId&gt;&gt; offer a memory to bind (raises BindPrompt)
+    ///   &lt;&lt;commission id verb&gt;&gt;  post | take | fulfil | close | fail a commission (PRG-12)
+    /// Functions: flag(key), has_flag(key), surveyed(id), commission_state(id), commission_is(id, state).
     /// </summary>
     public sealed class DialogueService : MonoBehaviour
     {
@@ -84,6 +86,11 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler("survey_hint", () => Tutorial?.Invoke("survey"));
             runner.AddCommandHandler<string>("tutorial", name => Tutorial?.Invoke(name));
             runner.AddCommandHandler<string>("bind_prompt", id => BindPrompt?.Invoke(id));
+            runner.AddCommandHandler<string, string>("commission", (id, verb) =>
+            {
+                if (!Commissions.Apply(GameState.World, id, verb))
+                    Debug.LogWarning("[OWSBG] <<commission " + id + " " + verb + ">> is not a valid move from " + Commissions.StateOf(GameState.World, id));
+            });
         }
 
         // Functions are declared with attributes so the compiler knows their signatures.
@@ -95,6 +102,13 @@ namespace OWSBG.Narrative
 
         [YarnFunction("surveyed")]
         public static bool IsSurveyed(string vantageId) => GameState.World.IsSurveyed(vantageId);
+
+        /// <summary>"unknown", "posted", "taken", "fulfilled", "closed" or "failed".</summary>
+        [YarnFunction("commission_state")]
+        public static string CommissionStateOf(string id) => Commissions.Describe(Commissions.StateOf(GameState.World, id));
+
+        [YarnFunction("commission_is")]
+        public static bool CommissionIs(string id, string state) => CommissionStateOf(id) == (state ?? "").Trim().ToLowerInvariant();
 
         public bool StartNode(string node)
         {

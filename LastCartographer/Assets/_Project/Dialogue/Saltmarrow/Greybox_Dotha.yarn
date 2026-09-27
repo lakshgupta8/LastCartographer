@@ -1,0 +1,40 @@
+// Greybox stand-in for Dotha, last elder of Merrow's End (bible 8.1: "Dotha's Last Season", [B]).
+// The real scene is NAR-04. This exists so a Commission can be taken at the ledger and finished in talk.
+// Cryptic register (style guide 6). The decision writes saltmarrow.dotha.decided: 1 remembered, 2 let fade.
+
+title: Greybox_Dotha
+---
+<<if has_flag("saltmarrow.dotha.decided")>>
+    <<jump Greybox_Dotha_After>>
+<<endif>>
+<<if commission_is("saltmarrow.dotha", "taken")>>
+    <<jump Greybox_Dotha_Season>>
+<<endif>>
+Dotha: Sit if you're sitting. Stand if you're Guild.
+Dotha: The ledger has my name on it. Has for three seasons. Nobody reads that far down. #still
+===
+
+title: Greybox_Dotha_Season
+---
+Dotha: You read that far down. Hm.
+Dotha: Merrow's End had eleven songs. I have nine of them. The other two went with people.
+Dotha: Sit. I'll sing the nine. Then you decide what the map says about us.
+-> Learn the songs. Write Merrow's End as it was.
+    Dotha: As it was. Nobody's asked for that in forty years.
+    Dotha: Get your quill out, then. Slowly. The first one is about weather.
+    <<flag saltmarrow.dotha.remembered 1>>
+    <<flag saltmarrow.dotha.decided 1>>
+-> Let it fade. Leave the songs with her.
+    Dotha: Kind, I suppose. Kinder than most of the Guild manage.
+    Dotha: I'll sing them to the water, then. It listens as well as anyone.
+    <<flag saltmarrow.dotha.decided 2>>
+===
+
+title: Greybox_Dotha_After
+---
+<<if has_flag("saltmarrow.dotha.remembered")>>
+    Dotha: Nine songs. You got the eighth one wrong. Leave it wrong. It's ours now. #still
+<<else>>
+    Dotha: Still here. The water's a poor audience but it never leaves early. #still
+<<endif>>
+===

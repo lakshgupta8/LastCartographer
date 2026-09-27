@@ -35,6 +35,10 @@ namespace OWSBG.World
         public float SlowFactor { get; set; } = 0.35f;
         public event Action<Enemy, HitInfo> WasHit;
         public event Action<Enemy> Died;
+        /// <summary>Every enemy death in the game (commission counters, later stats).</summary>
+        public static event Action<Enemy> AnyDied;
+        /// <summary>Roster name used by counters ("kill.MarshCrab"); the type name unless overridden.</summary>
+        public virtual string Family => GetType().Name;
 
         protected Rigidbody2D Body { get; private set; }
         protected Collider2D Collider { get; private set; }
@@ -172,6 +176,7 @@ namespace OWSBG.World
             Body.simulated = false;
             Collider.enabled = false;
             Died?.Invoke(this);
+            AnyDied?.Invoke(this);
         }
 
         void ContactCheck()

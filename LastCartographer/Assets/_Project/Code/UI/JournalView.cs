@@ -1,0 +1,203 @@
+using System.Collections.Generic;
+using OWSBG.Core;
+using OWSBG.Narrative;
+using OWSBG.World;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+
+namespace OWSBG.UI
+{
+    /// <summary>
+    /// The journal (the atlas's right-hand page, PRG-12): M or gamepad Select toggles it. Lists taken and
+    /// fulfilled commissions with their steps, then the closed ones, and the vellum-scrap count. Also owns the
+    /// small caption that announces ledger changes ("Commission taken · Lantern Chain").
+    /// </summary>
+    public sealed class JournalView : MonoBehaviour
+    {
+        [SerializeField] float _toastSeconds = 3f;
+
+        public bool IsOpen { get; private set; }
+        public VisualElement Panel => _panel;
+        public string ToastText => _toast != null ? _toast.text : _pendingToast;
+        public bool IsToastShowing => _toastLeft > 0f;
+
+        WrenController _wren;
+        bool _wasFrozen, _built;
+        VisualElement _panel, _open, _closed;
+        Label _title, _empty, _scraps, _toast;
+        string _pendingToast;
+        float _toastLeft;
+
+        void OnEnable() { Commissions.Changed += OnChanged; }
+        void OnDisable() { Commissions.Changed -= OnChanged; }
+
+        void OnChanged(string id, CommissionState state)
+        {
+            var def = CommissionCatalog.Find(id);
+            string title = def != null ? def.Title : id;
+            switch (state)
+            {
+                case CommissionState.Taken: Toast("Commission taken · " + title); break;
+                case CommissionState.Fulfilled: Toast(title + " · fulfilled. Return to the ledger."); break;
+                case CommissionState.Closed:
+                    var reward = def != null ? LedgerView.RewardLine(def) : "";
+                    Toast(title + " · closed" + (reward.Length > 0 ? ".  " + reward : ""));
+                    break;
+                case CommissionState.Failed: Toast(title + " · came to nothing."); break;
+            }
+            if (IsOpen) Refresh();
+        }
+
+        public void Toast(string text)
+        {
+            _pendingToast = text;
+            _toastLeft = _toastSeconds;
+            if (_built) { _toast.text = text; InkTheme.Show(_toast, true); }
+        }
+
+        public void Toggle()
+        {
+            if (IsOpen) Close(); else Open(FindFirstObjectByType<WrenController>());
+        }
+
+        public void Open(WrenController wren)
+        {
+            _wren = wren;
+            if (wren != null) { _wasFrozen = wren.Frozen; wren.Frozen = true; }
+            IsOpen = true;
+            Refresh();
+        }
+
+        public void Close()
+        {
+            if (!IsOpen) return;
+            IsOpen = false;
+            if (_wren != null) _wren.Frozen = _wasFrozen;
+            if (_built) InkTheme.Show(_panel, false);
+        }
+
+        void Update()
+        {
+            if (!_built && Build())
+            {
+                if (_pendingToast != null && _toastLeft > 0f) { _toast.text = _pendingToast; InkTheme.Show(_toast, true); }
+                if (IsOpen) Refresh();
+            }
+            if (_toastLeft > 0f)
+            {
+                _toastLeft -= Time.unscaledDeltaTime;
+                if (_toastLeft <= 0f && _built) InkTheme.Show(_toast, false);
+            }
+
+            var k = Keyboard.current;
+            var g = Gamepad.current;
+            bool toggle = (k != null && k.mKey.wasPressedThisFrame) || (g != null && g.selectButton.wasPressedThisFrame);
+            bool close = (k != null && k.escapeKey.wasPressedThisFrame) || (g != null && g.buttonEast.wasPressedThisFrame);
+            if (IsOpen)
+            {
+                if (toggle || close) Close();
+                return;
+            }
+            if (!toggle) return;
+            if (DialogueService.Instance != null && DialogueService.Instance.IsRunning) return;
+            var wren = FindFirstObjectByType<WrenController>();
+            if (wren != null && wren.Frozen) return;   // a desk or ledger page owns the screen
+            Open(wren);
+        }
+
+        bool Build()
+        {
+            var ui = UiRoot.Instance;
+            if (ui == null || !ui.IsReady || ui.Desk == null || ui.Caption == null) return false;
+            _panel = InkTheme.Panel("journal");
+            _panel.style.position = Position.Absolute;
+            _panel.style.left = new Length(50, LengthUnit.Percent);
+            _panel.style.top = new Length(50, LengthUnit.Percent);
+            _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
+            _panel.style.width = 860;
+            _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
+            _title = InkTheme.Text("title", "Journal", 30, InkTheme.Wash, FontStyle.Bold);
+            _title.style.marginBottom = 14;
+            _empty = InkTheme.Text("empty", "No commissions taken. The ledgers are at the hubs.", 17, InkTheme.Dim);
+            _open = new VisualElement { name = "open", pickingMode = PickingMode.Ignore };
+            _closed = new VisualElement { name = "closed", pickingMode = PickingMode.Ignore };
+            _closed.style.marginTop = 12;
+            _scraps = InkTheme.Text("scraps", "", 16, InkTheme.Wash);
+            _scraps.style.marginTop = 16;
+            var hint = InkTheme.Text("hint", "M / Esc close", 15, InkTheme.Dim);
+            hint.style.marginTop = 12;
+            _panel.Add(_title); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(hint);
+            InkTheme.Show(_panel, false);
+            ui.Desk.Add(_panel);
+
+            _toast = InkTheme.Text("journal-toast", "", 21, InkTheme.Ink, FontStyle.Italic);
+            _toast.style.position = Position.Absolute;
+            _toast.style.left = new Length(50, LengthUnit.Percent);
+            _toast.style.translate = new Translate(new Length(-50, LengthUnit.Percent), 0);
+            _toast.style.top = new Length(12, LengthUnit.Percent);
+            _toast.style.backgroundColor = InkTheme.Paper;
+            InkTheme.SetPadding(_toast, 8f, 18f);
+            InkTheme.SetRadius(_toast, 6f);
+            InkTheme.SetBorder(_toast, InkTheme.InkFaint, 1f);
+            InkTheme.Show(_toast, false);
+            ui.Caption.Add(_toast);
+            _built = true;
+            return true;
+        }
+
+        public void Refresh()
+        {
+            if (!_built) return;
+            InkTheme.Show(_panel, IsOpen);
+            if (!IsOpen) return;
+            var w = GameState.World;
+            _open.Clear(); _closed.Clear();
+            int openCount = 0, closedCount = 0;
+            foreach (var def in CommissionCatalog.All)
+            {
+                var state = Commissions.StateOf(w, def.Id);
+                if (state == CommissionState.Taken || state == CommissionState.Fulfilled) { _open.Add(Entry(def, state)); openCount++; }
+                else if (state == CommissionState.Closed || state == CommissionState.Failed) { _closed.Add(Entry(def, state)); closedCount++; }
+            }
+            InkTheme.Show(_empty, openCount == 0 && closedCount == 0);
+            if (closedCount > 0)
+            {
+                var head = InkTheme.Text("closed-head", "Closed", 16, InkTheme.Dim, FontStyle.Bold);
+                head.style.marginBottom = 4;
+                _closed.Insert(0, head);
+            }
+            _scraps.text = "Vellum scraps: " + Commissions.Scraps(w);
+        }
+
+        VisualElement Entry(CommissionDef def, CommissionState state)
+        {
+            var box = new VisualElement { name = "entry-" + def.Id, pickingMode = PickingMode.Ignore };
+            box.AddToClassList("journal-entry");
+            box.AddToClassList(Commissions.Describe(state));
+            box.style.marginBottom = 8;
+            bool dim = state == CommissionState.Closed || state == CommissionState.Failed;
+            var row = InkTheme.Row("head");
+            var title = InkTheme.Text("title", def.Title, 21, dim ? InkTheme.Dim : InkTheme.Ink, FontStyle.Bold);
+            title.style.flexGrow = 1;
+            var hub = InkTheme.Text("hub", def.Hub + (state == CommissionState.Fulfilled ? " · turn in" : ""), 15, dim ? InkTheme.Dim : InkTheme.Ochre);
+            row.Add(title); row.Add(hub);
+            box.Add(row);
+            if (!dim)
+            {
+                var body = InkTheme.Text("body", def.Journal, 16, InkTheme.Ink);
+                body.style.marginLeft = 12;
+                var steps = InkTheme.Text("steps", LedgerView.StepLines(GameState.World, def), 15, InkTheme.Dim);
+                steps.style.marginLeft = 12;
+                box.Add(body); box.Add(steps);
+            }
+            else
+            {
+                var after = InkTheme.Text("body", state == CommissionState.Closed ? def.Aftermath : "It came to nothing.", 15, InkTheme.Dim);
+                after.style.marginLeft = 12;
+                box.Add(after);
+            }
+            return box;
+        }
+    }
+}

@@ -66,7 +66,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | DES-03 `[ ]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns | M0 | SB-1.3, 10 | DES-02 |
 | DES-04 `[ ]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage) | M0 | SB-10, ART-3 | DES-01 |
 | DES-05 `[ ]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades | M1 | CMB-6 | DES-01 |
-| DES-06 `[ ]` | Commissions system spec (ledger, states, rewards, Blank-island flags) | M1 | SB-8 | DES-01 |
+| DES-06 `[~]` | Commissions system spec (ledger, states, rewards, Blank-island flags); v1 in `docs/design/commissions.md`, failure and expiry rules open | M1 | SB-8 | DES-01 |
 | DES-07 `[ ]` | World macro map: region graph, room counts, ability gates, sequence-break policy | M0 | SB-4.0 | DES-01 |
 | DES-08 `[ ]` | Saltmarrow room-by-room level design (paper maps, vantage points, gauntlet) | M0 | SB-4.1 | DES-07 |
 | DES-09 `[ ]` | Emberdown and Verdance room designs | M2 | SB-4.2, 4.3 | DES-07 |
@@ -115,7 +115,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-09 `[~]` | `WorldState` + save/load (JSON, autosave at desks) | M0 | SB-10 | PRG-01 |
 | PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure | M1 | DES-02 | PRG-08 |
 | PRG-11 `[~]` | Drafting desk: rest, respawn, Charter/Instrument swap (placeholder IMGUI desk menu), save | M1 | GDD 6 | PRG-09 |
-| PRG-12 `[ ]` | Commissions ledger runtime and journal | M1 | DES-06 | PRG-09 |
+| PRG-12 `[~]` | Commissions ledger runtime and journal (state machine in WorldState, tracker, ledger page, journal + toasts, Yarn command and functions, Saltmarrow greybox set; atlas page pending) | M1 | DES-06 | PRG-09 |
 | PRG-13 `[ ]` | Anchor / hold / release runtime; held-state loops; Warden patrol spawner | M2 | DES-03 | PRG-10 |
 | PRG-14 `[ ]` | Fade-stage runtime: `_Ink` animation per place, layer dropout, story-beat advancement | M2 | DES-04 | PRG-03 |
 | PRG-15 `[ ]` | NPC schedules and hub life (NavMesh, `#still` loops) | M2 | SB-5.1 | PRG-07 |

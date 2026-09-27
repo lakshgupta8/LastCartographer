@@ -110,7 +110,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-04 `[ ]` | Foreground-only depth-of-field render feature; paper-grain overlay feature | M0 | ART-3 | PRG-03 |
 | PRG-05 `[x]` | Input: `.inputactions`, buffered input service, rebinding | M0 | CMB-1 | PRG-01 |
 | PRG-06 `[~]` | Cinemachine 3 rig: follow, look-ahead, `Confiner2D` per room, boss cameras | M0 | Engine | CMB-01 |
-| PRG-07 `[~]` | Room system: additive scenes, transitions, neighbour preload, Addressables | M0 | Engine | PRG-01 |
+| PRG-07 `[~]` | Room system: additive scenes, transitions, neighbour preload, Addressables (rooms are addressables in one bundle each; neighbour bundles kept resident; Build Settings fallback; content build entry point, no CI yet) | M0 | Engine | PRG-01 |
 | PRG-08 `[~]` | Dialogue runtime: Yarn Spinner, `<<flag>>`, `<<commission>>`, `<<fade>>`, `<<anchor>>`, dialogue UI | M0 | SB-11 | PRG-01 |
 | PRG-09 `[~]` | `WorldState` + save/load (JSON, autosave at desks) | M0 | SB-10 | PRG-01 |
 | PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure | M1 | DES-02 | PRG-08 |

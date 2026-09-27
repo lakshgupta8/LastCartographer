@@ -73,6 +73,11 @@ Room A also has the first world interactions. Stand in front of something and pr
 
 Room B's west end has Dotha, the last elder of Merrow's End. She only talks properly once her commission is taken; her decision seeds an island in the Blank (`blank.island.Merrows_End`). The design is in `docs/design/commissions.md`.
 
+Rooms are Addressables (`Assets/AddressableAssetsData`, group **Rooms**, one bundle per room, address = scene name);
+only the persistent scene is a built-in scene. `RoomManager` loads a room by address, keeps the bundles of its neighbours
+(the targets of its transitions) resident, and releases the rest. Play mode reads from the AssetDatabase, so nothing has to be
+built to press Play; a player build needs `-executeMethod OWSBG.Setup.ProjectSetup.BuildAddressables` first.
+
 Cutscenes (`Assets/_Project/Data/Cutscenes/*.playable`, built by the setup script) are Timeline assets on a `Cutscene` object:
 `ActorMoveClip` walks an actor, `PaperFadeClip` drives the screen fade, `DialogueNodeClip` starts a Yarn node and holds the
 timeline until it ends; an optional Cinemachine shot takes over while it plays and Wren is frozen throughout.
@@ -86,7 +91,7 @@ Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartogr
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-journal.png` with the UI composited over the camera, for a headless visual check.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-journal.png` with the UI composited over the camera, for a headless visual check.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

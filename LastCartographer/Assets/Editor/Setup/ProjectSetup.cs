@@ -5,6 +5,7 @@
 //   2) -executeMethod OWSBG.Setup.ProjectSetup.BuildBootstrapScene
 //        the persistent scene (camera rig, Wren, RoomManager, volume) and two greybox rooms.
 //   3) -executeMethod OWSBG.Setup.ProjectSetup.CaptureScreenshot   (run WITHOUT -nographics)
+//   4) -executeMethod OWSBG.Setup.ProjectSetup.BuildAddressables   (player content; not needed for Play mode)
 using System.IO;
 using OWSBG.Core;
 using OWSBG.Narrative;
@@ -12,6 +13,10 @@ using OWSBG.World;
 using Unity.Cinemachine;
 using Yarn.Unity;
 using UnityEditor;
+using UnityEditor.AddressableAssets;
+using UnityEditor.AddressableAssets.Build.DataBuilders;
+using UnityEditor.AddressableAssets.Settings;
+using UnityEditor.AddressableAssets.Settings.GroupSchemas;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -274,14 +279,9 @@ namespace OWSBG.Setup
             BuildRoomC();
             BuildRoomEdge();
             BuildPersistent();
-            EditorBuildSettings.scenes = new[]
-            {
-                new EditorBuildSettingsScene(PersistentScenePath, true),
-                new EditorBuildSettingsScene(RoomAScenePath, true),
-                new EditorBuildSettingsScene(RoomBScenePath, true),
-                new EditorBuildSettingsScene(RoomCScenePath, true),
-                new EditorBuildSettingsScene(RoomEdgeScenePath, true),
-            };
+            // Rooms stream through Addressables (PRG-07); only the persistent scene is a built-in scene.
+            EditorBuildSettings.scenes = new[] { new EditorBuildSettingsScene(PersistentScenePath, true) };
+            SetupAddressables();
             AssetDatabase.SaveAssets();
             Debug.Log("[OWSBG] BuildBootstrapScene: done");
         }
@@ -824,6 +824,44 @@ namespace OWSBG.Setup
             so.FindProperty("_shot").objectReferenceValue = shot;
             so.ApplyModifiedPropertiesWithoutUndo();
             return cs;
+        }
+
+        // ---- Addressables (PRG-07): one group, one bundle per room, address = scene name.
+
+        static readonly string[] RoomScenePaths = { RoomAScenePath, RoomBScenePath, RoomCScenePath, RoomEdgeScenePath };
+
+        static void SetupAddressables()
+        {
+            var settings = AddressableAssetSettingsDefaultObject.GetSettings(true);
+            var group = settings.FindGroup("Rooms");
+            if (group == null)
+                group = settings.CreateGroup("Rooms", false, false, false, null, typeof(BundledAssetGroupSchema), typeof(ContentUpdateGroupSchema));
+            var bundled = group.GetSchema<BundledAssetGroupSchema>();
+            bundled.BuildPath.SetVariableByName(settings, AddressableAssetSettings.kLocalBuildPath);
+            bundled.LoadPath.SetVariableByName(settings, AddressableAssetSettings.kLocalLoadPath);
+            bundled.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackSeparately;   // neighbours preload one at a time
+            foreach (var path in RoomScenePaths)
+            {
+                var guid = AssetDatabase.AssetPathToGUID(path);
+                if (string.IsNullOrEmpty(guid)) { Debug.LogWarning("[OWSBG] room scene missing for Addressables: " + path); continue; }
+                var entry = settings.CreateOrMoveEntry(guid, group, false, false);
+                entry.address = Path.GetFileNameWithoutExtension(path);
+                entry.SetLabel("room", true, true, false);
+            }
+            // Play mode reads straight from the AssetDatabase: pressing Play needs no content build.
+            for (int i = 0; i < settings.DataBuilders.Count; i++)
+                if (settings.DataBuilders[i] is BuildScriptFastMode) { settings.ActivePlayModeDataBuilderIndex = i; break; }
+            settings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true, true);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[OWSBG] Addressables: " + group.entries.Count + " rooms in group Rooms");
+        }
+
+        /// <summary>Content build for players (bundles under Library/com.unity.addressables). Play mode does not need it.</summary>
+        public static void BuildAddressables()
+        {
+            AddressableAssetSettings.BuildPlayerContent(out var result);
+            if (!string.IsNullOrEmpty(result.Error)) throw new System.Exception("[OWSBG] Addressables build failed: " + result.Error);
+            Debug.Log("[OWSBG] Addressables built in " + result.Duration.ToString("0.0") + " s: " + result.OutputPath);
         }
 
         // ---- room helpers

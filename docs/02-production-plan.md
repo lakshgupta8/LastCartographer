@@ -67,7 +67,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | DES-04 `[~]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage); v1 in `docs/design/fade-stages.md`, per-region curves open | M0 | SB-10, ART-3 | DES-01 |
 | DES-05 `[ ]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades | M1 | CMB-6 | DES-01 |
 | DES-06 `[~]` | Commissions system spec (ledger, states, rewards, Blank-island flags); v1 in `docs/design/commissions.md`, failure and expiry rules open | M1 | SB-8 | DES-01 |
-| DES-07 `[ ]` | World macro map: region graph, room counts, ability gates, sequence-break policy | M0 | SB-4.0 | DES-01 |
+| DES-07 `[~]` | World macro map: region graph, room counts, ability gates, sequence-break policy; v1 in `docs/design/world-map.md` and as data (`WorldGraph`, reachability tests); per-region layouts are DES-08–11 | M0 | SB-4.0 | DES-01 |
 | DES-08 `[ ]` | Saltmarrow room-by-room level design (paper maps, vantage points, gauntlet) | M0 | SB-4.1 | DES-07 |
 | DES-09 `[ ]` | Emberdown and Verdance room designs | M2 | SB-4.2, 4.3 | DES-07 |
 | DES-10 `[ ]` | Halden room designs incl. flyer-towers | M2 | SB-4.4 | DES-07 |

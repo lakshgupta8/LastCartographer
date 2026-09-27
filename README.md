@@ -77,6 +77,8 @@ Room B also has the tether-post vantage and, over its east end, a **Cantor**: a 
 
 Hub life (`docs/design/hub-life.md`): the world has a day of fifteen minutes' play (dawn, day, dusk, night; the paper warms at dusk and cools at night), paused while you talk or read a page; resting at a desk sleeps to the next dawn. Sable and Dotha keep posts by the hour and walk between them: Sable mends nets at the quay, reads the ledger at dusk and sleeps under the stilts at night; Dotha sings to the water by the tether-post at dusk. What they say depends on where they stand. An anchored place keeps the hour it was sealed at, and its people loop their posts on a fixed period, the same lines every time (`#still`). The atlas page prints the day and hour.
 
+The macro map (`docs/design/world-map.md`) is also data: `WorldGraph` in Core lists every region's sub-zones, the ways between them and their gates (abilities, story flags, soft Wingbeat gaps), and `Reachable()` answers what a given kit and set of flags can reach; the edit-mode tests prove the spine from it. The greybox rooms are pinned to their zones.
+
 The survey loop (`docs/design/survey.md`): **M** opens the atlas, the pause screen. The left page is the map: each place with its vantages drawn (●), blank (○) or erased (✕), its fade stage and fate, and the desks and lamps you have stood at. Standing at a desk or a lit lamp, the page lists where you can **travel** (↑↓ then J): any known desk or lamp whose place is drawn. The lamp under the Lamp-Keeper's perch lights when she is beaten. The right page is the journal.
 
 The look (art-direction doc): `OWSBG/InkSprite` is the lit, alpha-clipped sprite shader with the two-step shadow ramp and the

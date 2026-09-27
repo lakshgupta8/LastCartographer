@@ -223,8 +223,20 @@ namespace OWSBG.Core
 
             // ---- The greybox rooms, placed on the map.
             _placeZones["Greyfold_Edge"] = "Greyfold.HalfCathedral";
+            _placeZones["Saltmarrow_Shore"] = "Saltmarrow.Shore";
             _placeZones["Saltmarrow_A"] = "Saltmarrow.Quay";
+            _placeZones["Saltmarrow_Stilts"] = "Saltmarrow.Quay";
+            _placeZones["Saltmarrow_Boardwalk"] = "Saltmarrow.Quay";
+            _placeZones["Saltmarrow_Roots_1"] = "Saltmarrow.Reedmother";
+            _placeZones["Saltmarrow_Roots_2"] = "Saltmarrow.Reedmother";
+            _placeZones["Saltmarrow_Roots_3"] = "Saltmarrow.Reedmother";
+            _placeZones["Saltmarrow_Roots_4"] = "Saltmarrow.Reedmother";
             _placeZones["Saltmarrow_B"] = "Saltmarrow.MerrowsEnd";
+            _placeZones["Saltmarrow_Tetherline"] = "Saltmarrow.MerrowsEnd";
+            _placeZones["Saltmarrow_Ferry"] = "Saltmarrow.MerrowsEnd";
+            _placeZones["Saltmarrow_Chain_1"] = "Saltmarrow.LanternChain";
+            _placeZones["Saltmarrow_Chain_2"] = "Saltmarrow.LanternChain";
+            _placeZones["Saltmarrow_Chain_3"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Lighthouse"] = "Saltmarrow.LanternChain";
         }
     }

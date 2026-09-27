@@ -191,12 +191,23 @@ namespace OWSBG.Core
             if (_defaults) return;
             _defaults = true;
             _places.Add(new AtlasPlace { Id = "Greyfold_Edge", Name = "The Edge", Region = "The Greyfold" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Shore", Name = "The Shore", Region = "The Saltmarrow" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_A", Name = "The Drowned Quay", Region = "The Saltmarrow" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Roots_2", Name = "Reedmother's Roots, the bole", Region = "The Saltmarrow" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Roots_4", Name = "Reedmother's Roots, the crown", Region = "The Saltmarrow" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_B", Name = "Merrow's End", Region = "The Saltmarrow" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Chain_1", Name = "The First Lighthouse", Region = "The Saltmarrow" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Chain_2", Name = "The Second Lighthouse", Region = "The Saltmarrow" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Chain_3", Name = "The Third Lighthouse, faded", Region = "The Saltmarrow" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_Lighthouse", Name = "The Fourth Lighthouse", Region = "The Saltmarrow" });
 
             _vantages.Add(new AtlasVantage { Id = "Greyfold_Edge/HalfCathedral", Name = "the half-cathedral" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Shore/Tideline", Name = "the tideline" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_A/Reedmother", Name = "the Reedmother" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Roots_2/Bole", Name = "the bole" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Roots_4/Crown", Name = "the crown" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Chain_1/FirstLamp", Name = "the first lamp" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Chain_2/SecondLamp", Name = "the second lamp" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_B/Tetherpost", Name = "the tether-post" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Lighthouse/Lamp", Name = "the lamp" });
 

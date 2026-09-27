@@ -29,7 +29,13 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 In the editor menu bar choose **OWSBG → Play From Start (the Edge)** (Ctrl+Shift+P). It opens the persistent
 scene plus the prologue room and enters Play mode. **OWSBG → Play From Saltmarrow** skips the prologue and starts in room A. Then **click inside the Game view once** so it has
 keyboard focus (Unity only sends input to a focused Game view). Walk off the right edge to transition
-into room B, which has a Talonhold shaft.
+into the stilt-roosts, and on through the boardwalk to Merrow's End (room B), which has a Talonhold shaft.
+
+The greybox is now the vertical slice's sixteen rooms (`docs/design/saltmarrow-rooms.md`): the shore and its sea-fade to the
+west of the quay; the stilt-roosts and the boardwalk east of it; Merrow's End, the tether-line and the ferry landing;
+the first, second and faded third lighthouses before the fourth; and, up from the stilt-roosts, the four rooms of
+Reedmother's Roots with vantages at the bole and the crown. Twelve of them are built from recipes in the setup script
+(geometry, exits, vantages and enemies as data); the four hand-built rooms keep their bespoke content.
 
 **The prologue (the Edge).** A new game opens at the Greyfold's edge with Isolde: the paper thins, she asks what you see,
 then sends you to the marker behind you (hold Q). Surveying it brings the binding and the seal (a wax seal is set where you stand),

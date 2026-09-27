@@ -53,7 +53,7 @@ namespace OWSBG.Tests
             Assert.IsTrue(rm.UsesAddressables);
             Assert.IsTrue(rm.IsAddressable("Greybox_Saltmarrow_A"), "room A came in through Addressables");
             yield return Until(() => !rm.IsPreloading, 10f, "neighbour preload");
-            CollectionAssert.AreEquivalent(new[] { "Greybox_Saltmarrow_B" }, rm.PreloadedNeighbours.ToArray(), "room A's only neighbour is B");
+            CollectionAssert.AreEquivalent(new[] { "Greybox_Saltmarrow_Shore", "Greybox_Saltmarrow_Stilts" }, rm.PreloadedNeighbours.ToArray(), "room A's neighbours are the shore and the stilts");
 
             rm.Transition("Greybox_Saltmarrow_B", "West");
             yield return Until(() => rm.CurrentRoom == "Greybox_Saltmarrow_B" && !rm.IsTransitioning, 10f, "room B");
@@ -64,7 +64,7 @@ namespace OWSBG.Tests
             var wren = Object.FindFirstObjectByType<WrenController>();
             Assert.Less(wren.Position.x, -10f, "Wren stands at B's west spawn");
             yield return Until(() => !rm.IsPreloading, 10f, "neighbour preload from B");
-            CollectionAssert.AreEquivalent(new[] { "Greybox_Saltmarrow_A", "Greybox_Saltmarrow_Lighthouse" }, rm.PreloadedNeighbours.ToArray(), "B's neighbours are resident, B itself is not");
+            CollectionAssert.AreEquivalent(new[] { "Greybox_Saltmarrow_Boardwalk", "Greybox_Saltmarrow_Tetherline" }, rm.PreloadedNeighbours.ToArray(), "B's neighbours are resident, B itself is not");
         }
     }
 }

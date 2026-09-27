@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 // Batch-mode project configuration. Entry points, run as separate editor launches:
 //
 //   1) -executeMethod OWSBG.Setup.ProjectSetup.Configure
@@ -279,6 +280,7 @@ namespace OWSBG.Setup
             BuildRoomB();
             BuildRoomC();
             BuildRoomEdge();
+            foreach (var recipe in SaltmarrowRecipes()) BuildRecipe(recipe);
             SetupRenderFeatures();
             BuildPersistent();
             // Rooms stream through Addressables (PRG-07); only the persistent scene is a built-in scene.
@@ -506,7 +508,6 @@ namespace OWSBG.Setup
             MakeGround(room, "Platform_A", new Vector2(-6f, 2.0f), new Vector2(4f, 0.6f), platMat);
             MakeGround(room, "Platform_B", new Vector2(1f, 3.5f), new Vector2(3f, 0.6f), platMat);
             MakeGround(room, "Platform_C", new Vector2(7f, 5.0f), new Vector2(4f, 0.6f), platMat);
-            MakeGround(room, "Wall_L", new Vector2(-13f, 3f), new Vector2(1f, 8f), platMat);
             MakeGround(room, "Stilt_1", new Vector2(11f, 1.5f), new Vector2(0.4f, 3f), platMat);
             MakeWeakFloor(room, "WeakFloor_1", new Vector2(-9f, 4.6f), new Vector2(3f, 0.5f));
             MakeHiddenPlatform(room, "Hidden_1", new Vector2(16f, 3.2f), new Vector2(3f, 0.5f));
@@ -528,7 +529,7 @@ namespace OWSBG.Setup
             MakeLedger(room, "Saltmarrow", new Vector2(-7f, 0f));
             MakeEnemy<MarshCrab>(room, "Crab_1", new Vector2(7f, 5.9f), new Vector2(0.9f, 0.7f));
             MakeEnemy<ReedSkimmer>(room, "Skimmer_1", new Vector2(9f, 4f), new Vector2(0.9f, 0.5f));
-            MakeEnemy<Smudge>(room, "Smudge_1", new Vector2(-15.5f, 1.5f), new Vector2(1.1f, 1.1f));
+            MakeEnemy<Smudge>(room, "Smudge_1", new Vector2(-15.5f, 4.5f), new Vector2(1.1f, 1.1f));
             MakeHeldState(room, new Vector2(2f, 0.9f), new Vector2(12f, 0.9f));
 
             MakeSpawn(room, "Start", new Vector2(-2f, 0f));
@@ -548,8 +549,8 @@ namespace OWSBG.Setup
             shoreSo.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(wake);
 
-            MakeTransition(room, "To_B", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f),
-                Path.GetFileNameWithoutExtension(RoomBScenePath), "West");
+            MakeTransition(room, "To_Shore", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Shore"), "East");
+            MakeTransition(room, "To_Stilts", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Stilts"), "West");
             MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomAScenePath);
@@ -588,10 +589,8 @@ namespace OWSBG.Setup
 
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
             MakeSpawn(room, "East", new Vector2(17f, 0f));
-            MakeTransition(room, "To_A", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f),
-                Path.GetFileNameWithoutExtension(RoomAScenePath), "East");
-            MakeTransition(room, "To_Lighthouse", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f),
-                Path.GetFileNameWithoutExtension(RoomCScenePath), "West");
+            MakeTransition(room, "To_Boardwalk", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Boardwalk"), "East");
+            MakeTransition(room, "To_Tetherline", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Tetherline"), "West");
             MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomBScenePath);
@@ -622,8 +621,7 @@ namespace OWSBG.Setup
             MakeLamp(room, "Lamp", new Vector2(3f, 0f), "lamp.Saltmarrow_Lighthouse", "the fourth lamp", "Saltmarrow_Lighthouse/Lamp");
             MakeSpawn(room, "Start", new Vector2(-12.5f, 0f));
             MakeSpawn(room, "West", new Vector2(-14.5f, 0f));
-            MakeTransition(room, "To_B", new Vector2(-15.6f, 4f), new Vector2(0.8f, 10f),
-                Path.GetFileNameWithoutExtension(RoomBScenePath), "East");
+            MakeTransition(room, "To_Chain_3", new Vector2(-15.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Chain_3"), "East");
 
             // Doors: solid while the fight is on, inactive otherwise.
             var doorW = MakeDoor(room, "Door_W", new Vector2(-6.5f, 3f), new Vector2(1f, 6f), doorMat);
@@ -937,7 +935,167 @@ namespace OWSBG.Setup
 
         // ---- Addressables (PRG-07): one group, one bundle per room, address = scene name.
 
-        static readonly string[] RoomScenePaths = { RoomAScenePath, RoomBScenePath, RoomCScenePath, RoomEdgeScenePath };
+        static IEnumerable<string> RoomScenePaths => AllRoomScenePaths();
+
+        // ---- Recipe rooms (DES-08, docs/design/saltmarrow-rooms.md) -------------------------------------
+        // The slice beyond the four hand-built rooms is data: geometry, exits, vantages and enemies per room.
+        sealed class RoomRecipe
+        {
+            public string Id;
+            public Rect Bounds = new Rect(-20f, -3f, 40f, 17f);
+            public bool Faded, SeaWest;
+            public readonly List<(string name, Vector2 c, Vector2 s)> Ground = new List<(string, Vector2, Vector2)>();
+            public readonly List<(string name, Vector2 pos)> Spawns = new List<(string, Vector2)>();
+            public readonly List<(string name, Vector2 c, Vector2 s, string target, string spawn)> Exits = new List<(string, Vector2, Vector2, string, string)>();
+            public readonly List<(string name, Vector2 pos)> Vantages = new List<(string, Vector2)>();
+            public readonly List<(System.Type type, string name, Vector2 pos, Vector2 size)> Enemies = new List<(System.Type, string, Vector2, Vector2)>();
+
+            public RoomRecipe(string id) { Id = id; }
+            public RoomRecipe Tall() { Bounds = new Rect(-20f, -3f, 40f, 19f); return this; }
+            public RoomRecipe Floor(float x0, float x1) { Ground.Add(("Floor_" + Ground.Count, new Vector2((x0 + x1) * 0.5f, -0.5f), new Vector2(x1 - x0, 1f))); return this; }
+            public RoomRecipe Shallows(float x0, float x1) { Ground.Add(("Shallows_" + Ground.Count, new Vector2((x0 + x1) * 0.5f, -3f), new Vector2(x1 - x0, 1f))); return this; }
+            public RoomRecipe Plat(float x, float y, float w) { Ground.Add(("Plat_" + Ground.Count, new Vector2(x, y), new Vector2(w, 0.6f))); return this; }
+            public RoomRecipe West(string target) { Spawns.Add(("West", new Vector2(-17f, 0f))); Exits.Add(("To_W", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f), target, "East")); return this; }
+            public RoomRecipe East(string target) { Spawns.Add(("East", new Vector2(17f, 0f))); Exits.Add(("To_E", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f), target, "West")); return this; }
+            /// <summary>An exit above the top platform (its centre x, its top y); arrives at the target's Bottom.</summary>
+            public RoomRecipe Up(string target, float x, float topY) { Spawns.Add(("Top", new Vector2(x, topY + 0.05f))); Exits.Add(("To_Up", new Vector2(x, topY + 2.2f), new Vector2(4f, 0.8f), target, "Bottom")); return this; }
+            /// <summary>A drop through the floor gap centred on x; arrives at the target's Top. The floor must leave the gap.</summary>
+            public RoomRecipe Down(string target, float x) { Spawns.Add(("Bottom", new Vector2(x + 3.5f, 0f))); Exits.Add(("To_Down", new Vector2(x, -2.4f), new Vector2(4f, 0.8f), target, "Top")); return this; }
+            public RoomRecipe Vantage(string name, float x, float y) { Vantages.Add((name, new Vector2(x, y))); return this; }
+            public RoomRecipe Crab(float x) { Enemies.Add((typeof(MarshCrab), "Crab_" + Enemies.Count, new Vector2(x, 0.6f), new Vector2(0.9f, 0.7f))); return this; }
+            public RoomRecipe Crab(float x, float y) { Enemies.Add((typeof(MarshCrab), "Crab_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.7f))); return this; }
+            public RoomRecipe Skimmer(float x, float y) { Enemies.Add((typeof(ReedSkimmer), "Skimmer_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.5f))); return this; }
+            public RoomRecipe Smudge(float x) { Enemies.Add((typeof(Smudge), "Smudge_" + Enemies.Count, new Vector2(x, 1.5f), new Vector2(1.1f, 1.1f))); return this; }
+            public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
+        }
+
+        static string Scene(string id) => "Greybox_" + id;
+        static string RoomPath(string id) => Root + "/Scenes/Greybox/" + Scene(id) + ".unity";
+
+        static List<RoomRecipe> SaltmarrowRecipes()
+        {
+            const string A = "Saltmarrow_A", B = "Saltmarrow_B", C = "Saltmarrow_Lighthouse";
+            return new List<RoomRecipe>
+            {
+                new RoomRecipe("Saltmarrow_Shore") { SeaWest = true }
+                    .Floor(-20f, 20f).Plat(-8f, 0.6f, 2.4f).Vantage("Tideline", -8f, 0.9f)
+                    .Crab(6f).Smudge(-3f)
+                    .East(Scene(A)),
+                new RoomRecipe("Saltmarrow_Stilts").Tall()
+                    .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(-5f, 5f, 3f).Plat(0f, 7.5f, 3f).Plat(5f, 10f, 3f).Plat(0f, 12f, 4f)
+                    .Skimmer(-5f, 7f).Skimmer(6f, 12.5f).Crab(10f)
+                    .West(Scene(A)).East(Scene("Saltmarrow_Boardwalk")).Up(Scene("Saltmarrow_Roots_1"), 0f, 12.3f),
+                new RoomRecipe("Saltmarrow_Boardwalk")
+                    .Floor(-20f, -6f).Floor(-2f, 8f).Floor(12f, 20f).Shallows(-6f, -2f).Shallows(8f, 12f)
+                    .Crab(3f).Crab(15f).Smudge(-12f)
+                    .West(Scene("Saltmarrow_Stilts")).East(Scene(B)),
+                new RoomRecipe("Saltmarrow_Tetherline")
+                    .Floor(-20f, 20f).Plat(-8f, 3f, 2.5f).Plat(0f, 4f, 2.5f).Plat(8f, 3f, 2.5f)
+                    .Skimmer(-8f, 5f).Skimmer(8f, 5f).Crab(0f)
+                    .West(Scene(B)).East(Scene("Saltmarrow_Ferry")),
+                new RoomRecipe("Saltmarrow_Ferry")
+                    .Floor(-20f, 20f).Plat(4f, 2.5f, 3f).Plat(9f, 4.5f, 3f)
+                    .Smudge(-6f).Smudge(6f)
+                    .West(Scene("Saltmarrow_Tetherline")).East(Scene("Saltmarrow_Chain_1")),
+                new RoomRecipe("Saltmarrow_Chain_1").Tall()
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(-1f, 5f, 3f).Plat(4f, 7.5f, 3f).Plat(0f, 10f, 5f).Vantage("FirstLamp", 0f, 10.3f)
+                    .Skimmer(2f, 6f).Crab(-12f)
+                    .West(Scene("Saltmarrow_Ferry")).East(Scene("Saltmarrow_Chain_2")),
+                new RoomRecipe("Saltmarrow_Chain_2").Tall()
+                    .Floor(-20f, 20f).Plat(6f, 2.5f, 3f).Plat(1f, 5f, 3f).Plat(-4f, 7.5f, 3f).Plat(0f, 10f, 5f).Vantage("SecondLamp", 0f, 10.3f)
+                    .Cantor(12f).Crab(-10f)
+                    .West(Scene("Saltmarrow_Chain_1")).East(Scene("Saltmarrow_Chain_3")),
+                new RoomRecipe("Saltmarrow_Chain_3") { Faded = true }
+                    .Floor(-20f, 20f).Plat(-4f, 2.5f, 3f).Plat(2f, 4.5f, 3f)
+                    .Smudge(-8f).Smudge(8f)
+                    .West(Scene("Saltmarrow_Chain_2")).East(Scene(C)),
+                new RoomRecipe("Saltmarrow_Roots_1")
+                    .Floor(-20f, -2f).Floor(2f, 20f).Plat(8f, 3f, 3f).Plat(13f, 6f, 3f)
+                    .Crab(-10f).Skimmer(8f, 5f)
+                    .Down(Scene("Saltmarrow_Stilts"), 0f).East(Scene("Saltmarrow_Roots_2")),
+                new RoomRecipe("Saltmarrow_Roots_2").Tall()
+                    .Floor(-20f, 20f).Vantage("Bole", -8f, 0f).Plat(-4f, 3f, 3f).Plat(1f, 5.5f, 3f).Plat(6f, 8f, 3f).Plat(2f, 10.5f, 4f)
+                    .Skimmer(4f, 8.5f).Crab(10f)
+                    .West(Scene("Saltmarrow_Roots_1")).Up(Scene("Saltmarrow_Roots_3"), 2f, 10.8f),
+                new RoomRecipe("Saltmarrow_Roots_3")
+                    .Floor(-20f, 0f).Floor(4f, 20f).Plat(-8f, 3f, 3f).Plat(12f, 3f, 3f)
+                    .Smudge(-8f).Skimmer(10f, 4f)
+                    .Down(Scene("Saltmarrow_Roots_2"), 2f).East(Scene("Saltmarrow_Roots_4")),
+                new RoomRecipe("Saltmarrow_Roots_4")
+                    .Floor(-20f, 20f).Plat(0f, 3f, 3f).Plat(5f, 6f, 3f).Plat(10f, 9f, 4f).Vantage("Crown", 10f, 9.3f)
+                    .Crab(-6f).Skimmer(5f, 8f)
+                    .West(Scene("Saltmarrow_Roots_3")),
+            };
+        }
+
+        static void BuildRecipe(RoomRecipe r)
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var room = MakeRoom(r.Id, r.Bounds);
+            var floorMat = r.Faded ? MakeLitMaterial("M_Greybox_Floor_Faded", new Color(0.72f, 0.72f, 0.66f)) : MakeLitMaterial("M_Greybox_Floor", new Color(0.45f, 0.47f, 0.36f));
+            var platMat = r.Faded ? MakeLitMaterial("M_Greybox_Platform_Faded", new Color(0.76f, 0.73f, 0.66f)) : MakeLitMaterial("M_Greybox_Platform", new Color(0.52f, 0.46f, 0.36f));
+            var waterMat = MakeLitMaterial("M_Greybox_Shallows", new Color(0.50f, 0.56f, 0.56f));
+            foreach (var g in r.Ground)
+                MakeGround(room, g.name, g.c, g.s, g.name.StartsWith("Shallows") ? waterMat : g.name.StartsWith("Floor") ? floorMat : platMat);
+
+            if (r.Faded)
+            {
+                MakePaperLayer(room, "Mid_Reeds_Faded", 3f, 0f, new Color(0.80f, 0.80f, 0.74f), 6f);
+                MakePaperLayer(room, "Far_Roosts_Faded", 8f, 2f, new Color(0.86f, 0.85f, 0.80f), 10f);
+                MakePaperLayer(room, "Farther_Cliffs_Faded", 16f, 6f, new Color(0.90f, 0.89f, 0.84f), 16f);
+            }
+            else
+            {
+                MakePaperLayer(room, "Mid_Reeds", 3f, 0f, new Color(0.62f, 0.64f, 0.52f), 6f);
+                MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f);
+                MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f);
+            }
+            if (r.SeaWest) MakeSeaFade(room);
+
+            foreach (var s in r.Spawns) MakeSpawn(room, s.name, s.pos);
+            foreach (var e in r.Exits) MakeTransition(room, e.name, e.c, e.s, e.target, e.spawn);
+            foreach (var v in r.Vantages) MakeVantage(room, v.name, r.Id + "/" + v.name, v.pos);
+            foreach (var e in r.Enemies)
+            {
+                if (e.type == typeof(MarshCrab)) MakeEnemy<MarshCrab>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(ReedSkimmer)) MakeEnemy<ReedSkimmer>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Smudge)) MakeEnemy<Smudge>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Cantor)) MakeEnemy<Cantor>(room, e.name, e.pos, e.size);
+            }
+            MakeFadeGroup(room);
+            EditorSceneManager.SaveScene(scene, RoomPath(r.Id));
+            Debug.Log("[OWSBG] saved " + RoomPath(r.Id));
+        }
+
+        // The sea-fade: the Edge's white sheets, mirrored to the west (the horizon dissolves to white).
+        static void MakeSeaFade(Room room)
+        {
+            var mat = MakeLitMaterial("M_Blank_White", new Color(0.97f, 0.96f, 0.93f));
+            float[] z = { 0.6f, 4.5f, 10f, 18f };
+            float[] x0 = { 16f, 14f, 12f, 10f };
+            for (int i = 0; i < z.Length; i++)
+            {
+                var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                q.name = "Sea_" + i;
+                q.layer = LayerMask.NameToLayer("Paper");
+                Object.DestroyImmediate(q.GetComponent<Collider>());
+                q.transform.SetParent(room.transform, false);
+                float w = 40f;
+                q.transform.position = new Vector3(-(x0[i] + w * 0.5f), 6f, z[i]);
+                q.transform.localScale = new Vector3(w, 30f, 1f);
+                var r = q.GetComponent<MeshRenderer>();
+                r.sharedMaterial = mat;
+                r.shadowCastingMode = ShadowCastingMode.Off;
+                r.receiveShadows = false;
+            }
+        }
+
+        static List<string> AllRoomScenePaths()
+        {
+            var list = new List<string> { RoomAScenePath, RoomBScenePath, RoomCScenePath, RoomEdgeScenePath };
+            foreach (var r in SaltmarrowRecipes()) list.Add(RoomPath(r.Id));
+            return list;
+        }
 
         static void SetupAddressables()
         {

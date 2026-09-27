@@ -153,13 +153,13 @@ namespace OWSBG.Tests
             yield return Frames(5);
             Hold(Key.D);
             t = 0f;
-            while (RoomManager.Instance.CurrentRoom != "Greybox_Saltmarrow_B" && t < 8f)
+            while (RoomManager.Instance.CurrentRoom != "Greybox_Saltmarrow_Stilts" && t < 8f)
             {
                 t += Time.fixedDeltaTime;
                 yield return new WaitForFixedUpdate();
             }
             Release();
-            Assert.AreEqual("Greybox_Saltmarrow_B", RoomManager.Instance.CurrentRoom, "east edge should transition to room B");
+            Assert.AreEqual("Greybox_Saltmarrow_Stilts", RoomManager.Instance.CurrentRoom, "east edge should transition to the stilt-roosts");
             Assert.Less(wren.Position.x, -10f, "Wren should arrive at room B's west spawn");
             Assert.IsFalse(SceneManager.GetSceneByName("Greybox_Saltmarrow_A").isLoaded, "room A should unload");
         }

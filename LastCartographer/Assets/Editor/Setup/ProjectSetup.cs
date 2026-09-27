@@ -372,6 +372,7 @@ namespace OWSBG.Setup
             uiGo.AddComponent<OWSBG.UI.JournalView>();
             uiGo.AddComponent<OWSBG.UI.AtlasView>();
             uiGo.AddComponent<OWSBG.UI.ShopView>();
+            uiGo.AddComponent<OWSBG.UI.WalkView>();
             uiGo.AddComponent<OWSBG.UI.PromptView>();
             uiGo.AddComponent<OWSBG.UI.FadeView>();
 
@@ -590,6 +591,15 @@ namespace OWSBG.Setup
             dotha.AddPost(DayPhase.Day, new Vector2(-12f, 0f), "", "on her stoop", 1);
             dotha.AddPost(DayPhase.Dusk, new Vector2(0.5f, 0f), "Greybox_Dotha_Water", "singing to the water", 1);
             dotha.AddPost(DayPhase.Night, new Vector2(-12f, 0f), "Greybox_Dotha_Night", "asleep", -1);
+            // The Merrow's End bounds-walk (DES-13): four bounds, two verses, Dotha the chorus.
+            var walk = MakeBoundsWalk(room, "merrows_end", "saltmarrow.dotha.decided", 3, dotha);
+            walk.AddVerse("the stoop and the post",
+                ("Dotha's stoop", new Vector2(-12f, 0f)), ("the tether-post", new Vector2(2f, 0f)),
+                ("the shaft's foot", new Vector2(12.5f, 0f)), ("the first step", new Vector2(-8f, 1.8f)));
+            walk.AddVerse("back by the steps",
+                ("the second step", new Vector2(-3f, 3.8f)), ("the first step", new Vector2(-8f, 1.8f)),
+                ("the tether-post", new Vector2(2f, 0f)), ("Dotha's stoop", new Vector2(-12f, 0f)));
+            MakeBoundMarkers(room, walk);
             MakeVantage(room, "Tetherpost", "Saltmarrow_B/Tetherpost", new Vector2(2f, 0f));
             // A Cantor over the east end: its bell erases Merrow's End until the tether-post is drawn again.
             MakeEnemy<Cantor>(room, "Cantor_1", new Vector2(13f, 2.6f), new Vector2(0.8f, 0.9f));
@@ -1329,6 +1339,46 @@ namespace OWSBG.Setup
         }
 
         // A survey spot: a trigger area plus a thin marker post.
+        // A bounds-walk in a room (DES-13); verses are added by the caller, then MakeBoundMarkers.
+        static BoundsWalk MakeBoundsWalk(Room room, string id, string completeFlag, int completeValue, params Behaviour[] pause)
+        {
+            var go = new GameObject("Walk_" + id);
+            go.transform.SetParent(room.transform, false);
+            var walk = go.AddComponent<BoundsWalk>();
+            walk.Id = id;
+            walk.PlaceId = room.RoomId;
+            walk.SecondsPerBeat = 3.5f;
+            var so = new SerializedObject(walk);
+            so.FindProperty("_completeFlag").stringValue = completeFlag;
+            so.FindProperty("_completeFlagValue").intValue = completeValue;
+            var p = so.FindProperty("_pauseWhileWalking");
+            p.arraySize = pause.Length;
+            for (int i = 0; i < pause.Length; i++) p.GetArrayElementAtIndex(i).objectReferenceValue = pause[i];
+            so.ApplyModifiedPropertiesWithoutUndo();
+            return walk;
+        }
+
+        static void MakeBoundMarkers(Room room, BoundsWalk walk)
+        {
+            var mat = MakeLitMaterial("M_Greybox_Bound", new Color(0.20f, 0.27f, 0.45f));
+            var made = new Dictionary<Vector2, Renderer>();
+            foreach (var v in walk.Verses)
+                foreach (var b in v.Beats)
+                {
+                    if (made.TryGetValue(b.Position, out var existing)) { b.Marker = existing; continue; }
+                    var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    post.name = "Bound_" + b.Name.Replace(' ', '_').Replace('\'', '_');
+                    Object.DestroyImmediate(post.GetComponent<Collider>());
+                    post.transform.SetParent(walk.transform, false);
+                    post.transform.position = new Vector3(b.Position.x, b.Position.y + 0.5f, 0.7f);
+                    post.transform.localScale = new Vector3(0.12f, 1.0f, 0.12f);
+                    var r = post.GetComponent<MeshRenderer>();
+                    r.sharedMaterial = mat;
+                    b.Marker = r;
+                    made[b.Position] = r;
+                }
+        }
+
         // Where an NPC stands through the day (PRG-15); posts are added by the caller.
         static NpcSchedule MakeSchedule(Room room, string npcName)
         {

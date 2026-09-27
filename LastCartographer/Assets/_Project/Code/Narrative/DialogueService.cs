@@ -101,6 +101,11 @@ namespace OWSBG.Narrative
             });
             runner.AddCommandHandler("sleep", () => DayClock.Sleep(GameState.World));
             runner.AddCommandHandler<string>("shop", hub => Shops.Request(hub));
+            runner.AddCommandHandler<string>("walk", id =>
+            {
+                var walk = BoundsWalk.Find(id);
+                if (walk == null || !walk.Begin()) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: no such walk here, or it is already walked");
+            });
             runner.AddCommandHandler<string>("erase", place =>
             {
                 if (!Atlas.Erase(GameState.World, place))
@@ -161,6 +166,14 @@ namespace OWSBG.Narrative
 
         [YarnFunction("seeds")]
         public static float SeedCount() => Economy.Seeds(GameState.World);
+
+        /// <summary>The place's bounds have been walked: it is held.</summary>
+        [YarnFunction("walked")]
+        public static bool IsWalked(string place) => BoundsWalks.IsWalked(GameState.World, place);
+
+        /// <summary>Wren knows the roll-call (taught at Kettil's Rest, or heard in the whale).</summary>
+        [YarnFunction("walk_known")]
+        public static bool WalkKnown() => BoundsWalks.IsLearned(GameState.World);
 
         /// <summary>A Cantor's bell has wiped the place and nobody has drawn it since.</summary>
         [YarnFunction("erased")]

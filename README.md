@@ -90,6 +90,12 @@ Hub life (`docs/design/hub-life.md`): the world has a day of fifteen minutes' pl
 
 The macro map (`docs/design/world-map.md`) is also data: `WorldGraph` in Core lists every region's sub-zones, the ways between them and their gates (abilities, story flags, soft Wingbeat gaps), and `Reachable()` answers what a given kit and set of flags can reach; the edit-mode tests prove the spine from it. The greybox rooms are pinned to their zones.
 
+The bounds-walk (`docs/design/bounds-walk.md`): how a place is **held** rather than sealed. Once you have heard the whale
+(the Bone Bridge commission through Sable), Dotha offers to walk Merrow's End's bounds with you. She calls a bound half a
+beat ahead and you must be standing on it when the beat lands (the posts in room B light up as they are called; the strip at
+the top shows the name, the beat and your misses). Three misses restart the verse; two verses walked and Merrow's End is held.
+The desk refuses to seal Hold on a place that has not been walked. Yarn: `<<walk id>>`, `walked("place")`, `walk_known()`.
+
 The survey loop (`docs/design/survey.md`): **M** opens the atlas, the pause screen. The left page is the map: each place with its vantages drawn (●), blank (○) or erased (✕), its fade stage and fate, and the desks and lamps you have stood at. Standing at a desk or a lit lamp, the page lists where you can **travel** (↑↓ then J): any known desk or lamp whose place is drawn. The lamp under the Lamp-Keeper's perch lights when she is beaten. The right page is the journal.
 
 The look (art-direction doc): `OWSBG/InkSprite` is the lit, alpha-clipped sprite shader with the two-step shadow ramp and the
@@ -119,13 +125,13 @@ timeline until it ends; an optional Cinemachine shot takes over while it plays a
 The HUD, dialogue page, desk page, atlas spread and boss bar are one UI Toolkit document (`UI` object in the persistent
 scene; `Assets/_Project/Code/UI`), built in code on the paper-and-ink palette until the UI art (ENV-11) lands.
 
-Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it), `<<fade place stage>>`, `<<anchor|hold|release place>>`, `<<erase place>>`, `<<clock dawn|day|dusk|night>>`, `<<sleep>>`, `<<shop hub>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`, `fade_stage("place")`, `place_fate("place")`, `erased("place")`, `drawn("place")`, `phase()`, `phase_in("place")`, `day()`, `seeds()`.
+Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`, `<<commission id post|take|fulfil|close|fail>>`, `<<cutscene id>>` (waits for it), `<<fade place stage>>`, `<<anchor|hold|release place>>`, `<<erase place>>`, `<<clock dawn|day|dusk|night>>`, `<<sleep>>`, `<<shop hub>>`, `<<walk id>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`, `commission_state("id")`, `commission_is("id", "taken")`, `fade_stage("place")`, `place_fate("place")`, `erased("place")`, `drawn("place")`, `phase()`, `phase_in("place")`, `day()`, `seeds()`, `walked("place")`, `walk_known()`.
 
 ## Verifying headless
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, the survey loop and fast travel, hub schedules, the economy, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-atlas.png` with the UI composited over the camera, for a headless visual check.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, the survey loop and fast travel, hub schedules, the economy, the bounds-walk, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-atlas.png` with the UI composited over the camera, for a headless visual check.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

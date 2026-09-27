@@ -73,7 +73,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | DES-10 `[ ]` | Halden room designs incl. flyer-towers | M2 | SB-4.4 | DES-07 |
 | DES-11 `[ ]` | Windreach, Greyfold, Blank room designs (drifting islands, lantern-radius platforms) | M3 | SB-4.5–4.7 | DES-07 |
 | DES-12 `[ ]` | Ending requirement matrix as flag logic; every ending reachable | M3 | SB-9 | NAR-13 |
-| DES-13 `[ ]` | Bounds-walk rhythm spec and three authored walks | M2 | CMB-10 | DES-03 |
+| DES-13 `[~]` | Bounds-walk rhythm spec and three authored walks; v1 in `docs/design/bounds-walk.md` (Merrow's End built, Kettil's Rest and Hollowvein designed) | M2 | CMB-10 | DES-03 |
 | DES-14 `[ ]` | Accessibility: remap, hold/toggle, hitstop and shake sliders, high-contrast ink, no timed dialogue | M4 | — | PRG-05 |
 
 ### 3.3 Combat (CMB)
@@ -125,7 +125,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-19 `[ ]` | Localization wiring | M2 | — | PRG-08 |
 | PRG-20 `[ ]` | Blank island generator from `WorldState` | M3 | SB-8.6 | PRG-14 |
 | PRG-21 `[ ]` | Moving camp (Windreach) and day-advance travel | M3 | SB-4.5 | PRG-15 |
-| PRG-22 `[ ]` | Bounds-walk rhythm runtime | M2 | DES-13 | PRG-08 |
+| PRG-22 `[~]` | Bounds-walk rhythm runtime (BoundsWalk set piece, roll-call strip, `<<walk>>`, hold on completion; the desk defers Hold to it; music pending) | M2 | DES-13 | PRG-08 |
 | PRG-23 `[ ]` | Endings runner and epilogue walk | M3 | SB-9 | DES-12 |
 | PRG-24 `[ ]` | Performance: streaming budget, sprite batching, 60 fps lock | M4 | — | all |
 | PRG-25 `[ ]` | Build pipeline: CI, Windows build, Steam packaging | M4 | — | PRG-01 |

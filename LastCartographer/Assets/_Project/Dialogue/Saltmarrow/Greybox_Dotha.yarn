@@ -29,6 +29,10 @@ Dotha: Sit. I'll sing the nine. Then you decide what the map says about us.
     Dotha: I'll sing them to the water, then. It listens as well as anyone.
     <<flag saltmarrow.dotha.decided 2>>
     <<fade Saltmarrow_B 2>>
+-> Walk the bounds with her. <<if walk_known()>>
+    Dotha: You heard the whale, then. That's the shape of it. Old as the bridge. #plant:3.4
+    Dotha: Stand where I say, when I say it. That's all a village ever was.
+    <<walk merrows_end>>
 ===
 
 title: Greybox_Dotha_Water
@@ -44,7 +48,9 @@ Dotha: Asleep, or near enough. Ask me in the light. #still
 
 title: Greybox_Dotha_After
 ---
-<<if has_flag("saltmarrow.dotha.remembered")>>
+<<if flag("saltmarrow.dotha.decided") == 3>>
+    Dotha: Walked. All of it. Nobody's walked it in forty years; the water was surprised. #still
+<<elseif has_flag("saltmarrow.dotha.remembered")>>
     Dotha: Nine songs. You got the eighth one wrong. Leave it wrong. It's ours now. #still
 <<else>>
     Dotha: Still here. The water's a poor audience but it never leaves early. #still

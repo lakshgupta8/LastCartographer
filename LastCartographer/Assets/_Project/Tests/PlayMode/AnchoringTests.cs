@@ -178,6 +178,8 @@ namespace OWSBG.Tests
             Assert.AreEqual(PlaceFate.Anchored, menu.Proposed);
             menu.Step(1);   // -> hold
             Assert.AreEqual(PlaceFate.Held, menu.Proposed);
+            Assert.IsFalse(menu.Confirm(), "hold is the walk's to give, not the seal's (DES-13)");
+            GameState.World.Set(BoundsWalks.DoneKey("Anchor_Test"), true);
             Assert.IsTrue(menu.Confirm(), "J on the place row seals it");
             Assert.AreEqual(PlaceFate.Held, Places.FateOf(GameState.World, "Anchor_Test"));
             Assert.IsTrue(menu.IsOpen, "sealing does not close the desk");

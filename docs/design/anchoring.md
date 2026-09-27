@@ -52,6 +52,6 @@ set. Saves need nothing extra.
 
 ## 8. Open
 - The bind requirement at the desk (a memory from a resident), and whether Wren can anchor without a licence.
-- The bounds-walk (PRG-22) as the way Hold is actually performed.
+- Hold is performed by the bounds-walk (`docs/design/bounds-walk.md`, DES-13): the desk refuses Hold until the place is walked.
 - Wardens before Act 1's end: neutral, or absent.
 - Whether Release should advance the fade one stage on the spot (the story says it continues, not that it jumps).

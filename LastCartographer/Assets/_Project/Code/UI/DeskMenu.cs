@@ -142,6 +142,7 @@ namespace OWSBG.UI
                 return bought;
             }
             if (Row != FateRow || !CanSeal || Proposed == PlaceFate.Unwritten) return false;
+            if (Proposed == PlaceFate.Held && !BoundsWalks.IsWalked(GameState.World, PlaceId)) return false;   // the people hold it, not the seal (DES-13)
             bool ok = Places.Decide(GameState.World, PlaceId, Proposed);
             if (ok) GameState.Save();
             Refresh();
@@ -284,7 +285,9 @@ namespace OWSBG.UI
             switch (Proposed)
             {
                 case PlaceFate.Anchored: return "Survey, bind, seal. Nothing fades. Nothing changes. Wardens.";
-                case PlaceFate.Held: return "Leave it to the people who live here. It holds as long as they do.";
+                case PlaceFate.Held: return BoundsWalks.IsWalked(GameState.World, PlaceId)
+                    ? "Walked. The people hold it, for as long as they do."
+                    : "Walk the bounds first. The people hold a place; a seal only freezes it.";
                 case PlaceFate.Released: return "Let it go. It will be an island in the Blank, and remember how you left it.";
                 default: return "Choose what this place becomes. It is final.";
             }

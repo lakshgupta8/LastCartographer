@@ -91,7 +91,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CMB-09 `[~]` | Enemy roster: 12 for M1, 40 by M3 (greybox: Marsh Crab, Reed Skimmer, Smudge, Warden) | M1–M3 | CMB-7 | CMB-08 |
 | CMB-10 `[~]` | Boss framework: phases, arena states, intro through the Timeline pipeline on first entry, retry loop under 8 s; outro cutscene pending | M1 | CMB-8 | CMB-08 |
 | CMB-11 `[~]` | The Lamp-Keeper (6.1): greybox kit (beam, dive, double beam), three phases, rewards | M1 | SB-6.1 | CMB-10 |
-| CMB-12 `[ ]` | Halvard recurring (6.3 × 3 kits) | M2 | SB-6.3 | CMB-10 |
+| CMB-12 `[~]` | Halvard recurring (6.3 × 3 kits); the first kit built in the Salt Chapel (thrust, lunge, the survey's marks and the count, phase 3's floor; parry staggers him; he withdraws at zero); the second and third kits open | M2 | SB-6.3 | CMB-10 |
 | CMB-13 `[ ]` | The Collapse, Brann, the Gatekeeper, the Choir | M2–M3 | SB-6.4–6.7 | CMB-10 |
 | CMB-14 `[ ]` | Oriel, Hale, the Fallen Star | M3 | SB-6.8–6.10 | CMB-10 |
 | CMB-15 `[ ]` | Voss (arena-anchoring phase) | M3 | SB-6.11 | CMB-10 |

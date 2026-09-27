@@ -238,6 +238,7 @@ namespace OWSBG.Core
             _placeZones["Saltmarrow_Chain_2"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Chain_3"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Lighthouse"] = "Saltmarrow.LanternChain";
+            _placeZones["Saltmarrow_Chapel"] = "Saltmarrow.SaltChapel";
         }
     }
 }

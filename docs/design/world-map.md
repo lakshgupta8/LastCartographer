@@ -111,6 +111,7 @@ third: Shore, Quay, Reedmother's Roots, Merrow's End, the Lantern Chain to the f
 | `Saltmarrow_A` | Saltmarrow.Quay |
 | `Saltmarrow_B` | Saltmarrow.MerrowsEnd |
 | `Saltmarrow_Lighthouse` | Saltmarrow.LanternChain |
+| `Saltmarrow_Chapel` | Saltmarrow.SaltChapel |
 
 `WorldGraph.Reachable(abilities, flags, allowSoft)` is the same question the ending matrix (DES-12) and the
 full-playthrough matrix (PRO-05) will ask; both should be built on it.

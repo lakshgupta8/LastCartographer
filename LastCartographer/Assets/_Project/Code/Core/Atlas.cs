@@ -200,6 +200,7 @@ namespace OWSBG.Core
             _places.Add(new AtlasPlace { Id = "Saltmarrow_Chain_2", Name = "The Second Lighthouse", Region = "The Saltmarrow" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_Chain_3", Name = "The Third Lighthouse, faded", Region = "The Saltmarrow" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_Lighthouse", Name = "The Fourth Lighthouse", Region = "The Saltmarrow" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Chapel", Name = "The Salt Chapel", Region = "The Saltmarrow" });
 
             _vantages.Add(new AtlasVantage { Id = "Greyfold_Edge/HalfCathedral", Name = "the half-cathedral" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Shore/Tideline", Name = "the tideline" });
@@ -210,6 +211,7 @@ namespace OWSBG.Core
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Chain_2/SecondLamp", Name = "the second lamp" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_B/Tetherpost", Name = "the tether-post" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Lighthouse/Lamp", Name = "the lamp" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Chapel/Altar", Name = "the altar" });
 
             _waypoints.Add(new Waypoint { Id = "desk.Saltmarrow_A", Kind = WaypointKind.Desk, Place = "Saltmarrow_A", Room = "Greybox_Saltmarrow_A", Spawn = "Desk", Name = "the quay's desk" });
             _waypoints.Add(new Waypoint { Id = "desk.Saltmarrow_Lighthouse", Kind = WaypointKind.Desk, Place = "Saltmarrow_Lighthouse", Room = "Greybox_Saltmarrow_Lighthouse", Spawn = "Desk", Name = "the lighthouse desk" });

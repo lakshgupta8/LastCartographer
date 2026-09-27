@@ -38,6 +38,7 @@ namespace OWSBG.Setup
         public const string RoomBScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_B.unity";
         public const string RoomCScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_Lighthouse.unity";
         public const string RoomEdgeScenePath = Root + "/Scenes/Greybox/Greybox_Greyfold_Edge.unity";
+        public const string RoomChapelScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_Chapel.unity";
         const string RendererAssetPath = Root + "/Settings/Rendering/URP_Renderer.asset";
         const string CutsceneDir = Root + "/Data/Cutscenes";
         const string InputAssetPath = Root + "/Settings/Input/WrenInput.inputactions";
@@ -279,6 +280,7 @@ namespace OWSBG.Setup
             BuildRoomA();
             BuildRoomB();
             BuildRoomC();
+            BuildRoomChapel();
             BuildRoomEdge();
             foreach (var recipe in SaltmarrowRecipes()) BuildRecipe(recipe);
             SetupRenderFeatures();
@@ -626,7 +628,6 @@ namespace OWSBG.Setup
             var platMat = MakeLitMaterial("M_Greybox_Platform", new Color(0.52f, 0.46f, 0.36f));
             var doorMat = MakeLitMaterial("M_Greybox_Door", new Color(0.30f, 0.26f, 0.24f));
             MakeGround(room, "Floor", new Vector2(1f, -0.5f), new Vector2(34f, 1f), floorMat);
-            MakeGround(room, "Wall_E", new Vector2(17.5f, 5f), new Vector2(1f, 14f), platMat);
             MakeGround(room, "Lamp_Housing", new Vector2(3f, 10.2f), new Vector2(3f, 0.8f), platMat);
             MakeGround(room, "Ledge_L", new Vector2(-4f, 2.4f), new Vector2(2.5f, 0.5f), platMat);
             MakeGround(room, "Ledge_R", new Vector2(10f, 2.4f), new Vector2(2.5f, 0.5f), platMat);
@@ -648,6 +649,8 @@ namespace OWSBG.Setup
             MakeSpawn(room, "Start", new Vector2(-12.5f, 0f));
             MakeSpawn(room, "West", new Vector2(-14.5f, 0f));
             MakeTransition(room, "To_Chain_3", new Vector2(-15.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Chain_3"), "East");
+            MakeSpawn(room, "East", new Vector2(15.5f, 0f));
+            MakeTransition(room, "To_Chapel", new Vector2(17.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Chapel"), "West");
 
             // Doors: solid while the fight is on, inactive otherwise.
             var doorW = MakeDoor(room, "Door_W", new Vector2(-6.5f, 3f), new Vector2(1f, 6f), doorMat);
@@ -728,6 +731,105 @@ namespace OWSBG.Setup
 
             EditorSceneManager.SaveScene(scene, RoomCScenePath);
             Debug.Log("[OWSBG] saved " + RoomCScenePath);
+        }
+
+        // The Salt Chapel (DES-08, CMB-12): the tide gap (a jump and a Wingbeat; the coast's soft gate), a desk on
+        // the near bank, and Halvard's first fight behind two doors. The altar vantage stands past the arena.
+        static void BuildRoomChapel()
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            var room = MakeRoom("Saltmarrow_Chapel", new Rect(-20f, -3f, 40f, 17f));
+
+            var floorMat = MakeLitMaterial("M_Greybox_Floor", new Color(0.45f, 0.47f, 0.36f));
+            var platMat = MakeLitMaterial("M_Greybox_Platform", new Color(0.52f, 0.46f, 0.36f));
+            var doorMat = MakeLitMaterial("M_Greybox_Door", new Color(0.30f, 0.26f, 0.24f));
+            MakeGround(room, "Bank_W", new Vector2(-16f, -0.5f), new Vector2(8f, 1f), floorMat);      // -20..-12
+            MakeGround(room, "Floor", new Vector2(8.5f, -0.5f), new Vector2(23f, 1f), floorMat);       // -3..20
+            MakeGround(room, "Wall_E", new Vector2(19.5f, 5f), new Vector2(1f, 14f), platMat);
+            MakeGround(room, "Altar", new Vector2(17f, 0.8f), new Vector2(2.4f, 1.6f), platMat);
+            MakeTide(room, "Tide", new Vector2(-7.5f, -3f), new Vector2(9f, 3f), new Vector2(-12.6f, 0f), new Vector2(-2.4f, 0f));
+
+            MakePaperLayer(room, "Mid_Salt", 3f, 0f, new Color(0.62f, 0.62f, 0.58f), 6f);
+            MakePaperLayer(room, "Far_Chapel", 8f, 4f, new Color(0.70f, 0.70f, 0.66f), 14f);
+            MakePaperLayer(room, "Farther_Sea", 16f, 6f, new Color(0.80f, 0.80f, 0.76f), 16f);
+
+            MakeDesk(room, new Vector2(-15f, 0f));
+            // A skimmer over the gap: the pogo across is the soft break (world-map.md §2).
+            MakeEnemy<ReedSkimmer>(room, "Skimmer_Gap", new Vector2(-7.5f, 3f), new Vector2(0.9f, 0.5f));
+            MakeSpawn(room, "Start", new Vector2(-17f, 0f));
+            MakeSpawn(room, "West", new Vector2(-17.5f, 0f));
+            MakeTransition(room, "To_Lighthouse", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Lighthouse"), "East");
+
+            var doorW = MakeDoor(room, "Door_W", new Vector2(-1f, 3f), new Vector2(1f, 6f), doorMat);
+            var doorE = MakeDoor(room, "Door_E", new Vector2(15f, 3f), new Vector2(1f, 6f), doorMat);
+
+            var boss = MakeBoss<Halvard>(room, "Halvard", new Vector2(11f, 0.9f), new Vector2(0.8f, 1.8f));
+            var hv = (Halvard)boss;
+            hv.floorY = 0f;
+            hv.arenaMinX = 0.5f; hv.arenaMaxX = 13.5f;
+            var bossSo = new SerializedObject(boss);
+            bossSo.FindProperty("_maxHealth").intValue = 30;
+            bossSo.FindProperty("_contactDamage").intValue = 1;
+            bossSo.FindProperty("_hurtstunFrames").intValue = 2;
+            var sheet = Bosses.Find("halvard");
+            bossSo.FindProperty("_bossName").stringValue = sheet.Name;
+            bossSo.FindProperty("_tier").intValue = sheet.Tier;
+            var lines = bossSo.FindProperty("_phaseLines");
+            lines.arraySize = 3;
+            for (int i = 0; i < 3; i++) lines.GetArrayElementAtIndex(i).stringValue = sheet.Lines[i];
+            bossSo.ApplyModifiedPropertiesWithoutUndo();
+
+            var arenaGo = new GameObject("Arena_Halvard") { layer = LayerMask.NameToLayer("Trigger") };
+            arenaGo.transform.SetParent(room.transform, false);
+            arenaGo.transform.position = new Vector3(7f, 5f, 0f);
+            var zone = arenaGo.AddComponent<BoxCollider2D>();
+            zone.isTrigger = true;
+            zone.size = new Vector2(16f, 11f);
+            var arena = arenaGo.AddComponent<BossArena>();
+            var arSo = new SerializedObject(arena);
+            arSo.FindProperty("_bossId").stringValue = "halvard";
+            arSo.FindProperty("_boss").objectReferenceValue = boss;
+            var doors = arSo.FindProperty("_doors");
+            doors.arraySize = 2;
+            doors.GetArrayElementAtIndex(0).objectReferenceValue = doorW;
+            doors.GetArrayElementAtIndex(1).objectReferenceValue = doorE;
+            arSo.FindProperty("_rewardAbility").intValue = (int)Ability.None;
+            arSo.FindProperty("_vellumScraps").intValue = 1;
+            arSo.FindProperty("_arenaCamera").objectReferenceValue = MakeShot(room, "CM Arena", new Vector3(7f, 4.2f, -21f));
+            arSo.ApplyModifiedPropertiesWithoutUndo();
+
+            MakeVantage(room, "Altar", "Saltmarrow_Chapel/Altar", new Vector2(17f, 1.6f));
+            MakeFadeGroup(room);
+
+            EditorSceneManager.SaveScene(scene, RoomChapelScenePath);
+            Debug.Log("[OWSBG] saved " + RoomChapelScenePath);
+        }
+
+        // Water under a gap (Tide): a trigger that costs a mask and returns Wren to the nearer bank; a pale quad shows it.
+        static void MakeTide(Room room, string name, Vector2 center, Vector2 size, Vector2 westBank, Vector2 eastBank)
+        {
+            var go = new GameObject(name) { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(center.x, center.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = size;
+            var tide = go.AddComponent<Tide>();
+            var so = new SerializedObject(tide);
+            so.FindProperty("_westBank").vector2Value = westBank;
+            so.FindProperty("_eastBank").vector2Value = eastBank;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            q.name = "Water";
+            q.layer = LayerMask.NameToLayer("Paper");
+            Object.DestroyImmediate(q.GetComponent<Collider>());
+            q.transform.SetParent(room.transform, false);
+            q.transform.position = new Vector3(center.x, center.y + size.y * 0.5f + 0.1f, 0.4f);   // surface just under the bank
+            q.transform.localScale = new Vector3(size.x, 1.6f, 1f);
+            var r = q.GetComponent<MeshRenderer>();
+            r.sharedMaterial = MakeLitMaterial("M_Greybox_Water", new Color(0.62f, 0.70f, 0.72f));
+            r.shadowCastingMode = ShadowCastingMode.Off;
+            r.receiveShadows = false;
         }
 
         static GameObject MakeDoor(Room room, string name, Vector2 center, Vector2 size, Material mat)
@@ -1162,7 +1264,7 @@ namespace OWSBG.Setup
 
         static List<string> AllRoomScenePaths()
         {
-            var list = new List<string> { RoomAScenePath, RoomBScenePath, RoomCScenePath, RoomEdgeScenePath };
+            var list = new List<string> { RoomAScenePath, RoomBScenePath, RoomCScenePath, RoomChapelScenePath, RoomEdgeScenePath };
             foreach (var r in SaltmarrowRecipes()) list.Add(RoomPath(r.Id));
             return list;
         }

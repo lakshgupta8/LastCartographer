@@ -32,7 +32,8 @@ Shore ── Quay (A) ── Stilts ── Boardwalk ── Merrow's End (B) ─
 | **Chain_1** | Lantern Chain | The first lighthouse: a spiral of platforms to the lamp room. | FirstLamp | skimmer, crab | W → Ferry, E → Chain_2 |
 | **Chain_2** | Lantern Chain | The second: the same spiral mirrored; a Cantor watches the chain. | SecondLamp | Cantor, crab | W → Chain_1, E → Chain_3 |
 | **Chain_3** | Lantern Chain | The faded third: paler paper, smudges, the tether landing for Aury's island (`saltmarrow.tether`, later). | — | smudge ×2 | W → Chain_2, E → C |
-| **C** (hand-built) | Lantern Chain | The fourth: desk, the Lamp-Keeper's arena, her lamp (a travel point once lit). | Lamp (the beacon) | the Lamp-Keeper | W → Chain_3 |
+| **C** (hand-built) | Lantern Chain | The fourth: desk, the Lamp-Keeper's arena, her lamp (a travel point once lit). | Lamp (the beacon) | the Lamp-Keeper | W → Chain_3, E → Chapel |
+| **Chapel** (hand-built) | Salt Chapel | The tide gap (nine units: a jump and a Wingbeat, or a pogo off the skimmer), a desk on the near bank, Halvard's first fight behind two doors, the altar past it. | Altar | skimmer; Halvard | W → C |
 | **Roots_1** | Reedmother's Roots | The bole of the great reed: a gap in the floor drops back to the stilts; platforms lead east. | — | crab, skimmer | down → Stilts, E → Roots_2 |
 | **Roots_2** | Reedmother's Roots | The Bole vantage on the floor, then a climb to a top exit. | Bole | skimmer, crab | W → Roots_1, up → Roots_3 |
 | **Roots_3** | Reedmother's Roots | Among the roots: a smudge in the dark, a skimmer in the light; the gap drops back down. | — | smudge, skimmer | down → Roots_2, E → Roots_4 |
@@ -57,8 +58,8 @@ Vantages in the slice: 8 (Tideline, Reedmother, Tetherpost, Bole, Crown, FirstLa
 | Zone | Rooms | Notes |
 |---|---|---|
 | The Pale Iris Fields | 3 | East of Reedmother's Roots; iris seeds (DES-05); the iris gap to the Verdance (Wingbeat, soft). |
-| Lighthouses 5–7 | 3 | Beyond the fourth: the Wingbeat gap at the fifth (soft), the Salt Chapel road. |
-| The Salt Chapel | 3 | Halvard's first hunt; a chapel of salt-eaten paper. |
+| Lighthouses 5–7 | 3 | Beyond the fourth: the Salt Chapel road. |
+| The Salt Chapel | 2 more | The chapel's first room is built (the gap, the fight); a chapel of salt-eaten paper behind it. |
 | The Bone Bridge | 3 | The whale; the second step of the Bone Bridge commission; the climb to Emberdown. |
 
 ## 4. Open

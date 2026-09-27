@@ -24,7 +24,7 @@ namespace OWSBG.Tests
         {
             "Greybox_Greyfold_Edge", "Greybox_Saltmarrow_Shore", "Greybox_Saltmarrow_A", "Greybox_Saltmarrow_Stilts", "Greybox_Saltmarrow_Boardwalk",
             "Greybox_Saltmarrow_B", "Greybox_Saltmarrow_Tetherline", "Greybox_Saltmarrow_Ferry", "Greybox_Saltmarrow_Chain_1", "Greybox_Saltmarrow_Chain_2",
-            "Greybox_Saltmarrow_Chain_3", "Greybox_Saltmarrow_Lighthouse", "Greybox_Saltmarrow_Roots_1", "Greybox_Saltmarrow_Roots_2", "Greybox_Saltmarrow_Roots_3",
+            "Greybox_Saltmarrow_Chain_3", "Greybox_Saltmarrow_Lighthouse", "Greybox_Saltmarrow_Chapel", "Greybox_Saltmarrow_Roots_1", "Greybox_Saltmarrow_Roots_2", "Greybox_Saltmarrow_Roots_3",
             "Greybox_Saltmarrow_Roots_4",
         };
 
@@ -115,7 +115,7 @@ namespace OWSBG.Tests
             CollectionAssert.AreEquivalent(Rooms.Where(r => r != "Greybox_Greyfold_Edge"), seen, "every coast room is reachable on foot from the shore");
 
             int vantages = infos.Values.Sum(i => i.Vantages.Count);
-            Assert.AreEqual(8, vantages, "seven coast vantages to stand at, plus the Edge's (the fourth lamp is the boss's beacon)");
+            Assert.AreEqual(9, vantages, "eight coast vantages to stand at, plus the Edge's (the fourth lamp is the boss's beacon)");
             var slice = Atlas.AllVantages.Where(v => v.Id.StartsWith("Saltmarrow")).Select(v => v.Id).ToList();
             var inScenes = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Saltmarrow")).ToList();
             inScenes.Add("Saltmarrow_Lighthouse/Lamp");

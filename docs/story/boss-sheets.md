@@ -67,8 +67,8 @@ His image is paces and counts; his lines count.
 meeting and says so.
 
 ### First hunt — the Salt Chapel (I)
-Staged as the measuring in the fourth lighthouse (no fight yet; `Lighthouse_Halvard_Hunt`); the fight is the
-chapel's. **Arena.** The chapel's salt floor: his marks stay for the whole fight and erupt when he calls the
+The measuring is staged in the fourth lighthouse (`Lighthouse_Halvard_Hunt`); the fight is the chapel's, one room
+east past the tide gap, and it is built (`Halvard`, CMB-12). **Arena.** The chapel's salt floor: his marks stay for the whole fight and erupt when he calls the
 count. Phase 1: reach and lunge. Phase 2: he surveys three squares; stand elsewhere. Phase 3: the whole floor
 is marked but one pace.
 1. "Three paces. I measured them."
@@ -350,9 +350,8 @@ roll-call and the beat is the only safe rhythm: be on the named ground on the be
 | 6.15 | The Complete Survey | Halden.Observatory | IV | | the Sky | `boss.complete_survey.defeated` |
 
 ## Open
-- The Salt Chapel fight (6.3 first) versus the lighthouse measuring that is staged: the bible has the Guild find
-  her "first" at step 3; v1 keeps the measuring in the lighthouse (no fight) and puts the fight in the chapel.
-  If the chapel is cut from the slice, the first fight moves to the lighthouse's outer stair.
+- The Salt Chapel fight (6.3 first) follows the lighthouse measuring by one room; the bible has the Guild find
+  her "first" at step 3, and v1 reads the measuring as that finding and the chapel as the fight.
 - 6.10's lines are Idrenne's and 6.12's are inscriptions; the twelve-word rule is applied to them all the same.
 - Oriel's stand-down condition (no mask lost) needs a test in play; it may be too hard at Tier III.
 - Kits are sketches. CMB-12 to CMB-16 own the frame data; these sheets own the reason and the words.

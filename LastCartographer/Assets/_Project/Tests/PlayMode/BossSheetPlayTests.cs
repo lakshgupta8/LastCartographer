@@ -31,14 +31,20 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
-        public IEnumerator TheLampKeeperReadsFromHerSheet()
+        public IEnumerator TheLampKeeperReadsFromHerSheet() => RoomReadsItsSheet("Greybox_Saltmarrow_Lighthouse", "lamp_keeper");
+
+        [UnityTest]
+        public IEnumerator HalvardReadsFromHisSheet() => RoomReadsItsSheet("Greybox_Saltmarrow_Chapel", "halvard");
+
+        IEnumerator RoomReadsItsSheet(string room, string bossId)
         {
-            var handle = Addressables.LoadSceneAsync("Greybox_Saltmarrow_Lighthouse", LoadSceneMode.Additive);
+            var handle = Addressables.LoadSceneAsync(room, LoadSceneMode.Additive);
             yield return handle;
             Assert.AreEqual(AsyncOperationStatus.Succeeded, handle.Status);
             var arena = Object.FindFirstObjectByType<BossArena>(FindObjectsInactive.Include);
-            Assert.IsNotNull(arena, "the lighthouse has its arena");
-            var sheet = Bosses.Find(arena!.BossId);
+            Assert.IsNotNull(arena, room + " has its arena");
+            Assert.AreEqual(bossId, arena!.BossId);
+            var sheet = Bosses.Find(arena.BossId);
             Assert.IsNotNull(sheet, "the arena's boss id has a sheet: " + arena.BossId);
             Assert.AreEqual(sheet!.FlagKey, arena.FlagKey);
             var boss = arena.Boss;

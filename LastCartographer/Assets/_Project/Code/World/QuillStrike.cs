@@ -46,6 +46,7 @@ namespace OWSBG.World
 
         void FixedUpdate()
         {
+            if (_ctrl.Frozen) { _phase = Phase.Idle; return; }
             if (_ctrl.IsDashing) { _phase = Phase.Idle; return; }   // dash cancels recovery
 
             if (_phase == Phase.Idle)

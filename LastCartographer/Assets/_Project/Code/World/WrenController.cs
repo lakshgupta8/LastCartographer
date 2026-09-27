@@ -47,6 +47,8 @@ namespace OWSBG.World
 
         public IWrenInput Input { get; set; }
         public AbilitySet Abilities { get; set; }
+        /// <summary>While true (dialogue, cutscenes) input is ignored and Wren stops; gravity still applies.</summary>
+        public bool Frozen { get; set; }
 
         public Vector2 Velocity => _vel;
         public bool IsGrounded => _grounded;
@@ -118,8 +120,13 @@ namespace OWSBG.World
         void FixedUpdate()
         {
             float dt = Time.fixedDeltaTime;
-            Vector2 move = Input != null ? Input.Move : Vector2.zero;
+            Vector2 move = Input != null && !Frozen ? Input.Move : Vector2.zero;
             bool wasGrounded = _grounded;
+            if (Frozen && Input != null)
+            {
+                // Drain buffered presses so nothing fires the moment dialogue ends.
+                Input.ConsumeJump(); Input.ConsumeDash(); Input.ConsumeAttack();
+            }
 
             _grounded = Probe(Vector2.down);
             _wallDir = !_grounded ? (Probe(Vector2.right) ? 1 : Probe(Vector2.left) ? -1 : 0) : 0;

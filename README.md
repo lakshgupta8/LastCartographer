@@ -45,6 +45,13 @@ and pressing Play inside any room scene bootstraps the persistent scene for you.
 
 Wingbeat and Talonhold are pre-unlocked in the greybox for feel-testing (`AbilitySet` on the Wren object).
 
+Room A also has the first world interactions. Stand in front of something and press **up** (W or stick up) to use it:
+- the dark bird on the left is a stand-in Sable: a Yarn conversation with options (1-3 or arrows, J to confirm);
+- the small table is a drafting desk: restores masks, sets the respawn point, saves to `saves/slot0.json`;
+- the blue post on the right is a vantage point: hold **Q** on it to survey it (Sable notices afterwards).
+
+Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartographer.yarnproject`. Custom commands: `<<flag key value>>`, `<<tutorial name>>`, `<<bind_prompt id>>`; functions: `flag("key")`, `has_flag("key")`, `surveyed("id")`.
+
 ## Verifying headless
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml

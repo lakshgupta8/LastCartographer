@@ -129,11 +129,20 @@ namespace OWSBG.Tests
             Release();
             yield return Frames(6);                // stop before swinging
             int hitsBefore = dummy.Hits;
+            var strike = wren.GetComponent<QuillStrike>();
+            Assert.IsNotNull(strike, "Wren should have a QuillStrike");
+            bool swung = false; Vector2 swingDir = Vector2.zero;
+            strike.Swung += d => { swung = true; swingDir = d; };
             Hold(Key.J);
             yield return Frames(2);
             Release();
             yield return Frames(15);
-            Assert.AreEqual(hitsBefore + 1, dummy.Hits, "pressing J should land one quill strike on the dummy");
+            strike.GetHitbox(out var hbCenter, out var hbSize);
+            var diag = $"swung={swung} dir={swingDir} wren={wren.Position} facing={wren.Facing} frozen={wren.Frozen} " +
+                       $"dummy={(Vector2)dummy.transform.position} layer={LayerMask.LayerToName(dummy.gameObject.layer)} " +
+                       $"hitbox={hbCenter}/{hbSize} mask={strike.hitMask.value} grounded={wren.IsGrounded}";
+            Assert.IsTrue(swung, "J should start a swing. " + diag);
+            Assert.AreEqual(hitsBefore + 1, dummy.Hits, "pressing J should land one quill strike on the dummy. " + diag);
             Assert.Greater(wren.GetComponent<Inkwell>().Pips, 0, "a landed strike should fill ink");
 
             // Walk into the east transition.

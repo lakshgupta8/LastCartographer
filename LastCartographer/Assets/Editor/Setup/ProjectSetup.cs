@@ -7,8 +7,10 @@
 //   3) -executeMethod OWSBG.Setup.ProjectSetup.CaptureScreenshot   (run WITHOUT -nographics)
 using System.IO;
 using OWSBG.Core;
+using OWSBG.Narrative;
 using OWSBG.World;
 using Unity.Cinemachine;
+using Yarn.Unity;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -26,6 +28,7 @@ namespace OWSBG.Setup
         public const string RoomAScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_A.unity";
         public const string RoomBScenePath = Root + "/Scenes/Greybox/Greybox_Saltmarrow_B.unity";
         const string InputAssetPath = Root + "/Settings/Input/WrenInput.inputactions";
+        const string YarnProjectPath = Root + "/Dialogue/LastCartographer.yarnproject";
         const string PlaceholderTexPath = Root + "/Art/Characters/Placeholder_Wren.png";
 
         static readonly string[] Folders =
@@ -58,9 +61,25 @@ namespace OWSBG.Setup
             SetupUrp();
             SetupProjectSettings();
             WritePlaceholderTexture();
+            EnsureYarnProject();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             Debug.Log("[OWSBG] Configure: done");
+        }
+
+        // One .yarnproject covering every .yarn under Dialogue/. The importer compiles it.
+        static void EnsureYarnProject()
+        {
+            if (File.Exists(YarnProjectPath)) return;
+            var project = new Yarn.Compiler.Project
+            {
+                BaseLanguage = "en",
+                SourceFilePatterns = new[] { "**/*.yarn" },
+                ExcludeFilePatterns = new[] { "**/*~/*" },
+            };
+            project.SaveToFile(YarnProjectPath);
+            AssetDatabase.ImportAsset(YarnProjectPath, ImportAssetOptions.ForceSynchronousImport);
+            Debug.Log("[OWSBG] wrote " + YarnProjectPath);
         }
 
         static void CreateFolders()
@@ -128,7 +147,9 @@ namespace OWSBG.Setup
                 if (el.stringValue != name) el.stringValue = name;
             }
             so.ApplyModifiedPropertiesWithoutUndo();
-            Physics2D.queriesHitTriggers = false;
+            // Keep the default: queries can hit triggers. Movement casts exclude triggers by layer
+            // mask; interaction and strike overlaps rely on finding trigger colliders.
+            Physics2D.queriesHitTriggers = true;
             Debug.Log("[OWSBG] layers set: Ground, Player, Enemy, Hittable, Paper, Trigger");
         }
 
@@ -318,6 +339,20 @@ namespace OWSBG.Setup
             vol.isGlobal = true;
             vol.sharedProfile = GetOrCreateVolumeProfile();
 
+            // Dialogue service with the placeholder on-screen presenter.
+            var dlgGo = new GameObject("DialogueService");
+            dlgGo.AddComponent<WorldStateVariableStorage>();
+            var presenter = dlgGo.AddComponent<ImguiDialoguePresenter>();
+            var service = dlgGo.AddComponent<DialogueService>();
+            var yarnProject = AssetDatabase.LoadAssetAtPath<YarnProject>(YarnProjectPath);
+            if (yarnProject == null) Debug.LogWarning("[OWSBG] Yarn project asset not found at " + YarnProjectPath);
+            var dsSo = new SerializedObject(service);
+            dsSo.FindProperty("_project").objectReferenceValue = yarnProject;
+            var pres = dsSo.FindProperty("_presenters");
+            pres.arraySize = 1;
+            pres.GetArrayElementAtIndex(0).objectReferenceValue = presenter;
+            dsSo.ApplyModifiedPropertiesWithoutUndo();
+
             // Room manager.
             var rmGo = new GameObject("RoomManager");
             var rm = rmGo.AddComponent<RoomManager>();
@@ -361,6 +396,7 @@ namespace OWSBG.Setup
             go.AddComponent<WrenVitals>();
             var strike = go.AddComponent<QuillStrike>();
             strike.hitMask = LayerMask.GetMask("Hittable", "Enemy");
+            go.AddComponent<Interactor>();
             var strikeVisual = go.AddComponent<StrikeVisual>();
             var svSo = new SerializedObject(strikeVisual);
             svSo.FindProperty("_inkMaterial").objectReferenceValue = MakeLitMaterial("M_Ink_Black", new Color(0.06f, 0.06f, 0.08f));
@@ -406,6 +442,9 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Fore_Reeds", -4f, -2.6f, new Color(0.30f, 0.33f, 0.24f), 1.6f);
 
             MakeDummy(room, new Vector2(4f, 0.6f));
+            MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Greybox_Sable", new Color(0.16f, 0.18f, 0.22f));
+            MakeVantage(room, "Reedmother", "Saltmarrow_A/Reedmother", new Vector2(14f, 0f));
+            MakeDesk(room, new Vector2(-4.5f, 0f));
 
             MakeSpawn(room, "Start", new Vector2(-2f, 0f));
             MakeSpawn(room, "West", new Vector2(-17f, 0f));
@@ -509,6 +548,86 @@ namespace OWSBG.Setup
             d.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Dummy", new Color(0.75f, 0.35f, 0.30f));
             d.AddComponent<BoxCollider2D>().isTrigger = true;
             d.AddComponent<TrainingDummy>();
+        }
+
+        // A stand-in bird: an ink-tinted quad with a trigger, talkable with up.
+        static void MakeNpc(Room room, string name, Vector2 pos, string startNode, Color tint)
+        {
+            var go = new GameObject(name) { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(1.6f, 1.6f);
+            col.offset = new Vector2(0f, 0.8f);
+            var talker = go.AddComponent<NpcTalker>();
+            var so = new SerializedObject(talker);
+            so.FindProperty("_startNode").stringValue = startNode;
+            so.FindProperty("_prompt").stringValue = "Talk";
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
+            var mat = MakeInkMaterial("M_Npc_" + name, tex);
+            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", tint);
+            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quad.name = "Sprite";
+            Object.DestroyImmediate(quad.GetComponent<Collider>());
+            quad.transform.SetParent(go.transform, false);
+            quad.transform.localScale = new Vector3(0.9f, 1.4f, 1f);
+            quad.transform.localPosition = new Vector3(0f, 0.7f, 0f);
+            var r = quad.GetComponent<MeshRenderer>();
+            r.sharedMaterial = mat;
+            r.shadowCastingMode = ShadowCastingMode.TwoSided;
+        }
+
+        // A survey spot: a trigger area plus a thin marker post.
+        static void MakeVantage(Room room, string name, string vantageId, Vector2 pos)
+        {
+            var go = new GameObject("Vantage_" + name) { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(2.4f, 2f);
+            col.offset = new Vector2(0f, 1f);
+            var vp = go.AddComponent<VantagePoint>();
+            var so = new SerializedObject(vp);
+            so.FindProperty("_vantageId").stringValue = vantageId;
+            so.FindProperty("_displayName").stringValue = name;
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            post.name = "Marker";
+            Object.DestroyImmediate(post.GetComponent<Collider>());
+            post.transform.SetParent(go.transform, false);
+            post.transform.localPosition = new Vector3(0f, 0.9f, 0.6f);
+            post.transform.localScale = new Vector3(0.15f, 1.8f, 0.15f);
+            post.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Marker", new Color(0.20f, 0.27f, 0.45f));
+        }
+
+        // The rest point: a low table and a trigger; also a spawn named "Desk".
+        static void MakeDesk(Room room, Vector2 pos)
+        {
+            var go = new GameObject("DraftingDesk") { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(1.8f, 1.6f);
+            col.offset = new Vector2(0f, 0.8f);
+            var desk = go.AddComponent<DraftingDesk>();
+            var so = new SerializedObject(desk);
+            so.FindProperty("_prompt").stringValue = "Rest";
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            var table = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            table.name = "Table";
+            Object.DestroyImmediate(table.GetComponent<Collider>());
+            table.transform.SetParent(go.transform, false);
+            table.transform.localPosition = new Vector3(0f, 0.45f, 0.4f);
+            table.transform.localScale = new Vector3(1.4f, 0.9f, 0.8f);
+            table.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Desk", new Color(0.42f, 0.30f, 0.20f));
+            MakeSpawn(room, "Desk", pos);
         }
 
         static void MakeSpawn(Room room, string name, Vector2 pos)

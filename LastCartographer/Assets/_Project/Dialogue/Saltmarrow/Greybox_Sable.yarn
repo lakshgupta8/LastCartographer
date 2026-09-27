@@ -1,0 +1,30 @@
+// Greybox stand-in for Sable at the Drowned Quay. Cryptic register (style guide 6).
+// Real Saltmarrow writing is NAR-04; this exists so the dialogue pipeline can be felt in-engine.
+
+title: Greybox_Sable
+---
+<<if has_flag("greybox.met_sable")>>
+    <<jump Greybox_Sable_Again>>
+<<endif>>
+Sable: Wings high, stranger. You've come a long way to be lost.
+Sable: Guild cowl. No licence on you. No atlas either.
+-> Where is this?
+    Sable: The Saltmarrow. The far side of everything.
+    Sable: The Blank spat you out here. It does that, sometimes.
+-> There was a kite. Isolde Marr.
+    Sable: Nobody came out but you. Nobody ever comes out. #plant:5.2
+-> ...
+    Sable: Quiet suits you. Cheaper, too.
+Sable: Quay's up the boardwalk. Everything there has a price. Including me.
+<<flag greybox.met_sable 1>>
+===
+
+title: Greybox_Sable_Again
+---
+Sable: Still here. Still lost.
+<<if surveyed("Saltmarrow_A/Reedmother")>>
+    Sable: You drew the Reedmother. Hm. Maybe you are Guild after all.
+<<else>>
+    Sable: There's a vantage by the old reed. Draw it, if you're what your cowl says.
+<<endif>>
+===

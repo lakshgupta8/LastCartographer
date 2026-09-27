@@ -40,6 +40,8 @@ namespace OWSBG.World
         {
             _ctrl = GetComponent<WrenController>();
             _ink = GetComponent<Inkwell>();
+            if (Application.isPlaying && GetComponent<StrikeVisual>() == null)
+                gameObject.AddComponent<StrikeVisual>();   // scenes saved before the visual existed
         }
 
         void FixedUpdate()

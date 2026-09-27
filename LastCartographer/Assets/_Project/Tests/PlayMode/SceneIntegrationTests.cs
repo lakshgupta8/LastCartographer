@@ -118,6 +118,24 @@ namespace OWSBG.Tests
             Release();
             yield return Frames(60);
 
+            // Strike the training dummy through the real input path (J).
+            var dummy = Object.FindFirstObjectByType<TrainingDummy>();
+            Assert.IsNotNull(dummy, "room A should contain the training dummy");
+            var dummyX = dummy.transform.position.x;
+            wren.Teleport(new Vector2(dummyX - 1.6f, 0f));
+            yield return Frames(5);
+            Hold(Key.D);                           // face right toward the dummy
+            yield return Frames(2);
+            Release();
+            yield return Frames(6);                // stop before swinging
+            int hitsBefore = dummy.Hits;
+            Hold(Key.J);
+            yield return Frames(2);
+            Release();
+            yield return Frames(15);
+            Assert.AreEqual(hitsBefore + 1, dummy.Hits, "pressing J should land one quill strike on the dummy");
+            Assert.Greater(wren.GetComponent<Inkwell>().Pips, 0, "a landed strike should fill ink");
+
             // Walk into the east transition.
             wren.Teleport(new Vector2(17.5f, 0f));
             yield return Frames(5);

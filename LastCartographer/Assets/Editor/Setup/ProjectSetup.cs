@@ -361,6 +361,10 @@ namespace OWSBG.Setup
             go.AddComponent<WrenVitals>();
             var strike = go.AddComponent<QuillStrike>();
             strike.hitMask = LayerMask.GetMask("Hittable", "Enemy");
+            var strikeVisual = go.AddComponent<StrikeVisual>();
+            var svSo = new SerializedObject(strikeVisual);
+            svSo.FindProperty("_inkMaterial").objectReferenceValue = MakeLitMaterial("M_Ink_Black", new Color(0.06f, 0.06f, 0.08f));
+            svSo.ApplyModifiedPropertiesWithoutUndo();
 
             // Visual: an InkSprite quad, 1.2 units tall.
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);

@@ -37,6 +37,13 @@ jobs:
           path: LastCartographer/Library
           key: Library-${{ matrix.mode }}-${{ hashFiles('LastCartographer/Packages/packages-lock.json', 'LastCartographer/ProjectSettings/ProjectVersion.txt') }}
           restore-keys: Library-${{ matrix.mode }}-
+      # The editor image is over ten gigabytes and the hosted runner has about fourteen free: the first run died
+      # pulling it ("no space left on device"). The preinstalled toolchains the game doesn't use go first.
+      - name: Free the runner's disk for the editor image
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost /usr/local/.ghcup
+          sudo docker image prune --all --force
+          df -h /
       - uses: game-ci/unity-test-runner@v4
         id: tests
         with:
@@ -68,6 +75,13 @@ jobs:
           path: LastCartographer/Library
           key: Library-Windows-${{ hashFiles('LastCartographer/Packages/packages-lock.json', 'LastCartographer/ProjectSettings/ProjectVersion.txt') }}
           restore-keys: Library-Windows-
+      # The editor image is over ten gigabytes and the hosted runner has about fourteen free: the first run died
+      # pulling it ("no space left on device"). The preinstalled toolchains the game doesn't use go first.
+      - name: Free the runner's disk for the editor image
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost /usr/local/.ghcup
+          sudo docker image prune --all --force
+          df -h /
       - uses: game-ci/unity-builder@v4
         with:
           projectPath: ${{ env.PROJECT_PATH }}

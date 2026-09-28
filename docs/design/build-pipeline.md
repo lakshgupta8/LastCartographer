@@ -111,6 +111,15 @@ for the password and Steam Guard code itself and caches them after the first tim
 
 `SmokeTestTests` (PlayMode, 1): the smoke test passes in the editor.
 
+## The first run
+
+The first push (2026-09-29) ran both test jobs and both died before a test ran: `docker: failed to register layer:
+no space left on device`, pulling the editor image. GameCI's image is over ten gigabytes and `ubuntu-latest` has
+about fourteen free with its preinstalled toolchains. Both Unity jobs now start by removing the ones the game
+doesn't use (.NET, Android, Haskell, CodeQL, Boost) and pruning Docker's images, then print `df -h` so the next
+failure of this kind shows its number. The "no files found at test-results" warnings were the same failure: nothing
+ran, so nothing was written.
+
 ## Open
 
 - **CI hasn't run.** The workflow was checked by those tests and a YAML parse, not on GitHub; the first push with

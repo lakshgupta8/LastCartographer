@@ -34,6 +34,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/gauntlets.md` | The six traversal gauntlets, one per region but the Blank, each around its ability; falls back to solid ground; the Road That Stops' lantern-radius cobbles; Inkthread (the Thread button) and the Windmemory glide |
 | `docs/design/moving-camp.md` | Windreach's hub on the move (`Camp`): three fires at three sites, the camp walking on at first light, the bedroll that walks her with it for a day, ashes where it isn't; and travel that takes an hour a way on the macro map (`Travel`) |
 | `docs/design/localisation.md` | The player's language: `Loc` for UI and captions, Yarn line ids and strings CSVs for dialogue, the pseudo-locale, `LocalizationSetup.Refresh`, and what is not wired yet |
+| `docs/design/accessibility.md` | The options page (Esc / Start): remapping with swaps (`Controls`), hold or toggle for Bind, Survey and Glide, hitstop and shake sliders (`Shake`), high-contrast ink in the UI and the paper pass, captions that wait, and no dialogue that moves on by itself (`Options`) |
 | `docs/design/clarity.md` | Clarity as a meter and a gate (`ClarityMeter`): how long she lasts untethered, growing with the story; empty, the white gives her back; the lantern-radius it draws, white paper beyond it in the Greyfold and the Blank |
 | `docs/design/late-charters.md` | The Ferryman's, Unwriter's and Remnant Charters: combos, the reel, unwriting thrown things (`EnemyProjectile`), the dearer Bind, drained colour; handed over by Sable, the Choir and Ilse (`<<charter>>`) |
 | `docs/design/endings-runner.md` | The epilogue walk at runtime (`EndingsRunner`, `<<epilogue>>`): Voss's coda, Halden, the ending's region, the Hollow, the title; stand-in rooms for unbuilt stops |
@@ -89,6 +90,11 @@ and pressing Play inside any room scene bootstraps the persistent scene for you.
 | Select next Instrument slot | Tab | left stick press |
 | Survey (hold at a vantage) | Q | North |
 | Atlas (map, journal, travel) | M | Select |
+| Options (language, remapping, comfort) | Esc | Start |
+
+Every action but Move can be remapped on the options page's Controls page; a key already in use swaps places. The
+page also holds the language, hitstop and shake sliders, how long captions stay, high-contrast ink, and whether Bind,
+Survey and Glide are held or toggled (`docs/design/accessibility.md`).
 
 Forward strikes chain into the Charter's three-hit combo when pressed within 18 frames of the last swing.
 Every base Charter is owned from the start in the greybox; the desk menu swaps them. Wren starts with three Instruments (compass-dart, plumb weight, sighting lens) and buys the rest.

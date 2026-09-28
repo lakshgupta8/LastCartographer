@@ -47,7 +47,8 @@ namespace OWSBG.UI
 
         void OnFightEnded(BossArena arena)
         {
-            if (arena.State == BossArena.ArenaState.Won) { _line = Loc.T("boss.won", "…keep it lit."); _lineUntil = Time.unscaledTime + _lineSeconds; }
+            if (arena.State == BossArena.ArenaState.Won) { _line = Loc.T("boss.won", "…keep it lit."); _lineUntil = Time.unscaledTime + Options.CaptionSeconds(_lineSeconds); }
+            else _line = null;
             Unbind();
         }
 
@@ -61,12 +62,13 @@ namespace OWSBG.UI
         {
             if (string.IsNullOrEmpty(line)) return;
             _line = line;
-            _lineUntil = Time.unscaledTime + _lineSeconds;
+            _lineUntil = Time.unscaledTime + Options.CaptionSeconds(_lineSeconds);
         }
 
         void Update()
         {
             if (!_built && !Build()) return;
+            if (float.IsPositiveInfinity(_lineUntil) && PromptView.DismissPressed()) _lineUntil = 0f;
             bool showLine = _line != null && Time.unscaledTime < _lineUntil;
             InkTheme.Show(_caption, showLine);
             if (showLine) _caption.text = _line;

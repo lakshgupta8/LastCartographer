@@ -55,7 +55,7 @@ namespace OWSBG.UI
         public void Toast(string text)
         {
             _pendingToast = text;
-            _toastLeft = _toastSeconds;
+            _toastLeft = Options.CaptionSeconds(_toastSeconds);
             if (_built) { _toast.text = text; InkTheme.Show(_toast, true); }
         }
 
@@ -113,6 +113,7 @@ namespace OWSBG.UI
             }
             if (_toastLeft > 0f)
             {
+                if (float.IsPositiveInfinity(_toastLeft) && PromptView.DismissPressed()) _toastLeft = 0f;
                 _toastLeft -= Time.unscaledDeltaTime;
                 if (_toastLeft <= 0f && _built) InkTheme.Show(_toast, false);
             }

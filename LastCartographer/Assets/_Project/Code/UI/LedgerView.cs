@@ -201,10 +201,10 @@ namespace OWSBG.UI
             string stateText; Color stateColor; var style = FontStyle.Normal;
             switch (state)
             {
-                case CommissionState.Posted: stateText = "posted"; stateColor = InkTheme.Wash; break;
-                case CommissionState.Taken: stateText = "taken"; stateColor = InkTheme.Ochre; break;
+                case CommissionState.Posted: stateText = Loc.T("ledger.state.posted", "posted"); stateColor = InkTheme.Wash; break;
+                case CommissionState.Taken: stateText = Loc.T("ledger.state.taken", "taken"); stateColor = InkTheme.Ochre; break;
                 case CommissionState.Fulfilled: stateText = Loc.T("ledger.state.fulfilled", "fulfilled — turn in"); stateColor = InkTheme.Ochre; style = FontStyle.Bold; break;
-                case CommissionState.Closed: stateText = "closed"; stateColor = InkTheme.Dim; break;
+                case CommissionState.Closed: stateText = Loc.T("ledger.state.closed", "closed"); stateColor = InkTheme.Dim; break;
                 default: stateText = "failed"; stateColor = InkTheme.Dim; break;
             }
             var st = InkTheme.Text("state", stateText, 18, stateColor, style);

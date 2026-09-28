@@ -377,6 +377,7 @@ namespace OWSBG.Setup
             uiGo.AddComponent<OWSBG.UI.WalkView>();
             uiGo.AddComponent<OWSBG.UI.PromptView>();
             uiGo.AddComponent<OWSBG.UI.FadeView>();
+            uiGo.AddComponent<OWSBG.UI.OptionsView>();
 
             // Dialogue service drawing through the UI's dialogue view.
             var dlgGo = new GameObject("DialogueService");

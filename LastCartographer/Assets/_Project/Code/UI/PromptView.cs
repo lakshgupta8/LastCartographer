@@ -2,6 +2,7 @@ using OWSBG.Core;
 using OWSBG.Narrative;
 using OWSBG.World;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 namespace OWSBG.UI
@@ -9,7 +10,8 @@ namespace OWSBG.UI
     /// <summary>
     /// Tutorial prompts and world captions on a paper strip above the dialogue page: &lt;&lt;tutorial name&gt;&gt;
     /// from Yarn maps to a control hint here (the prologue's only tutorial text, GDD 10), and
-    /// <see cref="Captions"/> shows anything the world wants said ("Bound: ...").
+    /// <see cref="Captions"/> shows anything the world wants said ("Bound: ..."). They stay as long as the player's
+    /// <see cref="Options.Captions"/> says: once, twice or three times as long, or until the advance button dismisses them.
     /// </summary>
     public sealed class PromptView : MonoBehaviour
     {
@@ -29,11 +31,11 @@ namespace OWSBG.UI
 
         public static string TutorialText(string name) => name switch
         {
-            "survey" => Loc.T("tutorial.survey", "Hold Q at the marker. Let the pen find the line."),
-            "bind" => Loc.T("tutorial.bind", "Hold E to bind. It costs ink."),
+            "survey" => Loc.F("tutorial.survey", "{0} at the marker. Let the pen find the line.", Controls.Prompt(Hold.Survey)),
+            "bind" => Loc.F("tutorial.bind", "{0} to bind. It costs ink.", Controls.Prompt(Hold.Bind)),
             "seal" => Loc.T("tutorial.seal", "Sealed. A wax seal marks where you would come back to."),
-            "strike" => Loc.T("tutorial.strike", "J strikes. In the air, hold down and strike to bounce off what you hit."),
-            "dash" => Loc.T("tutorial.dash", "Shift dashes. Wingbeat is a memory of the sky."),
+            "strike" => Loc.F("tutorial.strike", "{0} strikes. In the air, hold down and strike to bounce off what you hit.", Controls.KeyName("Attack")),
+            "dash" => Loc.F("tutorial.dash", "{0} dashes. Wingbeat is a memory of the sky.", Controls.KeyName("Dash")),
             _ => name,
         };
 
@@ -42,7 +44,7 @@ namespace OWSBG.UI
         public void Show(string text, float seconds)
         {
             _pending = text;
-            _left = seconds;
+            _left = Options.CaptionSeconds(seconds);
             if (_built) { _label.text = text; InkTheme.Show(_label, true); }
         }
 
@@ -54,11 +56,21 @@ namespace OWSBG.UI
                 _bound.Tutorial += OnTutorial;
             }
             if (!_built && Build() && _pending != null && _left > 0f) { _label.text = _pending; InkTheme.Show(_label, true); }
+            if (float.IsPositiveInfinity(_left) && _built && DismissPressed()) _left = 0.0001f;
             if (_left > 0f)
             {
                 _left -= Time.unscaledDeltaTime;
                 if (_left <= 0f && _built) InkTheme.Show(_label, false);
             }
+        }
+
+        /// <summary>The advance button (J / Space / Enter, pad South / West): what dismisses a caption that waits.</summary>
+        public static bool DismissPressed()
+        {
+            var k = Keyboard.current;
+            if (k != null && (k.jKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame || k.enterKey.wasPressedThisFrame)) return true;
+            var g = Gamepad.current;
+            return g != null && (g.buttonSouth.wasPressedThisFrame || g.buttonWest.wasPressedThisFrame);
         }
 
         bool Build()

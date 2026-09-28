@@ -60,6 +60,28 @@ namespace OWSBG.Core
             }
         }
 
+        /// <summary>The locales the options page offers (DES-14): all of them, less the pseudo-locale outside development builds.</summary>
+        public static IReadOnlyList<string> Choosable
+        {
+            get
+            {
+                var list = new List<string>(Locales);
+                if (!Debug.isDebugBuild) list.Remove(Pseudo);
+                return list;
+            }
+        }
+
+        /// <summary>A language as its own speakers name it: shown in that language whatever the locale, as pickers do.</summary>
+        public static string NativeName(string locale) => locale switch
+        {
+            Base => "English",
+            Pseudo => "Pseudo (en-XA)",
+            "fr" => "Français", "de" => "Deutsch", "es" => "Español", "it" => "Italiano", "pt" => "Português",
+            "ja" => "日本語", "ko" => "한국어", "zh-Hans" => "简体中文", "zh-Hant" => "繁體中文", "ru" => "Русский",
+            "pl" => "Polski", "nl" => "Nederlands",
+            _ => locale,
+        };
+
         /// <summary>A locale shipped with a UI table (or registered by a test): it becomes selectable.</summary>
         public static void Register(string locale, IDictionary<string, string> table = null)
         {

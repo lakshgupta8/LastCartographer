@@ -335,9 +335,11 @@ namespace OWSBG.Tests
             Assert.AreEqual(hp - 1, st.Health);
 
             int masks = _vitals.Masks;
+            Shake.Stop();
             st.ForceAttack(FallenStar.Attack.Slam);
             yield return Until(() => st.Slams == 1 && st.Current == FallenStar.Move.Recover, 2f, "the slam");
             Assert.AreEqual(masks - 1, _vitals.Masks, "it came down on her");
+            Assert.AreEqual(FallenStar.SlamShake * Options.Shake, Shake.Amplitude, 1e-4f, "the one hard shake in the game (DES-14 scales it)");
             Assert.IsNotNull(st.Fist, "the fist stays down");
             Assert.IsFalse(st.Fist.TakeHit(Strike(Vector2.right)));
             Assert.IsTrue(st.Fist.TakeHit(Strike(Vector2.down)), "iron to pogo from");

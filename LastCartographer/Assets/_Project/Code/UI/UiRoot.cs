@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -6,7 +7,8 @@ namespace OWSBG.UI
     /// <summary>
     /// The one UI Toolkit document for the game (persistent scene). Owns the stacked layers the
     /// views draw into: HUD at the back, then boss bar, dialogue, desk, captions on top.
-    /// Builds a runtime PanelSettings if the document has none (tests, tooling).
+    /// Builds a runtime PanelSettings if the document has none (tests, tooling). Redraws everything in the other
+    /// palette when the player turns high-contrast ink on or off (DES-14), and makes sure the options page is here.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public sealed class UiRoot : MonoBehaviour
@@ -14,7 +16,8 @@ namespace OWSBG.UI
         public static UiRoot Instance { get; private set; }
 
         UIDocument _doc;
-        VisualElement _hud, _boss, _dialogue, _desk, _caption, _fade;
+        bool _contrast;
+        VisualElement _hud, _boss, _dialogue, _desk, _caption, _options, _fade;
 
         public VisualElement Root => _doc != null ? _doc.rootVisualElement : null;
         public VisualElement Hud => Layer(ref _hud, "layer-hud");
@@ -22,6 +25,7 @@ namespace OWSBG.UI
         public VisualElement Dialogue => Layer(ref _dialogue, "layer-dialogue");
         public VisualElement Desk => Layer(ref _desk, "layer-desk");
         public VisualElement Caption => Layer(ref _caption, "layer-caption");
+        public VisualElement OptionsLayer => Layer(ref _options, "layer-options");
         public VisualElement Fade => Layer(ref _fade, "layer-fade");
         public bool IsReady => Root != null;
 
@@ -42,6 +46,18 @@ namespace OWSBG.UI
                 }
                 _doc.panelSettings = ps;
             }
+            if (GetComponent<OptionsView>() == null) gameObject.AddComponent<OptionsView>();
+            _contrast = Options.HighContrast;
+        }
+
+        void OnEnable() { Options.Changed += OnOptions; }
+        void OnDisable() { Options.Changed -= OnOptions; }
+
+        void OnOptions()
+        {
+            if (_contrast == Options.HighContrast) return;
+            _contrast = Options.HighContrast;
+            InkTheme.Recolour(Root, _contrast);
         }
 
         void OnDestroy() { if (Instance == this) Instance = null; }
@@ -55,7 +71,7 @@ namespace OWSBG.UI
             if (field == null)
             {
                 // Keep the stacking order stable whichever view asks first.
-                string[] order = { "layer-hud", "layer-boss", "layer-dialogue", "layer-desk", "layer-caption", "layer-fade" };
+                string[] order = { "layer-hud", "layer-boss", "layer-dialogue", "layer-desk", "layer-caption", "layer-options", "layer-fade" };
                 foreach (var n in order) if (root.Q(n) == null) root.Add(InkTheme.Layer(n));
                 field = root.Q(name);
             }

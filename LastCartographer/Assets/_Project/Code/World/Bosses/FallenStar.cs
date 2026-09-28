@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -22,6 +23,8 @@ namespace OWSBG.World
         public float walkSpeed = 1.6f, walkSeconds = 1.2f;
         public int slamTelegraphFrames = 18, slamFrames = 6, fistFrames = 45;
         public float slamReach = 5f;
+        /// <summary>The one hard shake in the game (combat doc: only on boss slams), before the player's scale.</summary>
+        public const float SlamShake = 0.35f;
         public Vector2 fistSize = new Vector2(1.6f, 1f);
         public int wallTelegraphFrames = 20;
         public float wallHeight = 3.6f, burningWallHeight = 5.4f, wallWidth = 0.8f, wallOffset = 3f;
@@ -174,7 +177,7 @@ namespace OWSBG.World
                     if (!Telegraph(ref _telegraphStarted, TelegraphFrames(CurrentAttack))) break;
                     ClearMarks();
                     _frames = 0;
-                    if (CurrentAttack == Attack.Slam) { Slams++; Current = Move.Slam; }
+                    if (CurrentAttack == Attack.Slam) { Slams++; Current = Move.Slam; Shake.Request(SlamShake, 0.35f); }
                     else if (CurrentAttack == Attack.Walls) { RaiseWalls(); Recover(); }
                     else Recover();
                     break;

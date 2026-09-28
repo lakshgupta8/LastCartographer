@@ -76,6 +76,10 @@ namespace OWSBG.World
         public Vector2 ThreadTarget { get; private set; }
         /// <summary>Holding jump on the way down with Windmemory's wings.</summary>
         public bool IsGliding { get; private set; }
+        /// <summary>Glide toggled on (DES-14): she glides on the way down without holding jump, until she lands or presses again.</summary>
+        public bool GlideLatched => _glideLatch;
+        bool _glideLatch;
+        int _glideLatchAge;
         /// <summary>The pips the next thread will cost: the Charter's, else the base cost.</summary>
         public int ThreadCost
         {
@@ -210,6 +214,11 @@ namespace OWSBG.World
                 if (_vel.y < 0f) _vel.y = 0f;
             }
 
+            // A toggled glide lets go on landing, and one toggled a moment before landing was a jump pressed early.
+            bool lateJump = false;
+            if (_glideLatch && (_grounded || Frozen)) { lateJump = _grounded && _glideLatchAge <= 6; _glideLatch = false; }
+            else if (_glideLatch) _glideLatchAge++;
+
             if (_inputLock > 0) _inputLock--;
             _clinging = false;
 
@@ -248,7 +257,7 @@ namespace OWSBG.World
                 // Jump: ground, coyote, or wall. Only consume the buffer when we can act on it.
                 bool canGroundJump = _grounded || _coyoteLeft > 0;
                 bool canWallJump = !_grounded && _wallDir != 0 && hasTalon;
-                if ((canGroundJump || canWallJump) && Input != null && Input.ConsumeJump())
+                if ((canGroundJump || canWallJump) && Input != null && ((lateJump && canGroundJump) || Input.ConsumeJump()))
                 {
                     if (canGroundJump)
                     {
@@ -268,6 +277,15 @@ namespace OWSBG.World
                     Jumped?.Invoke();
                 }
 
+                // Toggled glide (DES-14): in the air, falling, where the press can't jump, it switches the glide.
+                bool hasWind = Abilities != null && Abilities.Has(Ability.Windmemory);
+                if (_clinging) _glideLatch = false;
+                else if (Options.IsToggle(Hold.Glide) && hasWind && !canGroundJump && !canWallJump && _vel.y <= 0f && Input != null && Input.ConsumeJump())
+                {
+                    _glideLatch = !_glideLatch;
+                    _glideLatchAge = 0;
+                }
+
                 // Variable height: releasing early clamps upward speed to the min-height launch speed.
                 if (!_jumpCutApplied && _vel.y > 0f && !(Input != null && Input.JumpHeld))
                 {
@@ -282,7 +300,7 @@ namespace OWSBG.World
                     if (_vel.y < 0f) g *= fallGravityMultiplier;
                     if (_apexLeft > 0 && Mathf.Abs(_vel.y) < apexThreshold) { g *= 0.5f; _apexLeft--; }
                     // Windmemory: holding jump on the way down, she glides.
-                    IsGliding = _vel.y <= 0f && Input != null && Input.JumpHeld && Abilities != null && Abilities.Has(Ability.Windmemory);
+                    IsGliding = _vel.y <= 0f && hasWind && (_glideLatch || (Input != null && Input.JumpHeld));
                     if (IsGliding) g *= glideGravityScale;
                     _vel.y -= g * dt;
                     if (_vel.y < -maxFallSpeed) _vel.y = -maxFallSpeed;

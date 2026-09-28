@@ -41,7 +41,7 @@ namespace OWSBG.UI
         void OnStarted(BoundsWalk w) { _linger = 0f; if (_built) { InkTheme.Show(_root, true); _name.text = "…"; _name.style.color = InkTheme.Ink; } }
         void OnCalled(BoundsWalk w, BoundsWalk.Bound b) { if (_built) _name.text = b.Name; }
         void OnLanded(BoundsWalk w, BoundsWalk.Bound b, bool hit) { _flash = 0.4f; if (_built) _name.style.color = hit ? InkTheme.Wash : InkTheme.Ochre; }
-        void OnCompleted(BoundsWalk w) { _linger = _lingerSeconds; if (_built) { _name.text = Loc.T("walk.held", "Held."); _name.style.color = InkTheme.Wash; _fill.style.width = new Length(100, LengthUnit.Percent); } }
+        void OnCompleted(BoundsWalk w) { _linger = Options.CaptionSeconds(_lingerSeconds); if (_built) { _name.text = Loc.T("walk.held", "Held."); _name.style.color = InkTheme.Wash; _fill.style.width = new Length(100, LengthUnit.Percent); } }
 
         void Update()
         {
@@ -49,6 +49,7 @@ namespace OWSBG.UI
             var walk = BoundsWalk.Current;
             if (walk == null || !walk.IsWalking)
             {
+                if (float.IsPositiveInfinity(_linger) && PromptView.DismissPressed()) _linger = 0.0001f;
                 if (_linger > 0f) { _linger -= Time.deltaTime; InkTheme.Show(_root, true); if (_linger <= 0f) InkTheme.Show(_root, false); }
                 else if (IsVisible) InkTheme.Show(_root, false);
                 return;

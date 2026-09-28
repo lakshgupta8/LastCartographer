@@ -83,7 +83,12 @@ namespace OWSBG.World
                     }
                 }
             }
-            else _bindHeld = 0f;
+            else
+            {
+                _bindHeld = 0f;
+                // A toggled Bind lets go once it can't go on (full, dry, airborne): the next press starts it again.
+                if (_ctrl != null && _ctrl.Input != null && _ctrl.Input.BindHeld) Controls.Release(Hold.Bind);
+            }
         }
 
         /// <summary>Take damage from a source at a world position (knockback points away from it).</summary>

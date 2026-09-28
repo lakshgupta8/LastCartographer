@@ -64,9 +64,10 @@ namespace OWSBG.World
                 if (_refillT >= _inkRefillSeconds) { _refillT = 0f; _ink.Add(1); }
             }
 
-            if (IsSurveyed) { Progress = 0f; return; }
-            bool holding = _wren.Input != null && _wren.Input.SurveyHeld && _wren.IsGrounded;
-            if (!holding) { Progress = 0f; return; }
+            bool latched = _wren.Input != null && _wren.Input.SurveyHeld;
+            if (IsSurveyed) { Progress = 0f; if (latched) Controls.Release(Hold.Survey); return; }
+            bool holding = latched && _wren.IsGrounded;
+            if (!holding) { Progress = 0f; if (latched) Controls.Release(Hold.Survey); return; }
             Progress = Mathf.Clamp01(Progress + dt / Mathf.Max(0.01f, _holdSeconds));
             if (Progress >= 1f)
             {
@@ -79,6 +80,7 @@ namespace OWSBG.World
                     Captions.Show(recovering ? Loc.F("caption.drawn_again", "Drawn again: {0}", Atlas.PlaceName(place)) : Loc.F("caption.drawn", "Drawn: {0}", Atlas.VantageName(_vantageId)), 2.5f);
                     Surveyed?.Invoke(this);
                 }
+                Controls.Release(Hold.Survey);
             }
         }
     }

@@ -8,16 +8,92 @@ namespace OWSBG.UI
     /// The paper-and-ink palette and element helpers for the atlas UI (art direction 5, ENV-11).
     /// Everything is built in code with explicit fonts so it works with or without a theme asset;
     /// the hand-drawn frames and the ink font replace these when the UI art lands.
+    /// Two palettes: the warm one, and high-contrast ink (DES-14) where every text colour reads at 7:1 or better on the
+    /// paper and the faint rules are drawn firmly. The colours follow <see cref="Options.HighContrast"/>, and
+    /// <see cref="Recolour"/> moves what is already drawn from one palette to the other.
     /// </summary>
     public static class InkTheme
     {
-        public static readonly Color Paper = new Color(0.96f, 0.93f, 0.85f, 0.97f);
-        public static readonly Color PaperDark = new Color(0.88f, 0.84f, 0.74f, 1f);
-        public static readonly Color Ink = new Color(0.08f, 0.08f, 0.11f, 1f);
-        public static readonly Color InkFaint = new Color(0.08f, 0.08f, 0.11f, 0.25f);
-        public static readonly Color Wash = new Color(0.20f, 0.27f, 0.45f, 1f);
-        public static readonly Color Dim = new Color(0.35f, 0.35f, 0.40f, 1f);
-        public static readonly Color Ochre = new Color(0.86f, 0.70f, 0.30f, 1f);
+        public enum Swatch { Paper, PaperDark, Ink, InkFaint, Wash, Dim, Ochre }
+
+        public static readonly Color[] Warm =
+        {
+            new Color(0.96f, 0.93f, 0.85f, 0.97f),  // Paper
+            new Color(0.88f, 0.84f, 0.74f, 1f),     // PaperDark
+            new Color(0.08f, 0.08f, 0.11f, 1f),     // Ink
+            new Color(0.08f, 0.08f, 0.11f, 0.25f),  // InkFaint
+            new Color(0.20f, 0.27f, 0.45f, 1f),     // Wash
+            new Color(0.35f, 0.35f, 0.40f, 1f),     // Dim
+            new Color(0.86f, 0.70f, 0.30f, 1f),     // Ochre
+        };
+
+        public static readonly Color[] HighContrast =
+        {
+            new Color(1f, 1f, 1f, 1f),              // Paper: opaque white, no world showing through
+            new Color(0.80f, 0.80f, 0.80f, 1f),     // PaperDark
+            new Color(0f, 0f, 0f, 1f),              // Ink
+            new Color(0f, 0f, 0f, 0.65f),           // InkFaint: rules you can see
+            new Color(0.02f, 0.16f, 0.58f, 1f),     // Wash
+            new Color(0.16f, 0.16f, 0.18f, 1f),     // Dim
+            new Color(0.52f, 0.29f, 0.00f, 1f),     // Ochre
+        };
+
+        public static Color[] Palette => Options.HighContrast ? HighContrast : Warm;
+        public static Color Of(Swatch s) => Palette[(int)s];
+
+        public static Color Paper => Of(Swatch.Paper);
+        public static Color PaperDark => Of(Swatch.PaperDark);
+        public static Color Ink => Of(Swatch.Ink);
+        public static Color InkFaint => Of(Swatch.InkFaint);
+        public static Color Wash => Of(Swatch.Wash);
+        public static Color Dim => Of(Swatch.Dim);
+        public static Color Ochre => Of(Swatch.Ochre);
+
+        /// <summary>
+        /// Move every inline colour under <paramref name="root"/> that is one of the palette's to the same swatch in the
+        /// other palette. Colours that aren't swatches (a region's tint, a boss's bar) are left as they are.
+        /// </summary>
+        public static void Recolour(VisualElement root, bool high)
+        {
+            if (root == null) return;
+            var from = high ? Warm : HighContrast;
+            var to = high ? HighContrast : Warm;
+            root.Query<VisualElement>().ForEach(e =>
+            {
+                var st = e.style;
+                if (Map(st.color, from, to, out var c)) st.color = c;
+                if (Map(st.backgroundColor, from, to, out c)) st.backgroundColor = c;
+                if (Map(st.borderTopColor, from, to, out c)) st.borderTopColor = c;
+                if (Map(st.borderBottomColor, from, to, out c)) st.borderBottomColor = c;
+                if (Map(st.borderLeftColor, from, to, out c)) st.borderLeftColor = c;
+                if (Map(st.borderRightColor, from, to, out c)) st.borderRightColor = c;
+            });
+        }
+
+        static bool Map(StyleColor style, Color[] from, Color[] to, out Color mapped)
+        {
+            mapped = default;
+            if (style.keyword != StyleKeyword.Undefined) return false;
+            for (int i = 0; i < from.Length; i++)
+                if (Same(style.value, from[i])) { mapped = to[i]; return true; }
+            return false;
+        }
+
+        static bool Same(Color a, Color b) =>
+            Mathf.Abs(a.r - b.r) < 0.002f && Mathf.Abs(a.g - b.g) < 0.002f && Mathf.Abs(a.b - b.b) < 0.002f && Mathf.Abs(a.a - b.a) < 0.002f;
+
+        /// <summary>WCAG contrast ratio of a text colour over a ground (both opaque), 1 to 21.</summary>
+        public static float ContrastRatio(Color text, Color ground)
+        {
+            float la = Luminance(text), lb = Luminance(ground);
+            return (Mathf.Max(la, lb) + 0.05f) / (Mathf.Min(la, lb) + 0.05f);
+        }
+
+        static float Luminance(Color c)
+        {
+            static float Lin(float v) => v <= 0.03928f ? v / 12.92f : Mathf.Pow((v + 0.055f) / 1.055f, 2.4f);
+            return 0.2126f * Lin(c.r) + 0.7152f * Lin(c.g) + 0.0722f * Lin(c.b);
+        }
 
         static Font _font;
         public static Font Font

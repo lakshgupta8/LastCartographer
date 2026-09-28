@@ -6,6 +6,9 @@ namespace OWSBG.Core
     /// <summary>
     /// Reads the "Player" action map of the WrenInput asset and exposes it as buffered
     /// <see cref="IWrenInput"/>. Buffer windows are from the combat doc (6 frames jump/attack, 4 dash).
+    /// The player's remapped keys are laid over the asset when it binds (<see cref="Controls"/>), and Bind and Survey
+    /// read as held while latched when the player has chosen to toggle them (DES-14): a press starts, the next press
+    /// or the end of what it was doing (<see cref="Controls.Release"/>) stops.
     /// </summary>
     public sealed class InputReader : MonoBehaviour, IWrenInput
     {
@@ -17,6 +20,7 @@ namespace OWSBG.Core
         [SerializeField] int _instrumentBufferFrames = 6;
 
         InputAction _move, _jump, _attack, _dash, _bind, _survey, _flourish, _instrument, _cycle, _thread;
+        bool _bindLatch, _surveyLatch;
         ButtonBuffer _jumpBuf, _attackBuf, _dashBuf, _flourishBuf, _instrumentBuf, _cycleBuf, _threadBuf;
 
         public InputActionAsset Asset
@@ -27,8 +31,8 @@ namespace OWSBG.Core
 
         public Vector2 Move => _move != null ? _move.ReadValue<Vector2>() : Vector2.zero;
         public bool JumpHeld => _jump != null && _jump.IsPressed();
-        public bool BindHeld => _bind != null && _bind.IsPressed();
-        public bool SurveyHeld => _survey != null && _survey.IsPressed();
+        public bool BindHeld => Options.IsToggle(Hold.Bind) ? _bindLatch : _bind != null && _bind.IsPressed();
+        public bool SurveyHeld => Options.IsToggle(Hold.Survey) ? _surveyLatch : _survey != null && _survey.IsPressed();
 
         public bool ConsumeJump() => _jumpBuf.Consume();
         public bool ConsumeDash() => _dashBuf.Consume();
@@ -54,6 +58,8 @@ namespace OWSBG.Core
         {
             Unbind();
             if (_asset == null) return;
+            Controls.Load(_asset);
+            Controls.Asset = _asset;
             var map = _asset.FindActionMap("Player", throwIfNotFound: false);
             if (map == null) { Debug.LogError("[OWSBG] WrenInput asset has no 'Player' map"); return; }
             _move = map.FindAction("Move");
@@ -73,6 +79,9 @@ namespace OWSBG.Core
             if (_instrument != null) _instrument.performed += OnInstrument;
             if (_cycle != null) _cycle.performed += OnCycle;
             if (_thread != null) _thread.performed += OnThread;
+            if (_bind != null) _bind.performed += OnBind;
+            if (_survey != null) _survey.performed += OnSurvey;
+            map.actionTriggered += OnAny;
             if (isActiveAndEnabled) map.Enable();
         }
 
@@ -85,12 +94,46 @@ namespace OWSBG.Core
             if (_instrument != null) _instrument.performed -= OnInstrument;
             if (_cycle != null) _cycle.performed -= OnCycle;
             if (_thread != null) _thread.performed -= OnThread;
+            if (_bind != null) _bind.performed -= OnBind;
+            if (_survey != null) _survey.performed -= OnSurvey;
+            var map = _move != null ? _move.actionMap : null;
+            if (map != null) map.actionTriggered -= OnAny;
             _move = _jump = _attack = _dash = _bind = _survey = _flourish = _instrument = _cycle = _thread = null;
         }
 
-        void OnEnable() { _asset?.FindActionMap("Player", false)?.Enable(); }
-        void OnDisable() { _asset?.FindActionMap("Player", false)?.Disable(); }
-        void OnDestroy() { Unbind(); }
+        void OnEnable()
+        {
+            _asset?.FindActionMap("Player", false)?.Enable();
+            Controls.Released += OnReleased;
+            Options.Changed += OnOptions;
+        }
+
+        void OnDisable()
+        {
+            _asset?.FindActionMap("Player", false)?.Disable();
+            Controls.Released -= OnReleased;
+            Options.Changed -= OnOptions;
+        }
+
+        void OnDestroy() { Unbind(); if (Controls.Asset == _asset) Controls.Asset = null; }
+
+        void OnBind(InputAction.CallbackContext _) { if (Options.IsToggle(Hold.Bind)) _bindLatch = !_bindLatch; }
+        void OnSurvey(InputAction.CallbackContext _) { if (Options.IsToggle(Hold.Survey)) _surveyLatch = !_surveyLatch; }
+
+        void OnReleased(Hold hold)
+        {
+            if (hold == Hold.Bind) _bindLatch = false;
+            if (hold == Hold.Survey) _surveyLatch = false;
+        }
+
+        void OnOptions() { if (!Options.IsToggle(Hold.Bind)) _bindLatch = false; if (!Options.IsToggle(Hold.Survey)) _surveyLatch = false; }
+
+        static void OnAny(InputAction.CallbackContext ctx)
+        {
+            var device = ctx.control != null ? ctx.control.device : null;
+            if (device is Keyboard) Controls.LastDevice = Controls.Device.Keyboard;
+            else if (device is Gamepad) Controls.LastDevice = Controls.Device.Gamepad;
+        }
 
         void OnJump(InputAction.CallbackContext _) => _jumpBuf.Press();
         void OnAttack(InputAction.CallbackContext _) => _attackBuf.Press();

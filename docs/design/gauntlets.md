@@ -72,6 +72,6 @@ The gauntlets needed the two movement abilities the controller didn't have yet.
 - **The two climbs have no runner.** A climbing policy for the shafts and the tower (wall to wall, clear of the
   vents) is next. The numbers test proves they need Talonhold, not that the vents leave a way up.
 - **Thread aim.** The thread goes to the nearest anchor ahead. Aiming with the stick, and a reticle, come with the
-  art and the controls pass (DES-14).
+  controls art; DES-14 v1 (`accessibility.md`) remaps the Thread button but doesn't aim it.
 - **Real rooms.** Each gauntlet moves into its region's built room; the Lantern Chain's lamp posts could join the
   built chain now, between the second and third lighthouses.

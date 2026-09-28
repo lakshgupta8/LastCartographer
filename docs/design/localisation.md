@@ -11,8 +11,9 @@ NAR-18 (M4).
   that, the system's language if we ship a table for it; failing that, English.
 - **Changing it:** `Loc.SetLocale(code)` switches, saves, and raises `Loc.Changed`. An unknown locale is refused.
 - **Which locales exist:** English (`en`), the pseudo-locale (`en-XA`), and any locale with a UI table.
-- **No picker yet.** Choosing a language belongs on the options screen (DES-14); until then it's the saved
-  preference, set by code.
+- **The picker** is the Language row of the options page (DES-14, `accessibility.md`): left and right step through
+  `Loc.Choosable`, each language named in its own words (`Loc.NativeName`). The pseudo-locale is offered only in
+  development builds.
 
 ## Two tables, one locale
 

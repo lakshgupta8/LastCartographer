@@ -113,4 +113,4 @@ A rhythm traversal: NPCs sing the roll-call; each street name is a beat; Wren mu
 ## 11. What we don't do
 - No stamina. No weapon durability. No XP levels.
 - No damage numbers on screen.
-- No difficulty modes at launch; accessibility options instead (see plan DES-15).
+- No difficulty modes at launch; accessibility options instead (plan DES-14, `docs/design/accessibility.md`).

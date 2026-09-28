@@ -228,8 +228,8 @@ Nothing carried, nothing anchored: the climbs for their abilities, the Threshold
 - Fights are flags. When the late fights exist (CMB-14, CMB-15), the routes' `Boss` steps should play them.
 
 ## 5. Open
-- PRO-05's full-playthrough matrix (each ending, each region order, sequence breaks) should be built from
-  `EndingRoutes`: permute the region legs and replay.
+- ~~PRO-05's full-playthrough matrix.~~ Built (`docs/design/playthrough-matrix.md`): the routes' legs in every
+  order the map allows, and the soft gaps' breaks, replayed.
 - A route that sends the report, to prove Oriel's branch (6.8) does not lock the Threshold.
 - The Rest's "zero anchors" counts `Places`. A player who seals the quay at its desk in Act 1 has closed the Rest
   before they know it exists. Bible 9.4 wants that; the design should say so somewhere the player can find.

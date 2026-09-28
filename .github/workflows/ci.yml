@@ -1,0 +1,125 @@
+# The Last Cartographer: tests, the Windows build, a smoke run of that build, and (on a version tag) Steam.
+# docs/design/build-pipeline.md explains each job and the secrets it needs.
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UNITY_VERSION: 6000.3.7f1
+  PROJECT_PATH: LastCartographer
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+
+jobs:
+  tests:
+    name: Tests (${{ matrix.mode }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [editmode, playmode]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/cache@v4
+        with:
+          path: LastCartographer/Library
+          key: Library-${{ matrix.mode }}-${{ hashFiles('LastCartographer/Packages/packages-lock.json', 'LastCartographer/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: Library-${{ matrix.mode }}-
+      - uses: game-ci/unity-test-runner@v4
+        id: tests
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          testMode: ${{ matrix.mode }}
+          # Our play tests only: the Input System is testable (for its fixture) and would bring its own.
+          customParameters: ${{ matrix.mode == 'playmode' && '-assemblyNames OWSBG.Tests.PlayMode' || '' }}
+          artifactsPath: test-results-${{ matrix.mode }}
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Test results (${{ matrix.mode }})
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.mode }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
+
+  build-windows:
+    name: Windows build
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          fetch-depth: 0          # git describe names the version
+      - uses: actions/cache@v4
+        with:
+          path: LastCartographer/Library
+          key: Library-Windows-${{ hashFiles('LastCartographer/Packages/packages-lock.json', 'LastCartographer/ProjectSettings/ProjectVersion.txt') }}
+          restore-keys: Library-Windows-
+      - uses: game-ci/unity-builder@v4
+        with:
+          projectPath: ${{ env.PROJECT_PATH }}
+          unityVersion: ${{ env.UNITY_VERSION }}
+          targetPlatform: StandaloneWindows64
+          buildName: LastCartographer
+          buildMethod: OWSBG.Build.GameBuild.BuildFromCommandLine
+          versioning: Semantic
+      - uses: actions/upload-artifact@v4
+        with:
+          name: LastCartographer-Windows
+          path: build/StandaloneWindows64
+          retention-days: 14
+
+  smoke-windows:
+    name: Smoke run (Windows)
+    needs: build-windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: tools
+      - uses: actions/download-artifact@v4
+        with:
+          name: LastCartographer-Windows
+          path: build
+      - name: Boot the build, walk two rooms, start a conversation
+        shell: pwsh
+        run: ./tools/smoke.ps1 -Exe build/LastCartographer.exe -Log smoke.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-log
+          path: smoke.log
+
+  steam:
+    name: Steam upload
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: smoke-windows
+    runs-on: ubuntu-latest
+    environment: steam
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: LastCartographer-Windows
+          path: build
+      - uses: game-ci/steam-deploy@v3
+        with:
+          username: ${{ secrets.STEAM_USERNAME }}
+          configVdf: ${{ secrets.STEAM_CONFIG_VDF }}
+          appId: ${{ vars.STEAM_APP_ID }}
+          buildDescription: ${{ github.ref_name }}
+          rootPath: build
+          depot1Path: .
+          releaseBranch: ${{ vars.STEAM_BRANCH || 'beta' }}

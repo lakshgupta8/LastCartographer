@@ -38,7 +38,7 @@ namespace OWSBG.UI
         bool _wasFrozen, _built, _blockedLastFrame = true;
         int _listenEndedFrame = -1;
         VisualElement _panel, _rows;
-        Label _title, _hint;
+        Label _title, _hint, _version;
         InputActionRebindingExtensions.RebindingOperation _listen;
 
         void Awake() { Instance = this; }
@@ -205,7 +205,10 @@ namespace OWSBG.UI
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _hint = InkTheme.Text("hint", "", 18, InkTheme.Dim, FontStyle.Italic);
             _hint.style.marginTop = 14;
-            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_hint);
+            _version = InkTheme.Text("version", "", 13, InkTheme.Dim);
+            _version.style.marginTop = 6;
+            _version.style.unityTextAlign = TextAnchor.MiddleRight;
+            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_hint); _panel.Add(_version);
             InkTheme.Show(_panel, false);
             layer.Add(_panel);
             _built = true;
@@ -217,6 +220,7 @@ namespace OWSBG.UI
             if (!_built) return;
             InkTheme.Show(_panel, IsOpen);
             if (!IsOpen) return;
+            _version.text = Loc.F("options.version", "version {0}", BuildInfo.Label);   // what a bug report quotes (PRG-25)
             _rows.Clear();
             if (Current == Page.Controls)
             {

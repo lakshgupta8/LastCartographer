@@ -1299,12 +1299,7 @@ namespace OWSBG.Setup
         }
 
         /// <summary>Content build for players (bundles under Library/com.unity.addressables). Play mode does not need it.</summary>
-        public static void BuildAddressables()
-        {
-            AddressableAssetSettings.BuildPlayerContent(out var result);
-            if (!string.IsNullOrEmpty(result.Error)) throw new System.Exception("[OWSBG] Addressables build failed: " + result.Error);
-            Debug.Log("[OWSBG] Addressables built in " + result.Duration.ToString("0.0") + " s: " + result.OutputPath);
-        }
+        public static void BuildAddressables() => OWSBG.Build.GameBuild.BuildContent();
 
         // The held state (PRG-13): Wardens placed inactive; anchoring the place switches them on and locks the grade.
         static void MakeHeldState(Room room, params Vector2[] wardenPositions)

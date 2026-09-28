@@ -110,7 +110,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-04 `[~]` | Foreground-only depth-of-field render feature; paper-grain overlay feature (both as full-screen passes on the renderer; tuning against real art pending) | M0 | ART-3 | PRG-03 |
 | PRG-05 `[x]` | Input: `.inputactions`, buffered input service, rebinding | M0 | CMB-1 | PRG-01 |
 | PRG-06 `[~]` | Cinemachine 3 rig: follow, look-ahead, `Confiner2D` per room, boss cameras (fixed arena camera per BossArena; cutscene shots; per-region tuning pending) | M0 | Engine | CMB-01 |
-| PRG-07 `[~]` | Room system: additive scenes, transitions, neighbour preload, Addressables (rooms are addressables in one bundle each; neighbour bundles kept resident; Build Settings fallback; content build entry point, no CI yet) | M0 | Engine | PRG-01 |
+| PRG-07 `[~]` | Room system: additive scenes, transitions, neighbour preload, Addressables (rooms are addressables in one bundle each; neighbour bundles kept resident; Build Settings fallback; content build entry point; CI in PRG-25) | M0 | Engine | PRG-01 |
 | PRG-08 `[~]` | Dialogue runtime: Yarn Spinner, `<<flag>>`, `<<commission>>`, `<<fade>>`, `<<anchor>>`, dialogue UI | M0 | SB-11 | PRG-01 |
 | PRG-09 `[~]` | `WorldState` + save/load (JSON, autosave at desks) | M0 | SB-10 | PRG-01 |
 | PRG-10 `[~]` | Survey system: vantage points, atlas reveal, fast travel, erasure (Atlas store, atlas page as pause screen, Cantor bell erasure and recovery by re-survey, travel points at desks and lit lamps; page inking animation pending) | M1 | DES-02 | PRG-08 |
@@ -128,7 +128,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | PRG-22 `[~]` | Bounds-walk rhythm runtime (BoundsWalk set piece, roll-call strip, `<<walk>>`, hold on completion; the desk defers Hold to it; music pending) | M2 | DES-13 | PRG-08 |
 | PRG-23 `[~]` | Endings runner and epilogue walk; v1: an ending's last scene says `<<epilogue>>` and `EndingsRunner` (persistent scene) plays Voss's coda, then walks the ending's stops through white (built room or an `EpilogueBuilder` stand-in), plays each scene, and ends on the title (`docs/design/endings-runner.md`); the walk is timed, not walked, and the stops' real rooms are unbuilt | M3 | SB-4.7, SB-9 | DES-12 |
 | PRG-24 `[ ]` | Performance: streaming budget, sprite batching, 60 fps lock | M4 | — | all |
-| PRG-25 `[ ]` | Build pipeline: CI, Windows build, Steam packaging | M4 | — | PRG-01 |
+| PRG-25 `[~]` | Build pipeline: CI, Windows build, Steam packaging; v1 in `docs/design/build-pipeline.md`: `GameBuild` builds the Addressables content and a stamped 64-bit Windows player (`tools/build.ps1`; release 101 MB), a built player passes `-smoke` (two rooms through Addressables, the stamp, a conversation), `SteamDepot` writes SteamPipe scripts (`tools/steam-upload.ps1`), and `.github/workflows/ci.yml` (GameCI) tests, builds, smoke-runs and uploads tags to Steam; CI has not run (secrets to set), and there is no Steamworks SDK in the game | M4 | — | PRG-01 |
 | PRG-26 `[~]` | Tests: controller frame-data, WorldState, save round-trip, ending reachability | M3 | — | PRG-09 |
 
 ### 3.5 Character art and animation (CHR)

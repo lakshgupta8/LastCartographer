@@ -16,20 +16,20 @@ title: Threshold_Halvard
     <<flag act2.halvard_third 1>>
     <<stop>>
 <<endif>>
-Halvard: The count ends here, journeyman. #line:01e892f
+Halvard: The count ends here, journeyman. #still #line:01e892f
 <<if has_flag("act2.halvard_second")>>
-    Halvard: Three paces at the lighthouse. Four on the bridges. None here. I counted every one. #line:06beaba
+    Halvard: Three paces at the lighthouse. Four on the bridges. None here. I counted every one. #still #line:06beaba
 <<else>>
-    Halvard: The bridges missed you. The line will not. #line:0ae1325
+    Halvard: The bridges missed you. The line will not. #still #line:0ae1325
 <<endif>>
 -> Count me, then. #line:09ea08a
-    Halvard: One. That's all you were to them. One. #line:0ea71ab
+    Halvard: One. That's all you were to them. One. #still #line:0ea71ab
     <<voice warden greyfold>>
 -> You don't want to be here. #line:0af8ffa
-    Halvard: No. I want to be home, counting gulls. Lance up. #line:045bd9d
+    Halvard: No. I want to be home, counting gulls. Lance up. #still #line:045bd9d
     <<voice surveyor greyfold>>
 -> ... #line:04069a5
-    Halvard: Silence. You learned that from me. Good. #line:0e3c7c4
+    Halvard: Silence. You learned that from me. Good. #still #line:0e3c7c4
     <<voice drift greyfold>>
 <<flag threshold.halvard.spoken 1>>
 ===
@@ -47,7 +47,7 @@ title: Threshold_Voss
     <<stop>>
 <<endif>>
 <<if has_flag("threshold.voss.spoken")>>
-    Voss: We are past speeches, journeyman. Take up your quill. #line:08b37fa
+    Voss: We are past speeches, journeyman. Take up your quill. #still #line:08b37fa
     <<stop>>
 <<endif>>
 Voss: Journeyman Halloway. This is as far as the map goes. #plant:5.4 #line:00180ea
@@ -61,7 +61,7 @@ Voss: Journeyman Halloway. This is as far as the map goes. #plant:5.4 #line:0018
 <<elseif flag("halden.maren.decided") == 2>>
     Voss: The Queen-Regent says you refused her. So have we, often. #line:09306b2
 <<elseif flag("halden.maren.decided") == 3>>
-    Voss: You told the Queen-Regent about the boy. That was not yours to tell. #plant:5.1 #line:0e235dd
+    Voss: You told the Queen-Regent about the boy. That was not yours to tell. #callback:5.1 #line:0e235dd
 <<endif>>
 <<if keystones() >= 3>>
     Voss: Three stones. More. You have emptied half of Aurenne into your pack. #line:0e70872
@@ -94,11 +94,11 @@ Voss: So nobody crosses. Not you. Not with the kingdom's stones. We hold. That i
 title: Threshold_Pell_Cross
 ---
 <<if not has_flag("pell.report_kept")>>
-    Threshold: The Wardens' line, broken. Tethers dropped on the white. Nobody from the Hall came. #line:0dd2a9e
+    Threshold: The Wardens' line, broken. Tethers dropped on the white. Nobody from the Hall came. #still #line:0dd2a9e
     <<stop>>
 <<endif>>
 <<if not has_flag("boss.voss.defeated")>>
-    Pell: He's right there. Which, technically, means you're not across yet. I'll wait. I'm good at it. #line:0eba8f0
+    Pell: He's right there. Which, technically, means you're not across yet. I'll wait. I'm good at it. #still #line:0eba8f0
     <<stop>>
 <<endif>>
 <<if has_flag("pell.at_threshold")>>

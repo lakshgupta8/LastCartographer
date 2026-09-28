@@ -39,16 +39,16 @@ title: Quay_Sable_Again
 <<elseif place_fate("Saltmarrow_A") == "released">>
     Sable: You let it go. Honest, at least. I'll sell tethers while there's a post to tie them to. #still #line:0e9e3d0
 <<elseif has_flag("act1.unlicensed")>>
-    Sable: Unlicensed. He said it loud enough for the reeds. #line:09fc3ee
-    Sable: Prices are the same. That's the one thing the Guild can't fix. #line:0e606c9
+    Sable: Unlicensed. He said it loud enough for the reeds. #still #line:09fc3ee
+    Sable: Prices are the same. That's the one thing the Guild can't fix. #still #line:0e606c9
 <<elseif has_flag("boss.lamp_keeper.defeated")>>
-    Sable: Fourth light's up. Ships will see it. So will the Guild. #line:02eba6b
+    Sable: Fourth light's up. Ships will see it. So will the Guild. #still #line:02eba6b
 <<else>>
-    Sable: Still here. Still lost. Both cost the same. #line:0695736
+    Sable: Still here. Still lost. Both cost the same. #still #line:0695736
 <<endif>>
 <<if erased("Saltmarrow_B")>>
-    Sable: Bells in the reeds. Merrow's End went off your page, didn't it. #line:05adab6
-    Sable: Draw it again. That's what the quill is for. The bell doesn't charge; the walk back does. #line:0378ecf
+    Sable: Bells in the reeds. Merrow's End went off your page, didn't it. #still #line:05adab6
+    Sable: Draw it again. That's what the quill is for. The bell doesn't charge; the walk back does. #still #line:0378ecf
 <<endif>>
 <<if commission_is("saltmarrow.tether_widows", "taken") and not has_flag("saltmarrow.widow.decided")>>
     <<jump Quay_Sable_Widow>>
@@ -59,17 +59,17 @@ title: Quay_Sable_Again
         <<flag saltmarrow.sable.reed 1>>
     <<endif>>
     <<if commission_is("saltmarrow.bone_bridge", "taken") and not has_flag("saltmarrow.bone_bridge.heard")>>
-        Sable: Whale sang while you were up there. Under the bridge. You hear it? #line:02c3db4
+        Sable: Whale sang while you were up there. Under the bridge. You hear it? #still #line:02c3db4
         -> I heard it. It sounded like names. #line:0e2e1fb
             Sable: Everyone says names. Nobody agrees whose. #plant:3.4 #line:03b9cd0
             <<flag saltmarrow.bone_bridge.heard 1>>
         -> I heard nothing. #line:0ff71b0
-            Sable: Then you weren't listening. Go again. It's bones; it'll wait. #line:0a39711
+            Sable: Then you weren't listening. Go again. It's bones; it'll wait. #still #line:0a39711
         -> ... #line:02316e4
-            Sable: That's how it starts. Listening for it. #line:08823bd
+            Sable: That's how it starts. Listening for it. #still #line:08823bd
     <<endif>>
 <<else>>
-    Sable: There's a vantage by the old reed. Draw it, if the cowl's honest. #line:01c329f
+    Sable: There's a vantage by the old reed. Draw it, if the cowl's honest. #still #line:01c329f
 <<endif>>
 <<if not has_flag("saltmarrow.sable.ledger")>>
     Sable: Board by the desk is the ledger. People write what they want and can't say aloud. #line:0b6a494
@@ -85,7 +85,7 @@ title: Quay_Sable_Again
 -> What are you selling? #line:082f994
     Sable: Tools. Ferrymen's prices. #still #line:0457a7c
     <<if has_flag("saltmarrow.iris_burned")>>
-        Sable: Dearer than they were. Ask the ones who burned the fields. #line:0b3f86f
+        Sable: Dearer than they were. Ask the ones who burned the fields. #still #line:0b3f86f
     <<endif>>
     <<shop Saltmarrow>>
 -> The third lighthouse. Who keeps it? <<if has_flag("boss.lamp_keeper.defeated") and not has_flag("saltmarrow.sable.aury")>> #line:02f3a83

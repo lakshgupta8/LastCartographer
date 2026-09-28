@@ -25,6 +25,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/story/endings.md` | The frame, the four endings and what each needs (`Endings`), Voss's coda, the epilogue walk, Marrow's verdict, Wren's last line; the seventh keystone settled |
 | `docs/story/blank-islands.md` | The Blank's islands as written: one per [B] commission, a generic Remnant island for any other released place (`Islands`), Aury by tether and with Sable, the tether itself |
 | `docs/story/boss-sheets.md` | The fifteen bosses: reason, arena by phase, three lines, answers, aftermath |
+| `docs/story/foreshadowing.md` | The foreshadowing audit: bible 5's secrets, each revealed on one `#reveal` line and planted three times before it on both Act 1 roads (`Foreshadowing`); `#still` as "heard again, unchanged", read from the scripts' shape (`YarnAudit`) and held both ways |
 | `docs/design/game-design-overview.md` | Pillars, loop, systems, scope |
 | `docs/design/combat-and-movement.md` | Wren's kit, Inkwell, Flourishes, Charters, Instruments, enemy and boss rules |
 | `docs/design/art-direction.md` | Ink-on-paper look, 2.5D definition, palettes, the `_Ink` fade state |

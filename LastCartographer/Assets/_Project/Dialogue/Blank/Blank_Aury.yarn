@@ -10,12 +10,12 @@ title: Aury_Lighthouse
     <<if has_flag("keystone.aury")>>
         Aury: Have you eaten? You look like you haven't. #still #line:0af4658
     <<else>>
-        Aury: Still humming, this thing. Take it, will you? It keeps me up. #line:08c8915
+        Aury: Still humming, this thing. Take it, will you? It keeps me up. #still #line:08c8915
         -> I'll take it. #line:0eeec90
             Aury: Good. Mind, it's heavy. The lamp won't miss it. #line:092d52d
             <<flag keystone.aury 1>>
         -> Keep it. It's the lamp's. #line:087b709
-            Aury: Suit yourself. It's company. #line:01f44fd
+            Aury: Suit yourself. It's company. #still #line:01f44fd
     <<endif>>
     <<stop>>
 <<endif>>
@@ -53,7 +53,7 @@ Aury: The island's moved. Or I have. Sable's coming, she says. Have you eaten? #
 title: Aury_Sable
 ---
 <<if not has_flag("act3.started") or not has_flag("sable.tether_sold")>>
-    Aury: Sable? Not lately. She's busy, I expect. #line:01ea4f8
+    Aury: Sable? Not lately. She's busy, I expect. #still #line:01ea4f8
     <<stop>>
 <<endif>>
 <<if has_flag("sable.aury_sat")>>

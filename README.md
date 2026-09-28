@@ -38,6 +38,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/localisation.md` | The player's language: `Loc` for UI and captions, Yarn line ids and strings CSVs for dialogue, the catalogs keyed by id (`DataText`, `WorldText`), plurals and lists, the pseudo-locale and its audit of every page, `LocalizationSetup.Refresh`, and what is still open |
 | `docs/design/performance.md` | The 60 fps lock and 60 Hz physics (`FrameRate`), the budgets (`PerfBudget`), the `-perf` probe of a built player (`PerfProbe`, `tools/perf.ps1`), the first measurements, and the per-frame garbage it found and fixed |
 | `docs/design/tuning.md` | The tuning pass (`Tuning`): a hit takes one mask and a slam two, telegraph floors and each tier's typical read, boss health from tier and access, enemy families, the Charters' quill damage, the Flourishes' ink trades and the Inkwell's tempo; every kit declares its attacks (`Boss.Kit()`) and the audit holds them to the rules |
+| `docs/design/bug-bar.md` | The bug bar (`BugBar`): severity by what a bug does to a player, the floor from its symptom, priority from reach, each milestone's bar and the triage states; F12's report folder (`BugReport`, `LogTail`, `BugReporter`), the issue form and `tools/triage.ps1` |
 | `docs/design/build-pipeline.md` | The Windows build (`GameBuild`, `tools/build.ps1`), its version stamp (`BuildInfo`), the `-smoke` run of a built player (`SmokeTest`), CI on GitHub Actions with GameCI, and Steam's depot scripts and upload |
 | `docs/design/accessibility.md` | The options page (Esc / Start): remapping with swaps (`Controls`), hold or toggle for Bind, Survey and Glide, hitstop and shake sliders (`Shake`), high-contrast ink in the UI and the paper pass, captions that wait, and no dialogue that moves on by itself (`Options`) |
 | `docs/design/clarity.md` | Clarity as a meter and a gate (`ClarityMeter`): how long she lasts untethered, growing with the story; empty, the white gives her back; the lantern-radius it draws, white paper beyond it in the Greyfold and the Blank |
@@ -182,6 +183,9 @@ conversation, then quit with 0 or an error code (`tools/smoke.ps1`); `-perf` wal
 transitions and garbage against the budgets (`tools/perf.ps1`, `docs/design/performance.md`). CI (`.github/workflows/ci.yml`, GameCI) runs both test
 suites, the Windows build and its smoke run on every push, and uploads to Steam from a `v*` tag; the secrets it needs,
 and Steam's depot scripts (`tools/steam-upload.ps1`), are in `docs/design/build-pipeline.md`.
+
+## Reporting a bug
+**F12** in the game writes a folder under `%USERPROFILE%\AppData\LocalLow\<company>\LastCartographer\BugReports\`: `report.md` (the build, the room, the first exception, the last log lines), the save, `log.txt` and a screenshot. A built player writes one by itself after its first exception. Attach it to a **Bug report** issue; the form's severities and areas are the bar's (`docs/design/bug-bar.md`). `pwsh tools/triage.ps1 -Labels` makes the tracker's labels and `pwsh tools/triage.ps1 -Milestone rc` counts the open bugs against the bar.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

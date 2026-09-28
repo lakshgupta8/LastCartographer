@@ -1,0 +1,111 @@
+# The bug report form (PRO-07). docs/design/bug-bar.md says what the severities mean and how a report is triaged;
+# the words here are the ones OWSBG.Core.BugBar uses, and a test holds them together.
+name: Bug report
+description: Something wrong in The Last Cartographer
+title: "[bug] "
+labels: ["triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Press **F12** in the game. It saves a folder under `%USERPROFILE%\AppData\LocalLow\<company>\LastCartographer\BugReports\`
+        with `report.md`, the save, the last log lines and a screenshot. Attach the folder (zipped) below, or paste `report.md`.
+        After a crash the game writes one by itself, named `…-exception`.
+  - type: input
+    id: build
+    attributes:
+      label: Build
+      description: From the foot of the options page, or the first line of report.md.
+      placeholder: "0.5.0 · 1a2b3c4"
+    validations:
+      required: true
+  - type: dropdown
+    id: symptom
+    attributes:
+      label: What happened
+      description: The worst of it. The severity starts from this and triage may raise it.
+      options:
+        - "Crash: the game closed, or an exception was thrown"
+        - "SaveLost: a save is gone, or loads into a wrong world"
+        - "CantFinish: no ending can be reached on this build"
+        - "SoftLock: stuck; a gate that stays shut, a room with no way out, a boss that can't be hurt"
+        - "WrongEnding: an ending's flag set or missed when it shouldn't be"
+        - "WrongState: a flag, a place's fate, a commission or a purse wrong, but passable"
+        - "OverBudget: the frame rate dropped, or a room took long to come in"
+        - "NoRead: an attack came with no warning"
+        - "Visual: a clip, a pop, a wrong colour"
+        - "Text: a typo, a wrong line, a missing translation"
+        - "Audio: a sound wrong or missing"
+        - "Feel: the controller or a hit not feeling right"
+        - "Unsorted: not sure"
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: Leave it to triage if unsure. Blocker means nobody can play past it; Critical, progress stops for some; Major, wrong but passable; Minor, cosmetic or feel; Trivial, nobody would notice untold.
+      options:
+        - "Blocker"
+        - "Critical"
+        - "Major"
+        - "Minor"
+        - "Trivial"
+        - "Let triage set it"
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: The plan's section that owns it, if you know.
+      options:
+        - "NAR: narrative, dialogue, a line"
+        - "DES: design, a room, a gate, a commission, the map"
+        - "CMB: combat, a boss, an enemy, Wren's kit"
+        - "PRG: programming, saves, rooms, performance, the build"
+        - "CHR: character art and animation"
+        - "ENV: environment art"
+        - "AUD: audio"
+        - "PRO: production, the tests, this tracker"
+        - "Not sure"
+  - type: input
+    id: room
+    attributes:
+      label: Room
+      description: From report.md, or the place on the atlas.
+      placeholder: "Greybox_Saltmarrow_A"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps
+      description: What you did, from the last save or the last desk, so someone else can do it again.
+      placeholder: |
+        1. Load slot 1 at the Quay's desk.
+        2. Walk right to the crab room and Bind the first crab.
+        3. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Report folder
+      description: Drop the zipped BugReports folder here, or paste report.md. A save that shows it is the fastest way to a fix.
+  - type: checkboxes
+    id: repro
+    attributes:
+      label: Does it happen again?
+      options:
+        - label: Every time, following the steps above
+        - label: Sometimes
+        - label: Once, so far

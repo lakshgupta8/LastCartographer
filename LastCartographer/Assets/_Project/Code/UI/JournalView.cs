@@ -32,8 +32,10 @@ namespace OWSBG.UI
         string _pendingToast;
         float _toastLeft;
 
-        void OnEnable() { Commissions.Changed += OnChanged; }
-        void OnDisable() { Commissions.Changed -= OnChanged; }
+        void OnEnable() { Commissions.Changed += OnChanged; BugReporter.Saved += OnReportSaved; }
+        void OnDisable() { Commissions.Changed -= OnChanged; BugReporter.Saved -= OnReportSaved; }
+
+        void OnReportSaved(string dir) => Toast(Loc.F("bug.saved", "Bug report saved · {0}", dir));   // PRO-07
 
         void OnChanged(string id, CommissionState state)
         {

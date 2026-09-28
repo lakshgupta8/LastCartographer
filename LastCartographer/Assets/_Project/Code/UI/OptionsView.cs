@@ -220,7 +220,8 @@ namespace OWSBG.UI
             if (!_built) return;
             InkTheme.Show(_panel, IsOpen);
             if (!IsOpen) return;
-            _version.text = Loc.F("options.version", "version {0}", BuildInfo.Label);   // what a bug report quotes (PRG-25)
+            _version.text = Loc.F("options.version", "version {0}", BuildInfo.Label)   // what a bug report quotes (PRG-25)
+                          + "  ·  " + Loc.T("options.bug_key", "F12 saves a bug report");   // and how to make one (PRO-07)
             _rows.Clear();
             if (Current == Page.Controls)
             {

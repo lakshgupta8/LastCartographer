@@ -38,6 +38,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/moving-camp.md` | Windreach's hub on the move (`Camp`): three fires at three sites, the camp walking on at first light, the bedroll that walks her with it for a day, ashes where it isn't; and travel that takes an hour a way on the macro map (`Travel`) |
 | `docs/design/localisation.md` | The player's language: `Loc` for UI and captions, Yarn line ids and strings CSVs for dialogue, the catalogs keyed by id (`DataText`, `WorldText`), plurals and lists, the pseudo-locale and its audit of every page, `LocalizationSetup.Refresh`, and what is still open |
 | `docs/design/performance.md` | The 60 fps lock and 60 Hz physics (`FrameRate`), the budgets (`PerfBudget`), the `-perf` probe of a built player (`PerfProbe`, `tools/perf.ps1`), the first measurements, and the per-frame garbage it found and fixed |
+| `docs/design/feel-test.md` | The controller feel-test (`FeelTest`), the M0 gate: the seven-station course (`FeelCourseRooms`, `-feel`), the twelve questions, what the game records while a tester runs (`FeelRecorder`) and the bar it is held to |
 | `docs/design/tuning.md` | The tuning pass (`Tuning`): a hit takes one mask and a slam two, telegraph floors and each tier's typical read, boss health from tier and access, enemy families, the Charters' quill damage, the Flourishes' ink trades and the Inkwell's tempo; every kit declares its attacks (`Boss.Kit()`) and the audit holds them to the rules |
 | `docs/design/bug-bar.md` | The bug bar (`BugBar`): severity by what a bug does to a player, the floor from its symptom, priority from reach, each milestone's bar and the triage states; F12's report folder (`BugReport`, `LogTail`, `BugReporter`), the issue form and `tools/triage.ps1` |
 | `docs/design/build-pipeline.md` | The Windows build (`GameBuild`, `tools/build.ps1`), its version stamp (`BuildInfo`), the `-smoke` run of a built player (`SmokeTest`), CI on GitHub Actions with GameCI, and Steam's depot scripts and upload |
@@ -60,7 +61,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 
 ## Playing the greybox
 In the editor menu bar choose **OWSBG → Play From Start (the Edge)** (Ctrl+Shift+P). It opens the persistent
-scene plus the prologue room and enters Play mode. **OWSBG → Play From Saltmarrow** skips the prologue and starts in room A. Then **click inside the Game view once** so it has
+scene plus the prologue room and enters Play mode. **OWSBG → Play From Saltmarrow** skips the prologue and starts in room A. **OWSBG → Play the Feel Course** goes straight to the controller feel-test's course (`docs/design/feel-test.md`); a build does the same with `-feel`. Then **click inside the Game view once** so it has
 keyboard focus (Unity only sends input to a focused Game view). Walk off the right edge to transition
 into the stilt-roosts, and on through the boardwalk to Merrow's End (room B), which has a Talonhold shaft.
 

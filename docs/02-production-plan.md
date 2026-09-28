@@ -188,7 +188,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 |---|---|---|---|
 | PRO-01 `[x]` | Repo, `.gitignore`, LFS attributes, folder layout | M0 | — |
 | PRO-02 `[ ]` | Tracker with these IDs; weekly build cadence | M0 | PRO-01 |
-| PRO-03 `[ ]` | Feel-test protocol for the controller (M0 gate) | M0 | CMB-01 |
+| PRO-03 `[~]` | Feel-test protocol for the controller (M0 gate); v1 in `docs/design/feel-test.md`: a seven-station course drawn at runtime from numbers held to the controller's reach (`FeelTest`, `FeelCourseRooms`, `-feel`, OWSBG → Play the Feel Course), twelve questions one to five, the session the game records (named `ButtonBuffer` presses acted on, buffered or dropped; coyote jumps, falls, seconds per station: `FeelRecorder`), and the gate (five testers, every median at four, none under three, at most a tenth of presses dropped: `FeelTest.Gate`); no session has been run | M0 | CMB-01 |
 | PRO-04 `[ ]` | External test round 1 (vertical slice) | M1 | M1 exit |
 | PRO-05 `[~]` | Full-playthrough matrix: each ending, each region order, sequence breaks; v1 in `docs/design/playthrough-matrix.md`: each route cut into legs by the story's marks and put in every order the map allows (either climb first, Halden or Windreach first) plus the two sequence breaks the soft gaps permit (a climb before the Lamp-Keeper), twenty playthroughs as data (`Playthroughs`), each replayed through the shipped scripts on the shared harness (`RouteReplay`) with the map's reachability held at every step | M3 | DES-12 |
 | PRO-06 `[ ]` | Performance targets: 60 fps at 1080p on GTX 1060-class; room transition under 100 ms | M4 | PRG-24 |

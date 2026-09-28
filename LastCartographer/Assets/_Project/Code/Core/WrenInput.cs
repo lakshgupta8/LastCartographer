@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace OWSBG.Core
@@ -34,21 +35,42 @@ namespace OWSBG.Core
         readonly int _window;
         int _framesLeft;
 
+        /// <summary>What the press is ("Jump"); the feel-test's recorder (PRO-03) counts by it. Null buffers say nothing.</summary>
+        public string Name { get; }
+        public int Window => _window;
+
+        /// <summary>A named press went in.</summary>
+        public static event Action<string> Pressed;
+        /// <summary>A named press was acted on, this many frames after it went in (0 is the same frame).</summary>
+        public static event Action<string, int> Consumed;
+        /// <summary>A named press ran out of its window with nothing done: from the player's side, a press that did nothing.</summary>
+        public static event Action<string> Dropped;
+
         public ButtonBuffer(int windowFrames) { _window = windowFrames; }
+        public ButtonBuffer(int windowFrames, string name) { _window = windowFrames; Name = name; }
 
         public bool Pending => _framesLeft > 0;
-        public void Press() => _framesLeft = _window;
+
+        public void Press()
+        {
+            _framesLeft = _window;
+            if (Name != null) Pressed?.Invoke(Name);
+        }
 
         public bool Consume()
         {
             if (_framesLeft <= 0) return false;
+            int waited = _window - _framesLeft;
             _framesLeft = 0;
+            if (Name != null) Consumed?.Invoke(Name, waited);
             return true;
         }
 
         public void Tick()
         {
-            if (_framesLeft > 0) _framesLeft--;
+            if (_framesLeft <= 0) return;
+            _framesLeft--;
+            if (_framesLeft == 0 && Name != null) Dropped?.Invoke(Name);
         }
     }
 }

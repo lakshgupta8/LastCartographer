@@ -17,6 +17,7 @@ namespace OWSBG.Editor
         public const string StartRoomPath = "Assets/_Project/Scenes/Greybox/Greybox_Saltmarrow_A.unity";
         public const string PrologueRoomPath = "Assets/_Project/Scenes/Greybox/Greybox_Greyfold_Edge.unity";
         const string SkipPref = "OWSBG.SkipPrologue";
+        const string FeelPref = OWSBG.Narrative.FeelRun.EditorPref;
 
         static SceneHelpers()
         {
@@ -42,6 +43,7 @@ namespace OWSBG.Editor
             if (EditorApplication.isPlaying) { EditorApplication.isPlaying = false; return; }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             EditorPrefs.SetBool(SkipPref, false);
+            EditorPrefs.SetBool(FeelPref, false);
             EditorSceneManager.OpenScene(PersistentPath, OpenSceneMode.Single);
             var room = System.IO.File.Exists(PrologueRoomPath) ? PrologueRoomPath : StartRoomPath;
             EditorSceneManager.OpenScene(room, OpenSceneMode.Additive);
@@ -54,6 +56,20 @@ namespace OWSBG.Editor
             if (EditorApplication.isPlaying) { EditorApplication.isPlaying = false; return; }
             if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
             EditorPrefs.SetBool(SkipPref, true);
+            EditorPrefs.SetBool(FeelPref, false);
+            EditorSceneManager.OpenScene(PersistentPath, OpenSceneMode.Single);
+            EditorSceneManager.OpenScene(StartRoomPath, OpenSceneMode.Additive);
+            EditorApplication.isPlaying = true;
+        }
+
+        /// <summary>The feel-test's course (PRO-03): a new game past the prologue, then straight to Feel_Course; the session is written on stop.</summary>
+        [MenuItem("OWSBG/Play the Feel Course", priority = 3)]
+        public static void PlayFeelCourse()
+        {
+            if (EditorApplication.isPlaying) { EditorApplication.isPlaying = false; return; }
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
+            EditorPrefs.SetBool(SkipPref, true);
+            EditorPrefs.SetBool(FeelPref, true);
             EditorSceneManager.OpenScene(PersistentPath, OpenSceneMode.Single);
             EditorSceneManager.OpenScene(StartRoomPath, OpenSceneMode.Additive);
             EditorApplication.isPlaying = true;

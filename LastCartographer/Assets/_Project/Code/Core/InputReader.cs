@@ -44,13 +44,13 @@ namespace OWSBG.Core
 
         void Awake()
         {
-            _jumpBuf = new ButtonBuffer(_jumpBufferFrames);
-            _attackBuf = new ButtonBuffer(_attackBufferFrames);
-            _dashBuf = new ButtonBuffer(_dashBufferFrames);
-            _flourishBuf = new ButtonBuffer(_flourishBufferFrames);
-            _instrumentBuf = new ButtonBuffer(_instrumentBufferFrames);
-            _cycleBuf = new ButtonBuffer(_instrumentBufferFrames);
-            _threadBuf = new ButtonBuffer(_dashBufferFrames);
+            _jumpBuf = new ButtonBuffer(_jumpBufferFrames, "Jump");
+            _attackBuf = new ButtonBuffer(_attackBufferFrames, "Attack");
+            _dashBuf = new ButtonBuffer(_dashBufferFrames, "Dash");
+            _flourishBuf = new ButtonBuffer(_flourishBufferFrames, "Flourish");
+            _instrumentBuf = new ButtonBuffer(_instrumentBufferFrames, "Instrument");
+            _cycleBuf = new ButtonBuffer(_instrumentBufferFrames, "CycleInstrument");
+            _threadBuf = new ButtonBuffer(_dashBufferFrames, "Thread");
             Bind();
         }
 

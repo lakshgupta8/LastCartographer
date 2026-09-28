@@ -8,6 +8,8 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'     # the week's build (PRO-02): Mondays 06:00 UTC, tests, build and smoke run
 
 concurrency:
   group: ci-${{ github.ref }}

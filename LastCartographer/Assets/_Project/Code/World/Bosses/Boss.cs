@@ -152,6 +152,13 @@ namespace OWSBG.World
 
         protected void ClearTelegraph() { TelegraphLeft = 0; }
 
+        /// <summary>For bosses whose phases follow something other than health (Hale's stones): move on, never back.</summary>
+        protected void AdvanceToPhase(int phase)
+        {
+            if (!IsFightActive || IsDead || phase <= Phase || phase > PhaseCount) return;
+            EnterPhase(phase);
+        }
+
         void EnterPhase(int phase)
         {
             if (phase == Phase) return;

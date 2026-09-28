@@ -22,14 +22,14 @@ namespace OWSBG.Tests
         }
 
         [Test]
-        public void OrielStandsThemDownAndTheReportSetsThemOnAgain()
+        public void TheReportSetsThemOnAndOrielStandsThemDown()
         {
             var w = new WorldState();
             Licence.Revoke(w);
-            w.Set(Licence.StoodDownFlag, true);
-            Assert.IsFalse(Licence.WardensHostile(w), "Oriel's stand-down");
             w.Set(Licence.ReportSentFlag, true);
-            Assert.IsTrue(Licence.WardensHostile(w), "Pell's report, sent, is the Guild's stance whatever Oriel said");
+            Assert.IsTrue(Licence.WardensHostile(w), "Pell's report, sent, is the Guild's stance");
+            w.Set(Licence.StoodDownFlag, true);
+            Assert.IsFalse(Licence.WardensHostile(w), "until Oriel, who has read it, stands them down");
 
             var fresh = new WorldState();
             fresh.Set(Licence.ReportSentFlag, true);

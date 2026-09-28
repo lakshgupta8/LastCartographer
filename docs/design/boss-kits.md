@@ -1,11 +1,12 @@
-# Boss Kits: the Collapse, Brann, the Choir, the Gatekeeper (CMB-13, v1)
+# Boss Kits: the mid-game and late bosses (CMB-13, CMB-14, v1)
 
-The four mid-game bosses from the boss sheets (6.4 to 6.7), built as greybox kits. Each kit keeps to the sheet's
-arena, its three phases and its answers. The sheet owns the reason and the words; the kit owns the frame data.
-Tier II throughout: telegraphs at least 11 frames, at most four attacks a phase.
+Seven bosses from the boss sheets, built as greybox kits: the four mid-game fights (6.4 to 6.7, CMB-13) and three
+late ones (6.8 to 6.10, CMB-14). Each kit keeps to the sheet's arena, its three phases and its answers. The sheet
+owns the reason and the words; the kit owns the frame data. Telegraphs keep the tier's floor (11 frames at Tier II,
+10 at Tier III), and no phase has more than four attacks.
 
-Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper` (World, `Code/World/Bosses/`), all on the `Boss` framework (CMB-10).
-`BossKits.Build(id, parent, origin)` builds any of the four arenas: an 18-unit floor between two doors, the arena
+Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar` (World, `Code/World/Bosses/`), all on
+the `Boss` framework (CMB-10). `BossKits.Build(id, parent, origin)` builds any of the seven arenas: an 18-unit floor between two doors, the arena
 zone, the props, and the boss with the name, tier, lines, reward and scraps from its sheet. The test rigs and the
 game's rooms use the same recipe.
 
@@ -19,6 +20,10 @@ game's rooms use the same recipe.
 - **`BossPart`** is a strikeable piece that is not the boss's body: a dove, a rubble block, an ink surge, a stone
   feather. It hands each hit to its owner, who decides whether it lands. A landed down-strike on a part pogoes
   Wren like any other hit.
+- **`Boss.AdvanceToPhase`** moves a boss on by something other than health (Hale's stones). **`Enemy.Heal`** gives
+  health back (Oriel's Bind).
+- **`Updraft`** (World) is rising air that lifts Wren while she has Windmemory (`WrenController.Lift`) and does
+  nothing without it. The Fallen Star's heat makes these; the Steppe's ink-swirls can use the same component.
 - **The answers as hit rules.** `Boss.IsLongstroke(hit)` means the forward Flourish in the frame it strikes.
   `IsDownStrike` means the pogo and `IsUpStrike` means the belly. The kits use these three tests to ask for the
   sheet's answers.
@@ -81,12 +86,65 @@ in the middle.
 
 32 health, 2 scraps, `boss.gatekeeper.defeated`. A retry puts it back on its plinth with its roots.
 
+## 6.8 Warden-Captain Oriel, the Bastion's drill-yard
+
+She has read Pell's report and fights to see whether it is accurate, so she mirrors Wren. When the fight begins she
+reads Wren's equipped Charter (`Equipment.Charter`). She fights with that Charter's combo, reversed (the Surveyor's
+slash, slash, thrust becomes thrust, slash, slash), and with its default Flourish. Each step's wind-up is three
+times its startup, never under the tier's floor. The late Charters mirror as the Surveyor until they exist.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | The mirrored combo, a step (clear of her, or into reach) | Parry the mirror: every combo step can be parried, and a parry staggers her 1 s and ends the combo |
+| 2 | Combo, Wren's own Flourish (Crosshatch in front, Longstroke six units, or Blot round her), step | Whatever the Charter asks |
+| 3 | At a third she steps clear and Binds, once: 60 frames, then a third of her health back. Then Flourish, combo, step, combo | Deny the Bind: a hit while she binds stops it, staggers her, and the Bind is spent |
+
+30 health, 3 scraps, `boss.oriel.defeated`. **The stand-down:** she counts every mask Wren loses in the attempt.
+Beaten with none lost, she writes `halden.oriel.stood_down`. A retry starts the count again and gives her Bind back.
+
+**A rule changed with it.** `Licence` used to let Pell's report outrank Oriel. But she only fights once the report
+has been sent, so her stand-down could never have counted. Her word now comes after the report and outranks it.
+`WardensHostile` is false once she has stood them down, and otherwise true when the report is sent or Wren is
+unlicensed. `LicenceTests` and `anchoring.md` now say so.
+
+## 6.9 Surveyor Hale, the Nine Stones
+
+The only duel. Nine stones stand two units apart across the floor. Hale sights the bare stone nearest him: his lens
+is up for 36 frames, then the stone is his. Wren draws a bare stone by standing still at it for 0.8 s. A stone she
+has drawn is hers, and if he was sighting it, his sighting fails. When he calls the count, a column of light rises
+over each of his stones and hurts whoever stands in it. Her stones stay quiet. **The phases follow the stones, not
+the wounds:** phase 2 when five stones have been drawn by either of them, phase 3 at eight. Health only decides
+the end.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Sight, quill (a jab), sight | Survey faster than him; parry the quill (1 s stagger) |
+| 2 | Sight, the count, quill | Stand on bare stones or her own; pogo the strikes (a down-strike on a column lands and bounces her) |
+| 3 | Count, quill, sight, count | The same, with most of the floor claimed |
+
+30 health, 2 scraps, `boss.hale.defeated`. When he has nothing left to sight, he calls the count instead; with no
+stones to call, he uses the quill. **Hale's lens:** once he is beaten the sighting lens cools down in half the time
+(`InstrumentBelt.CooldownOf`). His pages stay with `Stones_Hale_Pages`.
+
+## 6.10 The Fallen Star, the anvil-crater
+
+Magnetic iron everywhere but the seam on top where the keystone sat. Side strikes and up-strikes drift off it
+(counted, refused); only a strike from above lands. It hurts to touch.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Walk; slam (a mark where she stands, then the fist comes down; the fist stays 45 frames) | Pogo the fist up onto its back and strike the seam |
+| 2 | Iron walls (marked, then risen 3.6 units high either side of her, two at a time), slam, walk | Keep out of the pen, or climb |
+| 3 | It burns: the walls grow to 5.4 units, past any jump, and heat rises on her side of each | Windmemory: an updraft carries her over the wall; without it the heat is only heat |
+
+34 health, 2 scraps, `boss.fallen_star.defeated`. The keystone and the cold anvil belong to the Fire scene.
+
 ## Arena rooms
 
-The four regions are planned (`RoomPlans`), not built. `ArenaRooms` (Narrative) registers with
+The regions are planned (`RoomPlans`), not built. `ArenaRooms` (Narrative) registers with
 `RoomManager.Generators` and builds each fight's room at runtime. The scene is named after the planned room that
 fights that boss: `Arena_Emberdown_Hollow_4`, `Arena_Emberdown_Stair_3`, `Arena_Verdance_Aldermere_2`,
-`Arena_Verdance_Gate_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
+`Arena_Verdance_Gate_2`, `Arena_Halden_Bastion_2`, `Arena_Windreach_Stones_3`, `Arena_Windreach_Star_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
 region's rooms are built, its arena moves into them and that generator entry retires.
 
 ## Tests
@@ -106,11 +164,33 @@ region's rooms are built, its arena moves into them and that generator entry ret
   its roots, and then takes only up-strikes; a pass crosses the gate; a retry restores it.
 - **Every kit:** each one defeated sets its flag, gives its sheet's scraps and opens its doors.
 
+`LateBossKitFightTests` (PlayMode, 10 tests) do the same for the late three:
+
+- **Oriel:** she mirrors the Warden's Charter, reversed (overhead, shove, sweep) with Blot; every step shows its
+  wind-up and the combo lands; a real lens parry staggers her; her Flourish lands in phase 2; at a third she queues
+  the step and the Bind; the Bind heals a third, once; a retry gives it back, and a hit denies it. Beaten clean,
+  she stands the Wardens down even after the report; with a mask lost, she doesn't.
+- **Hale:** his sighting takes a stone; her survey beats his to the next one; his count spares her stones, hits
+  her on his, and its columns can be pogoed; 25 wounds leave him in phase 1 while five and eight stones move him
+  on; beating him halves the lens's cooldown.
+- **The Fallen Star:** side and up strikes drift and the seam takes a down-strike; the slam lands and the fist
+  pogoes; walls rise either side of her, then grow when it burns, with heat beside each; the heat lifts her over
+  the wall only once she has Windmemory; the walls go when it falls.
+
+The arena-room tests cover all seven rooms.
+
 `ArenaRoomsTests` (PlayMode, 2 tests) check that each kit has a planned room in its sheet's zone. They also travel
 to every arena room in the real game and walk in to start each fight.
 
 ## Open
 
+- **Hale can't win the survey yet.** Nothing happens if he sights all nine; the bible's stake (nine stones and the
+  Guild can anchor Windreach) belongs to the fight's outcome with the region's room, where it could write
+  `windreach.hale.finished`.
+- **The Fallen Star's magnetism** is v1 as a hit rule (side strikes drift). It doesn't yet pull Wren or bend the
+  quill's path.
+- **Oriel's arena** always holds her; gating it on `pell.report_sent` belongs with the Bastion's built room, like
+  the Choir's gate.
 - **Inkthread doesn't exist as a movement yet** (CMB-04). The Gatekeeper's phase 2 is reachable in the tests by
   placing Wren; in play it needs the thread. The roots are already the anchors the ability will look for.
 - **The Collapse keeps its own beat.** The bible's fight is the bounds-walk's last verse, so it should share the

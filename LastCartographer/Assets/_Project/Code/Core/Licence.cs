@@ -3,7 +3,8 @@ namespace OWSBG.Core
     /// <summary>
     /// Wren's standing with the Guild (bible 3.1, 7.1 step 3; DES-03 §2): a journeyman until Halvard's count at the
     /// lit lamp, unlicensed from then on. Wardens in anchored towns measure a journeyman and hunt an unlicensed
-    /// cartographer. Oriel can stand them down in Act 2 (boss 6.8); Pell's report, if sent, sets them on her again.
+    /// cartographer. Pell's report, if sent, sets them on her; Oriel fights her only once she has read it (boss 6.8),
+    /// and beaten without a mask lost she stands them down. Her word comes after the report and outranks it.
     /// </summary>
     public static class Licence
     {
@@ -23,13 +24,13 @@ namespace OWSBG.Core
         }
 
         /// <summary>
-        /// Whether the Wardens of an anchored place lower the lance at her: unlicensed, unless Oriel has stood them down;
-        /// and always once Pell's report is in the Guild's hands.
+        /// Whether the Wardens of an anchored place lower the lance at her: once Pell's report is in the Guild's hands, or
+        /// when she is unlicensed; never once Oriel has stood them down.
         /// </summary>
         public static bool WardensHostile(WorldState w)
         {
-            if (w.Is(ReportSentFlag)) return true;
-            return IsUnlicensed(w) && !w.Is(StoodDownFlag);
+            if (w.Is(StoodDownFlag)) return false;
+            return w.Is(ReportSentFlag) || IsUnlicensed(w);
         }
 
         public static string Describe(WorldState w) => IsUnlicensed(w) ? "unlicensed" : "journeyman";

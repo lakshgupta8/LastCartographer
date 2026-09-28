@@ -120,7 +120,7 @@ namespace OWSBG.Tests
                 Assert.AreEqual(sheet.Scraps, kit.Arena.VellumScraps, id + "'s scraps");
                 Assert.AreEqual(3, kit.Boss.PhaseCount);
                 Assert.IsFalse(kit.DoorW.activeSelf || kit.DoorE.activeSelf, "doors open until she steps in");
-                Assert.That(kit.Boss.MinTelegraphFrames, Is.InRange(9, 11), id + ": tier II telegraphs sit between tier I's 12 frames and tier IV's 8");
+                Assert.AreEqual(Mathf.Max(8, 12 - (sheet.Tier - 1) * 4 / 3), kit.Boss.MinTelegraphFrames, id + ": the tier's telegraph floor, between tier I's 12 frames and tier IV's 8");
             }
             for (int p = 1; p <= 3; p++)
             {

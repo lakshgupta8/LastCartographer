@@ -132,6 +132,9 @@ namespace OWSBG.World
         /// <summary>Tooling and tests: resize the health pool and refill it.</summary>
         public void SetMaxHealth(int max) { _maxHealth = Mathf.Max(1, max); Health = _maxHealth; }
 
+        /// <summary>Back up by <paramref name="amount"/>, never past the pool (a boss's Bind).</summary>
+        protected void Heal(int amount) { if (!IsDead) Health = Mathf.Min(_maxHealth, Health + Mathf.Max(0, amount)); }
+
         /// <summary>Back to full health and the starting pose (boss retry, respawning rooms).</summary>
         public void Revive()
         {

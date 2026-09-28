@@ -130,6 +130,15 @@ namespace OWSBG.World
             _grounded = false;
         }
 
+        /// <summary>Carried up (an updraft under Windmemory's wings): at least this rising speed, off the ground.</summary>
+        public void Lift(float speed)
+        {
+            if (_vel.y >= speed) return;
+            _vel.y = speed;
+            _grounded = false;
+            _jumpCutApplied = true;
+        }
+
         /// <summary>Called by the strike when a down-strike lands: bounce and refresh the dash.</summary>
         public void Pogo()
         {

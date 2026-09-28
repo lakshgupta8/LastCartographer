@@ -32,8 +32,8 @@ use this list; the bible should adopt it or replace it.
 The rule in character-bibles.md §1, now running: if Wren **reads** the report before Pell decides, and she has
 answered in the **Warden's** voice at least twice **in Halden**, Pell keeps it ("You'd have carried me out."). If she
 reads it and has not, or never reads it, Pell sends it, and says so to her face. Sent: `pell.report_sent`, which
-`Licence` already reads: Wardens hunt her in every anchored town whatever Oriel later says, and Oriel receives her
-in the drill-yard. Kept: the yard is closed.
+`Licence` already reads: Wardens hunt her in every anchored town, and Oriel receives her in the drill-yard. Beaten
+there without a mask lost, Oriel stands them down, and that outranks the report (CMB-14). Kept: the yard is closed.
 
 This needed a tally of Wren's voices, which the bible promises (2.3: "they colour NPC replies and decide the last
 line of the epilogue") and nothing counted until now.
@@ -69,6 +69,7 @@ rooms are released and Lowmarket is an island in the Blank (`Lowmarket`, the com
 
 ## 8. Open
 - The rooms; the flyer-tower's climb; Oriel's fight (CMB-14) and Halvard's second kit (CMB-12).
-- Oriel's stand-down (`halden.oriel.stood_down`) is written by the fight's outcome, which does not exist yet.
+- Oriel's stand-down (`halden.oriel.stood_down`) is written by her fight (CMB-14, `docs/design/boss-kits.md`) when
+  she is beaten without a mask lost; the fight stands in a runtime arena room until Bastion_2 is built.
 - Voice marks for the Saltmarrow, Emberdown and Verdance choices.
 - Pell at the act break (`Edge_Pell_Watch`, the Greyfold) and at the Threshold: NAR-11.

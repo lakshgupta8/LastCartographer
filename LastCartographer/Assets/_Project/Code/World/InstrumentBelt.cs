@@ -69,6 +69,10 @@ namespace OWSBG.World
         public Equipment Equipment => _bound ?? GameState.World.Equipment;
         public int SelectedSlot => Equipment.SelectedSlot;
         public bool IsParrying => _parryLeft > 0;
+        /// <summary>Hale's lens (boss 6.9): once he is beaten, the sighting lens comes round in half the time.</summary>
+        public static float CooldownOf(InstrumentInfo info, WorldState w)
+            => info.Kind == InstrumentKind.SightingLens && w != null && w.Is(Bosses.FlagKey("hale")) ? info.Cooldown * 0.5f : info.Cooldown;
+
         public float CooldownLeft(int slot) => slot >= 0 && slot < _cooldowns.Length ? Mathf.Max(0f, _cooldowns[slot] - Time.time) : 0f;
 
         public event Action<InstrumentKind, int> Used;       // kind, slot
@@ -184,7 +188,7 @@ namespace OWSBG.World
             }
             if (!Perform(s.Kind)) { Refused?.Invoke(s.Kind, slot); return false; }
             if (!info.Unlimited) e.SetUses(slot, s.UsesLeft - 1);
-            _cooldowns[slot] = Time.time + info.Cooldown;
+            _cooldowns[slot] = Time.time + CooldownOf(info, GameState.World);
             Used?.Invoke(s.Kind, slot);
             return true;
         }

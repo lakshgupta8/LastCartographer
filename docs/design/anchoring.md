@@ -37,8 +37,9 @@ also hurts. 5 health. Answer: Parry (the sighting lens). Placed in the room inac
 **Licence** (`Licence`, Core). Until Halvard's count at the lit lamp (`act1.unlicensed`, written by
 `Lighthouse_Halvard_Hunt`), a Warden **measures** a journeyman: stops in front of her for 40 frames, looks away,
 and does not measure again for 4 s; no lance, and touching him does not hurt (the first time, a caption). From
-the count on he is hostile everywhere, until Oriel stands the Wardens down (`halden.oriel.stood_down`, boss 6.8);
-Pell's report, if sent (`pell.report_sent`), sets them on her again whatever Oriel said. Striking a Warden
+the count on he is hostile everywhere. Pell's report, if sent (`pell.report_sent`), sets them on her too. Oriel,
+who fights her only once she has read it, stands them down if beaten without a mask lost
+(`halden.oriel.stood_down`, boss 6.8), and her word outranks the report. Striking a Warden
 provokes that one for the rest of the fight, papers or no. Yarn: `unlicensed()`.
 
 ## 5. Story hooks

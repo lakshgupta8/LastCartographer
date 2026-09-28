@@ -21,7 +21,7 @@ namespace OWSBG.World
     }
 
     /// <summary>
-    /// The greybox arenas of the bosses built at runtime (CMB-13): each boss's floor, doors, arena zone and props, its
+    /// The greybox arenas of the bosses built at runtime (CMB-13, CMB-14): each boss's floor, doors, arena zone and props, its
     /// name, tier and lines from its sheet (NAR-06), and its reward from the sheet too. The arena is eighteen units wide
     /// between the doors, floor top at the origin's height; the test rigs and the arena rooms build from the same recipe.
     /// </summary>
@@ -30,8 +30,8 @@ namespace OWSBG.World
         public const float Width = 18f;
         public const float DoorHeight = 6f;
 
-        /// <summary>The bosses with a kit here, in the plan's order (CMB-13).</summary>
-        public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper" };
+        /// <summary>The bosses with a kit here, in the plan's order (CMB-13, CMB-14).</summary>
+        public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star" };
         public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0;
 
         public static BossKit Build(string bossId, Transform parent, Vector2 origin)
@@ -93,6 +93,30 @@ namespace OWSBG.World
                     kit.Boss = g;
                     break;
                 }
+                case "oriel":
+                {
+                    var o = MakeBoss<Oriel>(parent, "Oriel", new Vector2(maxX - 3f, floor + 0.8f), new Vector2(0.7f, 1.6f), 30);
+                    o.floorY = floor; o.arenaMinX = minX; o.arenaMaxX = maxX;
+                    var chalk = InkMaterials.Lit("Arena_Chalk", new Color(0.94f, 0.93f, 0.88f));
+                    for (int i = 1; i < 6; i++) BossPart.Prop("Chalk", parent, new Vector2(origin.x + i * 3f, floor + 0.02f), new Vector2(0.08f, 0.04f), chalk, -0.4f);
+                    kit.Boss = o;
+                    break;
+                }
+                case "hale":
+                {
+                    var h = MakeBoss<Hale>(parent, "Hale", new Vector2(maxX - 1.5f, floor + 0.9f), new Vector2(0.8f, 1.8f), 30);
+                    h.floorY = floor; h.arenaMinX = minX; h.arenaMaxX = maxX;
+                    for (int i = 0; i < Hale.StoneCount; i++) h.stoneXs.Add(origin.x + 1f + i * 2f);
+                    kit.Boss = h;
+                    break;
+                }
+                case "fallen_star":
+                {
+                    var st = MakeBoss<FallenStar>(parent, "FallenStar", new Vector2(mid, floor + 1.6f), new Vector2(2.4f, 3.2f), 34);
+                    st.floorY = floor; st.arenaMinX = minX + 1.2f; st.arenaMaxX = maxX - 1.2f;
+                    kit.Boss = st;
+                    break;
+                }
             }
 
             kit.Boss.ApplySheet(sheet);
@@ -113,6 +137,9 @@ namespace OWSBG.World
             "collapse" => new Color(0.24f, 0.22f, 0.21f),
             "brann" => new Color(0.30f, 0.26f, 0.24f),
             "choir" => new Color(0.66f, 0.64f, 0.56f),
+            "oriel" => new Color(0.70f, 0.68f, 0.62f),
+            "hale" => new Color(0.56f, 0.52f, 0.34f),
+            "fallen_star" => new Color(0.32f, 0.28f, 0.26f),
             _ => new Color(0.44f, 0.48f, 0.38f),
         };
 

@@ -41,6 +41,7 @@ namespace OWSBG.World
         public string FlagKey => Bosses.FlagKey(_bossId);
         public bool IsDefeated => GameState.World.Is(FlagKey);
         public float IntroSeconds { get => _introSeconds; set => _introSeconds = value; }
+        public int VellumScraps { get => _vellumScraps; set => _vellumScraps = value; }
         public float RetryIntroSeconds { get => _retryIntroSeconds; set => _retryIntroSeconds = value; }
         public IReadOnlyList<GameObject> Doors => _doors;
         public Cutscene IntroCutscene { get => _introCutscene; set => _introCutscene = value; }

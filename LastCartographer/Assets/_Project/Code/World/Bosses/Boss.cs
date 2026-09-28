@@ -1,4 +1,5 @@
 using System;
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -55,6 +56,56 @@ namespace OWSBG.World
         }
 
         public string PhaseLine(int phase) => phase >= 1 && phase <= _phaseLines.Length ? _phaseLines[phase - 1] : "";
+
+        /// <summary>Name, tier and the three lines from the boss's sheet (NAR-06), for bosses built at runtime.</summary>
+        public void ApplySheet(BossSheet sheet)
+        {
+            if (sheet == null) return;
+            _bossName = sheet.Name;
+            _tier = sheet.Tier;
+            _phaseLines = sheet.Lines;
+        }
+
+        public enum Contact { None, Landed, Parried }
+        readonly Collider2D[] _wrenOverlaps = new Collider2D[4];
+
+        /// <summary>
+        /// One attack box against Wren. A parryable attack meets the lens first (Parried); otherwise it lands when she can
+        /// be hurt (Landed), and is None while she is invulnerable so the attack keeps looking.
+        /// </summary>
+        protected Contact HitWren(Vector2 centre, Vector2 size, int damage, bool parryable)
+        {
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            int n = Physics2D.OverlapBox(centre, size, 0f, filter, _wrenOverlaps);
+            return Resolve(n, damage, parryable);
+        }
+
+        protected Contact HitWrenInCircle(Vector2 centre, float radius, int damage)
+        {
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            int n = Physics2D.OverlapCircle(centre, radius, filter, _wrenOverlaps);
+            return Resolve(n, damage, false);
+        }
+
+        Contact Resolve(int n, int damage, bool parryable)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                var vitals = _wrenOverlaps[i].GetComponentInParent<WrenVitals>();
+                if (vitals == null) continue;
+                var belt = vitals.GetComponent<InstrumentBelt>();
+                if (parryable && belt != null && belt.TryParry(this)) return Contact.Parried;
+                return vitals.Damage(damage, transform.position) ? Contact.Landed : Contact.None;
+            }
+            return Contact.None;
+        }
+
+        /// <summary>The forward Flourish, in the frame it strikes.</summary>
+        public static bool IsLongstroke(in HitInfo hit)
+            => hit.Source != null && hit.Source.TryGetComponent<Flourishes>(out var f) && f.Current == FlourishKind.Longstroke;
+        /// <summary>A down-strike: the pogo.</summary>
+        public static bool IsDownStrike(in HitInfo hit) => hit.Direction.y < -0.5f;
+        public static bool IsUpStrike(in HitInfo hit) => hit.Direction.y > 0.5f;
 
         /// <summary>Called by the arena when the doors close.</summary>
         public void BeginFight()

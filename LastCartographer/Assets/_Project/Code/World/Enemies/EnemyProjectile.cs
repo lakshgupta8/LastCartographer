@@ -73,7 +73,7 @@ namespace OWSBG.World
             _body.MovePosition(p);
             transform.position = new Vector3(p.x, p.y, transform.position.z);
             var size = _box.size;
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
             int n = Physics2D.OverlapBox(p, size, 0f, filter, _hits);
             for (int i = 0; i < n; i++)
             {

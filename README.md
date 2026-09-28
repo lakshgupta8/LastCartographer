@@ -34,6 +34,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/gauntlets.md` | The six traversal gauntlets, one per region but the Blank, each around its ability; falls back to solid ground; the Road That Stops' lantern-radius cobbles; Inkthread (the Thread button) and the Windmemory glide |
 | `docs/design/moving-camp.md` | Windreach's hub on the move (`Camp`): three fires at three sites, the camp walking on at first light, the bedroll that walks her with it for a day, ashes where it isn't; and travel that takes an hour a way on the macro map (`Travel`) |
 | `docs/design/localisation.md` | The player's language: `Loc` for UI and captions, Yarn line ids and strings CSVs for dialogue, the catalogs keyed by id (`DataText`, `WorldText`), plurals and lists, the pseudo-locale and its audit of every page, `LocalizationSetup.Refresh`, and what is still open |
+| `docs/design/performance.md` | The 60 fps lock and 60 Hz physics (`FrameRate`), the budgets (`PerfBudget`), the `-perf` probe of a built player (`PerfProbe`, `tools/perf.ps1`), the first measurements, and the per-frame garbage it found and fixed |
 | `docs/design/build-pipeline.md` | The Windows build (`GameBuild`, `tools/build.ps1`), its version stamp (`BuildInfo`), the `-smoke` run of a built player (`SmokeTest`), CI on GitHub Actions with GameCI, and Steam's depot scripts and upload |
 | `docs/design/accessibility.md` | The options page (Esc / Start): remapping with swaps (`Controls`), hold or toggle for Bind, Survey and Glide, hitstop and shake sliders (`Shake`), high-contrast ink in the UI and the paper pass, captions that wait, and no dialogue that moves on by itself (`Options`) |
 | `docs/design/clarity.md` | Clarity as a meter and a gate (`ClarityMeter`): how long she lasts untethered, growing with the story; empty, the white gives her back; the lantern-radius it draws, white paper beyond it in the Greyfold and the Blank |
@@ -174,7 +175,8 @@ pwsh tools/build.ps1 -Development     # a development build
 ```
 `OWSBG.Build.GameBuild` builds the Addressables content and the 64-bit Windows player, stamped with its version (from the
 git tag) and commit, shown at the foot of the options page. `-smoke` makes a build boot, walk two rooms and start a
-conversation, then quit with 0 or an error code (`tools/smoke.ps1`). CI (`.github/workflows/ci.yml`, GameCI) runs both test
+conversation, then quit with 0 or an error code (`tools/smoke.ps1`); `-perf` walks six rooms and measures frames,
+transitions and garbage against the budgets (`tools/perf.ps1`, `docs/design/performance.md`). CI (`.github/workflows/ci.yml`, GameCI) runs both test
 suites, the Windows build and its smoke run on every push, and uploads to Steam from a `v*` tag; the secrets it needs,
 and Steam's depot scripts (`tools/steam-upload.ps1`), are in `docs/design/build-pipeline.md`.
 

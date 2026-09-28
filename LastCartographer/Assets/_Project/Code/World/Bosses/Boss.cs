@@ -77,14 +77,14 @@ namespace OWSBG.World
         /// </summary>
         protected Contact HitWren(Vector2 centre, Vector2 size, int damage, bool parryable)
         {
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
             int n = Physics2D.OverlapBox(centre, size, 0f, filter, _wrenOverlaps);
             return Resolve(n, damage, parryable);
         }
 
         protected Contact HitWrenInCircle(Vector2 centre, float radius, int damage)
         {
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
             int n = Physics2D.OverlapCircle(centre, radius, filter, _wrenOverlaps);
             return Resolve(n, damage, false);
         }

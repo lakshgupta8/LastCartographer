@@ -23,7 +23,7 @@ namespace OWSBG.Core
     {
         public static event Action<string, PlaceFate> FateChanged;
 
-        public static string Key(string place) => "place." + place + ".fate";
+        public static string Key(string place) => Keys.Of("place.", place, ".fate");
 
         public static PlaceFate FateOf(WorldState w, string place) => (PlaceFate)w.Get(Key(place));
         public static bool IsDecided(WorldState w, string place) => FateOf(w, place) != PlaceFate.Unwritten;

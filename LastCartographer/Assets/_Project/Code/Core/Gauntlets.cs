@@ -34,7 +34,7 @@ namespace OWSBG.Core
 
         /// <summary>A gauntlet's name in the player's language ("gauntlet.&lt;id&gt;"; NAR-18).</summary>
         public static string NameOf(GauntletPlan plan) => plan == null ? "" : Loc.T("gauntlet." + plan.Id, plan.Name);
-        public static string FlagKey(string id) => "gauntlet." + id + ".done";
+        public static string FlagKey(string id) => Keys.Of("gauntlet.", id, ".done");
         public static string SceneFor(string id) => ScenePrefix + id;
         public static bool IsGauntletScene(string scene) => !string.IsNullOrEmpty(scene) && scene.StartsWith(ScenePrefix);
 

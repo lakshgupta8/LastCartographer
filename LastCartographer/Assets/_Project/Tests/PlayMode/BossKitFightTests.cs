@@ -249,7 +249,13 @@ namespace OWSBG.Tests
 
             float scraps = Scraps();
             yield return Until(() => c.IsDrawn, 5f, "the last lamp's beat");
-            while (!c.IsDead) Assert.IsTrue(c.TakeHit(Strike(Vector2.right)));
+            // Strike on the lit part of each beat; a nested wait can resume a frame late, past the window's edge.
+            for (float t = 0f; !c.IsDead && t < 20f; t += Time.deltaTime)
+            {
+                if (c.IsDrawn) Assert.IsTrue(c.TakeHit(Strike(Vector2.right)), "a strike on a lit beat lands");
+                else yield return null;
+            }
+            Assert.IsTrue(c.IsDead);
             Won("collapse", scraps);
         }
 

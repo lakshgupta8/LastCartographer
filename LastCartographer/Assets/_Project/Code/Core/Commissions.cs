@@ -78,9 +78,9 @@ namespace OWSBG.Core
         /// <summary>Raised after every state change, with the new state.</summary>
         public static event Action<string, CommissionState> Changed;
 
-        public static string StateKey(string id) => Prefix + id;
+        public static string StateKey(string id) => Keys.Of(Prefix, id);
         public static string CounterKey(string id, int step) => Prefix + id + ".step" + step;
-        public static string IslandKey(string island) => "blank.island." + island;
+        public static string IslandKey(string island) => Keys.Of("blank.island.", island);
 
         public static CommissionState StateOf(WorldState w, string id) => (CommissionState)w.Get(StateKey(id));
         public static bool Is(WorldState w, string id, CommissionState state) => StateOf(w, id) == state;

@@ -31,7 +31,7 @@ namespace OWSBG.Core
         /// <summary>A bound's name, as the roll-call sings it, in the player's language.</summary>
         public static string BoundName(string walk, string english) => string.IsNullOrEmpty(english) ? english : Loc.T(BoundKey(walk, english), english);
 
-        public static string DoneKey(string place) => "walk." + place + ".done";
+        public static string DoneKey(string place) => Keys.Of("walk.", place, ".done");
 
         public static bool IsWalked(WorldState w, string place) => !string.IsNullOrEmpty(place) && w.Is(DoneKey(place));
 

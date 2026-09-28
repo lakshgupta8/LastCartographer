@@ -122,7 +122,7 @@ namespace OWSBG.World
             if (_hitThisThrust || Wren == null) return;
             var b = Collider.bounds;
             var centre = new Vector2(b.center.x + Facing * (b.extents.x + _lanceReach * 0.5f), b.center.y + 0.2f);
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
             int n = Physics2D.OverlapBox(centre, new Vector2(_lanceReach, _lanceHeight), 0f, filter, _hits);
             for (int i = 0; i < n; i++)
             {

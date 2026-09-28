@@ -19,7 +19,7 @@ namespace OWSBG.Core
         /// <summary>Bible 9.2: the Open World needs at least this many carried.</summary>
         public const int OpenWorldNeeds = 4;
 
-        public static string FlagKey(string home) => "keystone." + home;
+        public static string FlagKey(string home) => Keys.Of("keystone.", home);
         public static bool Has(WorldState w, string home) => w.Is(FlagKey(home));
 
         /// <summary>The stones Wren carries (Voss counts these; the frame adds its own).</summary>

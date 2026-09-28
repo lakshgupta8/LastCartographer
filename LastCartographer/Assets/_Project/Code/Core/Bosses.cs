@@ -67,7 +67,7 @@ namespace OWSBG.Core
         }
         public static List<BossSheet> ByNumber(string number) { EnsureDefaults(); return _all.FindAll(b => b.Number == number); }
         public static IEnumerable<string> Numbers => All.Select(b => b.Number).Distinct();
-        public static string FlagKey(string id) => "boss." + id + ".defeated";
+        public static string FlagKey(string id) => Keys.Of("boss.", id, ".defeated");
         public static bool IsDefeated(WorldState w, string id) => w.Is(FlagKey(id));
 
         /// <summary>Words in a line, for the twelve-word rule.</summary>

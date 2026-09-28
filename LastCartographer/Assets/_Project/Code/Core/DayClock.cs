@@ -77,7 +77,7 @@ namespace OWSBG.Core
 
         // ---- Anchored places keep their hour -------------------------------------------------------------
 
-        public static string LockKey(string place) => "place." + place + ".locked_time";
+        public static string LockKey(string place) => Keys.Of("place.", place, ".locked_time");
         public static bool IsLocked(WorldState w, string place) => !string.IsNullOrEmpty(place) && w.Numbers.ContainsKey(LockKey(place));
         public static void Lock(WorldState w, string place) { if (!string.IsNullOrEmpty(place)) w.Numbers[LockKey(place)] = Time(w); }
         public static void Unlock(WorldState w, string place) { if (!string.IsNullOrEmpty(place)) w.Numbers.Remove(LockKey(place)); }

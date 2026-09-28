@@ -15,12 +15,16 @@ namespace OWSBG.World
         /// <summary>Tests and tooling: true skips the prologue, false forces it, null defers to the editor pref.</summary>
         public static bool? SkipPrologueOverride { get; set; }
 
-        /// <summary>Start a new game at Saltmarrow instead of the Edge (OWSBG → Play From Saltmarrow).</summary>
+        /// <summary>A built player started with this skips the prologue too (testers, the performance probe).</summary>
+        public const string SkipPrologueArg = "-skipPrologue";
+
+        /// <summary>Start a new game at Saltmarrow instead of the Edge (OWSBG → Play From Saltmarrow, or <see cref="SkipPrologueArg"/>).</summary>
         public static bool SkipPrologue
         {
             get
             {
                 if (SkipPrologueOverride.HasValue) return SkipPrologueOverride.Value;
+                if (System.Array.IndexOf(System.Environment.GetCommandLineArgs(), SkipPrologueArg) >= 0) return true;
 #if UNITY_EDITOR
                 return UnityEditor.EditorPrefs.GetBool("OWSBG.SkipPrologue", false);
 #else

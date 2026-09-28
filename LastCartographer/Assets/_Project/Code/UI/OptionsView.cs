@@ -52,7 +52,7 @@ namespace OWSBG.UI
         {
             if (DialogueService.Instance != null && DialogueService.Instance.IsRunning) return true;
             if (AtlasView.Instance != null && AtlasView.Instance.IsOpen) return true;
-            var wren = FindFirstObjectByType<WrenController>();
+            var wren = WrenController.Current;   // asked every frame: no scene search
             return wren != null && wren.Frozen;
         }
 

@@ -114,7 +114,7 @@ namespace OWSBG.World
             Tolls++;
             State = Move.Recover;
             _frames = 0;
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
             int n = Physics2D.OverlapCircle(transform.position, _bellRadius, filter, _hits);
             for (int i = 0; i < n; i++)
             {

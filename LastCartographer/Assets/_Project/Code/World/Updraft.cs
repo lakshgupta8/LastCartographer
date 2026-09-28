@@ -25,7 +25,7 @@ namespace OWSBG.World
         void FixedUpdate()
         {
             var b = _box.bounds;
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
             int n = Physics2D.OverlapBox(b.center, b.size, 0f, filter, _hits);
             for (int i = 0; i < n; i++)
             {

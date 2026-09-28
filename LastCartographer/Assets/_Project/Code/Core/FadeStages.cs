@@ -18,9 +18,9 @@ namespace OWSBG.Core
         public static event Action<string> Erased;
         public static event Action<string> Recovered;
 
-        public static string Key(string place) => Prefix + place;
+        public static string Key(string place) => Keys.Of(Prefix, place);
         /// <summary>Set while erased: the stage the place had, plus one (so 0 means not erased).</summary>
-        public static string ErasedKey(string place) => Prefix + place + ".erased";
+        public static string ErasedKey(string place) => Keys.Of(Prefix, place, ".erased");
 
         public static int Get(WorldState w, string place) => Clamp(w.Get(Key(place)));
 

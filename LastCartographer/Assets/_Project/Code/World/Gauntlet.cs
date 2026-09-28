@@ -27,7 +27,7 @@ namespace OWSBG.World
         {
             if (_wren == null) _wren = FindFirstObjectByType<WrenController>();
             if (_wren == null || !_wren.IsGrounded) return;
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Ground"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Ground, useTriggers = false };
             int n = Physics2D.Raycast(_wren.Position + Vector2.up * 0.1f, Vector2.down, filter, _hits, 0.4f);
             for (int i = 0; i < n; i++)
                 if (_hits[i].collider.GetComponent<SolidGround>() != null) { LastSafe = _wren.Position; return; }
@@ -80,7 +80,7 @@ namespace OWSBG.World
         {
             if (Gauntlet == null) return;
             var b = _box.bounds;
-            var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
             int n = Physics2D.OverlapBox(b.center, b.size, 0f, filter, _hits);
             for (int i = 0; i < n; i++)
             {

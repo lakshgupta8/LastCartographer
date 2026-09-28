@@ -283,7 +283,7 @@ namespace OWSBG.World
                 {
                     var box = new Vector2(p.x + dir * wrenDrawingReach * 0.5f, p.y);
                     if (_vitals == null) _vitals = Wren.GetComponent<WrenVitals>();
-                    var filter = new ContactFilter2D { useLayerMask = true, layerMask = LayerMask.GetMask("Player"), useTriggers = false };
+                    var filter = new ContactFilter2D { useLayerMask = true, layerMask = Layers.Player, useTriggers = false };
                     var hits = new Collider2D[2];
                     int n = Physics2D.OverlapBox(box, new Vector2(wrenDrawingReach, 1f), 0f, filter, hits);
                     for (int i = 0; i < n; i++) if (hits[i].GetComponentInParent<WrenVitals>() is WrenVitals v && v.Damage(damage, p)) { _jabHit = true; break; }

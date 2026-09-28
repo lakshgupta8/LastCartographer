@@ -58,6 +58,17 @@ namespace OWSBG.Core
         public static bool IsLanternLit(string roomId)
         {
             if (string.IsNullOrEmpty(roomId)) return false;
+            // Asked every frame, and only the catalogs decide it: worked out once per room (PRG-24).
+            if (_lanternLit.TryGetValue(roomId, out var lit)) return lit;
+            lit = WorkOutLanternLit(roomId);
+            _lanternLit[roomId] = lit;
+            return lit;
+        }
+
+        static readonly System.Collections.Generic.Dictionary<string, bool> _lanternLit = new System.Collections.Generic.Dictionary<string, bool>();
+
+        static bool WorkOutLanternLit(string roomId)
+        {
             if (Islands.IsIslandScene(roomId)) return true;
             var planned = PlannedRoomOf(roomId);
             if (planned == null) return false;

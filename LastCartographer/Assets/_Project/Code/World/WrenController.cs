@@ -118,6 +118,12 @@ namespace OWSBG.World
         CharterSet _charters;
         Inkwell _ink;
 
+        /// <summary>The Wren in play, without searching the scene for her (PRG-24): the last one enabled.</summary>
+        public static WrenController Current { get; private set; }
+
+        void OnEnable() { Current = this; }
+        void OnDisable() { if (Current == this) Current = null; }
+
         void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();

@@ -41,6 +41,10 @@ namespace OWSBG.World
         public string CurrentRoom { get; private set; }
         public bool IsTransitioning { get; private set; }
         public bool UsesAddressables => _useAddressables;
+        /// <summary>How long the last room took, from the request to Wren standing in it (PRG-24's budget is 100 ms).</summary>
+        public float LastTransitionMs { get; private set; }
+        /// <summary>A room came in, and how long it took (ms).</summary>
+        public static event Action<string, float> Transitioned;
         /// <summary>True when the room came in through Addressables (as opposed to Build Settings or adoption).</summary>
         public bool IsAddressable(string scene) => !string.IsNullOrEmpty(scene) && _scenes.ContainsKey(scene);
         /// <summary>Neighbour rooms whose bundles are being kept resident.</summary>
@@ -119,6 +123,7 @@ namespace OWSBG.World
         IEnumerator Load(string scene, string spawn, string unload)
         {
             IsTransitioning = true;
+            float started = Time.realtimeSinceStartup;
             if (_preloading != null) { StopCoroutine(_preloading); _preloading = null; IsPreloading = false; }
 
             Scene loaded = default;
@@ -179,7 +184,9 @@ namespace OWSBG.World
 
             CurrentRoom = scene;
             IsTransitioning = false;
+            LastTransitionMs = (Time.realtimeSinceStartup - started) * 1000f;
             RoomChanged?.Invoke(scene);
+            Transitioned?.Invoke(scene, LastTransitionMs);
             if (_preloadNeighbours) _preloading = StartCoroutine(PreloadNeighbours(room));
         }
 

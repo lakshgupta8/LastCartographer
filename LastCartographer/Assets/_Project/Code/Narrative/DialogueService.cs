@@ -106,6 +106,7 @@ namespace OWSBG.Narrative
                 var walk = BoundsWalk.Find(id);
                 if (walk == null || !walk.Begin()) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: no such walk here, or it is already walked");
             });
+            runner.AddCommandHandler("epilogue", () => { EndingsRunner.Instance?.Begin(); });
             runner.AddCommandHandler<string, string>("voice", (kind, scope) =>
             {
                 if (Voices.TryParse(kind, out var v)) Voices.Record(GameState.World, v, scope);

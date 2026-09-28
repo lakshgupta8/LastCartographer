@@ -63,7 +63,7 @@ namespace OWSBG.Tests
         {
             yield return Boot();
             var w = GameState.World;
-            Assert.IsNotNull(RoomManager.Generator, "the builder registered itself");
+            Assert.IsTrue(RoomManager.Generators.Contains(IslandBuilder.Build), "the builder registered itself");
             Places.Release(w, "Verdance_Aldermere_2");
             Places.Release(w, "Halden_Lowmarket_2");
             Places.Release(w, "Emberdown_Baths_2");

@@ -399,6 +399,7 @@ namespace OWSBG.Setup
             sysGo.AddComponent<DayCycle>();
             sysGo.AddComponent<IrisSeedDrops>();
             sysGo.AddComponent<MemoryDrops>();
+            sysGo.AddComponent<EndingsRunner>();
 
             // Room manager.
             var rmGo = new GameObject("RoomManager");

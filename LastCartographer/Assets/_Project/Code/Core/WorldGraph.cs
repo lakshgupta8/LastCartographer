@@ -62,6 +62,19 @@ namespace OWSBG.Core
 
         /// <summary>The zone a greybox atlas place (room id) belongs to.</summary>
         public static string ZoneOfPlace(string placeId) { EnsureDefaults(); return _placeZones.TryGetValue(placeId ?? "", out var z) ? z : null; }
+        /// <summary>Built greybox rooms are scenes named for their place.</summary>
+        public const string GreyboxPrefix = "Greybox_";
+        /// <summary>The built places in a zone, by name.</summary>
+        public static List<string> PlacesOf(string zone)
+        {
+            EnsureDefaults();
+            var list = new List<string>();
+            foreach (var kv in _placeZones) if (kv.Value == zone) list.Add(kv.Key);
+            list.Sort(StringComparer.Ordinal);
+            return list;
+        }
+        /// <summary>The scene of the zone's first built room, or null if none is built yet.</summary>
+        public static string BuiltRoomScene(string zone) { var p = PlacesOf(zone); return p.Count == 0 ? null : GreyboxPrefix + p[0]; }
 
         public static int RoomCount() { int n = 0; foreach (var z in Zones) n += z.Rooms; return n; }
         public static int VantageCount() { int n = 0; foreach (var z in Zones) n += z.Vantages; return n; }

@@ -95,6 +95,10 @@ namespace OWSBG.Tests
                 var walk = Endings.EpilogueWalk(x);
                 Assert.AreEqual("Epilogue_Pell", walk.First(), x + ": Halden first");
                 Assert.AreEqual("Epilogue_Marrow", walk.Last(), x + ": Marrow last");
+                foreach (var stop in Endings.EpilogueStops(x))
+                    Assert.IsNotNull(WorldGraph.Find(stop.Zone), x + "'s stop " + stop.Node + " has a zone on the map");
+                Assert.AreEqual("Halden.JourneymansHall", Endings.EpilogueStops(x)[0].Zone, "Halden first");
+                Assert.AreEqual("Blank.ThessalyHollow", Endings.EpilogueStops(x).Last().Zone, "the Hollow last");
             }
         }
 

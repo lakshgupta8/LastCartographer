@@ -49,10 +49,11 @@ namespace OWSBG.World
         public event Action<string> RoomChanged;
 
         /// <summary>
-        /// Rooms made at runtime instead of loaded (the Blank's islands, PRG-20): given a scene name, returns the Room it
-        /// built in a new scene, or null for a scene it does not own. Registered by the builder; asked before Addressables.
+        /// Rooms made at runtime instead of loaded (the Blank's islands, the epilogue's stand-ins): each generator, given a
+        /// scene name, returns the Room it built in a new scene, or null for a scene it does not own. Builders register
+        /// themselves at load; they are asked in order, before Addressables.
         /// </summary>
-        public static Func<string, Room> Generator;
+        public static readonly List<Func<string, Room>> Generators = new List<Func<string, Room>>();
 
         void Awake()
         {
@@ -122,11 +123,13 @@ namespace OWSBG.World
 
             Scene loaded = default;
             bool ok = false;
-            var generated = Generator?.Invoke(scene);
-            if (generated != null)
+            foreach (var generate in Generators)
             {
+                var generated = generate(scene);
+                if (generated == null) continue;
                 loaded = generated.gameObject.scene;
                 ok = loaded.IsValid();
+                break;
             }
             if (!ok && _useAddressables)
             {

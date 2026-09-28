@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OWSBG.Core
@@ -86,6 +87,18 @@ namespace OWSBG.Core
                 case Ending.Rest: return new[] { "Epilogue_Pell", "Epilogue_Marrow" };
                 default: return new string[0];
             }
+        }
+
+        /// <summary>The walk's stops with where each plays, from the cast's placing of the epilogue scenes.</summary>
+        public static List<(string Node, string Zone)> EpilogueStops(Ending e)
+        {
+            var stops = new List<(string, string)>();
+            foreach (var node in EpilogueWalk(e))
+            {
+                var at = Cast.Appearances.FirstOrDefault(a => a.Node == node);
+                stops.Add((node, at?.Zone));
+            }
+            return stops;
         }
 
         public static bool TryParse(string s, out Ending e)

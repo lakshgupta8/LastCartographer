@@ -24,6 +24,7 @@ namespace OWSBG.Tests
             Time.timeScale = 1f;
             GameState.NewGame();
             Bootstrap.SkipPrologueOverride = true;
+            EndingsRunner.AutoWalk = false;
             CommissionCatalog.Reset(); CommissionCatalog.EnsureDefaults();
         }
 
@@ -31,6 +32,7 @@ namespace OWSBG.Tests
         public IEnumerator TearDown()
         {
             Bootstrap.SkipPrologueOverride = null;
+            EndingsRunner.AutoWalk = true;
             var empty = SceneManager.CreateScene("TestEmpty_" + Random.Range(0, 1 << 20));
             SceneManager.SetActiveScene(empty);
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)

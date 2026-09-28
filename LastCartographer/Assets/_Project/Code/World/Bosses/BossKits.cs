@@ -21,7 +21,7 @@ namespace OWSBG.World
     }
 
     /// <summary>
-    /// The greybox arenas of the bosses built at runtime (CMB-13, CMB-14): each boss's floor, doors, arena zone and props, its
+    /// The greybox arenas of the bosses built at runtime (CMB-13 to CMB-15): each boss's floor, doors, arena zone and props, its
     /// name, tier and lines from its sheet (NAR-06), and its reward from the sheet too. The arena is eighteen units wide
     /// between the doors, floor top at the origin's height; the test rigs and the arena rooms build from the same recipe.
     /// </summary>
@@ -30,8 +30,8 @@ namespace OWSBG.World
         public const float Width = 18f;
         public const float DoorHeight = 6f;
 
-        /// <summary>The bosses with a kit here, in the plan's order (CMB-13, CMB-14).</summary>
-        public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star" };
+        /// <summary>The bosses with a kit here, in the plan's order (CMB-13 to CMB-15).</summary>
+        public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star", "voss" };
         public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0;
 
         public static BossKit Build(string bossId, Transform parent, Vector2 origin)
@@ -110,6 +110,13 @@ namespace OWSBG.World
                     kit.Boss = h;
                     break;
                 }
+                case "voss":
+                {
+                    var v = MakeBoss<Voss>(parent, "Voss", new Vector2(maxX - 3f, floor + 1.1f), new Vector2(0.9f, 2.2f), 40);
+                    v.floorY = floor; v.arenaMinX = minX; v.arenaMaxX = maxX;
+                    kit.Boss = v;
+                    break;
+                }
                 case "fallen_star":
                 {
                     var st = MakeBoss<FallenStar>(parent, "FallenStar", new Vector2(mid, floor + 1.6f), new Vector2(2.4f, 3.2f), 34);
@@ -140,6 +147,7 @@ namespace OWSBG.World
             "oriel" => new Color(0.70f, 0.68f, 0.62f),
             "hale" => new Color(0.56f, 0.52f, 0.34f),
             "fallen_star" => new Color(0.32f, 0.28f, 0.26f),
+            "voss" => new Color(0.80f, 0.80f, 0.78f),
             _ => new Color(0.44f, 0.48f, 0.38f),
         };
 

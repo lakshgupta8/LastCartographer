@@ -1,13 +1,13 @@
-# Boss Kits: the mid-game and late bosses (CMB-13, CMB-14, v1)
+# Boss Kits: the mid-game and late bosses (CMB-13 to CMB-15, v1)
 
-Seven bosses from the boss sheets, built as greybox kits: the four mid-game fights (6.4 to 6.7, CMB-13) and three
-late ones (6.8 to 6.10, CMB-14). Each kit keeps to the sheet's arena, its three phases and its answers. The sheet
+Eight bosses from the boss sheets, built as greybox kits: the four mid-game fights (6.4 to 6.7, CMB-13), three
+late ones (6.8 to 6.10, CMB-14) and Voss at the Threshold (6.11, CMB-15). Each kit keeps to the sheet's arena, its three phases and its answers. The sheet
 owns the reason and the words; the kit owns the frame data. Telegraphs keep the tier's floor (11 frames at Tier II,
 10 at Tier III), and no phase has more than four attacks.
 
-Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar` (World, `Code/World/Bosses/`), all on
-the `Boss` framework (CMB-10). `BossKits.Build(id, parent, origin)` builds any of the seven arenas: an 18-unit floor between two doors, the arena
-zone, the props, and the boss with the name, tier, lines, reward and scraps from its sheet. The test rigs and the
+Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar`, `Voss` (World,
+`Code/World/Bosses/`), all on the `Boss` framework (CMB-10). `BossKits.Build(id, parent, origin)` builds any of the
+eight arenas: an 18-unit floor between two doors, the arena zone, the props, and the boss with the name, tier, lines, reward and scraps from its sheet. The test rigs and the
 game's rooms use the same recipe.
 
 ## Shared pieces
@@ -139,12 +139,32 @@ Magnetic iron everywhere but the seam on top where the keystone sat. Side strike
 
 34 health, 2 scraps, `boss.fallen_star.defeated`. The keystone and the cold anvil belong to the Fire scene.
 
+## 6.11 Guildmaster Aurelian Voss, the Threshold
+
+He will not let Wren cross. The floor is six sections. **Anchoring:** from phase 2 the colour grade locks
+(`HeldState.LockGrade`, the same global an anchored place sets), and he seals the section she stands in: a compass
+rose is drawn on it for 24 frames, then a brass seal rises over it. A section sealed with her inside holds her for a
+beat (0.8 s, `WrenController.Frozen`). She is held again only when she walks back in after leaving, and not sooner
+than 1.2 s after the last hold. A seal breaks to a strike on its edge from outside; from within, the quill only rings
+on it. He keeps three seals at most, and a fourth replaces the oldest. When a seal would go where she already stands
+sealed, he thrusts instead.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Thrust, guard (the compass-rose shield up for 60 frames, walking forward), lunge | Parry the lance (1 s stagger); over or behind the shield |
+| 2 | Anchor, thrust, anchor, lunge | Break the seal by striking its edge; don't stand where the rose is drawn |
+| 3 | The Blank eats the floor from the west, a section every 1.6 s, seals and all, until two sections are left; he fights from that island. Anchor, thrust, guard | Stay off the west: the white takes a mask at a time |
+
+40 health, 3 scraps, `boss.voss.defeated` (which `Threshold_Voss` reads before it writes `greyfold.crossed`). The
+grade comes free and any hold ends when he falls or on a retry.
+
 ## Arena rooms
 
 The regions are planned (`RoomPlans`), not built. `ArenaRooms` (Narrative) registers with
 `RoomManager.Generators` and builds each fight's room at runtime. The scene is named after the planned room that
 fights that boss: `Arena_Emberdown_Hollow_4`, `Arena_Emberdown_Stair_3`, `Arena_Verdance_Aldermere_2`,
-`Arena_Verdance_Gate_2`, `Arena_Halden_Bastion_2`, `Arena_Windreach_Stones_3`, `Arena_Windreach_Star_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
+`Arena_Verdance_Gate_2`, `Arena_Halden_Bastion_2`, `Arena_Windreach_Stones_3`, `Arena_Windreach_Star_2`,
+`Arena_Greyfold_Threshold_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
 region's rooms are built, its arena moves into them and that generator entry retires.
 
 ## Tests
@@ -177,7 +197,14 @@ region's rooms are built, its arena moves into them and that generator entry ret
   pogoes; walls rise either side of her, then grow when it burns, with heat beside each; the heat lifts her over
   the wall only once she has Windmemory; the walls go when it falls.
 
-The arena-room tests cover all seven rooms.
+`VossFightTests` (PlayMode, 5 tests): his sheet and patterns; the thrust lands after its wind-up, a real lens parry
+staggers him, and the shield turns the quill from the front but not over it or from behind; phase 2 locks the grade,
+seals her section and holds her for a beat, not again while she stands still, and again when she walks back in; a
+seal ignores strikes from inside and breaks to one on its edge from outside; phase 3's white takes the western seal,
+hurts her in the west, and stops at his two-section island; beating him sets the flag, pays three scraps and frees
+the grade; a retry mid-hold frees her and unseals the arena.
+
+The arena-room tests cover all eight rooms.
 
 `ArenaRoomsTests` (PlayMode, 2 tests) check that each kit has a planned room in its sheet's zone. They also travel
 to every arena room in the real game and walk in to start each fight.
@@ -191,6 +218,9 @@ to every arena room in the real game and walk in to start each fight.
   quill's path.
 - **Oriel's arena** always holds her; gating it on `pell.report_sent` belongs with the Bastion's built room, like
   the Choir's gate.
+- **Voss's sheet has sections freeze mid-air and platforms lock.** v1 seals floor sections only; the Threshold's
+  built room, with platforms to lock, can add them. His "shrinking island" is the floor's last two sections, not a
+  platform yet. Halvard's third kit, fought before him at Threshold_1, is still CMB-12's.
 - **Inkthread doesn't exist as a movement yet** (CMB-04). The Gatekeeper's phase 2 is reachable in the tests by
   placing Wren; in play it needs the thread. The roots are already the anchors the ability will look for.
 - **The Collapse keeps its own beat.** The bible's fight is the bounds-walk's last verse, so it should share the

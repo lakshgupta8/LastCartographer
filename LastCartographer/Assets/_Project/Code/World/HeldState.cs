@@ -74,6 +74,9 @@ namespace OWSBG.World
             SetGlobal(Level);
         }
 
+        /// <summary>Lock or free the grade from outside a held room (Voss anchors the Threshold's arena, boss 6.11).</summary>
+        public static void LockGrade(float level) { SetGlobal(Mathf.Clamp01(level)); }
+
         static void SetGlobal(float level)
         {
             CurrentLevel = level;

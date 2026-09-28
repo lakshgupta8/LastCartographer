@@ -159,6 +159,7 @@ namespace OWSBG.UI
             string here = Room.Current != null ? Room.Current.RoomId : "";
             _day.text = Loc.F("atlas.day", "Day {0} · {1}", DayClock.Day(w), DayClock.Display(DayClock.PhaseIn(w, here)))
                         + (DayClock.IsLocked(w, here) ? Loc.T("atlas.held_hour", "  (held at this hour)") : "");
+            _noted.Clear();
             foreach (var place in Atlas.AllPlaces)
             {
                 if (place.Region != region)
@@ -167,6 +168,9 @@ namespace OWSBG.UI
                     var head = InkTheme.Text("region", Atlas.RegionName(region), 16, InkTheme.Dim, FontStyle.Bold);
                     head.style.marginTop = 6; head.style.marginBottom = 4;
                     _places.Add(head);
+                    // The page's heading note, once anything on it is drawn (NAR-17).
+                    var note = RegionNote(w, region);
+                    if (note.Length > 0) _places.Add(Margin("region-note", note, 0f));
                 }
                 _places.Add(PlaceEntry(w, place, place.Id == here));
             }
@@ -205,6 +209,40 @@ namespace OWSBG.UI
                 row.Add(marker); row.Add(name); row.Add(where);
                 _travel.Add(row);
             }
+        }
+
+        readonly HashSet<string> _noted = new HashSet<string>();
+
+        /// <summary>A line in Wren's hand in the atlas's margin (NAR-17).</summary>
+        static Label Margin(string name, string text, float indent)
+        {
+            var l = InkTheme.Text(name, text, 14, InkTheme.Dim, FontStyle.Italic);
+            l.AddToClassList("atlas-margin");
+            l.style.marginLeft = indent;
+            l.style.marginBottom = 4;
+            l.style.whiteSpace = WhiteSpace.Normal;
+            return l;
+        }
+
+        /// <summary>The region's note, once a place on its page is drawn.</summary>
+        static string RegionNote(WorldState w, string region)
+        {
+            foreach (var p in Atlas.AllPlaces)
+            {
+                if (p.Region != region || !Atlas.IsDrawn(w, p.Id)) continue;
+                var zone = WorldGraph.Find(WorldGraph.ZoneOfPlace(p.Id) ?? "");
+                return zone != null ? Flavour.ForRegion(zone.Region) : "";
+            }
+            return "";
+        }
+
+        /// <summary>A zone's note under the first drawn place in it: the margin fills in as the page is surveyed.</summary>
+        string ZoneNote(WorldState w, AtlasPlace place)
+        {
+            if (!Atlas.IsDrawn(w, place.Id)) return "";
+            var zone = WorldGraph.ZoneOfPlace(place.Id);
+            if (string.IsNullOrEmpty(zone) || !_noted.Add(zone)) return "";
+            return Flavour.ForZone(zone);
         }
 
         VisualElement PlaceEntry(WorldState w, AtlasPlace place, bool here)
@@ -249,6 +287,8 @@ namespace OWSBG.UI
             var line = InkTheme.Text("status", status.ToString(), 15, erased ? InkTheme.Ochre : InkTheme.Dim);
             line.style.marginLeft = 12;
             box.Add(line);
+            var note = ZoneNote(w, place);
+            if (note.Length > 0) box.Add(Margin("zone-note", note, 12f));
             return box;
         }
     }

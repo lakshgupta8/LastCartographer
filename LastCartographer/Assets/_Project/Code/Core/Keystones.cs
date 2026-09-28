@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 
 namespace OWSBG.Core
@@ -20,6 +21,20 @@ namespace OWSBG.Core
         public const int OpenWorldNeeds = 4;
 
         public static string FlagKey(string home) => Keys.Of("keystone.", home);
+
+        /// <summary>Each stone as the journal names it (NAR-17), in English; "keystone.&lt;home&gt;.name" in the player's language.</summary>
+        public static readonly IReadOnlyDictionary<string, string> English = new Dictionary<string, string>
+        {
+            { "aury", "Aury's stone" },
+            { "hollowvein", "The Hollowvein stone" },
+            { "quiet_house", "The Quiet House's stone" },
+            { "windreach", "Idrenne's cooking-stone" },
+            { "isolde", "The Vault's sixth" },
+            { "archivist", "The seventh stone" },
+            { "observatory", "The Observatory's stone" },
+        };
+        public static string NameKey(string home) => Keys.Of("keystone.", home, ".name");
+        public static string NameOf(string home) => English.TryGetValue(home ?? "", out var e) ? Loc.T(NameKey(home), e) : home;
         public static bool Has(WorldState w, string home) => w.Is(FlagKey(home));
 
         /// <summary>The stones Wren carries (Voss counts these; the frame adds its own).</summary>

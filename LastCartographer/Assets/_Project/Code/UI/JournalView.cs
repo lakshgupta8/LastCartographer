@@ -27,7 +27,7 @@ namespace OWSBG.UI
 
         WrenController _wren;
         bool _wasFrozen, _built;
-        VisualElement _panel, _open, _closed, _host;
+        VisualElement _panel, _open, _closed, _host, _carried;
         Label _title, _empty, _scraps, _toast, _hint;
         string _pendingToast;
         float _toastLeft;
@@ -154,9 +154,11 @@ namespace OWSBG.UI
             _closed.style.marginTop = 12;
             _scraps = InkTheme.Text("scraps", "", 16, InkTheme.Wash);
             _scraps.style.marginTop = 16;
+            _carried = new VisualElement { name = "carried", pickingMode = PickingMode.Ignore };
+            _carried.style.marginTop = 12;
             _hint = InkTheme.Say("hint", "journal.hint", "M / Esc close", 15, InkTheme.Dim);
             _hint.style.marginTop = 12;
-            _panel.Add(_title); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(_hint);
+            _panel.Add(_title); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(_carried); _panel.Add(_hint);
             InkTheme.Show(_panel, false);
             if (_host != null) Host(); else ui.Desk.Add(_panel);
 
@@ -197,6 +199,43 @@ namespace OWSBG.UI
                 _closed.Insert(0, head);
             }
             _scraps.text = Loc.F("journal.purse", "Vellum scraps: {0}     Iris seeds: {1}", Commissions.Scraps(w), Economy.Seeds(w));
+            RefreshCarried(w);
+        }
+
+        /// <summary>
+        /// What she carries, each with its line in her hand (NAR-17): what came back to her, the stones, the bound
+        /// memories, and the two purses. The journal is the only page that shows them.
+        /// </summary>
+        void RefreshCarried(WorldState w)
+        {
+            _carried.Clear();
+            var head = InkTheme.Text("carried-head", Loc.T("journal.carried", "Carried"), 16, InkTheme.Dim, FontStyle.Bold);
+            head.style.marginBottom = 4;
+            _carried.Add(head);
+            var have = AbilitySet.FromWorld(w);
+            foreach (Ability a in System.Enum.GetValues(typeof(Ability)))
+                if (a != Ability.None && (have & a) == a) _carried.Add(Carried("ability-" + a, AbilityNames.Of(a), Flavour.ForAbility(a)));
+            foreach (var home in Keystones.Homes)
+                if (Keystones.Has(w, home)) _carried.Add(Carried("keystone-" + home, Keystones.NameOf(home), Flavour.ForKeystone(home)));
+            foreach (var m in w.BoundMemories) _carried.Add(Carried("memory-" + m, Memories.Name(m), Flavour.ForMemory(m)));
+            _carried.Add(Carried("purse-seeds", Loc.P("journal.carried.seeds", Economy.Seeds(w), "{0} iris seed", "{0} iris seeds"), Flavour.ForCurrency(Flavour.IrisSeed)));
+            _carried.Add(Carried("purse-scraps", Loc.P("journal.carried.scraps", Commissions.Scraps(w), "{0} vellum scrap", "{0} vellum scraps"), Flavour.ForCurrency(Flavour.VellumScrap)));
+        }
+
+        static VisualElement Carried(string name, string what, string flavour)
+        {
+            var box = new VisualElement { name = name, pickingMode = PickingMode.Ignore };
+            box.AddToClassList("journal-carried");
+            box.style.marginBottom = 4;
+            box.Add(InkTheme.Text("what", what, 17, InkTheme.Ink, FontStyle.Bold));
+            if (!string.IsNullOrEmpty(flavour))
+            {
+                var f = InkTheme.Text("flavour", flavour, 14, InkTheme.Dim, FontStyle.Italic);
+                f.style.marginLeft = 12;
+                f.style.whiteSpace = WhiteSpace.Normal;
+                box.Add(f);
+            }
+            return box;
         }
 
         VisualElement Entry(CommissionDef def, CommissionState state)

@@ -44,7 +44,7 @@ namespace OWSBG.UI
         InstrumentBelt _belt;
         bool _wasFrozen, _built;
         VisualElement _panel, _rows;
-        Label _title, _blurb;
+        Label _title, _blurb, _flavour;
 
         public VisualElement Panel => _panel;
 
@@ -201,9 +201,12 @@ namespace OWSBG.UI
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
             _blurb.style.marginTop = 10;
+            // What the thing is, in Wren's hand, under what it does (NAR-17).
+            _flavour = InkTheme.Text("flavour", "", 15, InkTheme.Dim, FontStyle.Italic);
+            _flavour.style.marginTop = 4;
             var hint = InkTheme.Say("hint", "desk.hint", "↑↓ row    ◂▸ change    1-3 Charter    J seal / buy / leave    Esc leave", 15, InkTheme.Dim);
             hint.style.marginTop = 18;
-            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(hint);
+            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(_flavour); _panel.Add(hint);
             InkTheme.Show(_panel, false);
             ui.Desk.Add(_panel);
             _built = true;
@@ -230,7 +233,8 @@ namespace OWSBG.UI
             _rows.Add(MakeRow(FateRow, Loc.T("desk.row.place", "Place"), FateValue(out bool arrows), "", arrows));
             _rows.Add(MakeRow(MaskRow, Loc.T("desk.row.masks", "Masks"), MaskValue(), Loc.P("desk.scraps", Economy.Scraps(GameState.World), "{0} scrap", "{0} scraps"), false));
             _rows.Add(MakeRow(BeltRow, Loc.T("desk.row.belt", "Belt"), BeltValue(), "", false));
-            if (Row == 0) _blurb.text = profile != null ? profile.LocalBlurb : "";
+            _flavour.text = "";
+            if (Row == 0) { _blurb.text = profile != null ? profile.LocalBlurb : ""; _flavour.text = profile != null ? Flavour.ForCharter(profile.Kind) : ""; }
             else if (Row == FateRow) _blurb.text = FateBlurb();
             else if (Row == MaskRow) _blurb.text = Economy.MasksFull(GameState.World) ? Loc.T("desk.masks.full", "The cowl holds nine. It will not take a tenth.") : Loc.T("desk.masks.buy", "Vellum stitched into the cowl. One more mask, and it is whole at once.");
             else if (Row == BeltRow) _blurb.text = GameState.World.Equipment.FourthSlotUnlocked ? Loc.T("desk.belt.full", "Four loops. A Guild belt.") : Loc.T("desk.belt.buy", "A fourth loop on the belt: one more Instrument carried.");
@@ -238,6 +242,7 @@ namespace OWSBG.UI
             {
                 var s = e.Slots[Row - 1];
                 _blurb.text = s.IsEmpty ? Loc.T("desk.slot.empty_blurb", "An empty loop on the belt.") : InstrumentInfo.Of(s.Kind).Blurb;
+                _flavour.text = Flavour.ForInstrument(s.Kind, GameState.World);
             }
         }
 

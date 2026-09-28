@@ -26,6 +26,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/story/blank-islands.md` | The Blank's islands as written: one per [B] commission, a generic Remnant island for any other released place (`Islands`), Aury by tether and with Sable, the tether itself |
 | `docs/story/boss-sheets.md` | The fifteen bosses: reason, arena by phase, three lines, answers, aftermath |
 | `docs/story/foreshadowing.md` | The foreshadowing audit: bible 5's secrets, each revealed on one `#reveal` line and planted three times before it on both Act 1 roads (`Foreshadowing`); `#still` as "heard again, unchanged", read from the scripts' shape (`YarnAudit`) and held both ways |
+| `docs/story/flavour-text.md` | Flavour text (`Flavour`): the atlas margins for every region and zone, the words on each Charter and Instrument, the keystones, abilities, memories and purses, in Wren's hand; where each shows (the desk, the atlas as it is drawn, the journal's Carried) and the rules the tests hold |
 | `docs/design/game-design-overview.md` | Pillars, loop, systems, scope |
 | `docs/design/combat-and-movement.md` | Wren's kit, Inkwell, Flourishes, Charters, Instruments, enemy and boss rules |
 | `docs/design/art-direction.md` | Ink-on-paper look, 2.5D definition, palettes, the `_Ink` fade state |

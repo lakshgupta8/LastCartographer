@@ -66,6 +66,8 @@ namespace OWSBG.Core
 
             foreach (Ability a in Enum.GetValues(typeof(Ability)))
                 if (a != Ability.None) Add(AbilityNames.Key(a), a.ToString(), "Abilities");
+            foreach (var kv in Flavour.English) Add(kv.Key, kv.Value, "Flavour");   // NAR-17
+            foreach (var kv in Keystones.English) Add(Keystones.NameKey(kv.Key), kv.Value, "Keystones");
             return list;
         }
     }

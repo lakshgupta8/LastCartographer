@@ -21,7 +21,7 @@ namespace OWSBG.World
     }
 
     /// <summary>
-    /// The greybox arenas of the bosses built at runtime (CMB-13 to CMB-15): each boss's floor, doors, arena zone and props, its
+    /// The greybox arenas of the bosses built at runtime (CMB-13 to CMB-16): each boss's floor, doors, arena zone and props, its
     /// name, tier and lines from its sheet (NAR-06), and its reward from the sheet too. The arena is eighteen units wide
     /// between the doors, floor top at the origin's height; the test rigs and the arena rooms build from the same recipe.
     /// </summary>
@@ -30,8 +30,9 @@ namespace OWSBG.World
         public const float Width = 18f;
         public const float DoorHeight = 6f;
 
-        /// <summary>The bosses with a kit here, in the plan's order (CMB-13 to CMB-15).</summary>
-        public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star", "voss" };
+        /// <summary>The bosses with a kit here, in the plan's order (CMB-13 to CMB-16).</summary>
+        public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star", "voss",
+                                                "bells", "corras_drawing", "archivist", "complete_survey" };
         public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0;
 
         public static BossKit Build(string bossId, Transform parent, Vector2 origin)
@@ -117,6 +118,37 @@ namespace OWSBG.World
                     kit.Boss = v;
                     break;
                 }
+                case "bells":
+                {
+                    var bl = MakeBoss<HalfCathedralBells>(parent, "Bells", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f), HalfCathedralBells.RopeCount);
+                    bl.floorY = floor; bl.arenaMinX = minX; bl.arenaMaxX = maxX;
+                    bl.ropeXs.AddRange(new[] { mid, origin.x + 5f, origin.x + 13f, origin.x + 16.5f });
+                    bl.vantageX = origin.x + 1.5f;
+                    BossPart.Prop("Vantage", parent, new Vector2(bl.vantageX, floor + 0.9f), new Vector2(0.15f, 1.8f), InkMaterials.Lit("Arena_Marker", new Color(0.20f, 0.27f, 0.45f)), 0.6f);
+                    kit.Boss = bl;
+                    break;
+                }
+                case "corras_drawing":
+                {
+                    var cd = MakeBoss<CorrasDrawing>(parent, "CorrasDrawing", new Vector2(maxX - 4f, floor + 1.8f), new Vector2(2.2f, 3.6f), 32);
+                    cd.floorY = floor; cd.arenaMinX = minX + 1.1f; cd.arenaMaxX = maxX - 1.1f;
+                    kit.Boss = cd;
+                    break;
+                }
+                case "archivist":
+                {
+                    var ar = MakeBoss<Archivist>(parent, "Archivist", new Vector2(mid, floor + 3f), new Vector2(2.2f, 2.4f), 40);
+                    ar.floorY = floor; ar.arenaMinX = minX; ar.arenaMaxX = maxX; ar.perchY = floor + 3f;
+                    kit.Boss = ar;
+                    break;
+                }
+                case "complete_survey":
+                {
+                    var cs = MakeBoss<CompleteSurvey>(parent, "CompleteSurvey", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f), 24);
+                    cs.floorY = floor; cs.arenaMinX = minX; cs.arenaMaxX = maxX;
+                    kit.Boss = cs;
+                    break;
+                }
                 case "fallen_star":
                 {
                     var st = MakeBoss<FallenStar>(parent, "FallenStar", new Vector2(mid, floor + 1.6f), new Vector2(2.4f, 3.2f), 34);
@@ -148,6 +180,10 @@ namespace OWSBG.World
             "hale" => new Color(0.56f, 0.52f, 0.34f),
             "fallen_star" => new Color(0.32f, 0.28f, 0.26f),
             "voss" => new Color(0.80f, 0.80f, 0.78f),
+            "bells" => new Color(0.95f, 0.94f, 0.91f),
+            "corras_drawing" => new Color(0.97f, 0.96f, 0.94f),
+            "archivist" => new Color(0.36f, 0.34f, 0.38f),
+            "complete_survey" => new Color(0.92f, 0.90f, 0.84f),
             _ => new Color(0.44f, 0.48f, 0.38f),
         };
 

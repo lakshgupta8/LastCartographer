@@ -6,10 +6,11 @@ using UnityEngine;
 namespace OWSBG.Narrative
 {
     /// <summary>
-    /// Arena rooms built at runtime (CMB-13 to CMB-15) for the planned rooms whose boss has a kit but whose region is not
+    /// Arena rooms built at runtime (CMB-13 to CMB-16) for the planned rooms whose boss has a kit but whose region is not
     /// built yet: the Collapse at the bottom of Hollowvein, Brann in the cold furnace, the Choir over Aldermere's square,
     /// the Gatekeeper at the Overgrown Gate, Oriel in the Bastion's drill-yard, Hale at the Nine Stones, the Fallen Star
-    /// in its anvil-crater, Voss at the Threshold. Owns scenes named "Arena_&lt;planned room id&gt;"; the room is the greybox recipe
+    /// in its anvil-crater, Voss at the Threshold, the Half-Cathedral's bells, Corra's room, the mirror-Observatory, and the
+    /// Observatory's frame for the Complete Survey. Owns scenes named "Arena_&lt;planned room id&gt;"; the room is the greybox recipe
     /// around the boss's kit, entered from the west. Replaced by the region's built rooms when they come.
     /// </summary>
     public static class ArenaRooms

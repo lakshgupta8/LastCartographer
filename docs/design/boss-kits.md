@@ -1,13 +1,17 @@
-# Boss Kits: the mid-game and late bosses (CMB-13 to CMB-15, v1)
+# Boss Kits: every boss after the first act (CMB-13 to CMB-16, v1)
 
-Eight bosses from the boss sheets, built as greybox kits: the four mid-game fights (6.4 to 6.7, CMB-13), three
-late ones (6.8 to 6.10, CMB-14) and Voss at the Threshold (6.11, CMB-15). Each kit keeps to the sheet's arena, its three phases and its answers. The sheet
-owns the reason and the words; the kit owns the frame data. Telegraphs keep the tier's floor (11 frames at Tier II,
-10 at Tier III), and no phase has more than four attacks.
+Twelve bosses from the boss sheets, built as greybox kits: the four mid-game fights (6.4 to 6.7, CMB-13), three
+late ones (6.8 to 6.10, CMB-14), Voss at the Threshold (6.11, CMB-15) and the four endgame fights (6.12 to 6.15,
+CMB-16). With the Lamp-Keeper and Halvard's first fight (built into their rooms), every boss sheet now has a kit
+except Reedmother's Brood (6.2, optional) and Halvard's second and third (CMB-12). Each kit keeps to the sheet's
+arena, its three phases and its answers. The sheet owns the reason and the words; the kit owns the frame data.
+Telegraphs keep the tier's floor (11 frames at Tier II, 10 at Tier III, 8 at Tier IV), and no phase has more than
+four attacks.
 
-Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar`, `Voss` (World,
-`Code/World/Bosses/`), all on the `Boss` framework (CMB-10). `BossKits.Build(id, parent, origin)` builds any of the
-eight arenas: an 18-unit floor between two doors, the arena zone, the props, and the boss with the name, tier, lines, reward and scraps from its sheet. The test rigs and the
+Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar`, `Voss`, `HalfCathedralBells`,
+`CorrasDrawing`, `Archivist`, `CompleteSurvey` (World, `Code/World/Bosses/`), all on the `Boss` framework (CMB-10).
+`BossKits.Build(id, parent, origin)` builds any of the twelve arenas: an 18-unit floor between two doors, the arena
+zone, the props, and the boss with the name, tier, lines, reward and scraps from its sheet. The test rigs and the
 game's rooms use the same recipe.
 
 ## Shared pieces
@@ -158,13 +162,80 @@ sealed, he thrusts instead.
 40 health, 3 scraps, `boss.voss.defeated` (which `Threshold_Voss` reads before it writes `greyfold.crossed`). The
 grade comes free and any hold ends when he falls or on a retry.
 
+## 6.12 The Half-Cathedral Bells, the nave
+
+Environmental: the bells are the boss, and the four ropes are its health. Each finished ring (40 frames) shrinks
+Wren's lantern-radius by 1.6 units, from 7 down to 1.2. Once it can't shrink further, each ring costs a mask. The
+radius is published as a shader global, `_OWSBG_LanternRadius`, for the lantern-radius pass (PRG-18).
+
+**She cuts a rope only when she can see it:** within her radius, or while the Field lantern shows everything (the
+Bells are `IRevealable`). Standing still for a second at the vantage by the west door steadies the radius back to
+full. The phases follow the ropes.
+
+| Phase | Bells | Answer |
+|---|---|---|
+| 1 | One, mid-nave | Close enough to see it; cut it |
+| 2 | Two, in canon (the second comes in 20 frames into the first) | The lantern for the far one, or walk to it |
+| 3 | The great bell: its rope is in the white, shown only to a radius of 4 or more, or the lantern | Steady at the vantage, then cut it before the rings shrink her again |
+
+4 ropes, no scraps, `boss.bells.defeated`. The bells' inscriptions are the phase lines. Clarity's growth and the
+bound memory are Clarity's (PRG-18) and the prologue's.
+
+## 6.13 Corra's Drawing, the crayon room
+
+It redraws a limb whenever one is struck: for 0.6 s after a hit it is not drawn and can't be hit, so hits must be
+spaced (strike the drawn frames). It walks toward her and attacks with a crayon-arm swipe in front and a stomp where
+a red crayon mark shows.
+
+| Phase | What changes | Answer |
+|---|---|---|
+| 1 | Swipe, stomp | Strike, wait for the line, strike |
+| 2 | It draws a second Voss, small, beside it. Strike the small one and the drawing draws itself bigger (+2 health) and draws him back in 2 s | Don't strike the small one |
+| 3 | The crayon runs out: outline, faster (half the pauses and wind-ups, never under the tier's floor, half the redraw), and the room's colour goes (`_OWSBG_Outline`) | The same, faster |
+
+32 health, 2 scraps, `boss.corras_drawing.defeated`, which opens `Capital_Corra` and the carry.
+
+## 6.14 The Archivist, the mirror-Observatory
+
+Corvin, an enormous half-drawn owl at perch height. **He draws, and the drawings are real while his quill is on
+them**: walls either side of her and a floor over her head (Ground colliders) for 3 s. Her drawing hunts her for
+6 s: it walks to her and jabs, with its own wind-up. The quill passes through it: it is her. His quill hand can be
+struck only while he draws. Struck, every drawing is unmade, he takes the hit and he staggers 0.8 s.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Draw (walls, floor), swoop (low across the room; contact hurts) | Strike his quill hand |
+| 2 | Draw her, draw, swoop | Ignore her drawing; strike his hand |
+| 3 | He draws the Atlas frame round the arena, stops drawing, and holds at the centre. The frame closes a wingspan (0.6) every 0.8 s, down to 4 units wide; outside it is the page, and the page hurts | Longstroke the frame's edge (it goes back 1.2); strike him |
+
+40 health, 3 scraps, `boss.archivist.defeated`, which `Capital_Corvin_After` reads to offer the keystone and the
+Rest.
+
+## 6.15 The Complete Survey, the Observatory floor
+
+The Great Atlas itself; it can't be struck, only its ink. The floor is six sections of page. The chorus keeps the
+beat. Each beat names a section, shown a beat ahead. **When the beat lands, if she is anywhere else, the region's
+ink fixes her where she stands:** held 0.6 s and a mask lost. Every third beat, ink pools where the named ground
+was (three pools at most). Striking a pool wounds the Atlas. Every ten beats, the last two are a verse break:
+nothing is named, time to Bind.
+
+| Phase | Ink | Beat | The named ground walks |
+|---|---|---|---|
+| 1 | Saltmarrow's tide | 0.9 s | One section a beat |
+| 2 | Emberdown's ash | 0.75 s | Two a beat |
+| 3 | Halden's late afternoon | 0.6 s | Three a beat |
+
+24 health (pools), no scraps, `boss.complete_survey.defeated`, and the Sky (the arena grants what the sheet
+grants), which `Ending_Open_After` reads.
+
 ## Arena rooms
 
 The regions are planned (`RoomPlans`), not built. `ArenaRooms` (Narrative) registers with
 `RoomManager.Generators` and builds each fight's room at runtime. The scene is named after the planned room that
 fights that boss: `Arena_Emberdown_Hollow_4`, `Arena_Emberdown_Stair_3`, `Arena_Verdance_Aldermere_2`,
 `Arena_Verdance_Gate_2`, `Arena_Halden_Bastion_2`, `Arena_Windreach_Stones_3`, `Arena_Windreach_Star_2`,
-`Arena_Greyfold_Threshold_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
+`Arena_Greyfold_Threshold_2`, `Arena_Greyfold_Cathedral_2`, `Arena_Blank_Capital_2`, `Arena_Blank_Capital_4`,
+`Arena_Halden_Observatory_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
 region's rooms are built, its arena moves into them and that generator entry retires.
 
 ## Tests
@@ -204,7 +275,23 @@ seal ignores strikes from inside and breaks to one on its edge from outside; pha
 hurts her in the west, and stops at his two-section island; beating him sets the flag, pays three scraps and frees
 the grade; a retry mid-hold frees her and unseals the arena.
 
-The arena-room tests cover all eight rooms.
+`EndgameBossFightTests` (PlayMode, 9 tests):
+
+- **The Bells:** a ring shrinks the radius and publishes it; at the smallest a ring takes a mask; the vantage
+  steadies it. A rope out of sight, or of a bell not yet ringing, won't cut, and one in sight will. The lantern
+  shows the far rope, and the great rope needs a wide radius even up close. Four cuts win.
+- **Corra's Drawing:** a struck limb can't be struck again until redrawn. Striking the small one heals the drawing
+  and he is drawn back. In outline it is faster and the room's colour goes, until it falls. The swipe and the stomp
+  land.
+- **The Archivist:** his hand is only a hand when he isn't drawing. The walls and floor are real, either side of
+  her, until his hand is struck or his quill lifts. The swoop lands. Her drawing can't be struck and does land its
+  jab, and is unmade by his hand. The frame closes a wingspan a beat, the page takes her, and a real Longstroke
+  pushes the edge back.
+- **The Complete Survey:** on the named ground she is safe; off it she is fixed and loses a mask. Walking the
+  bounds, nothing fixes her. Between verses nothing is named. Pools wound it, the phases quicken the beat and
+  lengthen the stride, and the win grants the Sky.
+
+The arena-room tests cover all twelve rooms.
 
 `ArenaRoomsTests` (PlayMode, 2 tests) check that each kit has a planned room in its sheet's zone. They also travel
 to every arena room in the real game and walk in to start each fight.
@@ -221,6 +308,15 @@ to every arena room in the real game and walk in to start each fight.
 - **Voss's sheet has sections freeze mid-air and platforms lock.** v1 seals floor sections only; the Threshold's
   built room, with platforms to lock, can add them. His "shrinking island" is the floor's last two sections, not a
   platform yet. Halvard's third kit, fought before him at Threshold_1, is still CMB-12's.
+- **The lantern-radius is a number, not yet a picture.** The Bells publish it and the ropes obey it, but the nave
+  doesn't go white beyond it until PRG-18 draws it; the sheet's "outline in peripheral vision" is that pass's too.
+  Cutting the ropes by Inkthread waits for the thread; v1 cuts them with any strike.
+- **The Remnant Charter draining the Drawing's colour** is CMB-17's.
+- **The Archivist's second phase draws her plainly.** Her drawing jabs; it doesn't yet use her Charter's combo the
+  way Oriel's mirror does.
+- **The Complete Survey keeps its own beat and names its own ground.** The bible's is the bounds-walk and Runa's
+  chorus singing the roll-call (`BoundsWalk`); when the Observatory is built, the beat and the named ground should be
+  the walk's, like the Collapse's. It fights only in the true ending; its room always holds it.
 - **Inkthread doesn't exist as a movement yet** (CMB-04). The Gatekeeper's phase 2 is reachable in the tests by
   placing Wren; in play it needs the thread. The roots are already the anchors the ability will look for.
 - **The Collapse keeps its own beat.** The bible's fight is the bounds-walk's last verse, so it should share the

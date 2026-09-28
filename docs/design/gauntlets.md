@@ -21,8 +21,10 @@ Crossing one writes `gauntlet.<id>.done` and pays one vellum scrap, the first ti
 
 - **`Gauntlet`** remembers the last `SolidGround` she stood on. A `GauntletZone` hazard (tide, vent, thorns, mill
   race, long grass, the white) takes one mask, never her last, and puts her back there.
-- **`LanternPlatform`** exists only when she carries Clarity and stands within its lantern-radius (3.5 units): solid
-  and drawn, otherwise an outline she falls through. The radius becomes the Clarity meter's with PRG-18.
+- **`LanternPlatform`** exists only when she carries Clarity and stands within her lantern-radius: solid and drawn,
+  otherwise an outline she falls through. The radius is her Clarity meter's (PRG-18, `clarity.md`): 5 units at level
+  1, narrowing as the meter runs down, wider with the Field lantern. The course was built at 3.5, and at any level
+  the next cobble is in reach and the one after it is not.
 - **The goal** is a zone over the far ground.
 
 ## The abilities it finished (CMB-04)

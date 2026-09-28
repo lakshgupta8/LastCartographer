@@ -42,7 +42,7 @@ The action layer. Target feel: *Silksong*-class responsiveness (input to animati
 | **Talonhold** (wall cling) | Toward wall | Cling 2.5 s, slow slide after; wall-jump arcs away 3 units | Reset Wingbeat; escape corners |
 | **Inkthread** (grapple) | Thread toward an anchor-point | Pulls Wren to anchor rings (world) or to **marked** enemies (after a thrust hit); 2 pips per use | The signature aggressive tool: mark, thread, pogo |
 | **Windmemory** (glide) | Hold jump in air | Glides at 60% fall speed; updrafts carry upward | Ride boss updrafts; aerial spacing |
-| **Clarity** | Passive | Untethered Blank sections drain a clarity meter; hits from Remnant drain more | Gates late areas |
+| **Clarity** | Passive | Untethered Blank sections drain a clarity meter; hits from Remnant drain more (`clarity.md`) | Gates late areas |
 | **The Sky** | Endgame | Brief true flight in scripted sections | The final approach |
 
 ## 4. Inkwell and Flourishes

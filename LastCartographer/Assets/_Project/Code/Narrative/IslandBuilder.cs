@@ -43,6 +43,9 @@ namespace OWSBG.Narrative
             RuntimeRooms.MakeGround(room, "Island", new Vector2(0f, -0.5f), new Vector2(24f, 1f), grey);
             RuntimeRooms.MakeGround(room, "White_W", new Vector2(-16f, -0.5f), new Vector2(8f, 1f), white);
             RuntimeRooms.MakeGround(room, "White_E", new Vector2(16f, -0.5f), new Vector2(8f, 1f), white);
+            // The white between the drift's edge and the island is untethered: the Clarity meter runs there (PRG-18).
+            UntetheredZone.Make("Untethered_W", room.transform, new Vector2(-13.75f, 4f), new Vector2(3.5f, 9f));
+            UntetheredZone.Make("Untethered_E", room.transform, new Vector2(13.75f, 4f), new Vector2(3.5f, 9f));
             // Two platforms, placed by the island's name so no two islands are quite the same.
             RuntimeRooms.MakeGround(room, "Platform_1", new Vector2(-8f + seed % 5, 3f), new Vector2(3f, 0.5f), dark);
             RuntimeRooms.MakeGround(room, "Platform_2", new Vector2(3f + (seed / 5) % 5, 5.5f), new Vector2(3f, 0.5f), dark);

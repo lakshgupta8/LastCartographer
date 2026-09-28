@@ -309,9 +309,10 @@ to every arena room in the real game and walk in to start each fight.
 - **Voss's sheet has sections freeze mid-air and platforms lock.** v1 seals floor sections only; the Threshold's
   built room, with platforms to lock, can add them. His "shrinking island" is the floor's last two sections, not a
   platform yet. Halvard's third kit, fought before him at Threshold_1, is still CMB-12's.
-- **The lantern-radius is a number, not yet a picture.** The Bells publish it and the ropes obey it, but the nave
-  doesn't go white beyond it until PRG-18 draws it; the sheet's "outline in peripheral vision" is that pass's too.
-  Cutting the ropes by Inkthread waits for the thread; v1 cuts them with any strike.
+- **The lantern-radius is a picture now (PRG-18, `clarity.md`).** While the Bells ring they hold the radius
+  (`Lantern.Hold`), and the paper pass whitens the nave beyond it, keeping outlines at the edge of the eye. They let
+  go when silenced or on a retry. Cutting the ropes by Inkthread is still open: the thread exists (CMB-18), but v1
+  cuts them with any strike.
 - **The Remnant Charter drains the Drawing's colour** (CMB-17): grey, it has nothing to redraw with and can be
   struck without waiting.
 - **The Archivist's second phase draws her plainly.** Her drawing jabs; it doesn't yet use her Charter's combo the

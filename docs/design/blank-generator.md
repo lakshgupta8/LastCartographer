@@ -42,7 +42,8 @@ No `FadeGroup`: an island is grey by material, not by stage. No vantages: the Bl
   and nothing is built for a scene that is not an island's or an island that does not drift in this world.
 
 ## 5. Open
-- The lantern-radius look (art-direction.md; colour blooming round Wren) is a render feature, not the room's.
+- The lantern-radius look is built (PRG-18, `clarity.md`): every island is drawn round her lantern, and the white
+  between the drift's edge and the island is untethered, so the Clarity meter runs there.
 - The Hollow's drift room is planned, not built; until it is, the drift is entered by `RoomManager.Transition`.
 - A generic island speaks one script. To say what it was ("This was the baths"), the builder should pass
   `Drift.Name` to Yarn: a `$island` variable, or a `<<island>>` command that sets a caption.

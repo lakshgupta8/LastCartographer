@@ -13,7 +13,7 @@ namespace OWSBG.World
     /// </summary>
     public sealed class HalfCathedralBells : Boss, IRevealable
     {
-        public const string RadiusGlobal = "_OWSBG_LanternRadius";
+        public const string RadiusGlobal = Lantern.RadiusGlobal;
         public const int RopeCount = 4;
 
         [Header("The Bells")]
@@ -50,7 +50,6 @@ namespace OWSBG.World
         float _gap, _revealLeft, _steadyT;
         bool _routing, _canonDue;
         int _turn;
-        static readonly int RadiusId = Shader.PropertyToID(RadiusGlobal);
 
         /// <summary>Whether this bell is one of the current phase's.</summary>
         public bool RingsNow(int bell) { foreach (var b in BellsOf(Phase)) if (b == bell) return true; return false; }
@@ -115,8 +114,12 @@ namespace OWSBG.World
         void SetRadius(float r)
         {
             Radius = Mathf.Clamp(r, minRadius, fullRadius);
-            Shader.SetGlobalFloat(RadiusId, Radius);
+            // The bells hold her lantern-radius while they ring; her own comes back when they stop.
+            if (IsFightActive) Lantern.Hold(this, Radius);
+            else Lantern.Release(this);
         }
+
+        void OnDisable() { Lantern.Release(this); }
 
         protected override void OnFightStarted()
         {

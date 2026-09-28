@@ -136,6 +136,8 @@ namespace OWSBG.World
         protected virtual bool AcceptsKnockback => true;
         /// <summary>Whether touching the body hurts right now (a Warden measuring a journeyman withholds it).</summary>
         protected virtual bool ContactHurts => true;
+        /// <summary>Seconds of Clarity a landed touch takes as well as the mask (the lost Remnant's).</summary>
+        protected virtual float ClarityDrain => 0f;
         /// <summary>Bosses deactivate instead so the arena can revive them for a retry.</summary>
         protected virtual bool DestroyOnDeath => true;
         public bool IsDying => _deathT >= 0f;
@@ -220,7 +222,11 @@ namespace OWSBG.World
                 if (vitals == null) continue;
                 var parry = vitals.GetComponent<InstrumentBelt>();
                 if (parry != null && parry.TryParry(this)) break;
-                vitals.Damage(_contactDamage, transform.position);
+                if (vitals.Damage(_contactDamage, transform.position) && ClarityDrain > 0f)
+                {
+                    var clarity = vitals.GetComponent<ClarityMeter>();
+                    if (clarity != null) clarity.Strike(ClarityDrain);
+                }
                 break;
             }
         }

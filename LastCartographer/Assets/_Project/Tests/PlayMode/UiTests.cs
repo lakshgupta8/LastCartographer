@@ -85,6 +85,24 @@ Sable: Everything here has a price.
         }
 
         [UnityTest]
+        public IEnumerator HudShowsClarityOnlyWhileItRuns()
+        {
+            yield return Frames(3);
+            var bar = _hud!.Root.Q("hud-clarity");
+            Assert.IsNotNull(bar, "the Clarity meter has a place on the HUD");
+            Assert.AreEqual(DisplayStyle.None, bar.style.display.value, "not before she has Clarity");
+            _wren!.GetComponent<AbilitySet>().Unlock(Ability.Clarity);
+            yield return new WaitForSeconds(0.3f);
+            Assert.AreEqual(DisplayStyle.None, bar.style.display.value, "hidden while it is full and she is held");
+            UntetheredZone.Make("White", _floor!.transform, new Vector2(0f, 4f), new Vector2(10f, 10f));
+            yield return new WaitForSeconds(1.5f);
+            Assert.AreEqual(DisplayStyle.Flex, bar.style.display.value, "shown in the white");
+            var fill = bar.Q("hud-clarity-fill");
+            Assert.Less(fill.style.width.value.value, 100f, "and running down");
+            Assert.Greater(fill.style.width.value.value, 0f);
+        }
+
+        [UnityTest]
         public IEnumerator HudShowsMasksInkCharterAndSlots()
         {
             yield return Frames(3);

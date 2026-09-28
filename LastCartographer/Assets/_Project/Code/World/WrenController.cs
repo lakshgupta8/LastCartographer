@@ -124,6 +124,8 @@ namespace OWSBG.World
             _box = GetComponent<BoxCollider2D>();
             if (Abilities == null) Abilities = GetComponent<AbilitySet>();
             if (Input == null) Input = GetComponent<IWrenInput>();
+            // Clarity is hers wherever she is (PRG-18): the meter and her lantern-radius.
+            if (GetComponent<ClarityMeter>() == null) gameObject.AddComponent<ClarityMeter>();
             _filter = new ContactFilter2D { useLayerMask = true, layerMask = groundMask, useTriggers = false };
             Recompute();
         }

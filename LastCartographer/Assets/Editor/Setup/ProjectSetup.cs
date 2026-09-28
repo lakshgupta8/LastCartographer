@@ -488,6 +488,7 @@ namespace OWSBG.Setup
             belt.hitMask = LayerMask.GetMask("Hittable", "Enemy");
             belt.groundMask = LayerMask.GetMask("Ground");
             go.AddComponent<CharterSet>();   // after the components it drives; profiles default in Awake
+            go.AddComponent<ClarityMeter>(); // the controller adds it at runtime too, for scenes built before PRG-18
 
             // Visual: an InkSprite quad, 1.2 units tall.
             var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);

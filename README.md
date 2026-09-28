@@ -32,6 +32,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/ending-matrix.md` | The endings as flag logic, what each decision closes, and one route to each ending from a new game (`EndingRoutes`), replayed through the scripts and proven on the map |
 | `docs/design/boss-kits.md` | Twelve bosses as greybox kits built from their sheets (`BossKits`): the Collapse, Brann, the Choir, the Gatekeeper, Oriel (Wren's own Charter mirrored, one Bind, the stand-down), Hale (the nine-stone duel), the Fallen Star (iron, walls, the heat that lifts her over), Voss (lance and shield, seals that hold her and lock the grade, the Blank eating the arena to his island), the Half-Cathedral Bells (ropes cut only when she can see them), Corra's Drawing (drawn frames, the small one), the Archivist (drawings real while his quill is on them, the closing frame) and the Complete Survey (the named ground on the beat, the Sky); each fought to its answers in a runtime arena room (`ArenaRooms`) |
 | `docs/design/gauntlets.md` | The six traversal gauntlets, one per region but the Blank, each around its ability; falls back to solid ground; the Road That Stops' lantern-radius cobbles; Inkthread (the Thread button) and the Windmemory glide |
+| `docs/design/clarity.md` | Clarity as a meter and a gate (`ClarityMeter`): how long she lasts untethered, growing with the story; empty, the white gives her back; the lantern-radius it draws, white paper beyond it in the Greyfold and the Blank |
 | `docs/design/late-charters.md` | The Ferryman's, Unwriter's and Remnant Charters: combos, the reel, unwriting thrown things (`EnemyProjectile`), the dearer Bind, drained colour; handed over by Sable, the Choir and Ilse (`<<charter>>`) |
 | `docs/design/endings-runner.md` | The epilogue walk at runtime (`EndingsRunner`, `<<epilogue>>`): Voss's coda, Halden, the ending's region, the Hollow, the title; stand-in rooms for unbuilt stops |
 | `docs/design/blank-generator.md` | The Blank's islands built at runtime from `WorldState` (`IslandBuilder`, `RoomManager.Generator`): the drift's order, the room recipe, the tests |
@@ -124,6 +125,8 @@ The look (art-direction doc): `OWSBG/InkSprite` is the lit, alpha-clipped sprite
 `_Ink` state; two full-screen passes sit on the URP renderer (`Settings/Rendering/URP_Renderer.asset`): **ForegroundBlur**
 (before post-processing; anything nearer than the gameplay plane blurs with distance, read from depth) and **PaperGrain**
 (after post-processing; static grain, stronger on light paper than on ink). Far layers blur through the volume's Gaussian DoF.
+In the Greyfold and the Blank the grain pass first whitens everything beyond Wren's lantern-radius, keeping outlines only
+toward the frame's edge; the radius is her Clarity meter's (`docs/design/clarity.md`).
 Materials `Art/Materials/M_FS_*.mat` hold the knobs.
 
 The regional decision (`docs/design/anchoring.md`): at the desk, once every vantage in the room is surveyed, the **Place**
@@ -153,7 +156,7 @@ Dialogue lives in `Assets/_Project/Dialogue/**/*.yarn`, compiled by `LastCartogr
 ```
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
-The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, the survey loop and fast travel, hub schedules, the economy, the bounds-walk, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-atlas.png` with the UI composited over the camera, for a headless visual check.
+The play-mode tests check the combat doc's frame data on the real controller, the enemies, Flourishes, Charters, Instruments, the boss loop, dialogue, commissions, cutscenes, the prologue end to end, room streaming, the survey loop and fast travel, hub schedules, the economy, the bounds-walk, and the UI. `UiScreenshotTests` also writes `logs/ui-hud.png`, `ui-dialogue.png`, `ui-desk.png`, `ui-ledger.png` and `ui-atlas.png` with the UI composited over the camera, for a headless visual check; `LanternRenderTests` writes `logs/lantern-*.png`, the lantern-radius through the real renderer.
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.

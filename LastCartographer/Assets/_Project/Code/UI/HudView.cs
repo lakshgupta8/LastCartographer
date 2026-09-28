@@ -6,8 +6,9 @@ using UnityEngine.UIElements;
 namespace OWSBG.UI
 {
     /// <summary>
-    /// Masks as ink diamonds, the Inkwell as nine pips, the Charter's name, and the Instrument slots
-    /// with uses, top-left. The death caption sits mid-screen. UI Toolkit, built in code (ENV-11 greybox).
+    /// Masks as ink diamonds, the Inkwell as nine pips, the Clarity meter (a thin wash, shown only while it runs or
+    /// fills), the Charter's name, and the Instrument slots with uses, top-left. The death caption sits mid-screen.
+    /// UI Toolkit, built in code (ENV-11 greybox).
     /// </summary>
     public sealed class HudView : MonoBehaviour
     {
@@ -17,7 +18,8 @@ namespace OWSBG.UI
         Inkwell _ink;
         CharterSet _charters;
         InstrumentBelt _belt;
-        VisualElement _root, _masks, _pips, _slots;
+        ClarityMeter _clarity;
+        VisualElement _root, _masks, _pips, _slots, _clarityBar, _clarityFill;
         Label _charter, _death, _seeds;
         float _nextRefresh;
         bool _built;
@@ -54,6 +56,20 @@ namespace OWSBG.UI
             _pips.style.marginBottom = 8;
             _root.Add(_pips);
 
+            // Clarity: a bar the width of the Inkwell, the colour of her lantern; hidden while it is full and she is held.
+            _clarityBar = new VisualElement { name = "hud-clarity", pickingMode = PickingMode.Ignore };
+            InkTheme.SetSize(_clarityBar, 130, 7);
+            InkTheme.SetBorder(_clarityBar, InkTheme.Ochre, 1.5f);
+            InkTheme.SetRadius(_clarityBar, 3f);
+            _clarityBar.style.marginBottom = 8;
+            _clarityFill = new VisualElement { name = "hud-clarity-fill", pickingMode = PickingMode.Ignore };
+            _clarityFill.style.height = new Length(100, LengthUnit.Percent);
+            _clarityFill.style.width = new Length(100, LengthUnit.Percent);
+            _clarityFill.style.backgroundColor = InkTheme.Ochre;
+            _clarityBar.Add(_clarityFill);
+            InkTheme.Show(_clarityBar, false);
+            _root.Add(_clarityBar);
+
             _charter = InkTheme.Text("hud-charter", "", 18, InkTheme.Dim);
             _charter.style.marginBottom = 6;
             _root.Add(_charter);
@@ -85,6 +101,7 @@ namespace OWSBG.UI
             _ink = wren.GetComponent<Inkwell>();
             _charters = wren.GetComponent<CharterSet>();
             _belt = wren.GetComponent<InstrumentBelt>();
+            _clarity = wren.GetComponent<ClarityMeter>();
             if (_vitals == null) return false;
             _vitals.MasksChanged += _ => Refresh();
             if (_ink != null) _ink.Changed += _ => Refresh();
@@ -103,6 +120,13 @@ namespace OWSBG.UI
             {
                 SyncCount(_pips, _ink.MaxPips, MakePip);
                 for (int i = 0; i < _pips.childCount; i++) SetFilled(_pips[i], i < _ink.Pips, InkTheme.Wash);
+            }
+
+            if (_clarity != null)
+            {
+                bool shown = _clarity.Level > 0 && (_clarity.IsUntethered || !_clarity.IsFull);
+                InkTheme.Show(_clarityBar, shown);
+                _clarityFill.style.width = new Length(_clarity.Fraction * 100f, LengthUnit.Percent);
             }
 
             _charter.text = _charters != null && _charters.Current != null ? _charters.Current.DisplayName : "";

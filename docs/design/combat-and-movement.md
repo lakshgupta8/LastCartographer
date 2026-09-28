@@ -69,7 +69,7 @@ Wren carries one Charter at a time; swap at a drafting desk. Each rewrites her c
 | **Warden's Charter** | Slow heavy sweep, shove, overhead | Blot | +1 mask; dash is shorter | Heavy, grounded, spacing |
 | **Drifter's Charter** | Fast triple slash, no thrust | Longstroke | Second Wingbeat per airtime; masks 4 max | Aerial, glass |
 
-Later Charters are found in the world: **Ferryman's Charter** (Inkthread costs 1, tether-swing attacks), **Unwriter's Charter** (attacks erase enemy projectiles; Bind costs 4), **Remnant Charter** (Act 3; strikes drain enemies' colour).
+Later Charters are found in the world: **Ferryman's Charter** (Inkthread costs 1, tether-swing attacks), **Unwriter's Charter** (attacks erase enemy projectiles; Bind costs 4), **Remnant Charter** (Act 3; strikes drain enemies' colour). Their combos, where each is found, and how the passives work are in `late-charters.md`.
 
 ## 6. Instruments (equipable tools)
 

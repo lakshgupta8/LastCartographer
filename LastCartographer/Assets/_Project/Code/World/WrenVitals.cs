@@ -37,6 +37,8 @@ namespace OWSBG.World
         }
         public void ResetMaxMasks() { if (_baseMaxMasks > 0) SetMaxMasks(_baseMaxMasks); }
         public int Masks => _masks;
+        /// <summary>Ink a Bind spends (combat doc 2.2); the Unwriter's Charter makes it 4.</summary>
+        public int BindCost { get => _bindCost; set => _bindCost = Mathf.Max(1, value); }
         public bool IsBinding => _bindHeld > 0f;
         public bool IsDead => _masks <= 0;
         public bool IsInvulnerable => _invulnLeft > 0 || (_ctrl != null && _ctrl.IsInvulnerable);

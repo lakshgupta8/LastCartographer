@@ -10,6 +10,10 @@ namespace OWSBG.World
         /// <summary>Knockback multiplier on the target's own knockback (1 = normal; the combo thrust uses 2.5).</summary>
         public float Knockback;
         public float KnockbackOrDefault => Knockback <= 0f ? 1f : Knockback;
+        /// <summary>The Ferryman's reel: the knockback comes toward the striker instead of away.</summary>
+        public bool Pulls;
+        /// <summary>The Remnant Charter: how much colour a landed strike takes (0..1).</summary>
+        public float Drain;
     }
 
     /// <summary>One forward swing of the combo (combat doc 2.1 and 5). Frames at 60 Hz, reach in units.</summary>
@@ -22,9 +26,13 @@ namespace OWSBG.World
         public int Startup, Active, Recovery;
         public int Damage;
         public float Knockback;   // multiplier on the target's knockback
+        public bool Pulls;        // the reel: knockback toward Wren
 
         public static ComboStep Make(string name, float reach, int startup, int active, int recovery, int damage = 1, float knockback = 1f, float thickness = 0.9f)
             => new ComboStep { Name = name, Reach = reach, Thickness = thickness, Startup = startup, Active = active, Recovery = recovery, Damage = damage, Knockback = knockback };
+
+        /// <summary>This step reels what it hits in.</summary>
+        public ComboStep Pulling() { var s = this; s.Pulls = true; return s; }
     }
 
     /// <summary>Something a Field lantern reveals for a while (hidden platforms, undrawn Smudges).</summary>

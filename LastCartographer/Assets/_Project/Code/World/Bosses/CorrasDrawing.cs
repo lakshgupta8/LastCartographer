@@ -59,7 +59,8 @@ namespace OWSBG.World
         Transform _stompMark;
         static readonly int OutlineId = Shader.PropertyToID(OutlineGlobal);
 
-        protected override bool AcceptsHit(in HitInfo hit) => IsDrawn;
+        /// <summary>Drawn frames only; drained grey (the Remnant Charter), it has no colour to redraw with.</summary>
+        protected override bool AcceptsHit(in HitInfo hit) => IsDrawn || IsGrey;
 
         /// <summary>Tests and tooling: begin a specific attack now.</summary>
         public void ForceAttack(Attack a)
@@ -108,7 +109,7 @@ namespace OWSBG.World
         protected override void OnHealthChanged()
         {
             base.OnHealthChanged();
-            if (IsDead) return;
+            if (IsDead || IsGrey) return;
             _redrawLeft = redrawSeconds * (IsOutline ? outlinePace : 1f);
             LimbsRedrawn++;
         }

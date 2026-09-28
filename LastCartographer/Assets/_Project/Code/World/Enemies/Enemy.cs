@@ -29,6 +29,15 @@ namespace OWSBG.World
         public bool IsDead => Health <= 0;
         public EnemyAnswer Answer => _answer;
         public int HurtstunLeft { get; private set; }
+        /// <summary>1 in full colour, 0 grey. The Remnant Charter's strikes drain it; it comes back when they stop.</summary>
+        public float Colour { get; private set; } = 1f;
+        public bool IsGrey => Colour <= 0.001f;
+        /// <summary>Seconds after the last drain before colour starts to come back, and how long the way back takes.</summary>
+        public float RecolourDelay { get; set; } = 3f;
+        public float RecolourSeconds { get; set; } = 2f;
+        /// <summary>A grey enemy is slowed this long by every strike (the Remnant Charter's answer).</summary>
+        public float GreySlowSeconds { get; set; } = 1.5f;
+        float _recolourWait;
         /// <summary>Seconds of slow remaining (Blot). Velocity is scaled by SlowFactor while active.</summary>
         public float SlowLeft { get; private set; }
         public bool IsSlowed => SlowLeft > 0f;
@@ -87,6 +96,8 @@ namespace OWSBG.World
             }
             if (Wren == null) Wren = FindFirstObjectByType<WrenController>();
             if (MarkLeft > 0f) MarkLeft -= Time.fixedDeltaTime;
+            if (_recolourWait > 0f) _recolourWait -= Time.fixedDeltaTime;
+            else if (Colour < 1f) Colour = Mathf.MoveTowards(Colour, 1f, Time.fixedDeltaTime / Mathf.Max(0.01f, RecolourSeconds));
             if (_staggerLeft > 0f) { _staggerLeft -= Time.fixedDeltaTime; Body.linearVelocity *= 0.8f; return; }
             if (HurtstunLeft > 0) { HurtstunLeft--; return; }
             Tick(Time.fixedDeltaTime);
@@ -144,6 +155,8 @@ namespace OWSBG.World
             SlowLeft = 0f;
             MarkLeft = 0f;
             _staggerLeft = 0f;
+            Colour = 1f;
+            _recolourWait = 0f;
             transform.localScale = _baseScale;
             gameObject.SetActive(true);
             Body.simulated = true;
@@ -153,6 +166,8 @@ namespace OWSBG.World
         }
 
         protected virtual void OnRevived() { }
+        /// <summary>The last of its colour drained.</summary>
+        protected virtual void OnGrey() { }
         /// <summary>After a landed hit changed Health (bosses check phase thresholds here).</summary>
         protected virtual void OnHealthChanged() { }
 
@@ -161,10 +176,19 @@ namespace OWSBG.World
             if (IsDead || _deathT >= 0f) return false;
             if (!AcceptsHit(hit)) { OnHitBlocked(hit); return false; }
             Health = Mathf.Max(0, Health - hit.Damage);
+            if (hit.Drain > 0f)
+            {
+                bool wasGrey = IsGrey;
+                Colour = Mathf.Max(0f, Colour - hit.Drain);
+                _recolourWait = RecolourDelay;
+                if (IsGrey) ApplySlow(GreySlowSeconds);
+                if (IsGrey && !wasGrey) OnGrey();
+            }
             OnHealthChanged();
             _flashUntil = Time.time + 0.1f;
             HurtstunLeft = _hurtstunFrames;
             var away = hit.Direction.sqrMagnitude > 0f ? hit.Direction.normalized : Vector2.right;
+            if (hit.Pulls) away = new Vector2(-away.x, 0f);   // reeled in
             float kb = _hitKnockback * hit.KnockbackOrDefault;
             if (AcceptsKnockback)
                 Body.linearVelocity = new Vector2(away.x * kb, Mathf.Max(Body.linearVelocity.y, away.y > 0f ? kb : 2f));
@@ -231,7 +255,7 @@ namespace OWSBG.World
         {
             if (Visual == null) return;
             Visual.GetPropertyBlock(_mpb);
-            var tint = TintColor();
+            var tint = Color.Lerp(new Color(0.55f, 0.55f, 0.55f), TintColor(), Colour);
             if (IsMarked) tint = Color.Lerp(tint, new Color(0.95f, 0.62f, 0.15f), 0.5f + 0.3f * Mathf.Sin(Time.time * 12f));
             _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? FlashColor : tint);
             Visual.SetPropertyBlock(_mpb);

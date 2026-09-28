@@ -23,6 +23,8 @@ namespace OWSBG.Core
         public string Entry, Turn, Last;
         public string Aftermath;
         public Ability Grants;
+        /// <summary>A Charter the fight hands over (the Choir's Unwriter's Charter), or null.</summary>
+        public CharterKind? Charter;
         public bool Keystone;
         public int Scraps;
 
@@ -55,13 +57,13 @@ namespace OWSBG.Core
 
         static void Sheet(string id, string number, string name, string species, string zone, int tier, string reason, string arena,
                           string entry, string turn, string last, string aftermath,
-                          bool optional = false, Ability grants = Ability.None, bool keystone = false, int scraps = 1)
+                          bool optional = false, Ability grants = Ability.None, bool keystone = false, int scraps = 1, CharterKind? charter = null)
         {
             _all.Add(new BossSheet
             {
                 Id = id, Number = number, Name = name, Species = species, Zone = zone, Tier = tier, Optional = optional,
                 Reason = reason, Arena = arena, Entry = entry, Turn = turn, Last = last, Aftermath = aftermath,
-                Grants = grants, Keystone = keystone, Scraps = scraps,
+                Grants = grants, Charter = charter, Keystone = keystone, Scraps = scraps,
             });
         }
 
@@ -114,7 +116,7 @@ namespace OWSBG.Core
                 "only if Wren tries to stop Aldermere's last day; the village asked to be let go",
                 "the square on its last evening; each bell erases a platform and a vantage; three doves, then two in canon, then one alone",
                 "They asked. Let them go.", "Which of us are you saving them from?", "Then it's held. Ask them if they're glad.",
-                "Aldermere is held against its wish; Teodor will not give the keystone; the Unwriter's Charter", optional: true);
+                "Aldermere is held against its wish; Teodor will not give the keystone; the Unwriter's Charter", optional: true, charter: CharterKind.Unwriter);
 
             Sheet("gatekeeper", "6.7", "The Gatekeeper", "a flying-age statue of a great eagle, roots for wings", "Verdance.OvergrownGate", 2,
                 "it guards the canopy road to the Plateau and admits only the winged",

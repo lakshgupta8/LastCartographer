@@ -13,7 +13,7 @@ namespace OWSBG.World
     /// </summary>
     public sealed class Hale : Boss
     {
-        public enum Attack { None, Sight, Call, Quill }
+        public enum Attack { None, Sight, Call, Quill, Flick }
         public enum Move { Stand, Approach, Telegraph, Quill, Call, Recover }
         public enum Owner { None, Hale, Wren }
 
@@ -30,6 +30,9 @@ namespace OWSBG.World
         public float eruptHeight = 3f, stoneWidth = 1f;
         public int quillTelegraphFrames = 12, quillFrames = 5;
         public float quillReach = 2.2f;
+        /// <summary>The flick: ink thrown off his quill at her, from range (an <see cref="EnemyProjectile"/>).</summary>
+        public int flickTelegraphFrames = 14;
+        public float flickSpeed = 9f;
         public float walkSpeed = 3f, reach = 2.2f, approachSeconds = 1.2f;
         public int recoverFrames = 20;
         public float standSeconds = 0.5f, parriedStaggerSeconds = 1f;
@@ -50,11 +53,13 @@ namespace OWSBG.World
         public int Calls { get; private set; }
         public int Quills { get; private set; }
         public int Parried { get; private set; }
+        public int Flicks { get; private set; }
+        public EnemyProjectile LastFlick { get; private set; }
         public int Dir => Facing;
 
         static readonly Attack[] Phase1 = { Attack.Sight, Attack.Quill, Attack.Sight };
-        static readonly Attack[] Phase2 = { Attack.Sight, Attack.Call, Attack.Quill };
-        static readonly Attack[] Phase3 = { Attack.Call, Attack.Quill, Attack.Sight, Attack.Call };
+        static readonly Attack[] Phase2 = { Attack.Sight, Attack.Call, Attack.Flick, Attack.Quill };
+        static readonly Attack[] Phase3 = { Attack.Call, Attack.Flick, Attack.Sight, Attack.Quill };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
 
         Owner[] _owner = new Owner[StoneCount];
@@ -203,8 +208,19 @@ namespace OWSBG.World
         {
             Attack.Sight => sightFrames,
             Attack.Call => callTelegraphFrames,
+            Attack.Flick => flickTelegraphFrames,
             _ => quillTelegraphFrames,
         };
+
+        /// <summary>Ink off the nib, straight at where she stands.</summary>
+        void Flick()
+        {
+            Flicks++;
+            var from = (Vector2)Collider.bounds.center + new Vector2(Facing * (Collider.bounds.extents.x + 0.3f), 0.2f);
+            var to = Wren != null ? Wren.Position + Vector2.up * 0.55f : from + new Vector2(Facing, 0f);
+            LastFlick = EnemyProjectile.Spawn("Flick", transform.parent, from, (to - from).normalized * flickSpeed, new Vector2(0.35f, 0.35f), damage,
+                InkMaterials.Lit("Hale_Ink", new Color(0.18f, 0.20f, 0.30f)));
+        }
 
         protected override void Tick(float dt)
         {
@@ -243,6 +259,7 @@ namespace OWSBG.World
                             break;
                         case Attack.Call: Calls++; RaisePillars(); Current = Move.Call; break;
                         case Attack.Quill: Quills++; Current = Move.Quill; break;
+                        case Attack.Flick: Flick(); Recover(); break;
                         default: Recover(); break;
                     }
                     break;

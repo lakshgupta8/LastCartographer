@@ -70,13 +70,8 @@ namespace OWSBG.World
         bool _telegraphStarted, _hitThisAttack;
         WrenVitals _vitals;
 
-        /// <summary>The Charter's profile by kind; the late Charters mirror as the Surveyor until they exist.</summary>
-        public static CharterProfile ProfileOf(CharterKind k) => k switch
-        {
-            CharterKind.Warden => CharterProfile.Warden(),
-            CharterKind.Drifter => CharterProfile.Drifter(),
-            _ => CharterProfile.Surveyor(),
-        };
+        /// <summary>The Charter's profile by kind, the late Charters too.</summary>
+        public static CharterProfile ProfileOf(CharterKind k) => CharterProfile.For(k);
 
         /// <summary>Tests and tooling: begin a specific attack now.</summary>
         public void ForceAttack(Attack a)

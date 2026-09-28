@@ -75,7 +75,8 @@ ringing dove stops that bell (the Cantor rule).
 | 2 | Two (the east dove leaves) | In canon: the second comes in halfway through the first |
 | 3 | One (the middle dove) | Alone, 0.55 s between |
 
-1 scrap, `boss.choir.defeated`. The Unwriter's Charter is CMB-17's.
+1 scrap, `boss.choir.defeated`, and the Unwriter's Charter: the arena hands it over from the sheet
+(`docs/design/late-charters.md`).
 
 ## 6.7 The Gatekeeper, at the Overgrown Gate
 
@@ -123,8 +124,8 @@ the end.
 | Phase | Attacks | Answer |
 |---|---|---|
 | 1 | Sight, quill (a jab), sight | Survey faster than him; parry the quill (1 s stagger) |
-| 2 | Sight, the count, quill | Stand on bare stones or her own; pogo the strikes (a down-strike on a column lands and bounces her) |
-| 3 | Count, quill, sight, count | The same, with most of the floor claimed |
+| 2 | Sight, the count, the flick (ink off his nib, thrown at her: an `EnemyProjectile`), quill | Stand on bare stones or her own; pogo the strikes (a down-strike on a column lands and bounces her); the Unwriter's Charter unwrites the flick |
+| 3 | Count, flick, sight, quill | The same, with most of the floor claimed |
 
 30 health, 2 scraps, `boss.hale.defeated`. When he has nothing left to sight, he calls the count instead; with no
 stones to call, he uses the quill. **Hale's lens:** once he is beaten the sighting lens cools down in half the time
@@ -311,7 +312,8 @@ to every arena room in the real game and walk in to start each fight.
 - **The lantern-radius is a number, not yet a picture.** The Bells publish it and the ropes obey it, but the nave
   doesn't go white beyond it until PRG-18 draws it; the sheet's "outline in peripheral vision" is that pass's too.
   Cutting the ropes by Inkthread waits for the thread; v1 cuts them with any strike.
-- **The Remnant Charter draining the Drawing's colour** is CMB-17's.
+- **The Remnant Charter drains the Drawing's colour** (CMB-17): grey, it has nothing to redraw with and can be
+  struck without waiting.
 - **The Archivist's second phase draws her plainly.** Her drawing jabs; it doesn't yet use her Charter's combo the
   way Oriel's mirror does.
 - **The Complete Survey keeps its own beat and names its own ground.** The bible's is the bounds-walk and Runa's

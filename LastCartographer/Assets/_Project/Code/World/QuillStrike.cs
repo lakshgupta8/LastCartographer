@@ -53,7 +53,9 @@ namespace OWSBG.World
         }
 
         // Frame data of the swing in progress (a combo step for forward swings, the base fields otherwise).
-        float _reach, _thickness; int _active, _recovery, _damage; float _knockback = 1f;
+        float _reach, _thickness; int _active, _recovery, _damage; float _knockback = 1f; bool _pulls;
+        /// <summary>Colour each landed strike takes (the Remnant Charter); set by the Charter.</summary>
+        public float Drain { get; set; }
 
         void FixedUpdate()
         {
@@ -90,13 +92,13 @@ namespace OWSBG.World
         {
             bool forward = _dir.y == 0f;
             int startup = startupFrames;
-            _reach = reach; _thickness = thickness; _active = activeFrames; _recovery = recoveryFrames; _damage = damage; _knockback = 1f;
+            _reach = reach; _thickness = thickness; _active = activeFrames; _recovery = recoveryFrames; _damage = damage; _knockback = 1f; _pulls = false;
             if (forward && Combo != null && Combo.Length > 0)
             {
                 ComboIndex = _comboWindowLeft > 0 ? (ComboIndex + 1) % Combo.Length : 0;
                 var s = Combo[ComboIndex];
                 _reach = s.Reach; _thickness = s.Thickness > 0f ? s.Thickness : thickness;
-                startup = s.Startup; _active = s.Active; _recovery = s.Recovery; _damage = s.Damage; _knockback = s.Knockback;
+                startup = s.Startup; _active = s.Active; _recovery = s.Recovery; _damage = s.Damage; _knockback = s.Knockback; _pulls = s.Pulls;
             }
             else ComboIndex = 0;
             _comboWindowLeft = 0;
@@ -126,7 +128,7 @@ namespace OWSBG.World
                 var h = _overlaps[i].GetComponentInParent<IHittable>();
                 if (h == null || _hitThisSwing.Contains(h)) continue;
                 _hitThisSwing.Add(h);
-                var info = new HitInfo { Damage = _damage, Direction = _dir, Source = gameObject, Knockback = _knockback };
+                var info = new HitInfo { Damage = _damage, Direction = _dir, Source = gameObject, Knockback = _knockback, Pulls = _pulls, Drain = Drain };
                 if (!h.TakeHit(info)) continue;
                 landedAny = true;
                 _ink?.AddFromHit(1);

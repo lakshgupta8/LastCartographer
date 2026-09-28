@@ -120,6 +120,11 @@ namespace OWSBG.Narrative
                 if (set != null) set.Unlock(a);
                 else GameState.World.Set(AbilitySet.FlagKey(a), true);   // no Wren loaded: the flag restores it later
             });
+            runner.AddCommandHandler<string>("charter", name =>
+            {
+                if (!Enum.TryParse(name, true, out CharterKind k)) { Debug.LogWarning("[OWSBG] <<charter " + name + ">>: no such Charter"); return; }
+                if (GameState.World.Equipment.OwnedCharters.Add(k)) Captions.Show("Charter: " + CharterProfile.For(k).DisplayName, 3f);
+            });
             runner.AddCommandHandler<string>("erase", place =>
             {
                 if (!Atlas.Erase(GameState.World, place))

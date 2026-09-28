@@ -21,6 +21,70 @@ namespace OWSBG.World
         public float DashScale = 1f;   // Warden 0.7
         public int ExtraAirDashes;     // Drifter 1
         public Color Tint = Color.white;   // greybox silhouette stand-in
+        public int BindCost = 3;           // Unwriter 4
+        public int InkthreadCost = 2;      // Ferryman 1 (read by the Inkthread when it exists, CMB-04)
+        public bool ErasesProjectiles;     // Unwriter: strikes erase enemy projectiles
+        public float Drain;                // Remnant: colour each strike takes
+
+        /// <summary>The profile of a Charter by kind.</summary>
+        public static CharterProfile For(CharterKind kind) => kind switch
+        {
+            CharterKind.Warden => Warden(),
+            CharterKind.Drifter => Drifter(),
+            CharterKind.Ferryman => Ferryman(),
+            CharterKind.Unwriter => Unwriter(),
+            CharterKind.Remnant => Remnant(),
+            _ => Surveyor(),
+        };
+
+        /// <summary>Found with Sable's tether-cord (combat doc 5): reach, a swing, and a reel that pulls. Inkthread costs 1.</summary>
+        public static CharterProfile Ferryman() => new CharterProfile
+        {
+            Kind = CharterKind.Ferryman, DisplayName = "Ferryman's Charter",
+            Blurb = "A hook on a cord. Hook, swing, reel. The thread comes cheap: one pip.",
+            Combo = new[]
+            {
+                ComboStep.Make("Hook", 3.2f, 5, 4, 10),
+                ComboStep.Make("Swing", 3.4f, 4, 5, 10, 1, 1.5f),
+                ComboStep.Make("Reel", 3.0f, 6, 4, 14, 2, 1.2f).Pulling(),
+            },
+            DefaultFlourish = FlourishKind.Longstroke,
+            InkthreadCost = 1,
+            Tint = new Color(0.52f, 0.62f, 0.60f),
+        };
+
+        /// <summary>From the Choir's last dove (6.6): strikes erase what is thrown at her; Bind costs 4.</summary>
+        public static CharterProfile Unwriter() => new CharterProfile
+        {
+            Kind = CharterKind.Unwriter, DisplayName = "Unwriter's Charter",
+            Blurb = "The Cantors' own. Hush, hush, toll. What is thrown at her is unwritten. Bind costs four.",
+            Combo = new[]
+            {
+                ComboStep.Make("Hush", 2.2f, 3, 4, 8),
+                ComboStep.Make("Hush", 2.2f, 3, 4, 8),
+                ComboStep.Make("Toll", 2.6f, 7, 6, 14, 2, 1.5f, 1.6f),
+            },
+            DefaultFlourish = FlourishKind.Blot,
+            BindCost = 4,
+            ErasesProjectiles = true,
+            Tint = new Color(0.94f, 0.92f, 0.86f),
+        };
+
+        /// <summary>Act 3, from Ilse in the Hollow: every strike drains the colour it lands on.</summary>
+        public static CharterProfile Remnant() => new CharterProfile
+        {
+            Kind = CharterKind.Remnant, DisplayName = "Remnant Charter",
+            Blurb = "Grey is a colour you can carry. Fade, fade, pale. What she strikes goes grey and slow.",
+            Combo = new[]
+            {
+                ComboStep.Make("Fade", 2.2f, 3, 4, 9),
+                ComboStep.Make("Fade", 2.2f, 3, 4, 9),
+                ComboStep.Make("Pale", 2.8f, 5, 4, 12, 1, 1f, 1.0f),
+            },
+            DefaultFlourish = FlourishKind.Crosshatch,
+            Drain = 0.34f,
+            Tint = new Color(0.62f, 0.62f, 0.62f),
+        };
 
         public static CharterProfile Surveyor() => new CharterProfile
         {
@@ -106,7 +170,11 @@ namespace OWSBG.World
         void Awake()
         {
             if (_profiles.Count == 0)
-                _profiles.AddRange(new[] { CharterProfile.Surveyor(), CharterProfile.Warden(), CharterProfile.Drifter() });
+                _profiles.AddRange(new[]
+                {
+                    CharterProfile.Surveyor(), CharterProfile.Warden(), CharterProfile.Drifter(),
+                    CharterProfile.Ferryman(), CharterProfile.Unwriter(), CharterProfile.Remnant(),
+                });
             _ctrl = GetComponent<WrenController>();
             _strike = GetComponent<QuillStrike>();
             _flourishes = GetComponent<Flourishes>();
@@ -151,11 +219,12 @@ namespace OWSBG.World
             var p = Find(kind) ?? Find(CharterKind.Surveyor) ?? (_profiles.Count > 0 ? _profiles[0] : null);
             if (p == null) return;
             Current = p;
-            if (_strike != null) _strike.Combo = p.Combo;
+            if (_strike != null) { _strike.Combo = p.Combo; _strike.Drain = p.Drain; }
             if (_flourishes != null) _flourishes.DefaultKind = p.DefaultFlourish;
             if (_ink != null) _ink.GainMultiplier = p.InkGainMultiplier;
             if (_vitals != null)
             {
+                _vitals.BindCost = p.BindCost;
                 int max = _vitals.BaseMaxMasks + p.MaskBonus;
                 if (p.MaskCap > 0) max = Mathf.Min(max, p.MaskCap);
                 _vitals.SetMaxMasks(max);

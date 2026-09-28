@@ -42,6 +42,8 @@ namespace OWSBG.World
         public bool IsDefeated => GameState.World.Is(FlagKey);
         public float IntroSeconds { get => _introSeconds; set => _introSeconds = value; }
         public int VellumScraps { get => _vellumScraps; set => _vellumScraps = value; }
+        /// <summary>A Charter handed over when the boss falls (the Choir's Unwriter's Charter).</summary>
+        public CharterKind? RewardCharter { get; set; }
         public float RetryIntroSeconds { get => _retryIntroSeconds; set => _retryIntroSeconds = value; }
         public IReadOnlyList<GameObject> Doors => _doors;
         public Cutscene IntroCutscene { get => _introCutscene; set => _introCutscene = value; }
@@ -175,6 +177,8 @@ namespace OWSBG.World
                 w.Numbers["$vellum_scraps"] = scraps + _vellumScraps;
             }
             if (!string.IsNullOrEmpty(_beaconVantageId)) w.MarkSurveyed(_beaconVantageId);
+            if (RewardCharter.HasValue && w.Equipment.OwnedCharters.Add(RewardCharter.Value))
+                Captions.Show("Charter: " + CharterProfile.For(RewardCharter.Value).DisplayName, 3f);
             if (_rewardAbility != Ability.None)
             {
                 var wren = _wren != null ? _wren : FindFirstObjectByType<WrenController>();

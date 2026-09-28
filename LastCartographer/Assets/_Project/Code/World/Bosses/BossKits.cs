@@ -168,6 +168,7 @@ namespace OWSBG.World
             kit.Arena = arenaGo.AddComponent<BossArena>();
             kit.Arena.Configure(kit.Boss, new[] { kit.DoorW, kit.DoorE }, bossId, sheet.Grants);
             kit.Arena.VellumScraps = sheet.Scraps;
+            kit.Arena.RewardCharter = sheet.Charter;
             return kit;
         }
 

@@ -6,7 +6,8 @@ CMB-16). With the Lamp-Keeper and Halvard's first fight (built into their rooms)
 except Reedmother's Brood (6.2, optional) and Halvard's second and third (CMB-12). Each kit keeps to the sheet's
 arena, its three phases and its answers. The sheet owns the reason and the words; the kit owns the frame data.
 Telegraphs keep the tier's floor (11 frames at Tier II, 10 at Tier III, 8 at Tier IV), and no phase has more than
-four attacks.
+four attacks. Health, slams and each tier's typical read are the tuning pass's (CMB-19, `tuning.md`); every kit
+declares its attacks (`Boss.Kit()`) and the tuning audit holds them to the rules.
 
 Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar`, `Voss`, `HalfCathedralBells`,
 `CorrasDrawing`, `Archivist`, `CompleteSurvey` (World, `Code/World/Bosses/`), all on the `Boss` framework (CMB-10).
@@ -45,7 +46,7 @@ lost and stays dark. Touching the Collapse does no harm: it is the mine.
 | 2 | Surge (ink along the floor from the far end, toward her), rubble | Jump the surge or Longstroke it; the quill does nothing to it |
 | 3 | Reach (1.4 s at the next lamp; unstruck, the lamp goes out), rubble, surge | Strike it while it reaches; it never takes the last lamp |
 
-28 health. The arena sets `boss.collapse.defeated` and gives 2 scraps. The keystone and the count are the Runa
+27 health (the tuning table, `tuning.md` §3). The rubble is a slam: two masks and the shake. The arena sets `boss.collapse.defeated` and gives 2 scraps. The keystone and the count are the Runa
 scene's.
 
 ## 6.5 Cinder Warden Brann, the cold furnace
@@ -59,11 +60,11 @@ pattern shifts, and the sections about to heat glow orange 0.8 s before.
 | 2 | Half cool, alternating | Cross-cut (both lances, both sides, low), hold, thrust | Jump the cross-cut and pogo him; only a Longstroke or a pogo gets through the hold, and a Longstroke breaks it (1.2 s stagger) |
 | 3 | Dark: nothing burns | Hold, cross-cut, thrust, charge | Read the glow: his brass is dim (0.25) at rest and full (1.0) on every telegraph |
 
-36 health, 3 scraps, `boss.brann.defeated`.
+34 health, 3 scraps, `boss.brann.defeated`.
 
 ## 6.6 The Choir, over Aldermere's square
 
-Three doves in a line at 2.6 units, one health between them (24). Only the doves can be struck; a hit on the Choir
+Three doves in a line at 2.6 units, one health between them (27). Only the doves can be struck; a hit on the Choir
 itself is refused. A dove's ring lasts 32 frames. When it finishes, it hurts within 3.2 units of the bell, erases
 the next of the square's four platforms, and erases Aldermere (`Verdance_Aldermere_2`) from the atlas. The square's
 vantage stands by the west door, so she can re-survey between verses and the next bell erases it again. A hit on a
@@ -89,7 +90,7 @@ in the middle.
 | 2 | Rises to the top of the gate (7 units) | Feathers, the sweep at perch height | Thread up the roots |
 | 3 | The roots tear free; it flies low (2.4 units) | Passes the width of the gate, heavy landings | Strike the belly: in the air only an up-strike lands |
 
-32 health, 2 scraps, `boss.gatekeeper.defeated`. A retry puts it back on its plinth with its roots.
+34 health, 2 scraps, `boss.gatekeeper.defeated`. The heavy landing is a slam (two masks, the shake, a 16-frame read). A retry puts it back on its plinth with its roots.
 
 ## 6.8 Warden-Captain Oriel, the Bastion's drill-yard
 
@@ -104,7 +105,7 @@ times its startup, never under the tier's floor. The late Charters mirror as the
 | 2 | Combo, Wren's own Flourish (Crosshatch in front, Longstroke six units, or Blot round her), step | Whatever the Charter asks |
 | 3 | At a third she steps clear and Binds, once: 60 frames, then a third of her health back. Then Flourish, combo, step, combo | Deny the Bind: a hit while she binds stops it, staggers her, and the Bind is spent |
 
-30 health, 3 scraps, `boss.oriel.defeated`. **The stand-down:** she counts every mask Wren loses in the attempt.
+38 health, 3 scraps, `boss.oriel.defeated`. **The stand-down:** she counts every mask Wren loses in the attempt.
 Beaten with none lost, she writes `halden.oriel.stood_down`. A retry starts the count again and gives her Bind back.
 
 **A rule changed with it.** `Licence` used to let Pell's report outrank Oriel. But she only fights once the report
@@ -142,7 +143,7 @@ Magnetic iron everywhere but the seam on top where the keystone sat. Side strike
 | 2 | Iron walls (marked, then risen 3.6 units high either side of her, two at a time), slam, walk | Keep out of the pen, or climb |
 | 3 | It burns: the walls grow to 5.4 units, past any jump, and heat rises on her side of each | Windmemory: an updraft carries her over the wall; without it the heat is only heat |
 
-34 health, 2 scraps, `boss.fallen_star.defeated`. The keystone and the cold anvil belong to the Fire scene.
+30 health, 2 scraps, `boss.fallen_star.defeated`. The fist is a slam: two masks. The keystone and the cold anvil belong to the Fire scene.
 
 ## 6.11 Guildmaster Aurelian Voss, the Threshold
 
@@ -160,7 +161,7 @@ sealed, he thrusts instead.
 | 2 | Anchor, thrust, anchor, lunge | Break the seal by striking its edge; don't stand where the rose is drawn |
 | 3 | The Blank eats the floor from the west, a section every 1.6 s, seals and all, until two sections are left; he fights from that island. Anchor, thrust, guard | Stay off the west: the white takes a mask at a time |
 
-40 health, 3 scraps, `boss.voss.defeated` (which `Threshold_Voss` reads before it writes `greyfold.crossed`). The
+38 health, 3 scraps, `boss.voss.defeated` (which `Threshold_Voss` reads before it writes `greyfold.crossed`). The
 grade comes free and any hold ends when he falls or on a retry.
 
 ## 6.12 The Half-Cathedral Bells, the nave
@@ -192,9 +193,9 @@ a red crayon mark shows.
 |---|---|---|
 | 1 | Swipe, stomp | Strike, wait for the line, strike |
 | 2 | It draws a second Voss, small, beside it. Strike the small one and the drawing draws itself bigger (+2 health) and draws him back in 2 s | Don't strike the small one |
-| 3 | The crayon runs out: outline, faster (half the pauses and wind-ups, never under the tier's floor, half the redraw), and the room's colour goes (`_OWSBG_Outline`) | The same, faster |
+| 3 | The crayon runs out: outline, faster (half the pauses and wind-ups, never under the tier's floor, and the stomp never under the tier's typical 12; half the redraw), and the room's colour goes (`_OWSBG_Outline`) | The same, faster |
 
-32 health, 2 scraps, `boss.corras_drawing.defeated`, which opens `Capital_Corra` and the carry.
+34 health, 2 scraps, `boss.corras_drawing.defeated`. The stomp is a slam: two masks, which opens `Capital_Corra` and the carry.
 
 ## 6.14 The Archivist, the mirror-Observatory
 
@@ -209,7 +210,7 @@ struck only while he draws. Struck, every drawing is unmade, he takes the hit an
 | 2 | Draw her, draw, swoop | Ignore her drawing; strike his hand |
 | 3 | He draws the Atlas frame round the arena, stops drawing, and holds at the centre. The frame closes a wingspan (0.6) every 0.8 s, down to 4 units wide; outside it is the page, and the page hurts | Longstroke the frame's edge (it goes back 1.2); strike him |
 
-40 health, 3 scraps, `boss.archivist.defeated`, which `Capital_Corvin_After` reads to offer the keystone and the
+34 health, 3 scraps, `boss.archivist.defeated`, which `Capital_Corvin_After` reads to offer the keystone and the
 Rest.
 
 ## 6.15 The Complete Survey, the Observatory floor
@@ -226,7 +227,7 @@ nothing is named, time to Bind.
 | 2 | Emberdown's ash | 0.75 s | Two a beat |
 | 3 | Halden's late afternoon | 0.6 s | Three a beat |
 
-24 health (pools), no scraps, `boss.complete_survey.defeated`, and the Sky (the arena grants what the sheet
+25 health (pools), no scraps, `boss.complete_survey.defeated`, and the Sky (the arena grants what the sheet
 grants), which `Ending_Open_After` reads.
 
 ## Arena rooms

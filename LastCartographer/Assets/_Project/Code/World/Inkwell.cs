@@ -1,12 +1,13 @@
 using System;
 using UnityEngine;
+using OWSBG.Core;
 
 namespace OWSBG.World
 {
     /// <summary>Wren's ink resource (combat doc 4): 9 pips, filled by hits, spent on Bind and Flourishes.</summary>
     public sealed class Inkwell : MonoBehaviour
     {
-        [SerializeField] int _maxPips = 9;
+        [SerializeField] int _maxPips = Tuning.InkMax;
         [SerializeField] int _pips = 0;
         float _carry;
 

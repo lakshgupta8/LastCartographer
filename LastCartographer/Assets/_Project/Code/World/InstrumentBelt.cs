@@ -62,7 +62,7 @@ namespace OWSBG.World
         [Header("Tether-hook")]
         public float tetherSeconds = 20f;
         [Header("Iris tincture")]
-        public int tincturePips = 5;
+        public int tincturePips = Tuning.TincturePips;
         [Header("Shared")]
         public float throwHeight = 0.8f;
         public LayerMask hitMask;

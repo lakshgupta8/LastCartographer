@@ -59,21 +59,21 @@ namespace OWSBG.World
             {
                 case "collapse":
                 {
-                    var c = MakeBoss<Collapse>(parent, "Collapse", new Vector2(minX + (maxX - minX) / 8f, floor + 1.5f), new Vector2((maxX - minX) / 4f * 0.8f, 3f), 28);
+                    var c = MakeBoss<Collapse>(parent, "Collapse", new Vector2(minX + (maxX - minX) / 8f, floor + 1.5f), new Vector2((maxX - minX) / 4f * 0.8f, 3f));
                     c.floorY = floor; c.arenaMinX = minX; c.arenaMaxX = maxX;
                     kit.Boss = c;
                     break;
                 }
                 case "brann":
                 {
-                    var b = MakeBoss<Brann>(parent, "Brann", new Vector2(maxX - 3f, floor + 1f), new Vector2(0.9f, 2f), 36);
+                    var b = MakeBoss<Brann>(parent, "Brann", new Vector2(maxX - 3f, floor + 1f), new Vector2(0.9f, 2f));
                     b.floorY = floor; b.arenaMinX = minX; b.arenaMaxX = maxX;
                     kit.Boss = b;
                     break;
                 }
                 case "choir":
                 {
-                    var ch = MakeBoss<Choir>(parent, "Choir", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f), 24);
+                    var ch = MakeBoss<Choir>(parent, "Choir", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f));
                     ch.floorY = floor; ch.centreX = mid; ch.hoverY = floor + 2.6f;
                     var plat = InkMaterials.Lit("Arena_Platform_choir", new Color(0.62f, 0.60f, 0.50f));
                     foreach (var x in new[] { 2.5f, 7f, 11f, 15.5f })
@@ -85,7 +85,7 @@ namespace OWSBG.World
                 }
                 case "gatekeeper":
                 {
-                    var g = MakeBoss<Gatekeeper>(parent, "Gatekeeper", new Vector2(mid, floor + 1.2f), new Vector2(2.4f, 2.4f), 32);
+                    var g = MakeBoss<Gatekeeper>(parent, "Gatekeeper", new Vector2(mid, floor + 1.2f), new Vector2(2.4f, 2.4f));
                     g.floorY = floor; g.arenaMinX = minX + 1.2f; g.arenaMaxX = maxX - 1.2f;
                     g.perchY = floor + 7f; g.passY = floor + 2.4f;
                     g.rootPoints.Add(new Vector2(origin.x + 3f, floor + 6f));
@@ -96,7 +96,7 @@ namespace OWSBG.World
                 }
                 case "oriel":
                 {
-                    var o = MakeBoss<Oriel>(parent, "Oriel", new Vector2(maxX - 3f, floor + 0.8f), new Vector2(0.7f, 1.6f), 30);
+                    var o = MakeBoss<Oriel>(parent, "Oriel", new Vector2(maxX - 3f, floor + 0.8f), new Vector2(0.7f, 1.6f));
                     o.floorY = floor; o.arenaMinX = minX; o.arenaMaxX = maxX;
                     var chalk = InkMaterials.Lit("Arena_Chalk", new Color(0.94f, 0.93f, 0.88f));
                     for (int i = 1; i < 6; i++) BossPart.Prop("Chalk", parent, new Vector2(origin.x + i * 3f, floor + 0.02f), new Vector2(0.08f, 0.04f), chalk, -0.4f);
@@ -105,7 +105,7 @@ namespace OWSBG.World
                 }
                 case "hale":
                 {
-                    var h = MakeBoss<Hale>(parent, "Hale", new Vector2(maxX - 1.5f, floor + 0.9f), new Vector2(0.8f, 1.8f), 30);
+                    var h = MakeBoss<Hale>(parent, "Hale", new Vector2(maxX - 1.5f, floor + 0.9f), new Vector2(0.8f, 1.8f));
                     h.floorY = floor; h.arenaMinX = minX; h.arenaMaxX = maxX;
                     for (int i = 0; i < Hale.StoneCount; i++) h.stoneXs.Add(origin.x + 1f + i * 2f);
                     kit.Boss = h;
@@ -113,14 +113,14 @@ namespace OWSBG.World
                 }
                 case "voss":
                 {
-                    var v = MakeBoss<Voss>(parent, "Voss", new Vector2(maxX - 3f, floor + 1.1f), new Vector2(0.9f, 2.2f), 40);
+                    var v = MakeBoss<Voss>(parent, "Voss", new Vector2(maxX - 3f, floor + 1.1f), new Vector2(0.9f, 2.2f));
                     v.floorY = floor; v.arenaMinX = minX; v.arenaMaxX = maxX;
                     kit.Boss = v;
                     break;
                 }
                 case "bells":
                 {
-                    var bl = MakeBoss<HalfCathedralBells>(parent, "Bells", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f), HalfCathedralBells.RopeCount);
+                    var bl = MakeBoss<HalfCathedralBells>(parent, "Bells", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f));
                     bl.floorY = floor; bl.arenaMinX = minX; bl.arenaMaxX = maxX;
                     bl.ropeXs.AddRange(new[] { mid, origin.x + 5f, origin.x + 13f, origin.x + 16.5f });
                     bl.vantageX = origin.x + 1.5f;
@@ -130,28 +130,28 @@ namespace OWSBG.World
                 }
                 case "corras_drawing":
                 {
-                    var cd = MakeBoss<CorrasDrawing>(parent, "CorrasDrawing", new Vector2(maxX - 4f, floor + 1.8f), new Vector2(2.2f, 3.6f), 32);
+                    var cd = MakeBoss<CorrasDrawing>(parent, "CorrasDrawing", new Vector2(maxX - 4f, floor + 1.8f), new Vector2(2.2f, 3.6f));
                     cd.floorY = floor; cd.arenaMinX = minX + 1.1f; cd.arenaMaxX = maxX - 1.1f;
                     kit.Boss = cd;
                     break;
                 }
                 case "archivist":
                 {
-                    var ar = MakeBoss<Archivist>(parent, "Archivist", new Vector2(mid, floor + 3f), new Vector2(2.2f, 2.4f), 40);
+                    var ar = MakeBoss<Archivist>(parent, "Archivist", new Vector2(mid, floor + 3f), new Vector2(2.2f, 2.4f));
                     ar.floorY = floor; ar.arenaMinX = minX; ar.arenaMaxX = maxX; ar.perchY = floor + 3f;
                     kit.Boss = ar;
                     break;
                 }
                 case "complete_survey":
                 {
-                    var cs = MakeBoss<CompleteSurvey>(parent, "CompleteSurvey", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f), 24);
+                    var cs = MakeBoss<CompleteSurvey>(parent, "CompleteSurvey", new Vector2(mid, floor + 9f), new Vector2(0.4f, 0.4f));
                     cs.floorY = floor; cs.arenaMinX = minX; cs.arenaMaxX = maxX;
                     kit.Boss = cs;
                     break;
                 }
                 case "fallen_star":
                 {
-                    var st = MakeBoss<FallenStar>(parent, "FallenStar", new Vector2(mid, floor + 1.6f), new Vector2(2.4f, 3.2f), 34);
+                    var st = MakeBoss<FallenStar>(parent, "FallenStar", new Vector2(mid, floor + 1.6f), new Vector2(2.4f, 3.2f));
                     st.floorY = floor; st.arenaMinX = minX + 1.2f; st.arenaMaxX = maxX - 1.2f;
                     kit.Boss = st;
                     break;
@@ -188,7 +188,7 @@ namespace OWSBG.World
             _ => new Color(0.44f, 0.48f, 0.38f),
         };
 
-        static T MakeBoss<T>(Transform parent, string name, Vector2 pos, Vector2 size, int health) where T : Boss
+        static T MakeBoss<T>(Transform parent, string name, Vector2 pos, Vector2 size) where T : Boss
         {
             var go = new GameObject(name) { layer = LayerMask.NameToLayer("Enemy") };
             if (parent != null) go.transform.SetParent(parent, false);
@@ -203,9 +203,7 @@ namespace OWSBG.World
             quad.transform.SetParent(go.transform, false);
             quad.transform.localScale = new Vector3(size.x * 1.3f, size.y * 1.3f, 1f);
             quad.GetComponent<MeshRenderer>().sharedMaterial = InkMaterials.Lit("Boss_" + name, Color.white);
-            var boss = go.AddComponent<T>();
-            boss.SetMaxHealth(health);
-            return boss;
+            return go.AddComponent<T>();   // health comes with the sheet (ApplySheet, Tuning.BossHealth)
         }
 
         static GameObject Ground(Transform parent, string name, Vector2 centre, Vector2 size, Material mat)

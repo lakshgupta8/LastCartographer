@@ -1,4 +1,5 @@
 using System;
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -25,6 +26,8 @@ namespace OWSBG.World
         [SerializeField] float _deathSeconds = 0.25f;
 
         public int MaxHealth => _maxHealth;
+        /// <summary>Masks the body takes on contact.</summary>
+        public int ContactDamage => _contactDamage;
         public int Health { get; private set; }
         public bool IsDead => Health <= 0;
         public EnemyAnswer Answer => _answer;
@@ -71,6 +74,8 @@ namespace OWSBG.World
             Visual = GetComponentInChildren<Renderer>();
             _mpb = new MaterialPropertyBlock();
             _baseScale = transform.localScale;
+            // The tuning table outranks the scene for the families it knows (CMB-19, docs/design/tuning.md §4).
+            if (Tuning.TryEnemy(Family, out var tune)) { _maxHealth = tune.Health; _contactDamage = tune.Contact; }
             Health = _maxHealth;
             if (_playerMask.value == 0) _playerMask = LayerMask.GetMask("Player");
         }

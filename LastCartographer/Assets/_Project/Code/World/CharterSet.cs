@@ -25,10 +25,21 @@ namespace OWSBG.World
         public float DashScale = 1f;   // Warden 0.7
         public int ExtraAirDashes;     // Drifter 1
         public Color Tint = Color.white;   // greybox silhouette stand-in
-        public int BindCost = 3;           // Unwriter 4
-        public int InkthreadCost = 2;      // Ferryman 1 (read by the Inkthread when it exists, CMB-04)
+        public int BindCost = Tuning.BindCost;           // Unwriter 4
+        public int InkthreadCost = Tuning.InkthreadCost;      // Ferryman 1 (read by the Inkthread when it exists, CMB-04)
         public bool ErasesProjectiles;     // Unwriter: strikes erase enemy projectiles
         public float Drain;                // Remnant: colour each strike takes
+
+        /// <summary>Damage a second from the quill alone, the whole combo swung without a pause (frames at 60 Hz; CMB-19).</summary>
+        public float QuillDamagePerSecond
+        {
+            get
+            {
+                int frames = 0, damage = 0;
+                if (Combo != null) foreach (var s in Combo) { frames += s.Startup + s.Active + s.Recovery; damage += s.Damage; }
+                return frames > 0 ? damage * 60f / frames : 0f;
+            }
+        }
 
         /// <summary>The profile of a Charter by kind.</summary>
         public static CharterProfile For(CharterKind kind) => kind switch

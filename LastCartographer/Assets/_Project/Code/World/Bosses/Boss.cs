@@ -1,9 +1,44 @@
 using System;
+using System.Collections.Generic;
 using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
 {
+    /// <summary>What an attack is to the tuning tables (CMB-19, <c>docs/design/tuning.md</c>).</summary>
+    public enum AttackKind
+    {
+        /// <summary>A telegraphed blow: one mask, and its read counts toward the tier's typical telegraph.</summary>
+        Strike,
+        /// <summary>A blow that comes down on floor it marked first: two masks and the hard shake.</summary>
+        Slam,
+        /// <summary>A long read the fight is built round (a ring, a sighting, a beat, the heat's glow): only the floor applies.</summary>
+        Window,
+        /// <summary>Changes the arena and hurts no one itself (walls, marks, a step).</summary>
+        Shape,
+    }
+
+    /// <summary>One attack of a boss's kit as the fight plays it: its read in frames (the tier's floor applied), the
+    /// masks it takes, and the phases it is in.</summary>
+    public readonly struct BossAttack
+    {
+        public readonly string Name;
+        public readonly AttackKind Kind;
+        public readonly int Telegraph;
+        public readonly int Damage;
+        /// <summary>Bit n-1 set for phase n.</summary>
+        public readonly int Phases;
+
+        public BossAttack(string name, AttackKind kind, int telegraph, int damage, int phases)
+        {
+            Name = name; Kind = kind; Telegraph = telegraph; Damage = damage; Phases = phases;
+        }
+
+        public bool In(int phase) => phase >= 1 && (Phases & (1 << (phase - 1))) != 0;
+        public const int All = 0b111;
+        public override string ToString() => $"{Name} ({Kind}, {Telegraph} f, {Damage} mask{(Damage == 1 ? "" : "s")})";
+    }
+
     /// <summary>
     /// Base for bosses (CMB-10, combat doc 8): three phases keyed to health thirds, each opened
     /// by a short line; dormant until the arena starts the fight; deactivates on death instead of
@@ -30,8 +65,33 @@ namespace OWSBG.World
         /// <summary>Frames left on the current telegraph; attacks start when it reaches 0.</summary>
         public int TelegraphLeft { get; private set; }
         public bool IsTelegraphing => TelegraphLeft > 0;
-        /// <summary>Minimum telegraph by tier: 12 frames at Tier I down to 8 at Tier IV (combat doc 8).</summary>
-        public int MinTelegraphFrames => Mathf.Max(8, 12 - (Mathf.Clamp(_tier, 1, 4) - 1) * 4 / 3);
+        /// <summary>Minimum telegraph by tier: 12 frames at Tier I down to 8 at Tier IV (combat doc 8, <see cref="Tuning.TelegraphFloor"/>).</summary>
+        public int MinTelegraphFrames => Tuning.TelegraphFloor(_tier);
+        /// <summary>The sheet this boss stands on (NAR-06), by its name and tier; null for a test rig.</summary>
+        public BossSheet Sheet => Bosses.Named(_bossName, _tier);
+
+        /// <summary>
+        /// Every attack in the kit as the fight plays it (CMB-19): the tuning tests hold these to the tier's floor and
+        /// typical read, a hit's one mask and a slam's two, and four attacks a phase. Read from the kit's own fields.
+        /// </summary>
+        public virtual IEnumerable<BossAttack> Kit() { yield break; }
+
+        /// <summary>A phase mask from the phases whose pattern holds the attack.</summary>
+        protected static int PhasesOf<T>(T attack, Func<int, IReadOnlyList<T>> patternFor)
+        {
+            int mask = 0;
+            for (int p = 1; p <= 3; p++)
+            {
+                var pattern = patternFor(p);
+                for (int i = 0; i < pattern.Count; i++) if (EqualityComparer<T>.Default.Equals(pattern[i], attack)) { mask |= 1 << (p - 1); break; }
+            }
+            return mask;
+        }
+
+        /// <summary>A telegraph as <see cref="Telegraph"/> plays it: never under the tier's floor.</summary>
+        protected int Read(int frames) => Mathf.Max(frames, MinTelegraphFrames);
+        /// <summary>Seconds as fixed steps.</summary>
+        protected static int Frames(float seconds) => Mathf.RoundToInt(seconds / Time.fixedDeltaTime);
 
         public event Action<Boss, int, string> PhaseStarted;
         public event Action<Boss> FightStarted, FightReset, Defeated;
@@ -48,6 +108,15 @@ namespace OWSBG.World
             Body.bodyType = RigidbodyType2D.Kinematic;
             Body.gravityScale = 0f;
             CaptureStart();
+            ApplyTunedHealth();
+        }
+
+        /// <summary>Health from the tuning table (CMB-19) when the boss stands on a sheet the table knows.</summary>
+        void ApplyTunedHealth()
+        {
+            var sheet = Sheet;
+            int h = sheet != null ? Tuning.BossHealth(sheet.Id) : 0;
+            if (h > 0) SetMaxHealth(h);
         }
 
         void CaptureStart()
@@ -66,6 +135,7 @@ namespace OWSBG.World
             _bossName = sheet.Name;
             _tier = sheet.Tier;
             _phaseLines = sheet.Lines;
+            ApplyTunedHealth();
         }
 
         public enum Contact { None, Landed, Parried }

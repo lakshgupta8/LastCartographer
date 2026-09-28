@@ -171,7 +171,7 @@ namespace OWSBG.Tests
             yield return Fixed(2);
             Assert.IsTrue(c.IsTelegraphing, "the dust rises first");
             yield return Until(() => c.Rubbles == 1 && c.Current == Collapse.Move.Wait, 3f, "the rubble to land");
-            Assert.AreEqual(masks - 1, _vitals.Masks, "it came down on her");
+            Assert.AreEqual(masks - Tuning.Slam, _vitals.Masks, "it came down on her: a slam takes two (CMB-19)");
             Assert.AreEqual(1, c.Rubble.Count);
             Assert.AreEqual(x1, c.Rubble[0].Position.x, 0.05f, "where she stood");
             Assert.IsTrue(c.IsLampBlocked(1), "and it lies under the second lamp");
@@ -220,7 +220,7 @@ namespace OWSBG.Tests
             c.waitSeconds = 999f;
             yield return StartFight(1f);
             yield return Until(() => c.IsDrawn, 2f, "a lit beat");
-            for (int i = 0; i < 19; i++) c.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(c, 3); i < n; i++) c.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(3, c.Phase, "a third left");
 
             c.ForceAttack(Collapse.Attack.Reach);
@@ -294,7 +294,7 @@ namespace OWSBG.Tests
             b.standSeconds = 999f;
             b.shiftSeconds = 999f;
             yield return StartFight(b.SectionCentre(3));
-            for (int i = 0; i < 13; i++) b.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(b, 2); i < n; i++) b.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(2, b.Phase);
             Assert.AreEqual(3, b.HotCount, "half the floor is cool");
             Assert.IsFalse(b.IsHot(3), "and she stands on the cool half");
@@ -328,7 +328,7 @@ namespace OWSBG.Tests
             var b = (Brann)Build("brann").Boss;
             b.standSeconds = 999f;
             yield return StartFight(b.SectionCentre(0));
-            for (int i = 0; i < 25; i++) b.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(b, 3); i < n; i++) b.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(3, b.Phase);
             Assert.IsTrue(b.IsDark);
             Assert.AreEqual(0, b.HotCount, "the furnace is out");
@@ -412,14 +412,14 @@ namespace OWSBG.Tests
         {
             var ch = (Choir)Build("choir").Boss;
             yield return StartFight(1f);
-            for (int i = 0; i < 9; i++) ch.Doves[0].TakeHit(Strike(Vector2.right, _wren));
+            for (int i = 0, n = BossHits.ToPhase(ch, 2); i < n; i++) ch.Doves[0].TakeHit(Strike(Vector2.right, _wren));
             Assert.AreEqual(2, ch.Phase);
             Assert.AreEqual(2, ch.ActiveDoves);
             Assert.IsFalse(ch.IsDoveActive(2), "the east dove has left");
             yield return Until(() => ch.RingingCount == 2, 6f, "two bells in canon");
             Assert.IsTrue(ch.IsRinging(0) && ch.IsRinging(1));
 
-            for (int i = 0; i < 8; i++) ch.Doves[0].TakeHit(Strike(Vector2.right, _wren));
+            for (int i = 0, n = BossHits.ToPhase(ch, 3); i < n; i++) ch.Doves[0].TakeHit(Strike(Vector2.right, _wren));
             Assert.AreEqual(3, ch.Phase);
             Assert.AreEqual(1, ch.ActiveDoves);
             Assert.IsTrue(ch.IsDoveActive(0) && !ch.IsDoveActive(1), "one dove, singing alone");
@@ -482,14 +482,14 @@ namespace OWSBG.Tests
             g.standSeconds = 999f;
             float restY = g.transform.position.y;
             yield return StartFight(2f);
-            for (int i = 0; i < 11; i++) g.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(g, 2); i < n; i++) g.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(2, g.Phase);
             yield return Until(() => g.Current != Gatekeeper.Move.Rise, 3f, "the rise");
             Assert.AreEqual(g.perchY, g.transform.position.y, 0.05f, "at the top of the gate");
             Assert.AreEqual(3, g.Roots.Count, "still rooted: the threads go up to it");
             Assert.IsTrue(g.TakeHit(Strike(Vector2.right)), "up here any strike lands");
 
-            for (int i = 0; i < 11; i++) g.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(g, 3); i < n; i++) g.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(3, g.Phase);
             yield return Fixed(2);
             Assert.IsTrue(g.RootsTorn);
@@ -514,7 +514,7 @@ namespace OWSBG.Tests
             _ctrl.Teleport(new Vector2(-4f, 0f));
             yield return Fixed(5);
             yield return StartFight(2f);
-            for (int i = 0; i < 22; i++) g.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(g, 3); i < n; i++) g.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(3, g.Phase);
             float scraps = Scraps();
             while (!g.IsDead) Assert.IsTrue(g.TakeHit(Strike(Vector2.up)));

@@ -18,12 +18,12 @@ namespace OWSBG.World
     public sealed class Flourishes : MonoBehaviour
     {
         [Header("Costs (pips)")]
-        public int crosshatchCost = 3;
-        public int longstrokeCost = 3;
-        public int blotCost = 4;
+        public int crosshatchCost = Tuning.CrosshatchCost;
+        public int longstrokeCost = Tuning.LongstrokeCost;
+        public int blotCost = Tuning.BlotCost;
 
         [Header("Crosshatch")]
-        public int crosshatchHits = 6;
+        public int crosshatchHits = Tuning.CrosshatchHits;
         public int crosshatchInterval = 3;      // frames between hits
         public float crosshatchReach = 2.4f;
         public float crosshatchHeight = 1.4f;
@@ -32,7 +32,7 @@ namespace OWSBG.World
         public int longstrokeStartup = 4;
         public float longstrokeReach = 6f;
         public float longstrokeThickness = 0.8f;
-        public int longstrokeDamage = 2;
+        public int longstrokeDamage = Tuning.LongstrokeDamage;   // at least the strikes its ink cost (CMB-19)
 
         [Header("Blot")]
         public int blotStartup = 3;
@@ -90,7 +90,7 @@ namespace OWSBG.World
                         _hitsDone++;
                         var dir = new Vector2(_facing, 0f);
                         var center = _ctrl.Position + Vector2.up * originHeight + dir * (crosshatchReach * 0.5f);
-                        HitBox(center, new Vector2(crosshatchReach, crosshatchHeight), dir, 1, false);
+                        HitBox(center, new Vector2(crosshatchReach, crosshatchHeight), dir, Tuning.CrosshatchDamage, false);
                         _visual?.Slash(new Vector2(_facing, (_hitsDone % 2 == 0 ? 0.35f : -0.35f)));
                     }
                     if (_hitsDone >= crosshatchHits && _frame >= crosshatchHits * crosshatchInterval + recoveryFrames) End();
@@ -112,7 +112,7 @@ namespace OWSBG.World
                     if (_frame == blotStartup)
                     {
                         var origin = _ctrl.Position + Vector2.up * originHeight;
-                        HitCircle(origin, blotRadius, 1);
+                        HitCircle(origin, blotRadius, Tuning.BlotDamage);
                         _visual?.Burst(origin, Vector2.zero, 14, 11f);
                     }
                     if (_frame >= blotStartup + recoveryFrames) End();

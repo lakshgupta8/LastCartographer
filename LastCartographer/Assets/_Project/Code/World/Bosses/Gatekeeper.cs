@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using OWSBG.Core;
 
 namespace OWSBG.World
 {
@@ -30,11 +31,13 @@ namespace OWSBG.World
         public Vector2 featherSize = new Vector2(0.5f, 0.9f);
         public int passTelegraphFrames = 18;
         public float passSpeed = 8f;
-        public int landTelegraphFrames = 14, landFrames = 8;
+        public int landTelegraphFrames = 16, landFrames = 8;
         public float landReach = 2.5f;
         public int recoverFrames = 26;
         public float standSeconds = 0.6f;
         public int damage = 1;
+        /// <summary>The heavy landing comes down on the shadow it throws first: a slam (CMB-19).</summary>
+        public int slamDamage = Tuning.Slam;
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
@@ -53,6 +56,15 @@ namespace OWSBG.World
         static readonly Attack[] Phase2 = { Attack.Feathers, Attack.Sweep, Attack.Feathers };
         static readonly Attack[] Phase3 = { Attack.Pass, Attack.Land, Attack.Pass };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
+
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Wing sweep", AttackKind.Strike, Read(sweepTelegraphFrames), damage, PhasesOf(Attack.Sweep, PatternFor));
+            yield return new BossAttack("Stone feathers", AttackKind.Strike, Read(featherTelegraphFrames), damage, PhasesOf(Attack.Feathers, PatternFor));
+            yield return new BossAttack("Pass", AttackKind.Strike, Read(passTelegraphFrames), ContactDamage, PhasesOf(Attack.Pass, PatternFor));
+            yield return new BossAttack("Landing", AttackKind.Slam, Read(landTelegraphFrames), slamDamage, PhasesOf(Attack.Land, PatternFor));
+        }
 
         readonly List<TetherAnchor> _roots = new List<TetherAnchor>();
         readonly List<BossPart> _feathers = new List<BossPart>();
@@ -238,9 +250,9 @@ namespace OWSBG.World
                 case Move.Land:
                 {
                     // Heavy and wrong: it comes down hard where it is and the floor jumps either side.
-                    if (_frames == 0) SetPos(new Vector2(transform.position.x, RestY));
+                    if (_frames == 0) { SetPos(new Vector2(transform.position.x, RestY)); Shake.Request(Tuning.SlamShake, Tuning.SlamShakeSeconds); }
                     var b = Collider.bounds;
-                    if (!_hitThisAttack && HitWren(new Vector2(b.center.x, floorY + 0.4f), new Vector2(b.size.x + landReach * 2f, 0.8f), damage, false) == Contact.Landed)
+                    if (!_hitThisAttack && HitWren(new Vector2(b.center.x, floorY + 0.4f), new Vector2(b.size.x + landReach * 2f, 0.8f), slamDamage, false) == Contact.Landed)
                         _hitThisAttack = true;
                     if (++_frames >= landFrames) { SetPos(new Vector2(transform.position.x, passY)); Recover(); }
                     break;

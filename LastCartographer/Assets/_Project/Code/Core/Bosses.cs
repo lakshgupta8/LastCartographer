@@ -48,6 +48,8 @@ namespace OWSBG.Core
 
         /// <summary>The sheet whose English name this is (bosses in scenes carry the name, not the id).</summary>
         public static BossSheet Named(string englishName) { EnsureDefaults(); return _all.Find(b => b.Name == englishName); }
+        /// <summary>By English name and tier: Halvard's three fights share a name (CMB-19).</summary>
+        public static BossSheet Named(string englishName, int tier) { EnsureDefaults(); return _all.Find(b => b.Name == englishName && b.Tier == tier); }
 
         public static readonly string[] LineFields = { "entry", "turn", "last" };
 

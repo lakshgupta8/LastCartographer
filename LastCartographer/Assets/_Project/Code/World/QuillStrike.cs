@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using OWSBG.Core;
 
 namespace OWSBG.World
 {
@@ -131,7 +132,7 @@ namespace OWSBG.World
                 var info = new HitInfo { Damage = _damage, Direction = _dir, Source = gameObject, Knockback = _knockback, Pulls = _pulls, Drain = Drain };
                 if (!h.TakeHit(info)) continue;
                 landedAny = true;
-                _ink?.AddFromHit(1);
+                _ink?.AddFromHit(Tuning.InkPerStrike);
                 Landed?.Invoke(h);
             }
             if (!landedAny) return;

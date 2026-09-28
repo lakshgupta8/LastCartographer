@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using OWSBG.Core;
 
 namespace OWSBG.World
 {
@@ -33,6 +34,8 @@ namespace OWSBG.World
         public float surgeSpeed = 9f, surgeWidth = 1.6f, surgeHeight = 0.7f;
         public int reachFrames = 70;
         public int damage = 1;
+        /// <summary>The rubble comes down on dust it raised first: a slam (CMB-19).</summary>
+        public int slamDamage = Tuning.Slam;
 
         public Move Current { get; private set; } = Move.Wait;
         public Attack CurrentAttack { get; private set; } = Attack.None;
@@ -59,6 +62,14 @@ namespace OWSBG.World
         static readonly Attack[] Phase2 = { Attack.Surge, Attack.Rubble };
         static readonly Attack[] Phase3 = { Attack.Reach, Attack.Rubble, Attack.Surge };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
+
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Rubble", AttackKind.Slam, Read(rubbleTelegraphFrames), slamDamage, PhasesOf(Attack.Rubble, PatternFor));
+            yield return new BossAttack("Surge", AttackKind.Strike, Read(surgeTelegraphFrames), damage, PhasesOf(Attack.Surge, PatternFor));
+            yield return new BossAttack("Reach", AttackKind.Window, Read(reachFrames), 0, PhasesOf(Attack.Reach, PatternFor));
+        }
 
         readonly List<BossPart> _rubble = new List<BossPart>();
         readonly List<Transform> _lamps = new List<Transform>();
@@ -238,7 +249,7 @@ namespace OWSBG.World
                     // The block comes down the column over the dust; standing in it costs a mask.
                     float k = Mathf.Clamp01((float)_frames / Mathf.Max(1, fallFrames));
                     float top = floorY + fallHeight * (1f - k) + rubbleHeight;
-                    if (!_hitThisAttack && HitWren(new Vector2(_targetX, (floorY + top) * 0.5f), new Vector2(rubbleWidth, top - floorY), damage, false) == Contact.Landed)
+                    if (!_hitThisAttack && HitWren(new Vector2(_targetX, (floorY + top) * 0.5f), new Vector2(rubbleWidth, top - floorY), slamDamage, false) == Contact.Landed)
                         _hitThisAttack = true;
                     if (++_frames >= fallFrames) { Land(); Rest(); }
                     break;
@@ -263,6 +274,7 @@ namespace OWSBG.World
 
         void Land()
         {
+            Shake.Request(Tuning.SlamShake, Tuning.SlamShakeSeconds);
             if (_rubble.Count >= maxRubble)
             {
                 if (_rubble[0] != null) Destroy(_rubble[0].gameObject);

@@ -262,7 +262,7 @@ namespace OWSBG.Tests
             _ctrl.Teleport(new Vector2(4f, 0f));
             cd.ForceAttack(CorrasDrawing.Attack.Stomp);
             yield return Until(() => cd.Stomps == 1 && cd.Current == CorrasDrawing.Move.Recover, 2f, "the stomp");
-            Assert.AreEqual(masks - 1, _vitals.Masks, "where the crayon marked");
+            Assert.AreEqual(masks - Tuning.Slam, _vitals.Masks, "where the crayon marked: a slam takes two (CMB-19)");
         }
 
         // ---- the Archivist -----------------------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ namespace OWSBG.Tests
             var ar = (Archivist)Build("archivist").Boss;
             ar.standSeconds = 999f;
             yield return StartFight(5f);
-            for (int i = 0; i < 14; i++) ar.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(ar, 2); i < n; i++) ar.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(2, ar.Phase);
             int masks = _vitals.Masks;
             ar.ForceAttack(Archivist.Attack.DrawWren);
@@ -322,7 +322,7 @@ namespace OWSBG.Tests
             Assert.IsNull(ar.WrenDrawing, "his hand struck, her drawing is unmade too");
 
             yield return Recovered();
-            for (int i = 0; i < 13; i++) ar.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(ar, 3); i < n; i++) ar.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(3, ar.Phase);
             Assert.IsTrue(ar.FrameDrawn, "the Atlas frame round the arena");
             Assert.AreEqual(Archivist.Move.Holding, ar.Current, "he stops drawing, and holds");

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using OWSBG.Core;
 
 namespace OWSBG.World
 {
@@ -22,9 +23,9 @@ namespace OWSBG.World
         public float arenaMinX = 0.5f, arenaMaxX = 17.5f;
         public float walkSpeed = 1.5f;
         public float redrawSeconds = 0.6f;
-        public int swipeTelegraphFrames = 14, swipeFrames = 8;
+        public int swipeTelegraphFrames = 12, swipeFrames = 8;
         public float swipeReach = 4f, swipeHeight = 1.6f;
-        public int stompTelegraphFrames = 16, stompFrames = 6;
+        public int stompTelegraphFrames = 14, stompFrames = 6;
         public float stompWidth = 2f, stompHeight = 3f;
         public int recoverFrames = 20;
         public float standSeconds = 0.6f;
@@ -34,6 +35,8 @@ namespace OWSBG.World
         public int smallHeal = 2;
         public float smallRedrawSeconds = 2f;
         public int damage = 1;
+        /// <summary>The stomp comes down where the red crayon marked: a slam (CMB-19).</summary>
+        public int slamDamage = Tuning.Slam;
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
@@ -52,6 +55,15 @@ namespace OWSBG.World
         static readonly Attack[] Phase2 = { Attack.Swipe, Attack.Stomp, Attack.Swipe };
         static readonly Attack[] Phase3 = { Attack.Stomp, Attack.Swipe };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
+
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Swipe", AttackKind.Strike, Read(TelegraphFrames(Attack.Swipe, false)), damage, PhasesOf(Attack.Swipe, PatternFor) & 0b011);
+            yield return new BossAttack("Swipe", AttackKind.Strike, Read(TelegraphFrames(Attack.Swipe, true)), damage, PhasesOf(Attack.Swipe, PatternFor) & 0b100);
+            yield return new BossAttack("Stomp", AttackKind.Slam, Read(TelegraphFrames(Attack.Stomp, false)), slamDamage, PhasesOf(Attack.Stomp, PatternFor) & 0b011);
+            yield return new BossAttack("Stomp", AttackKind.Slam, Read(TelegraphFrames(Attack.Stomp, true)), slamDamage, PhasesOf(Attack.Stomp, PatternFor) & 0b100);
+        }
 
         int _frames, _patternIndex;
         float _pause, _redrawLeft, _smallBackIn, _stompX;
@@ -176,10 +188,16 @@ namespace OWSBG.World
             Current = Move.Telegraph;
         }
 
-        int TelegraphFrames(Attack a)
+        int TelegraphFrames(Attack a) => TelegraphFrames(a, IsOutline);
+
+        /// <summary>Half the wind-up in outline, never under the tier's floor (Telegraph() keeps it); a slam's two masks
+        /// keep at least the tier's typical read (CMB-19).</summary>
+        int TelegraphFrames(Attack a, bool outline)
         {
             int f = a == Attack.Stomp ? stompTelegraphFrames : swipeTelegraphFrames;
-            return IsOutline ? Mathf.RoundToInt(f * outlinePace) : f;   // Telegraph() keeps the tier's floor
+            if (!outline) return f;
+            int fast = Mathf.RoundToInt(f * outlinePace);
+            return a == Attack.Stomp ? Mathf.Max(fast, Tuning.TypicalTelegraph(Tier)) : fast;
         }
 
         protected override void Tick(float dt)
@@ -206,7 +224,7 @@ namespace OWSBG.World
                     if (!Telegraph(ref _telegraphStarted, TelegraphFrames(CurrentAttack))) break;
                     _frames = 0;
                     if (CurrentAttack == Attack.Swipe) { Swipes++; Current = Move.Swipe; }
-                    else { Stomps++; Current = Move.Stomp; ClearMark(); }
+                    else { Stomps++; Current = Move.Stomp; ClearMark(); Shake.Request(Tuning.SlamShake, Tuning.SlamShakeSeconds); }
                     break;
 
                 case Move.Swipe:
@@ -219,7 +237,7 @@ namespace OWSBG.World
                 }
 
                 case Move.Stomp:
-                    if (!_hitThisAttack && HitWren(new Vector2(_stompX, floorY + stompHeight * 0.5f), new Vector2(stompWidth, stompHeight), damage, false) == Contact.Landed)
+                    if (!_hitThisAttack && HitWren(new Vector2(_stompX, floorY + stompHeight * 0.5f), new Vector2(stompWidth, stompHeight), slamDamage, false) == Contact.Landed)
                         _hitThisAttack = true;
                     if (++_frames >= stompFrames) Recover();
                     break;

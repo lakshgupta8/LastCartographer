@@ -176,7 +176,7 @@ namespace OWSBG.Tests
             o.standSeconds = 999f;
             yield return StartFight(o.transform.position.x - 1.5f);
             Assert.AreEqual(FlourishKind.Crosshatch, o.MirrorFlourish, "the Surveyor's Flourish");
-            for (int i = 0; i < 11; i++) o.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(o, 2); i < n; i++) o.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(2, o.Phase);
             yield return Recovered();
             int masks = _vitals.Masks;
@@ -184,7 +184,7 @@ namespace OWSBG.Tests
             yield return Until(() => o.Flourishes == 1 && o.Current != Oriel.Move.Flourish, 2f, "her Flourish");
             Assert.AreEqual(masks - 1, _vitals.Masks, "Wren's own Flourish, turned on her");
 
-            for (int i = 0; i < 10; i++) o.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(o, 3); i < n; i++) o.TakeHit(Strike(Vector2.right));
             Assert.AreEqual(3, o.Phase);
             CollectionAssert.AreEqual(new[] { Oriel.Attack.Step, Oriel.Attack.Bind }, o.Queued.ToArray(), "at a third: step clear, then Bind");
             int hp = o.Health;
@@ -200,7 +200,7 @@ namespace OWSBG.Tests
             // Denied: struck while she binds.
             yield return Retry(o.transform.position.x - 1.5f);
             Assert.IsFalse(o.BindSpent, "a retry gives her the Bind back");
-            for (int i = 0; i < 21; i++) o.TakeHit(Strike(Vector2.right));
+            for (int i = 0, n = BossHits.ToPhase(o, 3); i < n; i++) o.TakeHit(Strike(Vector2.right));
             yield return Fixed(10);
             o.ForceAttack(Oriel.Attack.Bind);
             yield return Fixed(10);
@@ -338,7 +338,7 @@ namespace OWSBG.Tests
             Shake.Stop();
             st.ForceAttack(FallenStar.Attack.Slam);
             yield return Until(() => st.Slams == 1 && st.Current == FallenStar.Move.Recover, 2f, "the slam");
-            Assert.AreEqual(masks - 1, _vitals.Masks, "it came down on her");
+            Assert.AreEqual(masks - Tuning.Slam, _vitals.Masks, "it came down on her: a slam takes two (CMB-19)");
             Assert.AreEqual(FallenStar.SlamShake * Options.Shake, Shake.Amplitude, 1e-4f, "the one hard shake in the game (DES-14 scales it)");
             Assert.IsNotNull(st.Fist, "the fist stays down");
             Assert.IsFalse(st.Fist.TakeHit(Strike(Vector2.right)));
@@ -353,7 +353,7 @@ namespace OWSBG.Tests
             st.standSeconds = 999f;
             float mid = st.transform.position.x;
             yield return StartFight(mid + 4f);
-            for (int i = 0; i < 12; i++) st.TakeHit(Strike(Vector2.down));
+            for (int i = 0, n = BossHits.ToPhase(st, 2); i < n; i++) st.TakeHit(Strike(Vector2.down));
             Assert.AreEqual(2, st.Phase);
             st.ForceAttack(FallenStar.Attack.Walls);
             yield return Until(() => st.WallRaisings == 1, 2f, "the walls");
@@ -363,7 +363,7 @@ namespace OWSBG.Tests
             Assert.AreEqual(st.wallHeight, st.Walls[0].GetComponent<BoxCollider2D>().size.y, 0.01f);
             Assert.IsTrue(st.Updrafts.All(u => u == null), "no heat yet");
 
-            for (int i = 0; i < 11; i++) st.TakeHit(Strike(Vector2.down));
+            for (int i = 0, n = BossHits.ToPhase(st, 3); i < n; i++) st.TakeHit(Strike(Vector2.down));
             Assert.AreEqual(3, st.Phase);
             Assert.IsTrue(st.IsBurning);
             Assert.AreEqual(st.burningWallHeight, st.Walls[1].GetComponent<BoxCollider2D>().size.y, 0.01f, "burning, the walls grow past any jump");

@@ -10,7 +10,7 @@ namespace OWSBG.World
     {
         [SerializeField] int _maxMasks = 5;
         [SerializeField] int _masks = 5;
-        [SerializeField] int _bindCost = 3;
+        [SerializeField] int _bindCost = Tuning.BindCost;
         [SerializeField] float _bindSeconds = 0.6f;
         [SerializeField] int _invulnFrames = 60;
         [SerializeField] Vector2 _hitKnockback = new Vector2(7f, 9f);

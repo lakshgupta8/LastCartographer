@@ -40,6 +40,12 @@ namespace OWSBG.World
         public float SteadyProgress => steadySeconds <= 0f ? 1f : Mathf.Clamp01(_steadyT / steadySeconds);
         public int RingFramesOrFloor => Mathf.Max(ringFrames, MinTelegraphFrames);
 
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Ring", AttackKind.Window, RingFramesOrFloor, whiteDamage, BossAttack.All);
+        }
+
         /// <summary>The bells ringing in a phase: the first; the two; the great one.</summary>
         public static IReadOnlyList<int> BellsOf(int phase) => phase >= 3 ? Great : phase >= 2 ? Two : One;
         static readonly int[] One = { 0 }, Two = { 1, 2 }, Great = { 3 };

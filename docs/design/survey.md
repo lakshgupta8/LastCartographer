@@ -39,7 +39,7 @@ M / Select opens and closes it; ↑↓ picks a destination; J / South travels; E
 Combat doc 7, Unwriter family. A dove with a bell that hovers 2.6 units over the floor and keeps 2.5 units
 from Wren. Within 5.5 units it **rings** for 26 frames (the bell rises: the telegraph), then **tolls**: one mask to
 anyone within 4 units, and the place is erased. Recover 40 frames, cooldown 4 s. A hit during the ring stops it.
-Answer: **Longstroke** (the forward Flourish reaches where the quill does not). Health 3.
+Answer: **Longstroke** (the forward Flourish reaches where the quill does not). Health 4 (`tuning.md` §4).
 
 ## 4. Story hooks
 ```yarn

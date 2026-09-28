@@ -52,7 +52,7 @@ The Inkwell has 9 pips. It fills by striking enemies, and slowly (1 pip / 10 s) 
 | Flourish | Cost | What it does |
 |---|---|---|
 | **Crosshatch** | 3 | Rapid 6-hit flurry in a cone; the quill scribbles. Best single-target damage |
-| **Longstroke** | 3 | Piercing horizontal thrust across 6 units; passes through enemies and thin walls |
+| **Longstroke** | 3 | Piercing horizontal thrust across 6 units (3 damage); passes through enemies and thin walls |
 | **Blot** | 4 | Ink burst around Wren; knockback, 2 s slow on smudges; also extinguishes small fires and dissolves Cantor bells |
 | **Bind** | 3 | Heal 1 mask (see 2.2) |
 | **Inkthread** | 2 | Grapple (see 3) |
@@ -98,7 +98,7 @@ Buy and craft at hubs with **iris seeds** (currency) and **vellum scraps** (upgr
 
 - Three phases, each introduced by a short line of dialogue or a change in the arena's ink state.
 - The arena is part of the character (the Lamp-Keeper's beam sweeps, Voss freezing sections, Corvin drawing walls).
-- No boss has more than four distinct attacks per phase. Every attack has a 12+ frame telegraph at Tier I, 8+ at Tier IV.
+- No boss has more than four distinct attacks per phase. Every attack has a 12+ frame telegraph at Tier I, 8+ at Tier IV, and each tier's bosses sit around a typical read (18 frames at Tier I down to 12 at Tier IV). A slam takes 2 masks and is never read in less than its tier's typical telegraph (`tuning.md`, CMB-19).
 - Bosses drop **vellum scraps** and, where the bible says so, a keystone or ability. Optional bosses drop Charters or Instruments.
 - Retry loop under 8 seconds from death to re-entering the arena. Drafting desk or wax seal within 15 seconds of every boss door.
 

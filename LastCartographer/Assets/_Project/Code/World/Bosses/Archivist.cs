@@ -60,6 +60,15 @@ namespace OWSBG.World
         static readonly Attack[] Phase3 = { Attack.Frame };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
 
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Draw", AttackKind.Shape, Read(drawTelegraphFrames), 0, PhasesOf(Attack.Draw, PatternFor));
+            yield return new BossAttack("Swoop", AttackKind.Strike, Read(swoopTelegraphFrames), ContactDamage, PhasesOf(Attack.Swoop, PatternFor));
+            yield return new BossAttack("Her drawing", AttackKind.Strike, Read(wrenDrawingTelegraphFrames), damage, PhasesOf(Attack.DrawWren, PatternFor));
+            yield return new BossAttack("The frame", AttackKind.Window, Read(Frames(beatSeconds)), pageDamage, PhasesOf(Attack.Frame, PatternFor));
+        }
+
         readonly List<GameObject> _drawings = new List<GameObject>();
         BossPart _frameL, _frameR;
         int _frames, _patternIndex, _swoopDir, _jabFrames;

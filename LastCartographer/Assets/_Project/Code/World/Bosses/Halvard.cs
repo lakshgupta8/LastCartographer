@@ -22,11 +22,11 @@ namespace OWSBG.World
         public float reach = 2.6f;
         public float approachSeconds = 1.6f;
         public float lanceReach = 2.4f, lanceHeight = 0.8f;
-        public int thrustTelegraphFrames = 12, thrustFrames = 6;
-        public int lungeTelegraphFrames = 14, lungeFrames = 10;
+        public int thrustTelegraphFrames = 14, thrustFrames = 6;
+        public int lungeTelegraphFrames = 17, lungeFrames = 10;
         public float lungeDistance = 6f;
-        public int surveyTelegraphFrames = 16;
-        public int countTelegraphFrames = 18, eruptFrames = 8;
+        public int surveyTelegraphFrames = 19;
+        public int countTelegraphFrames = 22, eruptFrames = 8;
         public float eruptHeight = 2.2f;
         public float markWidth = 1.6f;
         public float markSpacing = 3f;
@@ -50,6 +50,16 @@ namespace OWSBG.World
         static readonly Attack[] Phase1 = { Attack.Thrust, Attack.Survey, Attack.Lunge, Attack.Count };
         static readonly Attack[] Phase2 = { Attack.Lunge, Attack.Survey, Attack.Thrust, Attack.Survey, Attack.Count };
         static readonly Attack[] Phase3 = { Attack.Count, Attack.Survey, Attack.Lunge, Attack.Count, Attack.Thrust, Attack.Survey, Attack.Count };
+        public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
+
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Thrust", AttackKind.Strike, Read(thrustTelegraphFrames), lanceDamage, PhasesOf(Attack.Thrust, PatternFor));
+            yield return new BossAttack("Lunge", AttackKind.Strike, Read(lungeTelegraphFrames), lanceDamage, PhasesOf(Attack.Lunge, PatternFor));
+            yield return new BossAttack("Survey", AttackKind.Shape, Read(surveyTelegraphFrames), 0, PhasesOf(Attack.Survey, PatternFor));
+            yield return new BossAttack("Count", AttackKind.Strike, Read(countTelegraphFrames), lanceDamage, PhasesOf(Attack.Count, PatternFor));
+        }
 
         readonly List<float> _marks = new List<float>();
         readonly List<Transform> _markVisuals = new List<Transform>();

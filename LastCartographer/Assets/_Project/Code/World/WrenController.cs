@@ -45,7 +45,7 @@ namespace OWSBG.World
         public float threadHop = 8f;
         public int threadMaxFrames = 40;
         /// <summary>Ink per thread when no Charter says otherwise (combat doc 4: 2 pips; the Ferryman's is 1).</summary>
-        public int threadCost = 2;
+        public int threadCost = Tuning.InkthreadCost;
 
         [Header("Windmemory (glide)")]
         [Range(0.1f, 1f)] public float glideGravityScale = 0.6f;

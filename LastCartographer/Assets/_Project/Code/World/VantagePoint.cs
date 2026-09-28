@@ -15,7 +15,7 @@ namespace OWSBG.World
         [SerializeField] string _vantageId;
         [SerializeField] string _displayName = "Vantage";
         [SerializeField] float _holdSeconds = 1.2f;
-        [SerializeField] float _inkRefillSeconds = 10f;
+        [SerializeField] float _inkRefillSeconds = Tuning.VantageSecondsPerPip;
 
         public string VantageId { get => _vantageId; set => _vantageId = value; }
         public string DisplayName => _displayName;

@@ -63,6 +63,19 @@ namespace OWSBG.World
         static readonly Attack[] Phase3 = { Attack.Flourish, Attack.Combo, Attack.Step, Attack.Combo };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
 
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md). The mirrored combo is read from
+        /// its first step: the Charter she reads, backwards.</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            ComboStep first;
+            if (_combo.Count > 0) first = _combo[0];
+            else { var c = ProfileOf(GameState.World.Equipment.Charter).Combo; first = c[c.Length - 1]; }
+            yield return new BossAttack("Mirrored combo", AttackKind.Strike, Read(first.Startup * telegraphScale), damage, PhasesOf(Attack.Combo, PatternFor));
+            yield return new BossAttack("Flourish", AttackKind.Strike, Read(flourishTelegraphFrames), damage, PhasesOf(Attack.Flourish, PatternFor));
+            yield return new BossAttack("Step", AttackKind.Shape, 0, 0, PhasesOf(Attack.Step, PatternFor));
+            yield return new BossAttack("Bind", AttackKind.Shape, bindFrames, 0, 0b100);
+        }
+
         readonly List<ComboStep> _combo = new List<ComboStep>();
         readonly Queue<Attack> _queue = new Queue<Attack>();
         int _frames, _patternIndex, _step, _stepDir;

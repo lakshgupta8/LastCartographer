@@ -62,6 +62,15 @@ namespace OWSBG.World
         static readonly Attack[] Phase3 = { Attack.Call, Attack.Flick, Attack.Sight, Attack.Quill };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
 
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Sight", AttackKind.Window, Read(sightFrames), 0, PhasesOf(Attack.Sight, PatternFor));
+            yield return new BossAttack("The count", AttackKind.Strike, Read(callTelegraphFrames), damage, PhasesOf(Attack.Call, PatternFor));
+            yield return new BossAttack("Quill", AttackKind.Strike, Read(quillTelegraphFrames), damage, PhasesOf(Attack.Quill, PatternFor));
+            yield return new BossAttack("Flick", AttackKind.Strike, Read(flickTelegraphFrames), damage, PhasesOf(Attack.Flick, PatternFor));
+        }
+
         Owner[] _owner = new Owner[StoneCount];
         readonly List<Transform> _stones = new List<Transform>();
         readonly List<BossPart> _pillars = new List<BossPart>();

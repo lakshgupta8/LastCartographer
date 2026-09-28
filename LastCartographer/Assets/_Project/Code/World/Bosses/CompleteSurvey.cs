@@ -44,6 +44,13 @@ namespace OWSBG.World
         public int SafeBeats { get; private set; }
         public int PoolsStruck { get; private set; }
         public float SectionWidth => (arenaMaxX - arenaMinX) / Mathf.Max(1, sections);
+
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            for (int p = 1; p <= beatSeconds.Length && p <= 3; p++)
+                yield return new BossAttack("Named ground", AttackKind.Window, Read(Frames(beatSeconds[p - 1])), fixDamage, 1 << (p - 1));
+        }
         public int SectionOf(float x) => Mathf.Clamp(Mathf.FloorToInt((x - arenaMinX) / SectionWidth), 0, sections - 1);
         public float SectionCentre(int i) => arenaMinX + (i + 0.5f) * SectionWidth;
 

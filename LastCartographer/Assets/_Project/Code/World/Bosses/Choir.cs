@@ -39,6 +39,12 @@ namespace OWSBG.World
         public int ActiveDoves => Phase >= 3 ? 1 : Phase >= 2 ? 2 : DoveCount;
         public int RingFrames => Mathf.Max(ringFrames, MinTelegraphFrames);
 
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Bell", AttackKind.Window, RingFrames, bellDamage, BossAttack.All);
+        }
+
         readonly List<BossPart> _doves = new List<BossPart>();
         readonly int[] _ring = { -1, -1, -1 };   // frames into each dove's ring, -1 when quiet
         int _turn;

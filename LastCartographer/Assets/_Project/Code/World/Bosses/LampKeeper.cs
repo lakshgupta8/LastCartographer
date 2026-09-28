@@ -1,5 +1,6 @@
 using OWSBG.Core;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace OWSBG.World
 {
@@ -22,8 +23,8 @@ namespace OWSBG.World
         public float beamWidth = 1.2f;
         public float beamHeight = 1.5f;        // a jump clears it
         public float beamColumnHeight = 8f;
-        public int beamTelegraphFrames = 14;
-        public int diveTelegraphFrames = 16;
+        public int beamTelegraphFrames = 18;
+        public int diveTelegraphFrames = 20;
         public float diveSpeed = 22f;
         public float returnSpeed = 10f;
         public float[] groundedSecondsByPhase = { 1.6f, 1.3f, 1.0f };
@@ -49,6 +50,15 @@ namespace OWSBG.World
         static readonly Attack[] Phase1 = { Attack.Beam, Attack.Dive };
         static readonly Attack[] Phase2 = { Attack.Beam, Attack.Beam, Attack.Dive, Attack.Dive };
         static readonly Attack[] Phase3 = { Attack.DoubleBeam, Attack.Dive, Attack.Beam, Attack.Dive };
+        public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
+
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Beam", AttackKind.Strike, Read(beamTelegraphFrames), beamDamage, PhasesOf(Attack.Beam, PatternFor));
+            yield return new BossAttack("Double beam", AttackKind.Strike, Read(beamTelegraphFrames), beamDamage, PhasesOf(Attack.DoubleBeam, PatternFor));
+            yield return new BossAttack("Dive", AttackKind.Strike, Read(diveTelegraphFrames), ContactDamage, PhasesOf(Attack.Dive, PatternFor));
+        }
 
         protected override void Awake()
         {

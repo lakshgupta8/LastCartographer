@@ -24,7 +24,7 @@ namespace OWSBG.World
         public int slamTelegraphFrames = 18, slamFrames = 6, fistFrames = 45;
         public float slamReach = 5f;
         /// <summary>The one hard shake in the game (combat doc: only on boss slams), before the player's scale.</summary>
-        public const float SlamShake = 0.35f;
+        public const float SlamShake = Tuning.SlamShake;
         public Vector2 fistSize = new Vector2(1.6f, 1f);
         public int wallTelegraphFrames = 20;
         public float wallHeight = 3.6f, burningWallHeight = 5.4f, wallWidth = 0.8f, wallOffset = 3f;
@@ -33,6 +33,8 @@ namespace OWSBG.World
         public int recoverFrames = 24;
         public float standSeconds = 0.6f;
         public int damage = 1;
+        /// <summary>The fist comes down on the mark it made: a slam (CMB-19).</summary>
+        public int slamDamage = Tuning.Slam;
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
@@ -51,6 +53,14 @@ namespace OWSBG.World
         static readonly Attack[] Phase2 = { Attack.Walls, Attack.Slam, Attack.Walk };
         static readonly Attack[] Phase3 = { Attack.Slam, Attack.Walls, Attack.Walk };
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
+
+        /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        public override IEnumerable<BossAttack> Kit()
+        {
+            yield return new BossAttack("Walk", AttackKind.Shape, 0, 0, PhasesOf(Attack.Walk, PatternFor));
+            yield return new BossAttack("Slam", AttackKind.Slam, Read(slamTelegraphFrames), slamDamage, PhasesOf(Attack.Slam, PatternFor));
+            yield return new BossAttack("Iron walls", AttackKind.Shape, Read(wallTelegraphFrames), 0, PhasesOf(Attack.Walls, PatternFor));
+        }
 
         readonly List<GameObject> _walls = new List<GameObject>();
         readonly List<Updraft> _updrafts = new List<Updraft>();
@@ -177,7 +187,7 @@ namespace OWSBG.World
                     if (!Telegraph(ref _telegraphStarted, TelegraphFrames(CurrentAttack))) break;
                     ClearMarks();
                     _frames = 0;
-                    if (CurrentAttack == Attack.Slam) { Slams++; Current = Move.Slam; Shake.Request(SlamShake, 0.35f); }
+                    if (CurrentAttack == Attack.Slam) { Slams++; Current = Move.Slam; Shake.Request(SlamShake, Tuning.SlamShakeSeconds); }
                     else if (CurrentAttack == Attack.Walls) { RaiseWalls(); Recover(); }
                     else Recover();
                     break;
@@ -185,7 +195,7 @@ namespace OWSBG.World
                 case Move.Slam:
                 {
                     var centre = new Vector2(_slamX, floorY + fistSize.y * 0.5f);
-                    if (!_hitThisAttack && HitWren(centre, fistSize, damage, false) == Contact.Landed) _hitThisAttack = true;
+                    if (!_hitThisAttack && HitWren(centre, fistSize, slamDamage, false) == Contact.Landed) _hitThisAttack = true;
                     if (++_frames < slamFrames) break;
                     LeaveFist(centre);
                     Recover();

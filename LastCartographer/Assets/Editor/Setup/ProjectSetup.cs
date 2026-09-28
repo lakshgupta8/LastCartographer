@@ -665,7 +665,7 @@ namespace OWSBG.Setup
             lk.floorY = 0f;
             lk.arenaHalfWidth = 9f;
             var bossSo = new SerializedObject(boss);
-            bossSo.FindProperty("_maxHealth").intValue = 24;
+            bossSo.FindProperty("_maxHealth").intValue = Tuning.BossHealth("lamp_keeper");   // CMB-19
             bossSo.FindProperty("_contactDamage").intValue = 1;
             bossSo.FindProperty("_hurtstunFrames").intValue = 3;
             // Name, tier and the three lines come from her sheet (NAR-06, docs/story/boss-sheets.md).
@@ -771,7 +771,7 @@ namespace OWSBG.Setup
             hv.floorY = 0f;
             hv.arenaMinX = 0.5f; hv.arenaMaxX = 13.5f;
             var bossSo = new SerializedObject(boss);
-            bossSo.FindProperty("_maxHealth").intValue = 30;
+            bossSo.FindProperty("_maxHealth").intValue = Tuning.BossHealth("halvard");   // CMB-19
             bossSo.FindProperty("_contactDamage").intValue = 1;
             bossSo.FindProperty("_hurtstunFrames").intValue = 2;
             var sheet = Bosses.Find("halvard");

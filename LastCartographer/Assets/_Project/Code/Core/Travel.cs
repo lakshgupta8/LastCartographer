@@ -67,7 +67,7 @@ namespace OWSBG.Core
         {
             if (hours < 0.75f) return Loc.T("travel.half_hour", "half an hour");
             int h = (int)Math.Round(hours);
-            return h == 1 ? Loc.T("travel.hour", "an hour") : Loc.F("travel.hours", "{0} hours", h);
+            return h == 1 ? Loc.T("travel.hour", "an hour") : Loc.P("travel.hours", h, "{0} hour", "{0} hours");
         }
     }
 }

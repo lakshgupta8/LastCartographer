@@ -38,7 +38,7 @@ namespace OWSBG.UI
         void OnChanged(string id, CommissionState state)
         {
             var def = CommissionCatalog.Find(id);
-            string title = def != null ? def.Title : id;
+            string title = def != null ? Commissions.TitleOf(def) : id;
             switch (state)
             {
                 case CommissionState.Taken: Toast(Loc.F("journal.toast.taken", "Commission taken · {0}", title)); break;
@@ -207,14 +207,14 @@ namespace OWSBG.UI
             box.style.marginBottom = 8;
             bool dim = state == CommissionState.Closed || state == CommissionState.Failed;
             var row = InkTheme.Row("head");
-            var title = InkTheme.Text("title", def.Title, 21, dim ? InkTheme.Dim : InkTheme.Ink, FontStyle.Bold);
+            var title = InkTheme.Text("title", Commissions.TitleOf(def), 21, dim ? InkTheme.Dim : InkTheme.Ink, FontStyle.Bold);
             title.style.flexGrow = 1;
-            var hub = InkTheme.Text("hub", (state == CommissionState.Fulfilled ? Loc.F("journal.turn_in", "{0} · turn in", def.Hub) : def.Hub), 15, dim ? InkTheme.Dim : InkTheme.Ochre);
+            var hub = InkTheme.Text("hub", (state == CommissionState.Fulfilled ? Loc.F("journal.turn_in", "{0} · turn in", Commissions.HubName(def.Hub)) : Commissions.HubName(def.Hub)), 15, dim ? InkTheme.Dim : InkTheme.Ochre);
             row.Add(title); row.Add(hub);
             box.Add(row);
             if (!dim)
             {
-                var body = InkTheme.Text("body", def.Journal, 16, InkTheme.Ink);
+                var body = InkTheme.Text("body", Commissions.JournalOf(def), 16, InkTheme.Ink);
                 body.style.marginLeft = 12;
                 var steps = InkTheme.Text("steps", LedgerView.StepLines(GameState.World, def), 15, InkTheme.Dim);
                 steps.style.marginLeft = 12;
@@ -222,7 +222,7 @@ namespace OWSBG.UI
             }
             else
             {
-                var after = InkTheme.Text("body", state == CommissionState.Closed ? def.Aftermath : Loc.T("commission.failed", "It came to nothing."), 15, InkTheme.Dim);
+                var after = InkTheme.Text("body", state == CommissionState.Closed ? Commissions.AftermathOf(def) : Loc.T("commission.failed", "It came to nothing."), 15, InkTheme.Dim);
                 after.style.marginLeft = 12;
                 box.Add(after);
             }

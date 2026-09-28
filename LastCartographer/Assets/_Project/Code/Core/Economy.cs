@@ -79,6 +79,10 @@ namespace OWSBG.Core
 
         public static List<StockItem> StockAt(string hub) => _stock.FindAll(s => s.Hub == hub);
 
+        /// <summary>The seller's word on an item, in the player's language ("stock.&lt;hub&gt;.&lt;kind&gt;"; NAR-18).</summary>
+        public static string PitchOf(StockItem item) => item == null ? "" : Loc.T(PitchKey(item), item.Pitch);
+        public static string PitchKey(StockItem item) => "stock." + item.Hub + "." + item.Kind;
+
         public static StockItem Find(string hub, InstrumentKind kind) => _stock.Find(s => s.Hub == hub && s.Kind == kind);
 
         /// <summary>Ferrymen prices follow the Iris Harvest (bible 6.2, 8): burned fields, dearer tincture and all.</summary>

@@ -230,7 +230,7 @@ namespace OWSBG.UI
                     bool listening = IsListening && i == Row;
                     string key = listening && Column == Controls.Device.Keyboard ? Loc.T("options.controls.listening", "press a key…") : Controls.DisplayName(asset, action, Controls.Device.Keyboard);
                     string pad = listening && Column == Controls.Device.Gamepad ? Loc.T("options.controls.listening_pad", "press a button…") : Controls.DisplayName(asset, action, Controls.Device.Gamepad);
-                    _rows.Add(MakeRow(i, Controls.Label(action), key, pad, false, i == Row ? (int)Column : -1));
+                    _rows.Add(MakeRow(i, Controls.Label(action), key, pad, false, i == Row ? (int)Column : -1, verbatim: true));
                 }
                 _rows.Add(MakeRow(ResetRow, Loc.T("options.controls.reset", "Put every key back"), "", "", false));
                 _hint.text = IsListening ? Loc.T("options.controls.hint_listening", "Esc to keep the old key. A key already in use swaps places.")
@@ -238,7 +238,7 @@ namespace OWSBG.UI
                 return;
             }
             _title.text = Loc.T("options.title", "Options");
-            for (int i = 0; i < ItemCount; i++) _rows.Add(MakeRow(i, Label((Item)i), Value((Item)i), "", Arrows((Item)i)));
+            for (int i = 0; i < ItemCount; i++) _rows.Add(MakeRow(i, Label((Item)i), Value((Item)i), "", Arrows((Item)i), verbatim: (Item)i == Item.Language));
             _hint.text = Loc.T("options.hint", "Up and down to choose, left and right to change. Esc to carry on.");
         }
 
@@ -288,7 +288,7 @@ namespace OWSBG.UI
             return -1;
         }
 
-        VisualElement MakeRow(int index, string label, string value, string extra, bool arrows, int column = -1)
+        VisualElement MakeRow(int index, string label, string value, string extra, bool arrows, int column = -1, bool verbatim = false)
         {
             bool sel = index == Row;
             var row = InkTheme.Row("row-" + index);
@@ -304,12 +304,14 @@ namespace OWSBG.UI
             var v = InkTheme.Text("value", arrows && sel ? "◂  " + value + "  ▸" : value, 22, column == 0 ? InkTheme.Wash : InkTheme.Ink, column == 0 ? FontStyle.Bold : FontStyle.Normal);
             v.style.flexGrow = 1;
             v.style.flexBasis = 0;
+            if (verbatim) InkTheme.Verbatim(v);   // a language in its own words, a key by its name
             row.Add(marker); row.Add(l); row.Add(v);
             if (Current == Page.Controls)
             {
                 var x = InkTheme.Text("extra", extra, 22, column == 1 ? InkTheme.Wash : InkTheme.Ink, column == 1 ? FontStyle.Bold : FontStyle.Normal);
                 x.style.flexGrow = 1;
                 x.style.flexBasis = 0;
+                if (verbatim) InkTheme.Verbatim(x);
                 row.Add(x);
             }
             return row;

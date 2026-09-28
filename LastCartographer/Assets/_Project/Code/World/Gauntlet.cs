@@ -55,7 +55,7 @@ namespace OWSBG.World
                 w.Numbers.TryGetValue("$vellum_scraps", out var s);
                 w.Numbers["$vellum_scraps"] = s + 1;
                 var plan = Gauntlets.Find(Id);
-                Captions.Show(Loc.F("caption.gauntlet_crossed", "{0}: crossed.", plan != null ? plan.Name : Id), 3f);
+                Captions.Show(Loc.F("caption.gauntlet_crossed", "{0}: crossed.", plan != null ? Gauntlets.NameOf(plan) : Id), 3f);
             }
             Done?.Invoke(this);
         }

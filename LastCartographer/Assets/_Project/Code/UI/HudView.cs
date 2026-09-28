@@ -27,6 +27,10 @@ namespace OWSBG.UI
         public VisualElement Root => _root;
         public bool IsBound => _vitals != null;
 
+        void OnEnable() { Loc.Changed += OnLocale; }
+        void OnDisable() { Loc.Changed -= OnLocale; }
+        void OnLocale(string _) => Refresh();   // names from the catalogs change with the language, not only with the belt
+
         void Update()
         {
             if (!_built && !Build()) return;
@@ -129,7 +133,7 @@ namespace OWSBG.UI
                 _clarityFill.style.width = new Length(_clarity.Fraction * 100f, LengthUnit.Percent);
             }
 
-            _charter.text = _charters != null && _charters.Current != null ? _charters.Current.DisplayName : "";
+            _charter.text = _charters != null && _charters.Current != null ? _charters.Current.LocalName : "";
 
             if (_belt != null)
             {

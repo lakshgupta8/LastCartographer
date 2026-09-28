@@ -104,6 +104,19 @@ namespace OWSBG.Core
             }
         }
 
+        /// <summary>The stage as the atlas page prints it, in the player's language (NAR-18). <see cref="Describe"/> stays English.</summary>
+        public static string Display(int stage)
+        {
+            switch (Clamp(stage))
+            {
+                case 0: return Loc.T("fade.drawn", "drawn");
+                case 1: return Loc.T("fade.thinning", "thinning");
+                case 2: return Loc.T("fade.washing", "washing");
+                case 3: return Loc.T("fade.softening", "softening");
+                default: return Loc.T("fade.blank", "blank");
+            }
+        }
+
         static int Clamp(int s) => s < 0 ? 0 : (s > Max ? Max : s);
     }
 }

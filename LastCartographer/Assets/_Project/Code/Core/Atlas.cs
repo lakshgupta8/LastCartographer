@@ -143,19 +143,35 @@ namespace OWSBG.Core
             return _waypoints.FindAll(p => p.Place == place);
         }
 
-        /// <summary>The page's name for a place: the catalog's, else the id with its underscores opened.</summary>
-        public static string PlaceName(string place)
+        /// <summary>The page's name for a place in the player's language ("place.&lt;id&gt;"; NAR-18): the catalog's, else the id with its underscores opened.</summary>
+        public static string PlaceName(string place) => Loc.T("place." + place, EnglishPlaceName(place));
+
+        public static string EnglishPlaceName(string place)
         {
             var p = FindPlace(place);
             return p != null ? p.Name : (place ?? "").Replace('_', ' ');
         }
 
-        public static string VantageName(string vantageId)
+        /// <summary>A region's heading on the page in the player's language ("region.&lt;slug&gt;").</summary>
+        public static string RegionName(string region) => string.IsNullOrEmpty(region) ? "" : Loc.T(RegionKey(region), region);
+        public static string RegionKey(string region) => "region." + Loc.Slug(region);
+
+        /// <summary>A vantage's name in the player's language ("vantage.&lt;id&gt;").</summary>
+        public static string VantageName(string vantageId) => Loc.T("vantage." + vantageId, EnglishVantageName(vantageId));
+
+        public static string EnglishVantageName(string vantageId)
         {
             var v = FindVantage(vantageId);
             if (v != null) return v.Name;
             int i = (vantageId ?? "").IndexOf('/');
             return i < 0 ? vantageId ?? "" : vantageId.Substring(i + 1);
+        }
+
+        /// <summary>A desk's or lamp's name in the player's language ("waypoint.&lt;id&gt;").</summary>
+        public static string WaypointName(string waypointId)
+        {
+            var wp = FindWaypoint(waypointId);
+            return Loc.T("waypoint." + waypointId, wp != null ? wp.Name : waypointId ?? "");
         }
 
         public static void RegisterPlace(AtlasPlace place)
@@ -215,6 +231,7 @@ namespace OWSBG.Core
 
             _waypoints.Add(new Waypoint { Id = "desk.Saltmarrow_A", Kind = WaypointKind.Desk, Place = "Saltmarrow_A", Room = "Greybox_Saltmarrow_A", Spawn = "Desk", Name = "the quay's desk" });
             _waypoints.Add(new Waypoint { Id = "desk.Saltmarrow_Lighthouse", Kind = WaypointKind.Desk, Place = "Saltmarrow_Lighthouse", Room = "Greybox_Saltmarrow_Lighthouse", Spawn = "Desk", Name = "the lighthouse desk" });
+            _waypoints.Add(new Waypoint { Id = "desk.Saltmarrow_Chapel", Kind = WaypointKind.Desk, Place = "Saltmarrow_Chapel", Room = "Greybox_Saltmarrow_Chapel", Spawn = "Desk", Name = "the chapel's desk" });
             _waypoints.Add(new Waypoint { Id = "lamp.Saltmarrow_Lighthouse", Kind = WaypointKind.Lamp, Place = "Saltmarrow_Lighthouse", Room = "Greybox_Saltmarrow_Lighthouse", Spawn = "Lamp", Name = "the fourth lamp" });
         }
     }

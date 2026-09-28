@@ -89,6 +89,20 @@ namespace OWSBG.Core
         /// <summary>Lower-case name used by Yarn: "posted", "taken", "fulfilled", "closed", "failed", "unknown".</summary>
         public static string Describe(CommissionState s) => s.ToString().ToLowerInvariant();
 
+        // ---- In the player's language (NAR-18): "commission.<id>.<field>", the def's English the fallback ----
+
+        /// <summary>A hub's name as the ledger prints it ("hub.&lt;id&gt;").</summary>
+        public static string HubName(string hub) => string.IsNullOrEmpty(hub) ? "" : Loc.T("hub." + hub, hub);
+
+        public static string Key(CommissionDef d, string field) => "commission." + d.Id + "." + field;
+        static string Say(CommissionDef d, string field, string english) => d == null ? "" : string.IsNullOrEmpty(english) ? english ?? "" : Loc.T(Key(d, field), english);
+        public static string TitleOf(CommissionDef d) => Say(d, "title", d?.Title);
+        public static string PosterOf(CommissionDef d) => Say(d, "poster", d?.Poster);
+        public static string BriefOf(CommissionDef d) => Say(d, "brief", d?.Brief);
+        public static string JournalOf(CommissionDef d) => Say(d, "journal", d?.Journal);
+        public static string AftermathOf(CommissionDef d) => Say(d, "aftermath", d?.Aftermath);
+        public static string StepOf(CommissionDef d, int i) => d == null || i < 0 || i >= d.Steps.Length ? "" : Say(d, "step." + i, d.Steps[i].Text);
+
         static bool Move(WorldState w, string id, CommissionState to, CommissionState a, CommissionState b = CommissionState.Unknown)
         {
             if (string.IsNullOrEmpty(id)) return false;
@@ -249,6 +263,7 @@ namespace OWSBG.Core
         static bool _defaults;
 
         public static IReadOnlyList<CommissionDef> All { get { EnsureDefaults(); return _defs; } }
+
 
         public static CommissionDef Find(string id)
         {

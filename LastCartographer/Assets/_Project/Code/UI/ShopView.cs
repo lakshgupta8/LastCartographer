@@ -150,7 +150,7 @@ namespace OWSBG.UI
             if (Row < _items.Count)
             {
                 var item = _items[Row];
-                _blurb.text = item.Pitch + "  " + (InstrumentInfo.Of(item.Kind).Blurb ?? "");
+                _blurb.text = Economy.PitchOf(item) + "  " + (InstrumentInfo.Of(item.Kind).Blurb ?? "");
             }
             else _blurb.text = Loc.T("shop.empty", "Nothing on the table today.");
             _seeds.text = Economy.IrisBurned(w) ? Loc.F("shop.seeds_burned", "Iris seeds: {0}   (the fields burned; prices are up)", Economy.Seeds(w)) : Loc.F("shop.seeds", "Iris seeds: {0}", Economy.Seeds(w));

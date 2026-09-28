@@ -55,4 +55,11 @@ namespace OWSBG.Core
 
         public void Set(Ability all) => _unlocked = all;
     }
+
+    /// <summary>An ability's name as the page prints it ("abilities.&lt;name&gt;"; NAR-18, apart from the world's "ability." flags). The bible's names are the English.</summary>
+    public static class AbilityNames
+    {
+        public static string Of(Ability a) => a == Ability.None ? "" : Loc.T(Key(a), a.ToString());
+        public static string Key(Ability a) => "abilities." + a;
+    }
 }

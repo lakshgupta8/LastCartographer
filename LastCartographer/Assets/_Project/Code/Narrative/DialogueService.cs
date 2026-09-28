@@ -123,7 +123,7 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("charter", name =>
             {
                 if (!Enum.TryParse(name, true, out CharterKind k)) { Debug.LogWarning("[OWSBG] <<charter " + name + ">>: no such Charter"); return; }
-                if (GameState.World.Equipment.OwnedCharters.Add(k)) Captions.Show(Loc.F("caption.charter", "Charter: {0}", CharterProfile.For(k).DisplayName), 3f);
+                if (GameState.World.Equipment.OwnedCharters.Add(k)) Captions.Show(Loc.F("caption.charter", "Charter: {0}", CharterProfile.For(k).LocalName), 3f);
             });
             runner.AddCommandHandler<string>("erase", place =>
             {

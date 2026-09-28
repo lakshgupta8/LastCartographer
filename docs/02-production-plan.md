@@ -55,7 +55,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | NAR-15 `[ ]` | Environmental storytelling pass: inscriptions, corpses, tapestries, the fledgling loops | M3 | SB-5.6 | ENV-06 |
 | NAR-16 `[ ]` | Foreshadowing audit (three plants per secret), `#still` tagging | M4 | SB-11 | NAR-13 |
 | NAR-17 `[ ]` | Item, Charter, Instrument, memory, and atlas flavour text | M4 | CMB-5, 6 | DES-05 |
-| NAR-18 `[ ]` | Localization-ready pass | M4 | — | PRG-19 |
+| NAR-18 `[~]` | Localization-ready pass; v1 in `docs/design/localisation.md`: every catalog string (places, vantages, waypoints, commissions, bosses and their lines, memories, gauntlets, pitches, walks, abilities, Instruments, Charters) keyed by id with its English as the fallback and listed by `DataText`/`WorldText` into `ui.en.csv` (486 keys); plurals by CLDR rules (`Loc.P`) and lists (`Loc.List`); the pseudo-locale audit opens every page and finds no English; fonts beyond Latin-1, RTL and translations themselves are not done | M4 | — | PRG-19 |
 
 ### 3.2 Design (DES)
 

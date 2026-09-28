@@ -9,13 +9,19 @@ namespace OWSBG.World
     public readonly struct InstrumentInfo
     {
         public readonly InstrumentKind Kind;
-        public readonly string Name;
+        public readonly string EnglishName;
         public readonly int Uses;
         public readonly float Cooldown;
-        public readonly string Blurb;
+        public readonly string EnglishBlurb;
 
         InstrumentInfo(InstrumentKind kind, string name, int uses, float cooldown, string blurb)
-        { Kind = kind; Name = name; Uses = uses; Cooldown = cooldown; Blurb = blurb; }
+        { Kind = kind; EnglishName = name; Uses = uses; Cooldown = cooldown; EnglishBlurb = blurb; }
+
+        /// <summary>The name in the player's language ("instrument.&lt;kind&gt;.name"; NAR-18).</summary>
+        public string Name => EnglishName == null ? null : Loc.T(NameKey(Kind), EnglishName);
+        public string Blurb => EnglishBlurb == null ? null : Loc.T(BlurbKey(Kind), EnglishBlurb);
+        public static string NameKey(InstrumentKind k) => "instrument." + k + ".name";
+        public static string BlurbKey(InstrumentKind k) => "instrument." + k + ".blurb";
 
         public bool Unlimited => Uses < 0;
 

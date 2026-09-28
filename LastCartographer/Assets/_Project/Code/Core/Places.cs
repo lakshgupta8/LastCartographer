@@ -59,7 +59,17 @@ namespace OWSBG.Core
             return n;
         }
 
+        /// <summary>The fate's word for Yarn and logs; English, as scripts compare it.</summary>
         public static string Describe(PlaceFate f) => f.ToString().ToLowerInvariant();
+
+        /// <summary>The fate as a player reads it (NAR-18).</summary>
+        public static string Display(PlaceFate f) => f switch
+        {
+            PlaceFate.Anchored => Loc.T("fate.anchored", "anchored"),
+            PlaceFate.Held => Loc.T("fate.held", "held"),
+            PlaceFate.Released => Loc.T("fate.released", "released"),
+            _ => Loc.T("fate.unwritten", "unwritten"),
+        };
 
         public static bool TryParse(string s, out PlaceFate fate)
         {

@@ -88,6 +88,10 @@ namespace OWSBG.World
         }
 
         public Verse CurrentVerse => VerseIndex < _verses.Count ? _verses[VerseIndex] : null;
+        /// <summary>A verse's title in the player's language (NAR-18), or null for an untitled verse.</summary>
+        public string VerseTitle(int verse) => verse >= 0 && verse < _verses.Count ? BoundsWalks.VerseTitle(Id, verse, _verses[verse].Title) : null;
+        /// <summary>A bound's name as the roll-call sings it, in the player's language.</summary>
+        public string NameOf(Bound b) => b == null ? "" : BoundsWalks.BoundName(Id, b.Name);
         public Bound CurrentBeat => CurrentVerse != null && BeatIndex < CurrentVerse.Beats.Count ? CurrentVerse.Beats[BeatIndex] : null;
 
         /// <summary>Add a verse from code (tests, tooling).</summary>
@@ -133,7 +137,7 @@ namespace OWSBG.World
                 _t = _secondsPerBeat * 0.5f;   // a half-beat count-in before the first name
                 _called = false;
                 Started?.Invoke(this);
-                Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", CurrentVerse.Title ?? Loc.T("caption.rollcall.first", "verse one")), 2.5f);
+                Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", VerseTitle(VerseIndex) ?? Loc.T("caption.rollcall.first", "verse one")), 2.5f);
                 return;
             }
             if (State != Phase.Walking) return;
@@ -178,7 +182,7 @@ namespace OWSBG.World
                 Misses = 0;
                 VerseIndex++;
                 if (VerseIndex >= _verses.Count) { Finish(); return; }
-                Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", CurrentVerse.Title ?? Loc.T("caption.rollcall.next", "next verse")), 2.5f);
+                Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", VerseTitle(VerseIndex) ?? Loc.T("caption.rollcall.next", "next verse")), 2.5f);
             }
         }
 

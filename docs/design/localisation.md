@@ -1,8 +1,10 @@
-# Localisation (PRG-19, v1)
+# Localisation (PRG-19 and NAR-18, v1)
 
 This is the wiring that gets every string the player reads from a table in their language, and the checks that keep
-it that way. No language but English is written yet. That, and the pass over everything that isn't wired, are
-NAR-18 (M4).
+it that way. No language but English is written yet.
+- **PRG-19** wired the locale, dialogue, the UI and captions.
+- **NAR-18**, the localisation-ready pass, wired the catalogs, added plurals and lists, and turned the pseudo-locale
+  into an audit of every page.
 
 ## The locale
 
@@ -54,9 +56,9 @@ It does three things (`Assets/Editor/Setup/LocalizationSetup.cs`):
    1,087 lines and options in 43 files. Ids are what translations are filed under, so a line keeps its id when it's
    rewritten; the CSV's lock column tells a translator the English changed.
 2. It rewrites the pseudo-locale's dialogue table from the lines as they are now.
-3. It harvests every `Loc.T` / `Loc.F` / `Say(...)` in `Code/` into `Settings/Localization/ui.en.csv`, the English
-   UI table translators start from: 115 keys, each with the files that use it. One key with two different English
-   texts stops the harvest.
+3. It harvests every `Loc.T` / `Loc.F` / `Loc.P` / `Say(...)` in `Code/`, plus the catalogs' keys (`DataText`,
+   `WorldText`), into `Settings/Localization/ui.en.csv`, the English UI table translators start from. That's 486
+   keys, each with the files or catalogs that use it. One key with two different English texts stops the harvest.
 
 ## Tests
 
@@ -83,20 +85,80 @@ It does three things (`Assets/Editor/Setup/LocalizationSetup.cs`):
 `UiTests.TheHudFollowsThePlayersLanguage`: the HUD's label follows English → pseudo → a French table → English,
 the moment the locale changes.
 
-## Not wired yet (NAR-18)
+## The catalogs (NAR-18)
 
-- **Data text** comes from catalogs, not from `Loc`:
-  - place, vantage and waypoint names (`Atlas`), and fade-stage and fate words;
-  - Instrument names and blurbs, Charter names and blurbs;
-  - commission titles, briefs, steps and aftermaths; boss names and phase lines; memory names;
-  - island and ending titles; the camp's Yarn-only speaker names; interactable prompts ("Talk", "Rest").
+Most of what the pages print comes from catalogs, not from `Loc.T` calls. Each catalog keeps its English as it was,
+and gains an accessor that looks up a key built from the id. The English is the fallback.
 
-  These need keys by id and a harvest over the catalogs. In the pseudo-locale they show in plain English, which is
-  the list.
+| What | Key | Accessor |
+|---|---|---|
+| Place, vantage, desk and lamp names; region headings | `place.<id>`, `vantage.<id>`, `waypoint.<id>`, `region.<slug>` | `Atlas.PlaceName`, `VantageName`, `WaypointName`, `RegionName` |
+| Fade stages and place fates | `fade.<stage>`, `fate.<fate>` | `FadeStages.Display`, `Places.Display` |
+| Commissions: title, poster, brief, journal, aftermath, each step | `commission.<id>.<field>`, `commission.<id>.step.<n>` | `Commissions.TitleOf`, `StepOf`, … |
+| Hubs, abilities | `hub.<hub>`, `abilities.<Ability>` | `Commissions.HubName`, `AbilityNames.Of` |
+| Bosses: name and the three phase lines | `boss.<id>.name`, `.entry`, `.turn`, `.last` | `Bosses.NameOf`, `LineOf`, through `Boss.BossName` and `PhaseLine` |
+| Memories | `memory.<id>` | `Memories.Name`, `Describe` |
+| Gauntlets | `gauntlet.<id>` | `Gauntlets.NameOf` |
+| The seller's pitches | `stock.<hub>.<kind>` | `Economy.PitchOf` |
+| The walks' verses and bounds | `walk.<id>.verse.<n>`, `walk.<id>.bound.<slug>` | `BoundsWalks.VerseTitle`, `BoundName`, through `BoundsWalk` |
+| Instruments: name and blurb | `instrument.<kind>.name`, `.blurb` | `InstrumentInfo.Name`, `Blurb` (the English is `EnglishName`) |
+| Charters: name and blurb | `charter.<kind>.name`, `.blurb` | `CharterProfile.LocalName`, `LocalBlurb` |
+
+- **Where the table gets these keys.** They are built from ids, so the harvest can't find them in source.
+  `DataText.All()` (Core) and `WorldText.All()` (World) list them from the shipped catalogs instead, and the refresh
+  adds them to `ui.en.csv`: 486 keys, up from 162.
+- **Only English for scripts and logs.** Yarn functions such as `place_fate()`, `phase()` and `commission_state()`
+  still answer in English, because scripts compare the words. The `Display` accessors are for the pages.
+- **Scenes carry the catalogs' words:**
+  - A boss in a scene is found by its sheet's name.
+  - A desk or lamp takes its name from the atlas catalog when the catalog has one (the chapel's desk was added).
+  - The Merrow's End walk that ProjectSetup builds says what `BoundsWalks.Words` lists.
+  - A test checks all three.
+
+## Counts and lists
+
+- **`Loc.P("desk.scraps", n, "{0} scrap", "{0} scraps")`** picks the table's `key.one`, `key.few`, `key.many` or
+  `key.other` by the language's plural rules (`Loc.PluralOf`), else `key.other`, else the English.
+  - **Languages covered:** the CLDR cardinal rules for whole numbers in English, German, Spanish, Italian and
+    Dutch; French and Portuguese (0 and 1 are singular); Russian and Polish (one/few/many); Japanese, Korean and
+    Chinese (no plural).
+  - **What uses it:** the desk's scraps, masks and belt; the ledger's reward; travel hours.
+  - **The harvest** writes `key.one` and `key.other` for each.
+- **`Loc.List(items)`** joins "a, b and c" with the table's `list.comma` and `list.and`. The memories a fall
+  drops are listed through it.
+- **Loose English caught on the way:** the atlas's region headings and "(off the page)", the ledger's "vellum scrap(s)" and
+  "[needs …]", raw hub names, and ability names printed from code.
+
+## The pseudo-locale as an audit
+
+`PseudoLocaleAuditTests` boots the game in `en-XA` and puts something on every page: a commission taken, a place
+drawn, scraps and seeds. It then opens each page and fails on any text shown with a letter outside «…»:
+- the HUD;
+- the desk, every row;
+- the atlas with its journal;
+- the ledger;
+- the shop;
+- the options and their controls page.
+
+Text that stays as it is in every language is marked `InkTheme.Verbatim`: a language's own name on the picker, and a
+key's or button's name.
+
+`DataTextTests` (EditMode, 5):
+- plurals by each language's rules, and a table with only `key.other`;
+- lists joined in English and in a French table;
+- every catalog string has its own key and one English;
+- the catalogs answer in English, the pseudo-locale and a French table, and fall back to English for keys the table
+  lacks;
+- the scenes carry the catalogs' words: the walk, the bosses and every desk and lamp.
+
+## Still open
+
 - **Fonts.** The greybox font covers Latin-1, which is enough for the pseudo-locale. CJK and Cyrillic need font
-  assets and fallbacks (ENV-11).
-- **Plurals and gender.** Yarn's `[plural]`/`[select]` markup works in dialogue; `Loc.F` has no plural rules. "1
-  scraps" is English's problem now, and every language's later.
+  assets and fallbacks, and wait for the ink font (ENV-11).
 - **Right-to-left and text expansion** are layout questions for the UI art pass. The pseudo-locale already runs a
   third long.
 - **Voice-over assets per locale** (Yarn's asset folders) are unused.
+- **Not wired:** interactable prompts ("Talk", "Rest") are never shown, so none of them go through the tables yet.
+  Rooms that exist only in `RoomPlans` show their id with its underscores opened until the atlas catalogs them.
+- **No language is written.** A translation is `ui.<locale>.csv` next to `ui.en.csv`, plus a Yarn strings CSV per
+  locale listed in the project. Both start from the English files the refresh writes.

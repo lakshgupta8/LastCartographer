@@ -112,6 +112,16 @@ namespace OWSBG.Setup
                     else keys[key] = (english, new SortedSet<string> { file });
                 }
             }
+            // The catalogs' strings (NAR-18): keys built from ids, listed by the catalogs themselves.
+            foreach (var (key, english, source) in OWSBG.World.WorldText.Everything())
+            {
+                if (keys.TryGetValue(key, out var had))
+                {
+                    if (had.english != english) throw new System.InvalidOperationException("Loc key " + key + " has two texts: \"" + had.english + "\" and \"" + english + "\"");
+                    had.files.Add(source);
+                }
+                else keys[key] = (english, new SortedSet<string> { source });
+            }
             var sb = new StringBuilder("key,text,comment\n");
             foreach (var kv in keys)
                 sb.Append(Loc.CsvField(kv.Key)).Append(',').Append(Loc.CsvField(kv.Value.english)).Append(',').Append(Loc.CsvField(string.Join(" ", kv.Value.files))).Append('\n');

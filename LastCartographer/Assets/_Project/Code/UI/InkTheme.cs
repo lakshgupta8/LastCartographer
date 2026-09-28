@@ -189,6 +189,12 @@ namespace OWSBG.UI
 
         public static void SetSize(VisualElement e, float w, float h) { e.style.width = w; e.style.height = h; }
 
+        /// <summary>USS class for text shown as it is in every language: a language's own name, a key's name.</summary>
+        public const string VerbatimClass = "loc-verbatim";
+
+        /// <summary>Mark text that is not translated on purpose, so the pseudo-locale audit (NAR-18) passes over it.</summary>
+        public static T Verbatim<T>(T e) where T : VisualElement { e.AddToClassList(VerbatimClass); return e; }
+
         public static void Show(VisualElement e, bool on) { e.style.display = on ? DisplayStyle.Flex : DisplayStyle.None; }
     }
 }

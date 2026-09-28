@@ -39,7 +39,7 @@ namespace OWSBG.UI
         }
 
         void OnStarted(BoundsWalk w) { _linger = 0f; if (_built) { InkTheme.Show(_root, true); _name.text = "…"; _name.style.color = InkTheme.Ink; } }
-        void OnCalled(BoundsWalk w, BoundsWalk.Bound b) { if (_built) _name.text = b.Name; }
+        void OnCalled(BoundsWalk w, BoundsWalk.Bound b) { if (_built) _name.text = w.NameOf(b); }
         void OnLanded(BoundsWalk w, BoundsWalk.Bound b, bool hit) { _flash = 0.4f; if (_built) _name.style.color = hit ? InkTheme.Wash : InkTheme.Ochre; }
         void OnCompleted(BoundsWalk w) { _linger = Options.CaptionSeconds(_lingerSeconds); if (_built) { _name.text = Loc.T("walk.held", "Held."); _name.style.color = InkTheme.Wash; _fill.style.width = new Length(100, LengthUnit.Percent); } }
 
@@ -57,7 +57,7 @@ namespace OWSBG.UI
             InkTheme.Show(_root, true);
             if (_flash > 0f) _flash -= Time.deltaTime; else _name.style.color = InkTheme.Ink;
             var verse = walk.CurrentVerse;
-            _line.text = (verse != null && !string.IsNullOrEmpty(verse.Title) ? verse.Title + "  ·  " : "")
+            _line.text = (verse != null && !string.IsNullOrEmpty(verse.Title) ? walk.VerseTitle(walk.VerseIndex) + "  ·  " : "")
                          + Loc.F("walk.progress", "verse {0} of {1}  ·  beat {2} of {3}", walk.VerseIndex + 1, walk.Verses.Count, walk.BeatIndex + 1, verse != null ? verse.Beats.Count : 0);
             _fill.style.width = new Length(walk.BeatProgress * 100f, LengthUnit.Percent);
             for (int i = 0; i < _marks.childCount; i++)

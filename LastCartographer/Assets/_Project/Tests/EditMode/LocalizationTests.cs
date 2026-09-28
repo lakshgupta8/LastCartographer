@@ -154,6 +154,11 @@ namespace OWSBG.Tests
                     if (keys.TryGetValue(key, out var had) && had != english) conflicts.Add(key + ": \"" + had + "\" / \"" + english + "\"");
                     keys[key] = english;
                 }
+            foreach (var (key, english, _) in OWSBG.World.WorldText.Everything())
+            {
+                if (keys.TryGetValue(key, out var had) && had != english) conflicts.Add(key + ": \"" + had + "\" / \"" + english + "\"");
+                keys[key] = english;
+            }
             return keys;
         }
 

@@ -148,10 +148,10 @@ namespace OWSBG.UI
             var state = Commissions.StateOf(w, def.Id);
             switch (state)
             {
-                case CommissionState.Posted: _blurb.text = def.Brief + (string.IsNullOrEmpty(def.Poster) ? "" : "\n— " + def.Poster); break;
-                case CommissionState.Taken: _blurb.text = def.Journal; break;
+                case CommissionState.Posted: _blurb.text = Commissions.BriefOf(def) + (string.IsNullOrEmpty(def.Poster) ? "" : "\n— " + Commissions.PosterOf(def)); break;
+                case CommissionState.Taken: _blurb.text = Commissions.JournalOf(def); break;
                 case CommissionState.Fulfilled: _blurb.text = Loc.T("ledger.fulfilled", "Done. Turn it in."); break;
-                case CommissionState.Closed: _blurb.text = def.Aftermath; break;
+                case CommissionState.Closed: _blurb.text = Commissions.AftermathOf(def); break;
                 default: _blurb.text = Loc.T("commission.failed", "It came to nothing."); break;
             }
             _steps.text = state == CommissionState.Taken || state == CommissionState.Fulfilled ? StepLines(w, def) : "";
@@ -165,18 +165,18 @@ namespace OWSBG.UI
             {
                 var s = def.Steps[i];
                 bool done = Commissions.StepDone(w, def, i);
-                sb.Append(done ? "✓ " : "· ").Append(s.Text);
+                sb.Append(done ? "✓ " : "· ").Append(Commissions.StepOf(def, i));
                 if (s.Kind == StepKind.Count) sb.Append("   ").Append(Commissions.Progress(w, def, i)).Append(" / ").Append(s.Target);
                 if (i < def.Steps.Length - 1) sb.Append('\n');
             }
-            if (def.RequiresAbility != Ability.None) sb.Append("\n[needs ").Append(def.RequiresAbility).Append(']');
+            if (def.RequiresAbility != Ability.None) sb.Append('\n').Append(Loc.F("ledger.needs", "[needs {0}]", AbilityNames.Of(def.RequiresAbility)));
             return sb.ToString();
         }
 
         public static string RewardLine(CommissionDef def)
         {
             var parts = new List<string>();
-            if (def.RewardScraps > 0) parts.Add(def.RewardScraps + (def.RewardScraps == 1 ? " vellum scrap" : " vellum scraps"));
+            if (def.RewardScraps > 0) parts.Add(Loc.P("ledger.reward.scraps", def.RewardScraps, "{0} vellum scrap", "{0} vellum scraps"));
             if (def.RewardInstrument != InstrumentKind.None) parts.Add(InstrumentInfo.Of(def.RewardInstrument).Name);
             if (def.SeedsIsland) parts.Add(Loc.T("ledger.reward.island", "a place in the Blank"));
             if (!string.IsNullOrEmpty(def.Foreshadows)) parts.Add(Loc.T("ledger.reward.secret", "something worth knowing"));
@@ -196,7 +196,7 @@ namespace OWSBG.UI
             var marker = InkTheme.Text("marker", sel ? "▸" : "", 22, InkTheme.Wash);
             marker.style.width = 26;
             bool dim = state == CommissionState.Closed || state == CommissionState.Failed;
-            var title = InkTheme.Text("title", def.Title, 22, dim ? InkTheme.Dim : InkTheme.Ink);
+            var title = InkTheme.Text("title", Commissions.TitleOf(def), 22, dim ? InkTheme.Dim : InkTheme.Ink);
             title.style.flexGrow = 1;
             string stateText; Color stateColor; var style = FontStyle.Normal;
             switch (state)

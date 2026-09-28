@@ -147,6 +147,77 @@ namespace OWSBG.Core
             catch (FormatException) { return string.Format(CultureInfo.InvariantCulture, english, args); }
         }
 
+        /// <summary>CLDR's cardinal plural categories; a table gives "key.one", "key.few", "key.other" and so on as its language needs.</summary>
+        public enum Plural { Zero, One, Two, Few, Many, Other }
+
+        /// <summary>
+        /// The plural category of a whole number in a language (CLDR cardinal rules for integers), for the languages we
+        /// might ship: one/other for English and its kind, 0 and 1 as one in French and Portuguese, one/few/many in
+        /// Russian and Polish, and no plural in Japanese, Korean and Chinese.
+        /// </summary>
+        public static Plural PluralOf(string locale, long n)
+        {
+            string lang = string.IsNullOrEmpty(locale) ? Base : locale.Split('-')[0].ToLowerInvariant();
+            long a = n < 0 ? -n : n, d10 = a % 10, d100 = a % 100;
+            switch (lang)
+            {
+                case "ja": case "ko": case "zh": return Plural.Other;
+                case "fr": case "pt": return a == 0 || a == 1 ? Plural.One : Plural.Other;
+                case "ru":
+                    if (d10 == 1 && d100 != 11) return Plural.One;
+                    if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return Plural.Few;
+                    return Plural.Many;
+                case "pl":
+                    if (a == 1) return Plural.One;
+                    if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return Plural.Few;
+                    return Plural.Many;
+                default: return a == 1 ? Plural.One : Plural.Other;
+            }
+        }
+
+        /// <summary>
+        /// A count in words: "1 scrap", "3 scraps". The table's "key.&lt;category&gt;" for the count, else its "key.other",
+        /// else English. {0} is the count; further arguments follow it as {1}, {2}.
+        /// </summary>
+        public static string P(string key, long count, string one, string other, params object[] more)
+        {
+            var locale = Locale;
+            string english = count == 1 ? one : other;
+            string pattern = null;
+            if (locale != Base && locale != Pseudo)
+            {
+                var t = Table(locale);
+                string cat = PluralOf(locale, count).ToString().ToLowerInvariant();
+                if (!t.TryGetValue(key + "." + cat, out pattern) || string.IsNullOrEmpty(pattern)) t.TryGetValue(key + ".other", out pattern);
+            }
+            if (string.IsNullOrEmpty(pattern)) pattern = locale == Pseudo ? Pseudoize(english) : english;
+            var args = new object[1 + (more?.Length ?? 0)];
+            args[0] = count;
+            if (more != null) Array.Copy(more, 0, args, 1, more.Length);
+            try { return string.Format(CultureInfo.InvariantCulture, pattern, args); }
+            catch (FormatException) { return string.Format(CultureInfo.InvariantCulture, english, args); }
+        }
+
+        /// <summary>"a", "a and b", "a, b and c", joined as the language joins a list.</summary>
+        public static string List(IEnumerable<string> items)
+        {
+            var list = new List<string>(items ?? Array.Empty<string>());
+            if (list.Count == 0) return "";
+            string joined = list[0];
+            for (int i = 1; i < list.Count; i++)
+                joined = i == list.Count - 1 ? F("list.and", "{0} and {1}", joined, list[i]) : F("list.comma", "{0}, {1}", joined, list[i]);
+            return joined;
+        }
+
+        /// <summary>An id as a key part: lower case, anything but letters and digits an underscore ("Dotha's stoop" → "dotha_s_stoop").</summary>
+        public static string Slug(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            var sb = new StringBuilder(s.Length);
+            foreach (char c in s.ToLowerInvariant()) sb.Append(char.IsLetterOrDigit(c) ? c : '_');
+            return sb.ToString().Trim('_');
+        }
+
         static Dictionary<string, string> Table(string locale)
         {
             if (_tables.TryGetValue(locale, out var t)) return t;
@@ -254,11 +325,12 @@ namespace OWSBG.Core
         // ---- Harvest -----------------------------------------------------------------------------------------------
 
         static readonly Regex Call = new Regex(@"Loc\.(?:T|F)\(\s*""((?:[^""\\]|\\.)*)""\s*,\s*""((?:[^""\\]|\\.)*)""");
+        static readonly Regex PluralCall = new Regex(@"Loc\.P\(\s*""((?:[^""\\]|\\.)*)""\s*,(?:[^,""()]|\([^()]*\))+,\s*""((?:[^""\\]|\\.)*)""\s*,\s*""((?:[^""\\]|\\.)*)""");
         static readonly Regex Say = new Regex(@"\bSay\(\s*""(?:[^""\\]|\\.)*""\s*,\s*""((?:[^""\\]|\\.)*)""\s*,\s*""((?:[^""\\]|\\.)*)""");
 
         /// <summary>
-        /// Every <c>Loc.T/F("key", "English")</c> and UI <c>Say("element", "key", "English", ...)</c> in a source file,
-        /// English unescaped. The table's source.
+        /// Every <c>Loc.T/F("key", "English")</c>, <c>Loc.P("key", n, "one", "other")</c> (as "key.one" and "key.other")
+        /// and UI <c>Say("element", "key", "English", ...)</c> in a source file, English unescaped. The table's source.
         /// </summary>
         public static List<(string key, string english)> Harvest(string source)
         {
@@ -266,6 +338,11 @@ namespace OWSBG.Core
             var code = Regex.Replace(source ?? "", @"^[ \t]*//.*$", "", RegexOptions.Multiline);   // examples in comments are not strings
             foreach (Match m in Call.Matches(code)) list.Add((Unescape(m.Groups[1].Value), Unescape(m.Groups[2].Value)));
             foreach (Match m in Say.Matches(code)) list.Add((Unescape(m.Groups[1].Value), Unescape(m.Groups[2].Value)));
+            foreach (Match m in PluralCall.Matches(code))
+            {
+                list.Add((Unescape(m.Groups[1].Value) + ".one", Unescape(m.Groups[2].Value)));
+                list.Add((Unescape(m.Groups[1].Value) + ".other", Unescape(m.Groups[3].Value)));
+            }
             return list;
         }
 

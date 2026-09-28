@@ -218,7 +218,7 @@ namespace OWSBG.UI
             var e = GameState.World.Equipment;
             _rows.Clear();
             var profile = _charters != null ? _charters.Current : null;
-            string charterName = profile != null ? profile.DisplayName : e.Charter.ToString();
+            string charterName = profile != null ? profile.LocalName : e.Charter.ToString();
             _rows.Add(MakeRow(0, Loc.T("desk.row.charter", "Charter"), charterName, ""));
             for (int i = 0; i < e.SlotCount; i++)
             {
@@ -228,9 +228,9 @@ namespace OWSBG.UI
                 _rows.Add(MakeRow(i + 1, Loc.F("desk.row.slot", "Slot {0}", i + 1), name, uses));
             }
             _rows.Add(MakeRow(FateRow, Loc.T("desk.row.place", "Place"), FateValue(out bool arrows), "", arrows));
-            _rows.Add(MakeRow(MaskRow, Loc.T("desk.row.masks", "Masks"), MaskValue(), Loc.F("desk.scraps", "{0} scraps", Economy.Scraps(GameState.World)), false));
+            _rows.Add(MakeRow(MaskRow, Loc.T("desk.row.masks", "Masks"), MaskValue(), Loc.P("desk.scraps", Economy.Scraps(GameState.World), "{0} scrap", "{0} scraps"), false));
             _rows.Add(MakeRow(BeltRow, Loc.T("desk.row.belt", "Belt"), BeltValue(), "", false));
-            if (Row == 0) _blurb.text = profile != null ? profile.Blurb : "";
+            if (Row == 0) _blurb.text = profile != null ? profile.LocalBlurb : "";
             else if (Row == FateRow) _blurb.text = FateBlurb();
             else if (Row == MaskRow) _blurb.text = Economy.MasksFull(GameState.World) ? Loc.T("desk.masks.full", "The cowl holds nine. It will not take a tenth.") : Loc.T("desk.masks.buy", "Vellum stitched into the cowl. One more mask, and it is whole at once.");
             else if (Row == BeltRow) _blurb.text = GameState.World.Equipment.FourthSlotUnlocked ? Loc.T("desk.belt.full", "Four loops. A Guild belt.") : Loc.T("desk.belt.buy", "A fourth loop on the belt: one more Instrument carried.");
@@ -246,15 +246,16 @@ namespace OWSBG.UI
             var w = GameState.World;
             var vitals = _wren != null ? _wren.GetComponent<WrenVitals>() : null;
             int masks = vitals != null ? vitals.MaxMasks : 5 + Economy.MaskUpgrades(w);
-            if (Economy.MasksFull(w)) return Loc.F("desk.masks.value_full", "{0} masks · full", masks);
-            return Loc.F("desk.masks.value", "{0} masks · {1} scraps for one more", masks, Economy.MaskUpgradeCost);
+            if (Economy.MasksFull(w)) return Loc.P("desk.masks.value_full", masks, "{0} mask · full", "{0} masks · full");
+            return Loc.F("desk.masks.value", "{0} · {1}", Loc.P("desk.masks.count", masks, "{0} mask", "{0} masks"),
+                Loc.P("desk.masks.cost", Economy.MaskUpgradeCost, "{0} scrap for one more", "{0} scraps for one more"));
         }
 
         string BeltValue()
         {
             var w = GameState.World;
             if (w.Equipment.FourthSlotUnlocked) return Loc.T("desk.belt.value_full", "four loops");
-            return Loc.F("desk.belt.value", "three loops · {0} scraps for a fourth", Economy.SlotUpgradeCost);
+            return Loc.P("desk.belt.value", Economy.SlotUpgradeCost, "three loops · {0} scrap for a fourth", "three loops · {0} scraps for a fourth");
         }
 
         static string Verb(PlaceFate f) => f == PlaceFate.Anchored ? Loc.T("desk.verb.anchor", "anchor") : f == PlaceFate.Held ? Loc.T("desk.verb.hold", "hold") : f == PlaceFate.Released ? Loc.T("desk.verb.release", "release") : Loc.T("desk.verb.unwritten", "unwritten");
@@ -265,10 +266,10 @@ namespace OWSBG.UI
             var place = PlaceId;
             if (string.IsNullOrEmpty(place)) return Loc.T("desk.place.none", "(no place)");
             var fate = Places.FateOf(GameState.World, place);
-            if (fate != PlaceFate.Unwritten) return Loc.F("desk.place.fate", "{0}: {1}", place, Places.Describe(fate));
-            if (!CanSeal) return Loc.F("desk.place.survey_first", "{0}: survey it first", place);
+            if (fate != PlaceFate.Unwritten) return Loc.F("desk.place.fate", "{0}: {1}", Atlas.PlaceName(place), Places.Display(fate));
+            if (!CanSeal) return Loc.F("desk.place.survey_first", "{0}: survey it first", Atlas.PlaceName(place));
             arrows = true;
-            return Loc.F("desk.place.fate", "{0}: {1}", place, Verb(Proposed));
+            return Loc.F("desk.place.fate", "{0}: {1}", Atlas.PlaceName(place), Verb(Proposed));
         }
 
         string FateBlurb()

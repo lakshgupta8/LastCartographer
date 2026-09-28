@@ -19,7 +19,9 @@ namespace OWSBG.World
         [TextArea] [SerializeField] string[] _phaseLines = { "", "", "" };
         [SerializeField] int _tier = 1;
 
-        public string BossName => _bossName;
+        /// <summary>The name in the player's language (NAR-18); <see cref="EnglishName"/> is the sheet's.</summary>
+        public string BossName => Bosses.NameOf(_bossName);
+        public string EnglishName => _bossName;
         public int Tier => _tier;
         /// <summary>1-based. 0 before the fight starts.</summary>
         public int Phase { get; private set; }
@@ -55,7 +57,7 @@ namespace OWSBG.World
             _startCaptured = true;
         }
 
-        public string PhaseLine(int phase) => phase >= 1 && phase <= _phaseLines.Length ? _phaseLines[phase - 1] : "";
+        public string PhaseLine(int phase) => phase >= 1 && phase <= _phaseLines.Length ? Bosses.LineOf(_bossName, phase, _phaseLines[phase - 1]) : "";
 
         /// <summary>Name, tier and the three lines from the boss's sheet (NAR-06), for bosses built at runtime.</summary>
         public void ApplySheet(BossSheet sheet)

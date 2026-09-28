@@ -13,6 +13,10 @@ namespace OWSBG.World
         public string DisplayName;
         [TextArea] public string Blurb;
         public ComboStep[] Combo;
+
+        /// <summary>The Charter's name in the player's language ("charter.&lt;kind&gt;.name"; NAR-18). <see cref="DisplayName"/> is the English.</summary>
+        public string LocalName => Loc.T("charter." + Kind + ".name", DisplayName);
+        public string LocalBlurb => string.IsNullOrEmpty(Blurb) ? Blurb ?? "" : Loc.T("charter." + Kind + ".blurb", Blurb);
         public FlourishKind DefaultFlourish = FlourishKind.Crosshatch;
         [Header("Passives")]
         public float InkGainMultiplier = 1f;

@@ -45,6 +45,26 @@ namespace OWSBG.Core
 
         public static IReadOnlyList<BossSheet> All { get { EnsureDefaults(); return _all; } }
         public static BossSheet Find(string id) { EnsureDefaults(); return _all.Find(b => b.Id == id); }
+
+        /// <summary>The sheet whose English name this is (bosses in scenes carry the name, not the id).</summary>
+        public static BossSheet Named(string englishName) { EnsureDefaults(); return _all.Find(b => b.Name == englishName); }
+
+        public static readonly string[] LineFields = { "entry", "turn", "last" };
+
+        /// <summary>A boss's name in the player's language ("boss.&lt;id&gt;.name"; NAR-18).</summary>
+        public static string NameOf(string englishName)
+        {
+            var s = Named(englishName);
+            return s != null ? Loc.T("boss." + s.Id + ".name", s.Name) : englishName;
+        }
+
+        /// <summary>A phase line (1 entry, 2 the turn, 3 the last) in the player's language ("boss.&lt;id&gt;.entry"...).</summary>
+        public static string LineOf(string englishName, int phase, string english)
+        {
+            var s = Named(englishName);
+            if (s == null || string.IsNullOrEmpty(english) || phase < 1 || phase > LineFields.Length) return english;
+            return Loc.T("boss." + s.Id + "." + LineFields[phase - 1], english);
+        }
         public static List<BossSheet> ByNumber(string number) { EnsureDefaults(); return _all.FindAll(b => b.Number == number); }
         public static IEnumerable<string> Numbers => All.Select(b => b.Number).Distinct();
         public static string FlagKey(string id) => "boss." + id + ".defeated";

@@ -16,13 +16,16 @@ namespace OWSBG.Core
         public static event Action<string, int> Dropped;     // room, count
         public static event Action<int> Recovered;           // count
 
-        public static string Name(string id) => id switch
+        /// <summary>The memories there are words for, by id, in English.</summary>
+        public static readonly IReadOnlyDictionary<string, string> English = new Dictionary<string, string>
         {
-            "isolde.first_sight" => "the first time she saw you",
-            "dotha.eleven_songs" => "eleven songs, and which came first",
-            "sable.boats_back" => "the count of boats that came back",
-            _ => id,
+            { "isolde.first_sight", "the first time she saw you" },
+            { "dotha.eleven_songs", "eleven songs, and which came first" },
+            { "sable.boats_back", "the count of boats that came back" },
         };
+
+        /// <summary>A memory's words in the player's language ("memory.&lt;id&gt;"; NAR-18).</summary>
+        public static string Name(string id) => English.TryGetValue(id ?? "", out var e) ? Loc.T("memory." + id, e) : id;
 
         public static bool Has(WorldState w, string id) => w.BoundMemories.Contains(id);
         public static int Count(WorldState w) => w.BoundMemories.Count;
@@ -65,14 +68,12 @@ namespace OWSBG.Core
             return n;
         }
 
-        /// <summary>"the first time she saw you, and eleven songs" for captions.</summary>
+        /// <summary>"the first time she saw you and eleven songs" for captions, joined as the player's language joins a list.</summary>
         public static string Describe(IEnumerable<string> ids)
         {
             var names = new List<string>();
             foreach (var id in ids) names.Add(Name(id));
-            if (names.Count == 0) return "";
-            if (names.Count == 1) return names[0];
-            return string.Join(", ", names.GetRange(0, names.Count - 1)) + " and " + names[names.Count - 1];
+            return Loc.List(names);
         }
     }
 }

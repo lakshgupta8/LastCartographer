@@ -31,6 +31,9 @@ namespace OWSBG.Core
 
         public static IReadOnlyList<GauntletPlan> All { get { EnsureDefaults(); return _all; } }
         public static GauntletPlan Find(string id) { EnsureDefaults(); return _all.Find(g => g.Id == id); }
+
+        /// <summary>A gauntlet's name in the player's language ("gauntlet.&lt;id&gt;"; NAR-18).</summary>
+        public static string NameOf(GauntletPlan plan) => plan == null ? "" : Loc.T("gauntlet." + plan.Id, plan.Name);
         public static string FlagKey(string id) => "gauntlet." + id + ".done";
         public static string SceneFor(string id) => ScenePrefix + id;
         public static bool IsGauntletScene(string scene) => !string.IsNullOrEmpty(scene) && scene.StartsWith(ScenePrefix);

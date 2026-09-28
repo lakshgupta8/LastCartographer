@@ -26,7 +26,8 @@ namespace OWSBG.World
 
         public string WaypointId => _waypointId;
         public WaypointKind Kind => _kind;
-        public string DisplayName => _displayName;
+        /// <summary>The atlas's name for it, in the player's language (NAR-18).</summary>
+        public string DisplayName => Atlas.WaypointName(_waypointId);
         public string Spawn => _spawn;
         public string PlaceId { get { var room = GetComponentInParent<Room>(); return room != null ? room.RoomId : ""; } }
         public bool IsLit => _kind == WaypointKind.Desk || string.IsNullOrEmpty(_litByVantage) || GameState.World.IsEverSurveyed(_litByVantage);
@@ -37,9 +38,11 @@ namespace OWSBG.World
         void Awake()
         {
             if (string.IsNullOrEmpty(_waypointId)) _waypointId = (_kind == WaypointKind.Desk ? "desk." : "lamp.") + PlaceId;
+            var known = Atlas.FindWaypoint(_waypointId);   // the catalog's name wins: it is what the tables are keyed from
             Atlas.RegisterWaypoint(new Waypoint
             {
-                Id = _waypointId, Kind = _kind, Place = PlaceId, Room = gameObject.scene.name, Spawn = _spawn, Name = _displayName,
+                Id = _waypointId, Kind = _kind, Place = PlaceId, Room = gameObject.scene.name, Spawn = _spawn,
+                Name = known != null && !string.IsNullOrEmpty(known.Name) ? known.Name : _displayName,
             });
         }
 

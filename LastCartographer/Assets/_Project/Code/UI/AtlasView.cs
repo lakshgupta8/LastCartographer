@@ -164,7 +164,7 @@ namespace OWSBG.UI
                 if (place.Region != region)
                 {
                     region = place.Region;
-                    var head = InkTheme.Text("region", region, 16, InkTheme.Dim, FontStyle.Bold);
+                    var head = InkTheme.Text("region", Atlas.RegionName(region), 16, InkTheme.Dim, FontStyle.Bold);
                     head.style.marginTop = 6; head.style.marginBottom = 4;
                     _places.Add(head);
                 }
@@ -199,7 +199,7 @@ namespace OWSBG.UI
                 row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
                 var marker = InkTheme.Text("marker", sel ? "▸" : "", 20, InkTheme.Wash);
                 marker.style.width = 24;
-                var name = InkTheme.Text("name", (d.Kind == WaypointKind.Lamp ? "☼ " : "▣ ") + d.Name, 19, InkTheme.Ink);
+                var name = InkTheme.Text("name", (d.Kind == WaypointKind.Lamp ? "☼ " : "▣ ") + Atlas.WaypointName(d.Id), 19, InkTheme.Ink);
                 name.style.flexGrow = 1;
                 var where = InkTheme.Text("where", Atlas.PlaceName(d.Place), 15, InkTheme.Dim);
                 row.Add(marker); row.Add(name); row.Add(where);
@@ -215,7 +215,7 @@ namespace OWSBG.UI
             box.AddToClassList("atlas-place");
             box.style.marginBottom = 8;
             var head = InkTheme.Row("head");
-            var name = InkTheme.Text("name", place.Name, 21, drawn ? InkTheme.Ink : InkTheme.Dim, FontStyle.Bold);
+            var name = InkTheme.Text("name", Atlas.PlaceName(place.Id), 21, drawn ? InkTheme.Ink : InkTheme.Dim, FontStyle.Bold);
             head.Add(name);
             if (here)
             {
@@ -228,7 +228,7 @@ namespace OWSBG.UI
             foreach (var v in Atlas.VantagesOf(place.Id))
             {
                 if (marks.Length > 0) marks.Append("    ");
-                marks.Append(w.IsErased(v.Id) ? "✕ " : w.IsSurveyed(v.Id) ? "● " : "○ ").Append(v.Name);
+                marks.Append(w.IsErased(v.Id) ? "✕ " : w.IsSurveyed(v.Id) ? "● " : "○ ").Append(Atlas.VantageName(v.Id));
             }
             if (marks.Length == 0) marks.Append(Loc.T("atlas.no_vantage", "no vantage here"));
             var vantages = InkTheme.Text("vantages", marks.ToString(), 16, drawn ? InkTheme.Ink : InkTheme.Dim);
@@ -237,14 +237,14 @@ namespace OWSBG.UI
 
             var status = new System.Text.StringBuilder();
             int stage = FadeStages.Get(w, place.Id);
-            status.Append(erased ? Loc.T("atlas.erased", "erased. Draw it again.") : FadeStages.Describe(stage));
+            status.Append(erased ? Loc.T("atlas.erased", "erased. Draw it again.") : FadeStages.Display(stage));
             var fate = Places.FateOf(w, place.Id);
-            if (fate != PlaceFate.Unwritten) status.Append(" · ").Append(Places.Describe(fate));
+            if (fate != PlaceFate.Unwritten) status.Append(" · ").Append(Places.Display(fate));
             foreach (var wp in Atlas.WaypointsOf(place.Id))
             {
                 if (!Atlas.IsKnown(w, wp.Id)) continue;
-                status.Append(" · ").Append(wp.Kind == WaypointKind.Lamp ? "☼ " : "▣ ").Append(wp.Name);
-                if (!Atlas.CanTravelTo(w, wp)) status.Append(" (off the page)");
+                status.Append(" · ").Append(wp.Kind == WaypointKind.Lamp ? "☼ " : "▣ ").Append(Atlas.WaypointName(wp.Id));
+                if (!Atlas.CanTravelTo(w, wp)) status.Append(Loc.T("atlas.off_page", " (off the page)"));
             }
             var line = InkTheme.Text("status", status.ToString(), 15, erased ? InkTheme.Ochre : InkTheme.Dim);
             line.style.marginLeft = 12;

@@ -1,4 +1,5 @@
 #nullable enable
+using OWSBG.Core;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Yarn.Unity;
@@ -69,6 +70,7 @@ namespace OWSBG.Narrative
             _advance = false;
             if (view == null) { IsShowingLine = false; return; }
             view.ShowLine(line.CharacterName ?? "", line.TextWithoutCharacterName.Text);
+            Mix.Note(Mix.Duck.Line);                      // the room makes room for the voice (AUD-09)
             await YarnTask.Yield();                       // swallow the press that started dialogue
             while (!_advance && !token.IsNextContentRequested && ServiceRunning)
             {

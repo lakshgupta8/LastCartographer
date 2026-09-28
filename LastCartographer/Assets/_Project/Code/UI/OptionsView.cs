@@ -17,8 +17,8 @@ namespace OWSBG.UI
     public sealed class OptionsView : MonoBehaviour
     {
         public enum Page { Closed, Options, Controls }
-        public enum Item { Language, Hitstop, Shake, Captions, Contrast, ToggleBind, ToggleSurvey, ToggleGlide, Controls, Resume }
-        public const int ItemCount = 10;
+        public enum Item { Language, Hitstop, Shake, Captions, Contrast, ToggleBind, ToggleSurvey, ToggleGlide, VolumeMaster, VolumeMusic, VolumeSound, VolumeVoices, Controls, Resume }
+        public const int ItemCount = 14;
 
         public static OptionsView Instance { get; private set; }
 
@@ -111,6 +111,10 @@ namespace OWSBG.UI
                 case Item.ToggleBind: Options.SetToggle(Hold.Bind, !Options.IsToggle(Hold.Bind)); break;
                 case Item.ToggleSurvey: Options.SetToggle(Hold.Survey, !Options.IsToggle(Hold.Survey)); break;
                 case Item.ToggleGlide: Options.SetToggle(Hold.Glide, !Options.IsToggle(Hold.Glide)); break;
+                case Item.VolumeMaster: Options.Set(Options.Volume.Master, Options.Get(Options.Volume.Master) + dir * Options.VolumeStep); break;
+                case Item.VolumeMusic: Options.Set(Options.Volume.Music, Options.Get(Options.Volume.Music) + dir * Options.VolumeStep); break;
+                case Item.VolumeSound: Options.Set(Options.Volume.Sound, Options.Get(Options.Volume.Sound) + dir * Options.VolumeStep); break;
+                case Item.VolumeVoices: Options.Set(Options.Volume.Voices, Options.Get(Options.Volume.Voices) + dir * Options.VolumeStep); break;
             }
             Refresh();
         }
@@ -257,6 +261,10 @@ namespace OWSBG.UI
             Item.ToggleBind => Loc.T("options.bind", "Bind"),
             Item.ToggleSurvey => Loc.T("options.survey", "Survey"),
             Item.ToggleGlide => Loc.T("options.glide", "Glide"),
+            Item.VolumeMaster => Loc.T("options.volume.master", "Volume"),
+            Item.VolumeMusic => Loc.T("options.volume.music", "Music"),
+            Item.VolumeSound => Loc.T("options.volume.sound", "Sounds"),
+            Item.VolumeVoices => Loc.T("options.volume.voices", "Voices"),
             Item.Controls => Loc.T("options.controls", "Controls"),
             _ => Loc.T("options.resume", "Resume"),
         };
@@ -277,6 +285,10 @@ namespace OWSBG.UI
             Item.ToggleBind => HoldValue(Hold.Bind),
             Item.ToggleSurvey => HoldValue(Hold.Survey),
             Item.ToggleGlide => HoldValue(Hold.Glide),
+            Item.VolumeMaster => Percent(Options.Get(Options.Volume.Master)),
+            Item.VolumeMusic => Percent(Options.Get(Options.Volume.Music)),
+            Item.VolumeSound => Percent(Options.Get(Options.Volume.Sound)),
+            Item.VolumeVoices => Percent(Options.Get(Options.Volume.Voices)),
             Item.Controls => "›",
             _ => "",
         };

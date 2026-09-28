@@ -183,6 +183,7 @@ namespace OWSBG.World
             if (IsDead || _deathT >= 0f) return false;
             if (!AcceptsHit(hit)) { OnHitBlocked(hit); return false; }
             Health = Mathf.Max(0, Health - hit.Damage);
+            Mix.Note(Mix.Duck.Impact);   // the mix makes room for the impact (AUD-09)
             if (hit.Drain > 0f)
             {
                 bool wasGrey = IsGrey;

@@ -22,6 +22,7 @@ cutscene has the screen. The Esc that closes a page never opens the options in t
 | Captions stay | as written, twice as long, three times as long, until dismissed | as written |
 | High-contrast ink | off, on | off |
 | Bind, Survey, Glide | hold, or press to start and press to stop | hold |
+| Volume, Music, Sounds, Voices | off to 100% in tenths (`docs/design/audio-mix.md`) | 100% |
 | Controls | a page: every action's key and pad button | the asset's |
 | Resume | | |
 

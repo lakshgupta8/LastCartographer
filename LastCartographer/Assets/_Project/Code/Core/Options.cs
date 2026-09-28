@@ -19,6 +19,11 @@ namespace OWSBG.Core
     {
         public const string Prefix = "owsbg.opt.";
         public const float Step = 0.25f;
+        /// <summary>The volumes move in tenths (AUD-09).</summary>
+        public const float VolumeStep = 0.1f;
+
+        /// <summary>The player's four volumes: the master, the music, every sound in the room (SFX, ambience, the UI) and the voices.</summary>
+        public enum Volume { Master, Music, Sound, Voices }
         /// <summary>Global shader float: 1 when the world is drawn in high contrast (PaperGrain).</summary>
         public static readonly int ContrastId = Shader.PropertyToID("_OWSBG_Contrast");
 
@@ -29,6 +34,7 @@ namespace OWSBG.Core
         static CaptionTime _captions;
         static bool _highContrast;
         static readonly bool[] _toggle = new bool[3];
+        static readonly float[] _volume = { 1f, 1f, 1f, 1f };
 
         static void Ensure() { if (!_loaded) Load(); }
 
@@ -41,6 +47,7 @@ namespace OWSBG.Core
             _captions = (CaptionTime)Mathf.Clamp(PlayerPrefs.GetInt(Prefix + "captions", 0), 0, 3);
             _highContrast = PlayerPrefs.GetInt(Prefix + "contrast", 0) != 0;
             for (int i = 0; i < _toggle.Length; i++) _toggle[i] = PlayerPrefs.GetInt(Prefix + "toggle." + (Hold)i, 0) != 0;
+            for (int i = 0; i < _volume.Length; i++) _volume[i] = Tenth(PlayerPrefs.GetFloat(Prefix + "volume." + (Volume)i, 1f));
             ApplyGlobals();
         }
 
@@ -56,6 +63,7 @@ namespace OWSBG.Core
         {
             Prefix + "hitstop", Prefix + "shake", Prefix + "captions", Prefix + "contrast",
             Prefix + "toggle.Bind", Prefix + "toggle.Survey", Prefix + "toggle.Glide",
+            Prefix + "volume.Master", Prefix + "volume.Music", Prefix + "volume.Sound", Prefix + "volume.Voices",
         };
 
         /// <summary>How much of each hitstop is kept: 0 is none, 1 is the combat doc's frames.</summary>
@@ -99,6 +107,19 @@ namespace OWSBG.Core
             }
         }
 
+        /// <summary>A volume, 0 (silent) to 1 (as designed), in tenths.</summary>
+        public static float Get(Volume v) { Ensure(); return _volume[(int)v]; }
+
+        public static void Set(Volume v, float value)
+        {
+            Ensure();
+            value = Tenth(value);
+            if (Mathf.Approximately(_volume[(int)v], value)) return;
+            _volume[(int)v] = value;
+            PlayerPrefs.SetFloat(Prefix + "volume." + v, value);
+            Changed?.Invoke();
+        }
+
         public static bool IsToggle(Hold hold) { Ensure(); return _toggle[(int)hold]; }
 
         public static void SetToggle(Hold hold, bool toggle)
@@ -125,6 +146,7 @@ namespace OWSBG.Core
         public static void ApplyGlobals() => Shader.SetGlobalFloat(ContrastId, _highContrast ? 1f : 0f);
 
         static float Quarter(float v) => Mathf.Clamp01(Mathf.Round(v / Step) * Step);
+        static float Tenth(float v) => Mathf.Clamp01(Mathf.Round(v / VolumeStep) * VolumeStep);
 
         static void Set(ref float field, float value, string key)
         {

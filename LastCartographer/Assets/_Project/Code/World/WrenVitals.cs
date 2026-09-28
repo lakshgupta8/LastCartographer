@@ -79,6 +79,7 @@ namespace OWSBG.World
                     {
                         _masks = Mathf.Min(_maxMasks, _masks + 1);
                         MasksChanged?.Invoke(_masks);
+                        Mix.Note(Mix.Duck.Bind);
                         Bound?.Invoke();
                     }
                 }
@@ -111,6 +112,7 @@ namespace OWSBG.World
             _invulnLeft = _invulnFrames;
             _bindHeld = 0f;
             MasksChanged?.Invoke(_masks);
+            Mix.Note(Mix.Duck.Hurt);
             Hurt?.Invoke();
             if (_masks == 0) { _ink.Empty(); Died?.Invoke(); }
             return true;

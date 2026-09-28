@@ -180,7 +180,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | AUD-06 `[ ]` | Region themes: Emberdown, Verdance (near-silent), Halden, Windreach | M3 | SB-4 | AUD-01 |
 | AUD-07 `[ ]` | Boss themes (Halvard, Brann, Voss, Archivist; shared motifs for optionals) | M3 | SB-6 | AUD-01 |
 | AUD-08 `[ ]` | The Blank: reversed motifs, Remnant voices; endings and epilogue | M3 | SB-4.7, 9 | AUD-02 |
-| AUD-09 `[ ]` | Mixer, ducking, snapshots (dialogue, combat, boss, Blank) | M4 | — | AUD-05 |
+| AUD-09 `[~]` | Mixer, ducking, snapshots (dialogue, combat, boss, Blank); v1 in `docs/design/audio-mix.md`: six buses and six snapshots (paused, boss, dialogue, Blank, combat, explore) as gains and low-pass cutoffs with eased moves, four ducks (a line, an impact, a hurt, a Bind) with envelopes, the fade stage's filter on the ambience, and the player's four volumes on top (`Mix`, `Mixer`, `Options.Volume`); `MixDriver` wakes with the game with a source per bus and follows the state; a code mixer, no `AudioMixer` asset, and no clips yet | M4 | — | AUD-05 |
 
 ### 3.8 Production and QA (PRO)
 

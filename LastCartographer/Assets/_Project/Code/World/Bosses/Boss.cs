@@ -62,6 +62,10 @@ namespace OWSBG.World
         public int Phase { get; private set; }
         public int PhaseCount => _phaseThresholds.Length + 1;
         public bool IsFightActive { get; private set; }
+        /// <summary>Bosses fighting now, across the scene; the mix follows it (AUD-09).</summary>
+        public static int FightsActive { get; private set; }
+
+        protected virtual void OnDestroy() { if (IsFightActive) { IsFightActive = false; FightsActive--; } }
         /// <summary>Frames left on the current telegraph; attacks start when it reaches 0.</summary>
         public int TelegraphLeft { get; private set; }
         public bool IsTelegraphing => TelegraphLeft > 0;
@@ -183,6 +187,7 @@ namespace OWSBG.World
         public void BeginFight()
         {
             if (IsFightActive || IsDead) return;
+            if (!IsFightActive) FightsActive++;
             IsFightActive = true;
             Phase = 0;
             EnterPhase(1);
@@ -193,6 +198,7 @@ namespace OWSBG.World
         /// <summary>Wren died or left: back to the perch, full health, dormant until the next entry.</summary>
         public void ResetFight()
         {
+            if (IsFightActive) FightsActive--;
             IsFightActive = false;
             TelegraphLeft = 0;
             Phase = 0;
@@ -252,6 +258,7 @@ namespace OWSBG.World
         protected override void Die()
         {
             base.Die();
+            if (IsFightActive) FightsActive--;
             IsFightActive = false;
             TelegraphLeft = 0;
             OnDefeated();

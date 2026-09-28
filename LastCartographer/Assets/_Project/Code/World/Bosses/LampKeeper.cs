@@ -285,6 +285,6 @@ namespace OWSBG.World
             return c;
         }
 
-        void OnDestroy() { foreach (var b in _beams) if (b != null) Destroy(b.gameObject); }
+        protected override void OnDestroy() { base.OnDestroy(); foreach (var b in _beams) if (b != null) Destroy(b.gameObject); }
     }
 }

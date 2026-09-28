@@ -94,9 +94,11 @@ so a change that breaks the doc's numbers is caught before a tester sees it.
 4. After, the questions, then the open line.
 5. Put the answers beside the session (a row per tester: the ids above, one to five) and run the gate.
 
-The gate has no script yet; `FeelTest.Gate` takes the answers as data and the test shows the shape. A small
-tool that reads a CSV of answers and a folder of sessions is the next thing to write when the first session is
-booked.
+The gate runs from files: `pwsh tools/feel-gate.ps1` reads `logs/feel/answers.csv` (a row a tester; the
+header is `tester,goes,stops,weight,lands,tap,late,early,wall,dash,hits,pogo,hour`; blank where they couldn't
+answer) and every session JSON in `logs/feel`, joins them by the tester's name, and writes `logs/feel/gate.md`:
+the verdict, why not, each question's median with its answers, and each tester's numbers. It exits 0 when the
+gate is met, 1 when not, 2 when the files can't be read (`FeelGate`, `FeelGateSetup`).
 
 ## Tests
 
@@ -108,6 +110,11 @@ booked.
 - a session round-trips as JSON;
 - a named buffer says when it is pressed, acted on or dropped, once each, and a nameless one says nothing.
 
+`FeelGateTests` (EditMode, 3):
+- answers are read by their header, in any column order, a blank left out, and bad rows refused with the reason;
+- the report says why, shows every question's median and answers, and every tester's numbers;
+- the whole run reads a folder, joins sessions to testers by the name inside or the file's, and writes the report.
+
 `FeelRecorderTests` (PlayMode, 3):
 - on the real controller, presses are counted as acted on the same frame, buffered, coyote or dropped;
 - a fall into a pit is put back at the station and counted against it;
@@ -117,7 +124,6 @@ booked.
 
 - **No session has been run.** The gate is a bar with nothing measured against it yet. M0's exit waits on five
   people and an afternoon.
-- **A gate script** that reads the answers CSV and the sessions.
 - **Frames from press to picture.** The recorder measures press to action in fixed frames; the combat doc's
   "input to animation under 3 frames" also counts the render. A camera on the screen, or the built player's
   frame timing (PRG-24's probe), can close that.

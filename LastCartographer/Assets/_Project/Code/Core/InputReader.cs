@@ -16,8 +16,8 @@ namespace OWSBG.Core
         [SerializeField] int _flourishBufferFrames = 6;
         [SerializeField] int _instrumentBufferFrames = 6;
 
-        InputAction _move, _jump, _attack, _dash, _bind, _survey, _flourish, _instrument, _cycle;
-        ButtonBuffer _jumpBuf, _attackBuf, _dashBuf, _flourishBuf, _instrumentBuf, _cycleBuf;
+        InputAction _move, _jump, _attack, _dash, _bind, _survey, _flourish, _instrument, _cycle, _thread;
+        ButtonBuffer _jumpBuf, _attackBuf, _dashBuf, _flourishBuf, _instrumentBuf, _cycleBuf, _threadBuf;
 
         public InputActionAsset Asset
         {
@@ -36,6 +36,7 @@ namespace OWSBG.Core
         public bool ConsumeFlourish() => _flourishBuf.Consume();
         public bool ConsumeInstrument() => _instrumentBuf.Consume();
         public bool ConsumeCycleInstrument() => _cycleBuf.Consume();
+        public bool ConsumeThread() => _threadBuf.Consume();
 
         void Awake()
         {
@@ -45,6 +46,7 @@ namespace OWSBG.Core
             _flourishBuf = new ButtonBuffer(_flourishBufferFrames);
             _instrumentBuf = new ButtonBuffer(_instrumentBufferFrames);
             _cycleBuf = new ButtonBuffer(_instrumentBufferFrames);
+            _threadBuf = new ButtonBuffer(_dashBufferFrames);
             Bind();
         }
 
@@ -63,12 +65,14 @@ namespace OWSBG.Core
             _flourish = map.FindAction("Flourish");
             _instrument = map.FindAction("Instrument");
             _cycle = map.FindAction("CycleInstrument");
+            _thread = map.FindAction("Thread");
             if (_jump != null) _jump.performed += OnJump;
             if (_attack != null) _attack.performed += OnAttack;
             if (_dash != null) _dash.performed += OnDash;
             if (_flourish != null) _flourish.performed += OnFlourish;
             if (_instrument != null) _instrument.performed += OnInstrument;
             if (_cycle != null) _cycle.performed += OnCycle;
+            if (_thread != null) _thread.performed += OnThread;
             if (isActiveAndEnabled) map.Enable();
         }
 
@@ -80,7 +84,8 @@ namespace OWSBG.Core
             if (_flourish != null) _flourish.performed -= OnFlourish;
             if (_instrument != null) _instrument.performed -= OnInstrument;
             if (_cycle != null) _cycle.performed -= OnCycle;
-            _move = _jump = _attack = _dash = _bind = _survey = _flourish = _instrument = _cycle = null;
+            if (_thread != null) _thread.performed -= OnThread;
+            _move = _jump = _attack = _dash = _bind = _survey = _flourish = _instrument = _cycle = _thread = null;
         }
 
         void OnEnable() { _asset?.FindActionMap("Player", false)?.Enable(); }
@@ -93,6 +98,7 @@ namespace OWSBG.Core
         void OnFlourish(InputAction.CallbackContext _) => _flourishBuf.Press();
         void OnInstrument(InputAction.CallbackContext _) => _instrumentBuf.Press();
         void OnCycle(InputAction.CallbackContext _) => _cycleBuf.Press();
+        void OnThread(InputAction.CallbackContext _) => _threadBuf.Press();
 
         public void Tick()
         {
@@ -102,6 +108,7 @@ namespace OWSBG.Core
             _flourishBuf.Tick();
             _instrumentBuf.Tick();
             _cycleBuf.Tick();
+            _threadBuf.Tick();
         }
     }
 }

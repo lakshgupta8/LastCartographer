@@ -22,6 +22,8 @@ namespace OWSBG.Core
         bool ConsumeInstrument();
         /// <summary>Select the next Instrument slot.</summary>
         bool ConsumeCycleInstrument();
+        /// <summary>Inkthread: throw the thread at the nearest anchor ahead.</summary>
+        bool ConsumeThread();
         /// <summary>Age the buffers by one fixed frame. Called once per FixedUpdate by the controller.</summary>
         void Tick();
     }

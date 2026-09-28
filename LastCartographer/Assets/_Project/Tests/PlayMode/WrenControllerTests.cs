@@ -15,20 +15,22 @@ namespace OWSBG.Tests
         public bool BindHeld { get; set; }
         public bool SurveyHeld { get; set; }
         readonly ButtonBuffer _jump = new ButtonBuffer(6), _dash = new ButtonBuffer(4), _attack = new ButtonBuffer(6), _flourish = new ButtonBuffer(6),
-            _instrument = new ButtonBuffer(6), _cycle = new ButtonBuffer(6);
+            _instrument = new ButtonBuffer(6), _cycle = new ButtonBuffer(6), _thread = new ButtonBuffer(4);
         public void PressJump() => _jump.Press();
         public void PressDash() => _dash.Press();
         public void PressAttack() => _attack.Press();
         public void PressFlourish() => _flourish.Press();
         public void PressInstrument() => _instrument.Press();
         public void PressCycleInstrument() => _cycle.Press();
+        public void PressThread() => _thread.Press();
         public bool ConsumeJump() => _jump.Consume();
         public bool ConsumeDash() => _dash.Consume();
         public bool ConsumeAttack() => _attack.Consume();
         public bool ConsumeFlourish() => _flourish.Consume();
         public bool ConsumeInstrument() => _instrument.Consume();
         public bool ConsumeCycleInstrument() => _cycle.Consume();
-        public void Tick() { _jump.Tick(); _dash.Tick(); _attack.Tick(); _flourish.Tick(); _instrument.Tick(); _cycle.Tick(); }
+        public bool ConsumeThread() => _thread.Consume();
+        public void Tick() { _jump.Tick(); _dash.Tick(); _attack.Tick(); _flourish.Tick(); _instrument.Tick(); _cycle.Tick(); _thread.Tick(); }
     }
 
     /// <summary>

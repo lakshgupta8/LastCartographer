@@ -38,6 +38,19 @@ namespace OWSBG.World
         public Vector2 wallJumpVelocity = new Vector2(12f, 20f);
         public int wallJumpLockFrames = 8;
 
+        [Header("Inkthread (grapple)")]
+        public float threadRange = 9f;
+        public float threadSpeed = 22f;
+        public float threadArrive = 0.8f;
+        public float threadHop = 8f;
+        public int threadMaxFrames = 40;
+        /// <summary>Ink per thread when no Charter says otherwise (combat doc 4: 2 pips; the Ferryman's is 1).</summary>
+        public int threadCost = 2;
+
+        [Header("Windmemory (glide)")]
+        [Range(0.1f, 1f)] public float glideGravityScale = 0.6f;
+        public float glideMaxFall = 4f;
+
         [Header("Pogo")]
         public float pogoHeight = 3f;
 
@@ -58,13 +71,29 @@ namespace OWSBG.World
         public bool IsGrounded => _grounded;
         public int Facing => _facing;
         public bool IsDashing => _dashFramesLeft > 0;
+        public bool IsThreading => _threadFramesLeft > 0;
+        /// <summary>Where the thread is pulling her (an anchor, or a marked enemy).</summary>
+        public Vector2 ThreadTarget { get; private set; }
+        /// <summary>Holding jump on the way down with Windmemory's wings.</summary>
+        public bool IsGliding { get; private set; }
+        /// <summary>The pips the next thread will cost: the Charter's, else the base cost.</summary>
+        public int ThreadCost
+        {
+            get
+            {
+                if (_charters == null) _charters = GetComponent<CharterSet>();
+                return _charters != null && _charters.Current != null ? _charters.Current.InkthreadCost : threadCost;
+            }
+        }
         float DashDistance => dashDistance * DashScale;
         public bool IsClinging => _clinging;
         public int WallDirection => _wallDir;
         public bool IsInvulnerable => IsDashing && _dashElapsed >= dashInvulnStart && _dashElapsed <= dashInvulnEnd;
         public Vector2 Position => _rb != null ? _rb.position : (Vector2)transform.position;
 
-        public event Action Jumped, Landed, Dashed, Pogoed;
+        public event Action Jumped, Landed, Dashed, Pogoed, Threaded;
+        /// <summary>A thread thrown with no anchor in reach, or no ink for it.</summary>
+        public event Action ThreadRefused;
 
         Rigidbody2D _rb;
         BoxCollider2D _box;
@@ -80,6 +109,10 @@ namespace OWSBG.World
         int _dashFramesLeft, _dashElapsed, _dashDir, _wallDir;
         float _clingTimer;
         float _gravity, _jumpVelocity, _minJumpVelocity, _pogoVelocity;
+        int _threadFramesLeft;
+        Transform _threadTo;
+        CharterSet _charters;
+        Inkwell _ink;
 
         void Awake()
         {
@@ -126,6 +159,7 @@ namespace OWSBG.World
             _vel = velocity;
             _inputLock = lockFrames;
             _dashFramesLeft = 0;
+            _threadFramesLeft = 0;
             _jumpCutApplied = true;
             _grounded = false;
         }
@@ -159,7 +193,8 @@ namespace OWSBG.World
             {
                 // Drain buffered presses so nothing fires the moment dialogue ends.
                 Input.ConsumeJump(); Input.ConsumeDash(); Input.ConsumeAttack(); Input.ConsumeFlourish();
-                Input.ConsumeInstrument(); Input.ConsumeCycleInstrument();
+                Input.ConsumeInstrument(); Input.ConsumeCycleInstrument(); Input.ConsumeThread();
+                _threadFramesLeft = 0;
             }
 
             _grounded = Probe(Vector2.down);
@@ -176,7 +211,9 @@ namespace OWSBG.World
             if (_inputLock > 0) _inputLock--;
             _clinging = false;
 
-            if (_dashFramesLeft > 0)
+            IsGliding = false;
+            if (_threadFramesLeft > 0) ThreadStep();
+            else if (_dashFramesLeft > 0)
             {
                 _dashFramesLeft--;
                 _dashElapsed++;
@@ -242,8 +279,12 @@ namespace OWSBG.World
                     float g = _gravity;
                     if (_vel.y < 0f) g *= fallGravityMultiplier;
                     if (_apexLeft > 0 && Mathf.Abs(_vel.y) < apexThreshold) { g *= 0.5f; _apexLeft--; }
+                    // Windmemory: holding jump on the way down, she glides.
+                    IsGliding = _vel.y <= 0f && Input != null && Input.JumpHeld && Abilities != null && Abilities.Has(Ability.Windmemory);
+                    if (IsGliding) g *= glideGravityScale;
                     _vel.y -= g * dt;
                     if (_vel.y < -maxFallSpeed) _vel.y = -maxFallSpeed;
+                    if (IsGliding && _vel.y < -glideMaxFall) _vel.y = -glideMaxFall;
                 }
 
                 // Wingbeat: one per airtime; resets on ground, wall, or pogo.
@@ -258,6 +299,10 @@ namespace OWSBG.World
                     _apexLeft = 0;
                     Dashed?.Invoke();
                 }
+
+                // Inkthread: at the nearest anchor ahead, or a marked enemy; costs the Charter's pips.
+                if (_dashFramesLeft == 0 && Abilities != null && Abilities.Has(Ability.Inkthread) && Input != null && Input.ConsumeThread())
+                    TryThread();
             }
 
             // Coyote time counts down after the jump check, so all coyoteFrames are usable.
@@ -267,6 +312,64 @@ namespace OWSBG.World
 
             if (!wasGrounded && _grounded) Landed?.Invoke();
             Input?.Tick();
+        }
+
+        /// <summary>Throw the thread: the nearest anchor (or marked enemy) in reach, ones ahead of her first.</summary>
+        public bool TryThread()
+        {
+            var target = FindThreadTarget();
+            if (_ink == null) _ink = GetComponent<Inkwell>();
+            if (target == null || (_ink != null && !_ink.TrySpend(ThreadCost)))
+            {
+                ThreadRefused?.Invoke();
+                return false;
+            }
+            _threadTo = target;
+            ThreadTarget = target.position;
+            _threadFramesLeft = threadMaxFrames;
+            _dashFramesLeft = 0;
+            _clinging = false;
+            _grounded = false;
+            Threaded?.Invoke();
+            return true;
+        }
+
+        Transform FindThreadTarget()
+        {
+            Transform best = null;
+            float bestScore = float.MaxValue;
+            var pos = Position + Vector2.up * 0.55f;
+            void Consider(Transform t)
+            {
+                if (t == null) return;
+                var d = (Vector2)t.position - pos;
+                float dist = d.magnitude;
+                if (dist > threadRange || dist <= threadArrive) return;
+                float score = dist + (d.x * _facing > 0.25f ? 0f : 100f);   // ahead of her first
+                if (score < bestScore) { bestScore = score; best = t; }
+            }
+            foreach (var a in FindObjectsByType<TetherAnchor>(FindObjectsSortMode.None)) Consider(a.transform);
+            foreach (var e in FindObjectsByType<Enemy>(FindObjectsSortMode.None)) if (e.IsMarked && !e.IsDead) Consider(e.transform);
+            return best;
+        }
+
+        /// <summary>Pulled along the thread; at the anchor, a hop up and a fresh Wingbeat.</summary>
+        void ThreadStep()
+        {
+            if (_threadTo != null) ThreadTarget = _threadTo.position;
+            var d = ThreadTarget - (Position + Vector2.up * 0.55f);
+            _threadFramesLeft--;
+            if (d.magnitude <= threadArrive || _threadFramesLeft <= 0 || _threadTo == null)
+            {
+                _threadFramesLeft = 0;
+                _vel = new Vector2(Mathf.Sign(d.x) * runSpeed * 0.6f, threadHop);
+                _dashCharges = 1 + ExtraAirDashes;
+                _jumpCutApplied = true;
+                _apexLeft = apexHangFrames;
+                return;
+            }
+            _vel = d.normalized * threadSpeed;
+            if (Mathf.Abs(d.x) > 0.05f) _facing = d.x > 0f ? 1 : -1;
         }
 
         void MoveBy(Vector2 delta)

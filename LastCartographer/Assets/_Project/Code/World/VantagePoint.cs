@@ -76,7 +76,7 @@ namespace OWSBG.World
                 bool recovering = Atlas.IsErased(w, place);
                 if (Atlas.Survey(w, _vantageId))
                 {
-                    Captions.Show(recovering ? "Drawn again: " + Atlas.PlaceName(place) : "Drawn: " + Atlas.VantageName(_vantageId), 2.5f);
+                    Captions.Show(recovering ? Loc.F("caption.drawn_again", "Drawn again: {0}", Atlas.PlaceName(place)) : Loc.F("caption.drawn", "Drawn: {0}", Atlas.VantageName(_vantageId)), 2.5f);
                     Surveyed?.Invoke(this);
                 }
             }

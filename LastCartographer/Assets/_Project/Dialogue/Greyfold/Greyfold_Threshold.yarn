@@ -7,29 +7,29 @@
 title: Threshold_Halvard
 ---
 <<if has_flag("act2.halvard_third")>>
-    Halvard: A survey. I entered it as a survey. The first I've written. #still
+    Halvard: A survey. I entered it as a survey. The first I've written. #still #line:0d3f078
     <<stop>>
 <<endif>>
 <<if has_flag("boss.halvard_3.defeated")>>
-    Halvard: Go. I'll enter it as a survey.
-    Halvard: Wardens. Lances down. This is a survey now. Nobody counts her.
+    Halvard: Go. I'll enter it as a survey. #line:078f229
+    Halvard: Wardens. Lances down. This is a survey now. Nobody counts her. #line:00be0df
     <<flag act2.halvard_third 1>>
     <<stop>>
 <<endif>>
-Halvard: The count ends here, journeyman.
+Halvard: The count ends here, journeyman. #line:01e892f
 <<if has_flag("act2.halvard_second")>>
-    Halvard: Three paces at the lighthouse. Four on the bridges. None here. I counted every one.
+    Halvard: Three paces at the lighthouse. Four on the bridges. None here. I counted every one. #line:06beaba
 <<else>>
-    Halvard: The bridges missed you. The line will not.
+    Halvard: The bridges missed you. The line will not. #line:0ae1325
 <<endif>>
--> Count me, then.
-    Halvard: One. That's all you were to them. One.
+-> Count me, then. #line:09ea08a
+    Halvard: One. That's all you were to them. One. #line:0ea71ab
     <<voice warden greyfold>>
--> You don't want to be here.
-    Halvard: No. I want to be home, counting gulls. Lance up.
+-> You don't want to be here. #line:0af8ffa
+    Halvard: No. I want to be home, counting gulls. Lance up. #line:045bd9d
     <<voice surveyor greyfold>>
--> ...
-    Halvard: Silence. You learned that from me. Good.
+-> ... #line:04069a5
+    Halvard: Silence. You learned that from me. Good. #line:0e3c7c4
     <<voice drift greyfold>>
 <<flag threshold.halvard.spoken 1>>
 ===
@@ -38,55 +38,55 @@ title: Threshold_Voss
 ---
 <<if has_flag("boss.voss.defeated")>>
     <<if has_flag("greyfold.crossed")>>
-        Voss: Go, journeyman. The line is yours now. #still
+        Voss: Go, journeyman. The line is yours now. #still #line:030ecda
     <<else>>
-        Voss: Take it in. Tell her— no. Nothing. Go. #plant:5.5
-        Voss: I will be here. I have been here forty-one years. A little longer costs nothing.
+        Voss: Take it in. Tell her— no. Nothing. Go. #plant:5.5 #line:0436dfd
+        Voss: I will be here. I have been here forty-one years. A little longer costs nothing. #line:096c1dc
         <<flag greyfold.crossed 1>>
     <<endif>>
     <<stop>>
 <<endif>>
 <<if has_flag("threshold.voss.spoken")>>
-    Voss: We are past speeches, journeyman. Take up your quill.
+    Voss: We are past speeches, journeyman. Take up your quill. #line:08b37fa
     <<stop>>
 <<endif>>
-Voss: Journeyman Halloway. This is as far as the map goes. #plant:5.4
+Voss: Journeyman Halloway. This is as far as the map goes. #plant:5.4 #line:00180ea
 <<if has_flag("pell.report_sent")>>
-    Voss: Your minder writes well. I have read the report four times.
+    Voss: Your minder writes well. I have read the report four times. #line:0207179
 <<elseif has_flag("pell.report_kept")>>
-    Voss: Your minder filed nothing on you. Pell has not once filed late. We noticed.
+    Voss: Your minder filed nothing on you. Pell has not once filed late. We noticed. #line:06189a1
 <<endif>>
 <<if flag("halden.maren.decided") == 1>>
-    Voss: The Crown tells me you will make Halden permanent. Then help us hold it.
+    Voss: The Crown tells me you will make Halden permanent. Then help us hold it. #line:0ae2db6
 <<elseif flag("halden.maren.decided") == 2>>
-    Voss: The Queen-Regent says you refused her. So have we, often.
+    Voss: The Queen-Regent says you refused her. So have we, often. #line:09306b2
 <<elseif flag("halden.maren.decided") == 3>>
-    Voss: You told the Queen-Regent about the boy. That was not yours to tell. #plant:5.1
+    Voss: You told the Queen-Regent about the boy. That was not yours to tell. #plant:5.1 #line:0e235dd
 <<endif>>
 <<if keystones() >= 3>>
-    Voss: Three stones. More. You have emptied half of Aurenne into your pack.
+    Voss: Three stones. More. You have emptied half of Aurenne into your pack. #line:0e70872
 <<elseif keystones() >= 1>>
-    Voss: You carry the kingdom's stones. They belong in the Vault, in the slots we keep.
+    Voss: You carry the kingdom's stones. They belong in the Vault, in the slots we keep. #line:087be0f
 <<else>>
-    Voss: You carry no stones. Good. Then we have nothing to take from you.
+    Voss: You carry no stones. Good. Then we have nothing to take from you. #line:0ce26f1
 <<endif>>
 <<if has_flag("windreach.hale.finished")>>
-    Voss: Hale's survey of the Steppe is on my desk. Even the clans hold still for paper.
+    Voss: Hale's survey of the Steppe is on my desk. Even the clans hold still for paper. #line:0e9033d
 <<elseif has_flag("boss.hale.defeated")>>
-    Voss: Hale came home without his lens. He will not say why. We did not ask.
+    Voss: Hale came home without his lens. He will not say why. We did not ask. #line:07a9e9c
 <<endif>>
-Voss: Forty-one years we have held this line. Not one more town has gone into the white.
-Voss: I brought tethers today. Forty. I meant to go in myself, this morning.
-Voss: I have stood here since dawn. I cannot say why I have not. #plant:5.5
-Voss: So nobody crosses. Not you. Not with the kingdom's stones. We hold. That is what we are for.
--> Come in with me.
-    Voss: No. Somebody must hold the line.
+Voss: Forty-one years we have held this line. Not one more town has gone into the white. #line:0ca1596
+Voss: I brought tethers today. Forty. I meant to go in myself, this morning. #line:0f8e1a2
+Voss: I have stood here since dawn. I cannot say why I have not. #plant:5.5 #line:006c6d1
+Voss: So nobody crosses. Not you. Not with the kingdom's stones. We hold. That is what we are for. #line:003d230
+-> Come in with me. #line:0b6eb2c
+    Voss: No. Somebody must hold the line. #line:052883e
     <<voice drift greyfold>>
--> Who's in there you won't see?
-    Voss: Nobody. Nothing. Take up your quill, journeyman. #plant:5.5
+-> Who's in there you won't see? #line:0a385bc
+    Voss: Nobody. Nothing. Take up your quill, journeyman. #plant:5.5 #line:0cacfd5
     <<voice surveyor greyfold>>
--> Stand aside, Guildmaster.
-    Voss: Then we will see which of us the map remembers.
+-> Stand aside, Guildmaster. #line:071cfb0
+    Voss: Then we will see which of us the map remembers. #line:0a97689
     <<voice warden greyfold>>
 <<flag threshold.voss.spoken 1>>
 ===
@@ -94,27 +94,27 @@ Voss: So nobody crosses. Not you. Not with the kingdom's stones. We hold. That i
 title: Threshold_Pell_Cross
 ---
 <<if not has_flag("pell.report_kept")>>
-    Threshold: The Wardens' line, broken. Tethers dropped on the white. Nobody from the Hall came.
+    Threshold: The Wardens' line, broken. Tethers dropped on the white. Nobody from the Hall came. #line:0dd2a9e
     <<stop>>
 <<endif>>
 <<if not has_flag("boss.voss.defeated")>>
-    Pell: He's right there. Which, technically, means you're not across yet. I'll wait. I'm good at it.
+    Pell: He's right there. Which, technically, means you're not across yet. I'll wait. I'm good at it. #line:0eba8f0
     <<stop>>
 <<endif>>
 <<if has_flag("pell.at_threshold")>>
-    Pell: Go on. I'm writing. I'm a fast writer. #still
+    Pell: Go on. I'm writing. I'm a fast writer. #still #line:00757ec
     <<stop>>
 <<endif>>
-Pell: Three things. Your name. Isolde's. And whoever's in there.
-Pell: Go on. I'll write it down.
--> Write it plainly.
-    Pell: I only know how to write it plainly. That was the whole problem, once.
+Pell: Three things. Your name. Isolde's. And whoever's in there. #line:05a7f2e
+Pell: Go on. I'll write it down. #line:03ad242
+-> Write it plainly. #line:0b5e199
+    Pell: I only know how to write it plainly. That was the whole problem, once. #line:0ff51d1
     <<voice surveyor greyfold>>
--> Come with me.
-    Pell: I can't. Someone has to be here when you come back. It's going to be me.
+-> Come with me. #line:0f0e0b3
+    Pell: I can't. Someone has to be here when you come back. It's going to be me. #line:0ad024c
     <<voice warden greyfold>>
--> ...
-    Pell: Yes. Fine. That too. I'll write the silence down.
+-> ... #line:07cfae9
+    Pell: Yes. Fine. That too. I'll write the silence down. #line:03b1960
     <<voice drift greyfold>>
 <<flag pell.at_threshold 1>>
 ===

@@ -25,13 +25,18 @@ namespace OWSBG.Core
         public static readonly string[] Road = { PostRoom, "Windreach_Camp_2", "Windreach_River_2", "Windreach_Fire_1" };
 
         static readonly string[] SiteRooms = { "Windreach_Camp_2", "Windreach_River_2", "Windreach_Fire_1" };
-        static readonly string[] SiteNames = { "the fire ring", "the riverbed", "the high grass" };
         /// <summary>The fire's scene at each site (Windreach_Camp_Idrenne.yarn).</summary>
         static readonly string[] FireNodes = { "Camp_Idrenne", "River_Idrenne_Night", "Grass_Idrenne_Night" };
 
         public static int SiteCount => SiteRooms.Length;
         public static string RoomOfSite(int site) => SiteRooms[Clamp(site)];
-        public static string NameOfSite(int site) => SiteNames[Clamp(site)];
+        /// <summary>The site's name for the player, in their language.</summary>
+        public static string NameOfSite(int site) => Clamp(site) switch
+        {
+            0 => Loc.T("camp.site.fire_ring", "the fire ring"),
+            1 => Loc.T("camp.site.riverbed", "the riverbed"),
+            _ => Loc.T("camp.site.high_grass", "the high grass"),
+        };
         public static string FireNodeOf(int site) => FireNodes[Clamp(site)];
         public static int SiteOf(string room) => Array.IndexOf(SiteRooms, room);
 

@@ -123,7 +123,7 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("charter", name =>
             {
                 if (!Enum.TryParse(name, true, out CharterKind k)) { Debug.LogWarning("[OWSBG] <<charter " + name + ">>: no such Charter"); return; }
-                if (GameState.World.Equipment.OwnedCharters.Add(k)) Captions.Show("Charter: " + CharterProfile.For(k).DisplayName, 3f);
+                if (GameState.World.Equipment.OwnedCharters.Add(k)) Captions.Show(Loc.F("caption.charter", "Charter: {0}", CharterProfile.For(k).DisplayName), 3f);
             });
             runner.AddCommandHandler<string>("erase", place =>
             {
@@ -260,9 +260,37 @@ namespace OWSBG.Narrative
                 Debug.LogWarning("[OWSBG] Yarn node not found: " + node);
                 return false;
             }
+            ApplyLocale();
             _runner.StartDialogue(node).Forget();
             return true;
         }
+
+        /// <summary>
+        /// The Yarn locale for the player's (PRG-19): the project's localisation for it if there is one, else the base
+        /// language. Lines are fetched in it from the next line on.
+        /// </summary>
+        public static string DialogueLocaleFor(YarnProject? project, string locale)
+        {
+            if (project != null && !string.IsNullOrEmpty(locale) && project.localizations.ContainsKey(locale)) return locale;
+            return Loc.Base;
+        }
+
+        public string DialogueLocale => DialogueLocaleFor(_project, Loc.Locale);
+
+        void ApplyLocale()
+        {
+            if (_runner == null) return;
+            if (_runner.LineProvider is LineProviderBehaviour provider)
+            {
+                var code = DialogueLocale;
+                provider.LocaleCode = code;
+                if (provider is BuiltinLocalisedLineProvider builtin) builtin.AssetLocaleCode = code;
+            }
+        }
+
+        void OnLocaleChanged(string _) => ApplyLocale();
+        void OnEnable() { Loc.Changed += OnLocaleChanged; }
+        void OnDisable() { Loc.Changed -= OnLocaleChanged; }
 
         public void Stop()
         {

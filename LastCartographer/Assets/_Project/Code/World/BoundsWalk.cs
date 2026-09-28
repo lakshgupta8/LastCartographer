@@ -133,7 +133,7 @@ namespace OWSBG.World
                 _t = _secondsPerBeat * 0.5f;   // a half-beat count-in before the first name
                 _called = false;
                 Started?.Invoke(this);
-                Captions.Show("The roll-call: " + (CurrentVerse.Title ?? "verse one"), 2.5f);
+                Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", CurrentVerse.Title ?? Loc.T("caption.rollcall.first", "verse one")), 2.5f);
                 return;
             }
             if (State != Phase.Walking) return;
@@ -168,7 +168,7 @@ namespace OWSBG.World
                 Restarts++;
                 TintAll(RestTint);
                 VerseRestarted?.Invoke(this);
-                Captions.Show("Again, from the top of the verse.", 2f);
+                Captions.Show(Loc.T("caption.rollcall.again", "Again, from the top of the verse."), 2f);
                 return;
             }
             BeatIndex++;
@@ -178,7 +178,7 @@ namespace OWSBG.World
                 Misses = 0;
                 VerseIndex++;
                 if (VerseIndex >= _verses.Count) { Finish(); return; }
-                Captions.Show("The roll-call: " + (CurrentVerse.Title ?? "next verse"), 2.5f);
+                Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", CurrentVerse.Title ?? Loc.T("caption.rollcall.next", "next verse")), 2.5f);
             }
         }
 
@@ -191,7 +191,7 @@ namespace OWSBG.World
             var w = GameState.World;
             BoundsWalks.Complete(w, PlaceId);
             if (!string.IsNullOrEmpty(_completeFlag)) w.Set(_completeFlag, _completeFlagValue);
-            Captions.Show("Walked. " + Atlas.PlaceName(PlaceId) + " is held.", 4f);
+            Captions.Show(Loc.F("caption.walked", "Walked. {0} is held.", Atlas.PlaceName(PlaceId)), 4f);
             if (Current == this) Current = null;
             Completed?.Invoke(this);
         }

@@ -124,14 +124,14 @@ namespace OWSBG.UI
             map.style.flexGrow = 1; map.style.flexBasis = 0;
             map.style.paddingRight = 24;
             map.style.borderRightWidth = 1; map.style.borderRightColor = InkTheme.InkFaint;
-            _title = InkTheme.Text("title", "Atlas", 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.Say("title", "atlas.title", "Atlas", 30, InkTheme.Wash, FontStyle.Bold);
             _title.style.marginBottom = 2;
             _day = InkTheme.Text("day", "", 16, InkTheme.Dim);
             _day.style.marginBottom = 12;
             _places = new VisualElement { name = "places", pickingMode = PickingMode.Ignore };
             _travel = new VisualElement { name = "travel", pickingMode = PickingMode.Ignore };
             _travel.style.marginTop = 16;
-            var hint = InkTheme.Text("hint", "↑↓ destination    J travel    M / Esc close", 15, InkTheme.Dim);
+            var hint = InkTheme.Say("hint", "atlas.hint", "↑↓ destination    J travel    M / Esc close", 15, InkTheme.Dim);
             hint.style.marginTop = 14;
             map.Add(_title); map.Add(_day); map.Add(_places); map.Add(_travel); map.Add(hint);
 
@@ -157,8 +157,8 @@ namespace OWSBG.UI
             _places.Clear();
             string region = null;
             string here = Room.Current != null ? Room.Current.RoomId : "";
-            _day.text = "Day " + DayClock.Day(w) + " · " + DayClock.Describe(DayClock.PhaseIn(w, here))
-                        + (DayClock.IsLocked(w, here) ? "  (held at this hour)" : "");
+            _day.text = Loc.F("atlas.day", "Day {0} · {1}", DayClock.Day(w), DayClock.Display(DayClock.PhaseIn(w, here)))
+                        + (DayClock.IsLocked(w, here) ? Loc.T("atlas.held_hour", "  (held at this hour)") : "");
             foreach (var place in Atlas.AllPlaces)
             {
                 if (place.Region != region)
@@ -176,17 +176,17 @@ namespace OWSBG.UI
             var from = TravelPoint.Nearby;
             if (from == null)
             {
-                _travel.Add(InkTheme.Text("travel-head", "Travel from a desk or a lit lamp.", 16, InkTheme.Dim, FontStyle.Italic));
+                _travel.Add(InkTheme.Text("travel-head", Loc.T("atlas.travel.from_nowhere", "Travel from a desk or a lit lamp."), 16, InkTheme.Dim, FontStyle.Italic));
                 return;
             }
             _destinations.AddRange(Atlas.Destinations(w, from.WaypointId));
             if (Cursor >= _destinations.Count) Cursor = 0;
             if (_destinations.Count == 0)
             {
-                _travel.Add(InkTheme.Text("travel-head", "From " + from.DisplayName + ": nowhere else is drawn yet.", 16, InkTheme.Dim, FontStyle.Italic));
+                _travel.Add(InkTheme.Text("travel-head", Loc.F("atlas.travel.none", "From {0}: nowhere else is drawn yet.", from.DisplayName), 16, InkTheme.Dim, FontStyle.Italic));
                 return;
             }
-            _travel.Add(InkTheme.Text("travel-head", "From " + from.DisplayName + ":", 16, InkTheme.Dim, FontStyle.Bold));
+            _travel.Add(InkTheme.Text("travel-head", Loc.F("atlas.travel.from", "From {0}:", from.DisplayName), 16, InkTheme.Dim, FontStyle.Bold));
             for (int i = 0; i < _destinations.Count; i++)
             {
                 var d = _destinations[i];
@@ -219,7 +219,7 @@ namespace OWSBG.UI
             head.Add(name);
             if (here)
             {
-                var mark = InkTheme.Text("here", "  · here", 15, InkTheme.Ochre);
+                var mark = InkTheme.Text("here", Loc.T("atlas.here", "  · here"), 15, InkTheme.Ochre);
                 head.Add(mark);
             }
             box.Add(head);
@@ -230,14 +230,14 @@ namespace OWSBG.UI
                 if (marks.Length > 0) marks.Append("    ");
                 marks.Append(w.IsErased(v.Id) ? "✕ " : w.IsSurveyed(v.Id) ? "● " : "○ ").Append(v.Name);
             }
-            if (marks.Length == 0) marks.Append("no vantage here");
+            if (marks.Length == 0) marks.Append(Loc.T("atlas.no_vantage", "no vantage here"));
             var vantages = InkTheme.Text("vantages", marks.ToString(), 16, drawn ? InkTheme.Ink : InkTheme.Dim);
             vantages.style.marginLeft = 12;
             box.Add(vantages);
 
             var status = new System.Text.StringBuilder();
             int stage = FadeStages.Get(w, place.Id);
-            status.Append(erased ? "erased. Draw it again." : FadeStages.Describe(stage));
+            status.Append(erased ? Loc.T("atlas.erased", "erased. Draw it again.") : FadeStages.Describe(stage));
             var fate = Places.FateOf(w, place.Id);
             if (fate != PlaceFate.Unwritten) status.Append(" · ").Append(Places.Describe(fate));
             foreach (var wp in Atlas.WaypointsOf(place.Id))

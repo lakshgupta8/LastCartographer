@@ -99,14 +99,14 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 760;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Text("title", "Sable's table", 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.Text("title", Loc.T("shop.title.saltmarrow", "Sable's table"), 30, InkTheme.Wash, FontStyle.Bold);
             _title.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
             _blurb.style.marginTop = 10;
             _seeds = InkTheme.Text("seeds", "", 16, InkTheme.Ochre);
             _seeds.style.marginTop = 12;
-            var hint = InkTheme.Text("hint", "↑↓ row    J buy    Esc leave", 15, InkTheme.Dim);
+            var hint = InkTheme.Say("hint", "shop.hint", "↑↓ row    J buy    Esc leave", 15, InkTheme.Dim);
             hint.style.marginTop = 12;
             _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(_seeds); _panel.Add(hint);
             InkTheme.Show(_panel, false);
@@ -121,7 +121,7 @@ namespace OWSBG.UI
             InkTheme.Show(_panel, IsOpen);
             if (!IsOpen) return;
             var w = GameState.World;
-            _title.text = Hub == "Saltmarrow" ? "Sable's table" : Hub + " · stock";
+            _title.text = Hub == "Saltmarrow" ? Loc.T("shop.title.saltmarrow", "Sable's table") : Loc.F("shop.title", "{0} · stock", Hub);
             _rows.Clear();
             for (int i = 0; i < _items.Count; i++)
             {
@@ -141,7 +141,7 @@ namespace OWSBG.UI
                 marker.style.width = 26;
                 var name = InkTheme.Text("name", info.Name ?? item.Kind.ToString(), 22, owned ? InkTheme.Dim : can ? InkTheme.Ink : InkTheme.Dim);
                 name.style.flexGrow = 1;
-                var price = InkTheme.Text("price", owned ? "owned" : Economy.PriceOf(w, item) + " ✿", 20, owned ? InkTheme.Dim : can ? InkTheme.Ochre : InkTheme.Dim, FontStyle.Bold);
+                var price = InkTheme.Text("price", owned ? Loc.T("shop.owned", "owned") : Loc.F("shop.price", "{0} ✿", Economy.PriceOf(w, item)), 20, owned ? InkTheme.Dim : can ? InkTheme.Ochre : InkTheme.Dim, FontStyle.Bold);
                 price.style.width = 110;
                 price.style.unityTextAlign = TextAnchor.MiddleRight;
                 row.Add(marker); row.Add(name); row.Add(price);
@@ -152,8 +152,8 @@ namespace OWSBG.UI
                 var item = _items[Row];
                 _blurb.text = item.Pitch + "  " + (InstrumentInfo.Of(item.Kind).Blurb ?? "");
             }
-            else _blurb.text = "Nothing on the table today.";
-            _seeds.text = "Iris seeds: " + Economy.Seeds(w) + (Economy.IrisBurned(w) ? "   (the fields burned; prices are up)" : "");
+            else _blurb.text = Loc.T("shop.empty", "Nothing on the table today.");
+            _seeds.text = Economy.IrisBurned(w) ? Loc.F("shop.seeds_burned", "Iris seeds: {0}   (the fields burned; prices are up)", Economy.Seeds(w)) : Loc.F("shop.seeds", "Iris seeds: {0}", Economy.Seeds(w));
         }
     }
 }

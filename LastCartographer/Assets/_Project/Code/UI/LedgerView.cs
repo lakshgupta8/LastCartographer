@@ -105,7 +105,7 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 860;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Text("title", "Commissions", 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.Text("title", Loc.T("ledger.title", "Commissions"), 30, InkTheme.Wash, FontStyle.Bold);
             _title.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 17, InkTheme.Ink);
@@ -114,7 +114,7 @@ namespace OWSBG.UI
             _steps.style.marginTop = 6;
             _reward = InkTheme.Text("reward", "", 15, InkTheme.Wash);
             _reward.style.marginTop = 8;
-            var hint = InkTheme.Text("hint", "↑↓ choose    J take / turn in    Esc leave", 15, InkTheme.Dim);
+            var hint = InkTheme.Say("hint", "ledger.hint", "↑↓ choose    J take / turn in    Esc leave", 15, InkTheme.Dim);
             hint.style.marginTop = 18;
             _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(_steps); _panel.Add(_reward); _panel.Add(hint);
             InkTheme.Show(_panel, false);
@@ -134,13 +134,13 @@ namespace OWSBG.UI
             if (!IsOpen) return;
 
             var w = GameState.World;
-            _title.text = "Commissions" + (_ledger != null ? " — " + _ledger.HubId : "");
+            _title.text = _ledger != null ? Loc.F("ledger.title_hub", "Commissions — {0}", _ledger.HubId) : Loc.T("ledger.title", "Commissions");
             _rows.Clear();
             for (int i = 0; i < _entries.Count; i++) _rows.Add(MakeRow(i, _entries[i], Commissions.StateOf(w, _entries[i].Id)));
 
             if (_entries.Count == 0)
             {
-                _blurb.text = "Nothing posted. Come back when the coast has asked for something.";
+                _blurb.text = Loc.T("ledger.empty", "Nothing posted. Come back when the coast has asked for something.");
                 _steps.text = ""; _reward.text = "";
                 return;
             }
@@ -150,9 +150,9 @@ namespace OWSBG.UI
             {
                 case CommissionState.Posted: _blurb.text = def.Brief + (string.IsNullOrEmpty(def.Poster) ? "" : "\n— " + def.Poster); break;
                 case CommissionState.Taken: _blurb.text = def.Journal; break;
-                case CommissionState.Fulfilled: _blurb.text = "Done. Turn it in."; break;
+                case CommissionState.Fulfilled: _blurb.text = Loc.T("ledger.fulfilled", "Done. Turn it in."); break;
                 case CommissionState.Closed: _blurb.text = def.Aftermath; break;
-                default: _blurb.text = "It came to nothing."; break;
+                default: _blurb.text = Loc.T("commission.failed", "It came to nothing."); break;
             }
             _steps.text = state == CommissionState.Taken || state == CommissionState.Fulfilled ? StepLines(w, def) : "";
             _reward.text = RewardLine(def);
@@ -178,9 +178,9 @@ namespace OWSBG.UI
             var parts = new List<string>();
             if (def.RewardScraps > 0) parts.Add(def.RewardScraps + (def.RewardScraps == 1 ? " vellum scrap" : " vellum scraps"));
             if (def.RewardInstrument != InstrumentKind.None) parts.Add(InstrumentInfo.Of(def.RewardInstrument).Name);
-            if (def.SeedsIsland) parts.Add("a place in the Blank");
-            if (!string.IsNullOrEmpty(def.Foreshadows)) parts.Add("something worth knowing");
-            return parts.Count == 0 ? "" : "Reward: " + string.Join(" · ", parts);
+            if (def.SeedsIsland) parts.Add(Loc.T("ledger.reward.island", "a place in the Blank"));
+            if (!string.IsNullOrEmpty(def.Foreshadows)) parts.Add(Loc.T("ledger.reward.secret", "something worth knowing"));
+            return parts.Count == 0 ? "" : Loc.F("ledger.reward", "Reward: {0}", string.Join(" · ", parts));
         }
 
         VisualElement MakeRow(int index, CommissionDef def, CommissionState state)
@@ -203,7 +203,7 @@ namespace OWSBG.UI
             {
                 case CommissionState.Posted: stateText = "posted"; stateColor = InkTheme.Wash; break;
                 case CommissionState.Taken: stateText = "taken"; stateColor = InkTheme.Ochre; break;
-                case CommissionState.Fulfilled: stateText = "fulfilled — turn in"; stateColor = InkTheme.Ochre; style = FontStyle.Bold; break;
+                case CommissionState.Fulfilled: stateText = Loc.T("ledger.state.fulfilled", "fulfilled — turn in"); stateColor = InkTheme.Ochre; style = FontStyle.Bold; break;
                 case CommissionState.Closed: stateText = "closed"; stateColor = InkTheme.Dim; break;
                 default: stateText = "failed"; stateColor = InkTheme.Dim; break;
             }

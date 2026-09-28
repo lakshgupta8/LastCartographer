@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -66,6 +67,24 @@ namespace OWSBG.UI
             l.style.paddingBottom = 0; l.style.paddingTop = 0; l.style.paddingLeft = 0; l.style.paddingRight = 0;
             ApplyFont(l);
             return l;
+        }
+
+        /// <summary>A fixed label in the player's language (PRG-19): <see cref="Loc.T"/> now, and again when the locale changes.</summary>
+        public static Label Say(string name, string key, string english, float size, Color color, FontStyle style = FontStyle.Normal)
+        {
+            var l = Text(name, "", size, color, style);
+            Relabel(l, () => Loc.T(key, english));
+            return l;
+        }
+
+        /// <summary>Keeps a label's text in the player's language: set now, and again whenever the locale changes while it is shown.</summary>
+        public static void Relabel(TextElement label, System.Func<string> text)
+        {
+            label.text = text();
+            System.Action<string> on = _ => label.text = text();
+            label.RegisterCallback<AttachToPanelEvent>(_ => { Loc.Changed -= on; Loc.Changed += on; label.text = text(); });
+            label.RegisterCallback<DetachFromPanelEvent>(_ => Loc.Changed -= on);
+            if (label.panel != null) Loc.Changed += on;
         }
 
         public static VisualElement Row(string name)

@@ -37,7 +37,7 @@ namespace OWSBG.World
         /// <summary>Whether he lowers the lance at her: the Guild's stance, or his own grievance.</summary>
         public bool Hostile => Provoked || Licence.WardensHostile(GameState.World);
 
-        const string MeasureCaption = "The Warden measures the cowl and looks away.";
+        static string MeasureCaption => Loc.T("caption.warden_measures", "The Warden measures the cowl and looks away.");
         static bool _captioned;
 
         int _frames;

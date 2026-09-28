@@ -47,6 +47,8 @@ Every choice set should, where natural, include one line from each. Not labelled
 - Lines that intentionally repeat across visits in an anchored town are tagged `#still` so QA does not file them as bugs. (This is the `[still]` rule from the bible.)
 - Lines that plant a secret are tagged `#plant:5.1` (etc.) so the foreshadowing audit can count them.
 - Companion interjections use `#interject:pell` and are written in the companion's file, not the NPC's, so they can be omitted when the companion is absent.
+- Every line and option ends with a `#line:` id: the key its translations are filed under (PRG-19, `docs/design/localisation.md`). Don't write the ids by hand. After writing dialogue, run `-executeMethod OWSBG.Setup.LocalizationSetup.Refresh`; it tags new lines and rebuilds the pseudo-locale's table. Keep a line's id when you rewrite it; the table's lock notices the change.
+- Keep the speaker at the head of the line (`Sable: ...`), and never build a line out of pieces in a command. A translation moves words; it can't move a sentence that only exists once the code has joined it.
 
 ```yarn
 title: Orchard_FirstMeeting

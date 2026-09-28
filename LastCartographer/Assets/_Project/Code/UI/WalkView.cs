@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using OWSBG.World;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -40,7 +41,7 @@ namespace OWSBG.UI
         void OnStarted(BoundsWalk w) { _linger = 0f; if (_built) { InkTheme.Show(_root, true); _name.text = "…"; _name.style.color = InkTheme.Ink; } }
         void OnCalled(BoundsWalk w, BoundsWalk.Bound b) { if (_built) _name.text = b.Name; }
         void OnLanded(BoundsWalk w, BoundsWalk.Bound b, bool hit) { _flash = 0.4f; if (_built) _name.style.color = hit ? InkTheme.Wash : InkTheme.Ochre; }
-        void OnCompleted(BoundsWalk w) { _linger = _lingerSeconds; if (_built) { _name.text = "Held."; _name.style.color = InkTheme.Wash; _fill.style.width = new Length(100, LengthUnit.Percent); } }
+        void OnCompleted(BoundsWalk w) { _linger = _lingerSeconds; if (_built) { _name.text = Loc.T("walk.held", "Held."); _name.style.color = InkTheme.Wash; _fill.style.width = new Length(100, LengthUnit.Percent); } }
 
         void Update()
         {
@@ -56,7 +57,7 @@ namespace OWSBG.UI
             if (_flash > 0f) _flash -= Time.deltaTime; else _name.style.color = InkTheme.Ink;
             var verse = walk.CurrentVerse;
             _line.text = (verse != null && !string.IsNullOrEmpty(verse.Title) ? verse.Title + "  ·  " : "")
-                         + "verse " + (walk.VerseIndex + 1) + " of " + walk.Verses.Count + "  ·  beat " + (walk.BeatIndex + 1) + " of " + (verse != null ? verse.Beats.Count : 0);
+                         + Loc.F("walk.progress", "verse {0} of {1}  ·  beat {2} of {3}", walk.VerseIndex + 1, walk.Verses.Count, walk.BeatIndex + 1, verse != null ? verse.Beats.Count : 0);
             _fill.style.width = new Length(walk.BeatProgress * 100f, LengthUnit.Percent);
             for (int i = 0; i < _marks.childCount; i++)
                 _marks[i].style.backgroundColor = i < walk.Misses ? InkTheme.Ochre : new Color(0f, 0f, 0f, 0f);

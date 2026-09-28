@@ -65,9 +65,9 @@ namespace OWSBG.Core
         /// <summary>The page's words for it: "half an hour", "an hour", "3 hours".</summary>
         public static string Describe(float hours)
         {
-            if (hours < 0.75f) return "half an hour";
+            if (hours < 0.75f) return Loc.T("travel.half_hour", "half an hour");
             int h = (int)Math.Round(hours);
-            return h == 1 ? "an hour" : h + " hours";
+            return h == 1 ? Loc.T("travel.hour", "an hour") : Loc.F("travel.hours", "{0} hours", h);
         }
     }
 }

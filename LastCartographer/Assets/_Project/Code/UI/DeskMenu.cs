@@ -196,12 +196,12 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 760;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Text("title", "Drafting desk", 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.Say("title", "desk.title", "Drafting desk", 30, InkTheme.Wash, FontStyle.Bold);
             _title.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
             _blurb.style.marginTop = 10;
-            var hint = InkTheme.Text("hint", "↑↓ row    ◂▸ change    1-3 Charter    J seal / buy / leave    Esc leave", 15, InkTheme.Dim);
+            var hint = InkTheme.Say("hint", "desk.hint", "↑↓ row    ◂▸ change    1-3 Charter    J seal / buy / leave    Esc leave", 15, InkTheme.Dim);
             hint.style.marginTop = 18;
             _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(hint);
             InkTheme.Show(_panel, false);
@@ -219,25 +219,25 @@ namespace OWSBG.UI
             _rows.Clear();
             var profile = _charters != null ? _charters.Current : null;
             string charterName = profile != null ? profile.DisplayName : e.Charter.ToString();
-            _rows.Add(MakeRow(0, "Charter", charterName, ""));
+            _rows.Add(MakeRow(0, Loc.T("desk.row.charter", "Charter"), charterName, ""));
             for (int i = 0; i < e.SlotCount; i++)
             {
                 var s = e.Slots[i];
-                string name = s.IsEmpty ? "(empty)" : InstrumentInfo.Of(s.Kind).Name;
+                string name = s.IsEmpty ? Loc.T("desk.slot.empty", "(empty)") : InstrumentInfo.Of(s.Kind).Name;
                 string uses = s.IsEmpty ? "" : (s.UsesLeft < 0 ? "∞" : s.UsesLeft + " / " + InstrumentInfo.Of(s.Kind).Uses);
-                _rows.Add(MakeRow(i + 1, "Slot " + (i + 1), name, uses));
+                _rows.Add(MakeRow(i + 1, Loc.F("desk.row.slot", "Slot {0}", i + 1), name, uses));
             }
-            _rows.Add(MakeRow(FateRow, "Place", FateValue(out bool arrows), "", arrows));
-            _rows.Add(MakeRow(MaskRow, "Masks", MaskValue(), Economy.Scraps(GameState.World) + " scraps", false));
-            _rows.Add(MakeRow(BeltRow, "Belt", BeltValue(), "", false));
+            _rows.Add(MakeRow(FateRow, Loc.T("desk.row.place", "Place"), FateValue(out bool arrows), "", arrows));
+            _rows.Add(MakeRow(MaskRow, Loc.T("desk.row.masks", "Masks"), MaskValue(), Loc.F("desk.scraps", "{0} scraps", Economy.Scraps(GameState.World)), false));
+            _rows.Add(MakeRow(BeltRow, Loc.T("desk.row.belt", "Belt"), BeltValue(), "", false));
             if (Row == 0) _blurb.text = profile != null ? profile.Blurb : "";
             else if (Row == FateRow) _blurb.text = FateBlurb();
-            else if (Row == MaskRow) _blurb.text = Economy.MasksFull(GameState.World) ? "The cowl holds nine. It will not take a tenth." : "Vellum stitched into the cowl. One more mask, and it is whole at once.";
-            else if (Row == BeltRow) _blurb.text = GameState.World.Equipment.FourthSlotUnlocked ? "Four loops. A Guild belt." : "A fourth loop on the belt: one more Instrument carried.";
+            else if (Row == MaskRow) _blurb.text = Economy.MasksFull(GameState.World) ? Loc.T("desk.masks.full", "The cowl holds nine. It will not take a tenth.") : Loc.T("desk.masks.buy", "Vellum stitched into the cowl. One more mask, and it is whole at once.");
+            else if (Row == BeltRow) _blurb.text = GameState.World.Equipment.FourthSlotUnlocked ? Loc.T("desk.belt.full", "Four loops. A Guild belt.") : Loc.T("desk.belt.buy", "A fourth loop on the belt: one more Instrument carried.");
             else
             {
                 var s = e.Slots[Row - 1];
-                _blurb.text = s.IsEmpty ? "An empty loop on the belt." : InstrumentInfo.Of(s.Kind).Blurb;
+                _blurb.text = s.IsEmpty ? Loc.T("desk.slot.empty_blurb", "An empty loop on the belt.") : InstrumentInfo.Of(s.Kind).Blurb;
             }
         }
 
@@ -246,50 +246,50 @@ namespace OWSBG.UI
             var w = GameState.World;
             var vitals = _wren != null ? _wren.GetComponent<WrenVitals>() : null;
             int masks = vitals != null ? vitals.MaxMasks : 5 + Economy.MaskUpgrades(w);
-            if (Economy.MasksFull(w)) return masks + " masks · full";
-            return masks + " masks · " + Economy.MaskUpgradeCost + " scraps for one more";
+            if (Economy.MasksFull(w)) return Loc.F("desk.masks.value_full", "{0} masks · full", masks);
+            return Loc.F("desk.masks.value", "{0} masks · {1} scraps for one more", masks, Economy.MaskUpgradeCost);
         }
 
         string BeltValue()
         {
             var w = GameState.World;
-            if (w.Equipment.FourthSlotUnlocked) return "four loops";
-            return "three loops · " + Economy.SlotUpgradeCost + " scraps for a fourth";
+            if (w.Equipment.FourthSlotUnlocked) return Loc.T("desk.belt.value_full", "four loops");
+            return Loc.F("desk.belt.value", "three loops · {0} scraps for a fourth", Economy.SlotUpgradeCost);
         }
 
-        static string Verb(PlaceFate f) => f == PlaceFate.Anchored ? "anchor" : f == PlaceFate.Held ? "hold" : f == PlaceFate.Released ? "release" : "unwritten";
+        static string Verb(PlaceFate f) => f == PlaceFate.Anchored ? Loc.T("desk.verb.anchor", "anchor") : f == PlaceFate.Held ? Loc.T("desk.verb.hold", "hold") : f == PlaceFate.Released ? Loc.T("desk.verb.release", "release") : Loc.T("desk.verb.unwritten", "unwritten");
 
         string FateValue(out bool arrows)
         {
             arrows = false;
             var place = PlaceId;
-            if (string.IsNullOrEmpty(place)) return "(no place)";
+            if (string.IsNullOrEmpty(place)) return Loc.T("desk.place.none", "(no place)");
             var fate = Places.FateOf(GameState.World, place);
-            if (fate != PlaceFate.Unwritten) return place + ": " + Places.Describe(fate);
-            if (!CanSeal) return place + ": survey it first";
+            if (fate != PlaceFate.Unwritten) return Loc.F("desk.place.fate", "{0}: {1}", place, Places.Describe(fate));
+            if (!CanSeal) return Loc.F("desk.place.survey_first", "{0}: survey it first", place);
             arrows = true;
-            return place + ": " + Verb(Proposed);
+            return Loc.F("desk.place.fate", "{0}: {1}", place, Verb(Proposed));
         }
 
         string FateBlurb()
         {
             var place = PlaceId;
-            if (string.IsNullOrEmpty(place)) return "No place to seal from here.";
+            if (string.IsNullOrEmpty(place)) return Loc.T("desk.fate.none", "No place to seal from here.");
             switch (Places.FateOf(GameState.World, place))
             {
-                case PlaceFate.Anchored: return "Sealed. The Guild's way: nothing here fades, and nothing changes.";
-                case PlaceFate.Held: return "Sealed. Held by the people who live here, for as long as they do.";
-                case PlaceFate.Released: return "Let go. It will be an island in the Blank, and remember how you left it.";
+                case PlaceFate.Anchored: return Loc.T("desk.fate.anchored", "Sealed. The Guild's way: nothing here fades, and nothing changes.");
+                case PlaceFate.Held: return Loc.T("desk.fate.held", "Sealed. Held by the people who live here, for as long as they do.");
+                case PlaceFate.Released: return Loc.T("desk.fate.released", "Let go. It will be an island in the Blank, and remember how you left it.");
             }
-            if (!CanSeal) return "Draw every vantage here before you decide what it becomes.";
+            if (!CanSeal) return Loc.T("desk.fate.survey_first", "Draw every vantage here before you decide what it becomes.");
             switch (Proposed)
             {
-                case PlaceFate.Anchored: return "Survey, bind, seal. Nothing fades. Nothing changes. Wardens.";
+                case PlaceFate.Anchored: return Loc.T("desk.propose.anchor", "Survey, bind, seal. Nothing fades. Nothing changes. Wardens.");
                 case PlaceFate.Held: return BoundsWalks.IsWalked(GameState.World, PlaceId)
-                    ? "Walked. The people hold it, for as long as they do."
-                    : "Walk the bounds first. The people hold a place; a seal only freezes it.";
-                case PlaceFate.Released: return "Let it go. It will be an island in the Blank, and remember how you left it.";
-                default: return "Choose what this place becomes. It is final.";
+                    ? Loc.T("desk.propose.hold_walked", "Walked. The people hold it, for as long as they do.")
+                    : Loc.T("desk.propose.hold_unwalked", "Walk the bounds first. The people hold a place; a seal only freezes it.");
+                case PlaceFate.Released: return Loc.T("desk.propose.release", "Let it go. It will be an island in the Blank, and remember how you left it.");
+                default: return Loc.T("desk.propose.choose", "Choose what this place becomes. It is final.");
             }
         }
 

@@ -41,13 +41,13 @@ namespace OWSBG.UI
             string title = def != null ? def.Title : id;
             switch (state)
             {
-                case CommissionState.Taken: Toast("Commission taken · " + title); break;
-                case CommissionState.Fulfilled: Toast(title + " · fulfilled. Return to the ledger."); break;
+                case CommissionState.Taken: Toast(Loc.F("journal.toast.taken", "Commission taken · {0}", title)); break;
+                case CommissionState.Fulfilled: Toast(Loc.F("journal.toast.fulfilled", "{0} · fulfilled. Return to the ledger.", title)); break;
                 case CommissionState.Closed:
                     var reward = def != null ? LedgerView.RewardLine(def) : "";
-                    Toast(title + " · closed" + (reward.Length > 0 ? ".  " + reward : ""));
+                    Toast(reward.Length > 0 ? Loc.F("journal.toast.closed_reward", "{0} · closed.  {1}", title, reward) : Loc.F("journal.toast.closed", "{0} · closed", title));
                     break;
-                case CommissionState.Failed: Toast(title + " · came to nothing."); break;
+                case CommissionState.Failed: Toast(Loc.F("journal.toast.failed", "{0} · came to nothing.", title)); break;
             }
             if (IsOpen) Refresh();
         }
@@ -145,15 +145,15 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 860;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Text("title", "Journal", 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.Say("title", "journal.title", "Journal", 30, InkTheme.Wash, FontStyle.Bold);
             _title.style.marginBottom = 14;
-            _empty = InkTheme.Text("empty", "No commissions taken. The ledgers are at the hubs.", 17, InkTheme.Dim);
+            _empty = InkTheme.Say("empty", "journal.empty", "No commissions taken. The ledgers are at the hubs.", 17, InkTheme.Dim);
             _open = new VisualElement { name = "open", pickingMode = PickingMode.Ignore };
             _closed = new VisualElement { name = "closed", pickingMode = PickingMode.Ignore };
             _closed.style.marginTop = 12;
             _scraps = InkTheme.Text("scraps", "", 16, InkTheme.Wash);
             _scraps.style.marginTop = 16;
-            _hint = InkTheme.Text("hint", "M / Esc close", 15, InkTheme.Dim);
+            _hint = InkTheme.Say("hint", "journal.hint", "M / Esc close", 15, InkTheme.Dim);
             _hint.style.marginTop = 12;
             _panel.Add(_title); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(_hint);
             InkTheme.Show(_panel, false);
@@ -191,11 +191,11 @@ namespace OWSBG.UI
             InkTheme.Show(_empty, openCount == 0 && closedCount == 0);
             if (closedCount > 0)
             {
-                var head = InkTheme.Text("closed-head", "Closed", 16, InkTheme.Dim, FontStyle.Bold);
+                var head = InkTheme.Text("closed-head", Loc.T("journal.closed", "Closed"), 16, InkTheme.Dim, FontStyle.Bold);
                 head.style.marginBottom = 4;
                 _closed.Insert(0, head);
             }
-            _scraps.text = "Vellum scraps: " + Commissions.Scraps(w) + "     Iris seeds: " + Economy.Seeds(w);
+            _scraps.text = Loc.F("journal.purse", "Vellum scraps: {0}     Iris seeds: {1}", Commissions.Scraps(w), Economy.Seeds(w));
         }
 
         VisualElement Entry(CommissionDef def, CommissionState state)
@@ -208,7 +208,7 @@ namespace OWSBG.UI
             var row = InkTheme.Row("head");
             var title = InkTheme.Text("title", def.Title, 21, dim ? InkTheme.Dim : InkTheme.Ink, FontStyle.Bold);
             title.style.flexGrow = 1;
-            var hub = InkTheme.Text("hub", def.Hub + (state == CommissionState.Fulfilled ? " · turn in" : ""), 15, dim ? InkTheme.Dim : InkTheme.Ochre);
+            var hub = InkTheme.Text("hub", (state == CommissionState.Fulfilled ? Loc.F("journal.turn_in", "{0} · turn in", def.Hub) : def.Hub), 15, dim ? InkTheme.Dim : InkTheme.Ochre);
             row.Add(title); row.Add(hub);
             box.Add(row);
             if (!dim)
@@ -221,7 +221,7 @@ namespace OWSBG.UI
             }
             else
             {
-                var after = InkTheme.Text("body", state == CommissionState.Closed ? def.Aftermath : "It came to nothing.", 15, InkTheme.Dim);
+                var after = InkTheme.Text("body", state == CommissionState.Closed ? def.Aftermath : Loc.T("commission.failed", "It came to nothing."), 15, InkTheme.Dim);
                 after.style.marginLeft = 12;
                 box.Add(after);
             }

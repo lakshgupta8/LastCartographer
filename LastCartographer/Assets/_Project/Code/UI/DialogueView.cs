@@ -24,6 +24,7 @@ namespace OWSBG.UI
         public bool IsOptionAvailable(int index) => _pendingAvail != null && index >= 0 && index < _pendingAvail.Length && _pendingAvail[index];
         public string SpeakerText => _built ? _speaker.text : _pendingSpeaker;
         public string LineText => _built ? _text.text : _pendingLine;
+        public string OptionText(int index) => _pendingTexts != null && index >= 0 && index < _pendingTexts.Length ? _pendingTexts[index] : "";
         public event Action<int> OptionClicked;
 
         void OnEnable() { DialogueViews.Current = this; }
@@ -55,7 +56,7 @@ namespace OWSBG.UI
             _speaker = InkTheme.Text("speaker", "", 20, InkTheme.Wash, FontStyle.Bold);
             _speaker.style.marginBottom = 8;
             _text = InkTheme.Text("line", "", 24, InkTheme.Ink);
-            _prompt = InkTheme.Text("prompt", "J / Space  ▸", 16, InkTheme.Dim);
+            _prompt = InkTheme.Say("prompt", "dialogue.continue", "J / Space  ▸", 16, InkTheme.Dim);
             _prompt.style.alignSelf = Align.FlexEnd;
             _prompt.style.marginTop = 10;
             _options = new VisualElement { name = "options" };

@@ -40,7 +40,7 @@
 | `com.unity.2d.sprite`, `com.unity.2d.animation`, `com.unity.2d.psdimporter` | Sprite editing, boss bone rigs, layered PSD/Krita import |
 | `com.unity.timeline` | Cutscenes and boss intros |
 | `com.unity.addressables` | Room streaming |
-| `com.unity.localization` | String tables |
+| `com.unity.localization` | String tables. Installed but not the pipeline as of PRG-19: dialogue uses Yarn Spinner's own CSV localisations, and UI text uses `Loc` CSV tables (`docs/design/localisation.md`). Kept for smart strings and asset tables if they're wanted |
 | `com.unity.ai.navigation` | NPC pathing in hubs |
 | `com.unity.splines` | Enemy patrol paths, Inkthread swing arcs, updraft curves |
 | `com.unity.probuilder` | Greybox rooms |

@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using System;
 using UnityEngine;
 
@@ -34,7 +35,7 @@ namespace OWSBG.World
             if (vitals != null && _maskCost > 0) vitals.Damage(_maskCost);
             float mid = (_westBank.x + _eastBank.x) * 0.5f;
             wren.Teleport(wren.Position.x < mid ? _westBank : _eastBank);
-            if (!_captioned) { _captioned = true; Captions.Show("The tide takes her back to the bank.", 3f); }
+            if (!_captioned) { _captioned = true; Captions.Show(Loc.T("caption.tide", "The tide takes her back to the bank."), 3f); }
             Swept?.Invoke(wren);
         }
     }

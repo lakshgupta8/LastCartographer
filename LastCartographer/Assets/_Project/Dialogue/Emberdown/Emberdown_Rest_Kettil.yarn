@@ -9,58 +9,58 @@ title: Rest_Kettil
     <<jump Rest_Kettil_First>>
 <<endif>>
 <<if has_flag("boss.brann.defeated") and not has_flag("emberdown.kettil.brann")>>
-    Kettil: The crane's gone down the stair. Counted him out myself. One, gone.
-    Kettil: The furnace is cold for good. A town that can't be anchored by force. Remember that, Wren.
+    Kettil: The crane's gone down the stair. Counted him out myself. One, gone. #line:02632ee
+    Kettil: The furnace is cold for good. A town that can't be anchored by force. Remember that, Wren. #line:02acafc
     <<flag emberdown.kettil.brann 1>>
 <<endif>>
 <<if has_flag("emberdown.hollowvein.walked")>>
-    Kettil: Thirty-one came up. We buried them in daylight. I counted every one, and I'll count them again tonight.
+    Kettil: Thirty-one came up. We buried them in daylight. I counted every one, and I'll count them again tonight. #line:01d953c
 <<elseif has_flag("emberdown.hollowvein.buried")>>
-    Kettil: The boards stay on. Some weights you carry by leaving them where they fell.
+    Kettil: The boards stay on. Some weights you carry by leaving them where they fell. #line:05717d3
 <<elseif has_flag("emberdown.debate.heard") and walk_known() and not has_flag("emberdown.hollowvein_opened")>>
     <<jump Rest_Kettil_Hollowvein>>
 <<else>>
-    Kettil: Six hundred and eleven at supper. Six hundred and twelve with you. Eat something.
+    Kettil: Six hundred and eleven at supper. Six hundred and twelve with you. Eat something. #line:03857f4
 <<endif>>
--> Who sings the roll-call?
-    Kettil: Runa. My voice went in the smoke. Hers came out of it louder. Up the bell stair.
--> What's under the boards at the pit-head?
-    Kettil: Hollowvein. Thirty-one of ours. Ask me again when you've heard the baths argue.
--> Nothing today.
-    Kettil: Then go and be counted somewhere else. Ha.
+-> Who sings the roll-call? #line:033eaed
+    Kettil: Runa. My voice went in the smoke. Hers came out of it louder. Up the bell stair. #line:0df9e44
+-> What's under the boards at the pit-head? #line:009aba2
+    Kettil: Hollowvein. Thirty-one of ours. Ask me again when you've heard the baths argue. #line:0260ec3
+-> Nothing today. #line:0f27b53
+    Kettil: Then go and be counted somewhere else. Ha. #line:049f956
 ===
 
 title: Rest_Kettil_First
 ---
-Kettil: Halt at the gate. One, two, and a stranger. You're the stranger.
-Kettil: A stranger is a bird nobody remembers. Here, that's dangerous. For you, mostly.
+Kettil: Halt at the gate. One, two, and a stranger. You're the stranger. #line:0b163b4
+Kettil: A stranger is a bird nobody remembers. Here, that's dangerous. For you, mostly. #line:05b57ef
 <<if unlicensed()>>
-    Kettil: And a cowl. A Guild cowl. She spits. Unlicensed, the reeds say. Better. Slightly.
+    Kettil: And a cowl. A Guild cowl. She spits. Unlicensed, the reeds say. Better. Slightly. #line:0655ca5
 <<else>>
-    Kettil: And a cowl. A Guild cowl. She spits. Say you're not here to survey us.
+    Kettil: And a cowl. A Guild cowl. She spits. Say you're not here to survey us. #line:0b9001b
 <<endif>>
--> I'm here to go home. Halden.
-    Kettil: Up the chimneys and over the ridge. Runa can teach you the wall. If she likes you.
--> The map sent me.
-    Kettil: Maps don't send. Birds with maps send. We know which ones.
--> ...
-    Kettil: Quiet. Good. The quiet ones get counted last and remembered longest.
-Kettil: Supper's at dusk. Roll-call after, at the bell. Be there and you're one of the count.
+-> I'm here to go home. Halden. #line:0ba0e9c
+    Kettil: Up the chimneys and over the ridge. Runa can teach you the wall. If she likes you. #line:05db8f8
+-> The map sent me. #line:0e35f0e
+    Kettil: Maps don't send. Birds with maps send. We know which ones. #line:0ced428
+-> ... #line:0b629bf
+    Kettil: Quiet. Good. The quiet ones get counted last and remembered longest. #line:00331dd
+Kettil: Supper's at dusk. Roll-call after, at the bell. Be there and you're one of the count. #line:0000041
 <<flag emberdown.kettil.met 1>>
 ===
 
 title: Rest_Kettil_Hollowvein
 ---
-Kettil: You heard the baths. You know the numbers. And the reeds say you know the walk.
-Kettil: Thirty-one under the pit-head. Buried standing. The families want them up.
-Kettil: I kept the boards on because what's down there broke the mine.
--> Then let's bring them up.
-    Kettil: Runa leads. You follow her count. Miss a name and you start the verse again.
+Kettil: You heard the baths. You know the numbers. And the reeds say you know the walk. #line:0687313
+Kettil: Thirty-one under the pit-head. Buried standing. The families want them up. #line:0c0c5c2
+Kettil: I kept the boards on because what's down there broke the mine. #line:0fd3c2d
+-> Then let's bring them up. #line:00621c3
+    Kettil: Runa leads. You follow her count. Miss a name and you start the verse again. #line:0a5bd9c
     <<flag emberdown.hollowvein_opened 1>>
--> What broke the mine, Kettil?
-    Kettil: A stone that wouldn't stay still. It hums. Ask it yourself, at the bottom.
+-> What broke the mine, Kettil? #line:0eb9b34
+    Kettil: A stone that wouldn't stay still. It hums. Ask it yourself, at the bottom. #line:0b63e8f
     <<flag emberdown.hollowvein_opened 1>>
--> Leave the boards where they are.
-    Kettil: Aye. That's a count too. I'll tell the families you said it, not me.
-Kettil: The pit-head. Runa will be there before you.
+-> Leave the boards where they are. #line:0cf18b1
+    Kettil: Aye. That's a count too. I'll tell the families you said it, not me. #line:0c00bfd
+Kettil: The pit-head. Runa will be there before you. #line:06714c0
 ===

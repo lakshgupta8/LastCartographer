@@ -15,106 +15,106 @@ title: Quay_Sable
 
 title: Quay_Sable_First
 ---
-Sable: Found your feet, then. The boardwalk charges by the plank.
-Sable: Word came up the coast before you did. The Guild's declared Isolde Marr dead. #plant:5.2
-Sable: And a journeyman missing. Same day. They were quick about it. #plant:5.2
--> Quick isn't the same as sure.
-    Sable: No. But it's cheaper.
--> She isn't dead.
-    Sable: Nobody comes out. That's the price of going in. I don't set it.
--> ...
-    Sable: Quiet costs nothing. Keep it.
-Sable: You'll want the desk, the board, and the lamp up the chain. In that order.
-Sable: The lamp's not free either. Nothing that still remembers is. #plant:5.6
+Sable: Found your feet, then. The boardwalk charges by the plank. #line:04ec1af
+Sable: Word came up the coast before you did. The Guild's declared Isolde Marr dead. #plant:5.2 #line:0db64fa
+Sable: And a journeyman missing. Same day. They were quick about it. #plant:5.2 #line:0fe970e
+-> Quick isn't the same as sure. #line:0ce18a2
+    Sable: No. But it's cheaper. #line:0bd4754
+-> She isn't dead. #line:0de39ab
+    Sable: Nobody comes out. That's the price of going in. I don't set it. #line:03aadda
+-> ... #line:020eb6d
+    Sable: Quiet costs nothing. Keep it. #line:043c8aa
+Sable: You'll want the desk, the board, and the lamp up the chain. In that order. #line:04c5f18
+Sable: The lamp's not free either. Nothing that still remembers is. #plant:5.6 #line:0fdcd96
 <<flag saltmarrow.sable.talked 1>>
 ===
 
 title: Quay_Sable_Again
 ---
 <<if place_fate("Saltmarrow_A") == "anchored">>
-    Sable: Anchored, then. The same tide every day now. You'll get used to it. Everyone does. #still
-    Sable: The Wardens don't buy anything. Bad for trade. #still
+    Sable: Anchored, then. The same tide every day now. You'll get used to it. Everyone does. #still #line:07a13bc
+    Sable: The Wardens don't buy anything. Bad for trade. #still #line:009c3fe
 <<elseif place_fate("Saltmarrow_A") == "held">>
-    Sable: Held, is it. Roll-call at dusk. Don't be late; a bird nobody names is a bird nobody keeps. #still
+    Sable: Held, is it. Roll-call at dusk. Don't be late; a bird nobody names is a bird nobody keeps. #still #line:0f459b3
 <<elseif place_fate("Saltmarrow_A") == "released">>
-    Sable: You let it go. Honest, at least. I'll sell tethers while there's a post to tie them to. #still
+    Sable: You let it go. Honest, at least. I'll sell tethers while there's a post to tie them to. #still #line:0e9e3d0
 <<elseif has_flag("act1.unlicensed")>>
-    Sable: Unlicensed. He said it loud enough for the reeds.
-    Sable: Prices are the same. That's the one thing the Guild can't fix.
+    Sable: Unlicensed. He said it loud enough for the reeds. #line:09fc3ee
+    Sable: Prices are the same. That's the one thing the Guild can't fix. #line:0e606c9
 <<elseif has_flag("boss.lamp_keeper.defeated")>>
-    Sable: Fourth light's up. Ships will see it. So will the Guild.
+    Sable: Fourth light's up. Ships will see it. So will the Guild. #line:02eba6b
 <<else>>
-    Sable: Still here. Still lost. Both cost the same.
+    Sable: Still here. Still lost. Both cost the same. #line:0695736
 <<endif>>
 <<if erased("Saltmarrow_B")>>
-    Sable: Bells in the reeds. Merrow's End went off your page, didn't it.
-    Sable: Draw it again. That's what the quill is for. The bell doesn't charge; the walk back does.
+    Sable: Bells in the reeds. Merrow's End went off your page, didn't it. #line:05adab6
+    Sable: Draw it again. That's what the quill is for. The bell doesn't charge; the walk back does. #line:0378ecf
 <<endif>>
 <<if commission_is("saltmarrow.tether_widows", "taken") and not has_flag("saltmarrow.widow.decided")>>
     <<jump Quay_Sable_Widow>>
 <<endif>>
 <<if surveyed("Saltmarrow_A/Reedmother")>>
     <<if not has_flag("saltmarrow.sable.reed")>>
-        Sable: You drew the Reedmother. Hm. Guild after all, or good at pretending.
+        Sable: You drew the Reedmother. Hm. Guild after all, or good at pretending. #line:0723e53
         <<flag saltmarrow.sable.reed 1>>
     <<endif>>
     <<if commission_is("saltmarrow.bone_bridge", "taken") and not has_flag("saltmarrow.bone_bridge.heard")>>
-        Sable: Whale sang while you were up there. Under the bridge. You hear it?
-        -> I heard it. It sounded like names.
-            Sable: Everyone says names. Nobody agrees whose. #plant:3.4
+        Sable: Whale sang while you were up there. Under the bridge. You hear it? #line:02c3db4
+        -> I heard it. It sounded like names. #line:0e2e1fb
+            Sable: Everyone says names. Nobody agrees whose. #plant:3.4 #line:03b9cd0
             <<flag saltmarrow.bone_bridge.heard 1>>
-        -> I heard nothing.
-            Sable: Then you weren't listening. Go again. It's bones; it'll wait.
-        -> ...
-            Sable: That's how it starts. Listening for it.
+        -> I heard nothing. #line:0ff71b0
+            Sable: Then you weren't listening. Go again. It's bones; it'll wait. #line:0a39711
+        -> ... #line:02316e4
+            Sable: That's how it starts. Listening for it. #line:08823bd
     <<endif>>
 <<else>>
-    Sable: There's a vantage by the old reed. Draw it, if the cowl's honest.
+    Sable: There's a vantage by the old reed. Draw it, if the cowl's honest. #line:01c329f
 <<endif>>
 <<if not has_flag("saltmarrow.sable.ledger")>>
-    Sable: Board by the desk is the ledger. People write what they want and can't say aloud.
-    Sable: Read that far down, if you like. Nobody else does.
+    Sable: Board by the desk is the ledger. People write what they want and can't say aloud. #line:0b6a494
+    Sable: Read that far down, if you like. Nobody else does. #line:0a71fa2
     <<flag saltmarrow.sable.ledger 1>>
 <<endif>>
 <<if walked("Saltmarrow_B")>>
     <<if not has_flag("saltmarrow.sable.walked")>>
-        Sable: Heard you walked the old woman's bounds. Nobody sells that. I checked.
+        Sable: Heard you walked the old woman's bounds. Nobody sells that. I checked. #line:0fbe33c
         <<flag saltmarrow.sable.walked 1>>
     <<endif>>
 <<endif>>
--> What are you selling?
-    Sable: Tools. Ferrymen's prices. #still
+-> What are you selling? #line:082f994
+    Sable: Tools. Ferrymen's prices. #still #line:0457a7c
     <<if has_flag("saltmarrow.iris_burned")>>
-        Sable: Dearer than they were. Ask the ones who burned the fields.
+        Sable: Dearer than they were. Ask the ones who burned the fields. #line:0b3f86f
     <<endif>>
     <<shop Saltmarrow>>
--> The third lighthouse. Who keeps it? <<if has_flag("boss.lamp_keeper.defeated") and not has_flag("saltmarrow.sable.aury")>>
-    Sable: Nobody. It faded. There's a tether to it on the post; price on the tag.
-    Sable: My brother kept it. Keeps it. He doesn't know the difference. #plant:4.1
-    Sable: Don't tell him. That's not a price. That's a favour.
+-> The third lighthouse. Who keeps it? <<if has_flag("boss.lamp_keeper.defeated") and not has_flag("saltmarrow.sable.aury")>> #line:02f3a83
+    Sable: Nobody. It faded. There's a tether to it on the post; price on the tag. #line:04e2f6a
+    Sable: My brother kept it. Keeps it. He doesn't know the difference. #plant:4.1 #line:0b53921
+    Sable: Don't tell him. That's not a price. That's a favour. #line:03f72ab
     <<flag saltmarrow.sable.aury 1>>
--> Nothing today.
-    Sable: Cheaper. #still
+-> Nothing today. #line:0b72e2a
+    Sable: Cheaper. #still #line:0d7eb7a
 ===
 
 title: Quay_Sable_Widow
 ---
-Sable: The widow at the tether-post asked after you. First time she's asked after anyone.
-Sable: She means to go in after him. Rope's already round her waist. I sold it to her.
--> Talk her out of it.
-    Sable: I'll carry it. She won't listen. They never do, and then they do.
+Sable: The widow at the tether-post asked after you. First time she's asked after anyone. #line:0e14292
+Sable: She means to go in after him. Rope's already round her waist. I sold it to her. #line:02a58b5
+-> Talk her out of it. #line:011c394
+    Sable: I'll carry it. She won't listen. They never do, and then they do. #line:0bcf3ef
     <<flag saltmarrow.widow.decided 1>>
--> Then somebody goes with her. Me.
-    Sable: Then I hold the other end. I've held worse.
+-> Then somebody goes with her. Me. #line:00b4603
+    Sable: Then I hold the other end. I've held worse. #line:0d72818
     <<flag saltmarrow.widow.decided 2>>
--> ...
-    Sable: That's an answer too. She'll take it as the second one.
+-> ... #line:0a60e5e
+    Sable: That's an answer too. She'll take it as the second one. #line:0c8179b
     <<flag saltmarrow.widow.decided 2>>
 ===
 
 title: Quay_Sable_Night
 ---
 // Night post: asleep under the stilts. The same every night; in an anchored quay, every loop.
-Sable: Quay's shut. So am I. #still
-Sable: Morning, if you're still here. Most aren't. #still
+Sable: Quay's shut. So am I. #still #line:01df1f3
+Sable: Morning, if you're still here. Most aren't. #still #line:0f8e732
 ===

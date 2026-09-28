@@ -40,7 +40,7 @@ namespace OWSBG.World
             var vitals = wren.GetComponent<WrenVitals>();
             if (vitals != null && vitals.Masks > 1) vitals.Damage(1);
             wren.Teleport(LastSafe);
-            if (!_captioned) { _captioned = true; Captions.Show("Back to solid ground.", 2.5f); }
+            if (!_captioned) { _captioned = true; Captions.Show(Loc.T("caption.gauntlet_fall", "Back to solid ground."), 2.5f); }
             Fell?.Invoke(this);
         }
 
@@ -55,7 +55,7 @@ namespace OWSBG.World
                 w.Numbers.TryGetValue("$vellum_scraps", out var s);
                 w.Numbers["$vellum_scraps"] = s + 1;
                 var plan = Gauntlets.Find(Id);
-                Captions.Show((plan != null ? plan.Name : Id) + ": crossed.", 3f);
+                Captions.Show(Loc.F("caption.gauntlet_crossed", "{0}: crossed.", plan != null ? plan.Name : Id), 3f);
             }
             Done?.Invoke(this);
         }

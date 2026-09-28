@@ -98,7 +98,7 @@ namespace OWSBG.Narrative
         {
             var w = W;
             Memories.Bind(w, memoryId);
-            Captions.Show("Bound: " + MemoryName(memoryId), 4f);
+            Captions.Show(Loc.F("caption.bound", "Bound: {0}", MemoryName(memoryId)), 4f);
         }
 
         public static string MemoryName(string id) => Memories.Name(id);

@@ -81,7 +81,7 @@ namespace OWSBG.UI
             _seeds.style.marginTop = 6;
             _root.Add(_seeds);
 
-            _death = InkTheme.Text("hud-death", "the ink runs out", 34, InkTheme.Ink, FontStyle.Italic);
+            _death = InkTheme.Say("hud-death", "hud.death", "the ink runs out", 34, InkTheme.Ink, FontStyle.Italic);
             _death.style.position = Position.Absolute;
             _death.style.left = 0; _death.style.right = 0; _death.style.top = new Length(40, LengthUnit.Percent);
             _death.style.unityTextAlign = TextAnchor.MiddleCenter;

@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using OWSBG.World;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -46,7 +47,7 @@ namespace OWSBG.UI
 
         void OnFightEnded(BossArena arena)
         {
-            if (arena.State == BossArena.ArenaState.Won) { _line = "…keep it lit."; _lineUntil = Time.unscaledTime + _lineSeconds; }
+            if (arena.State == BossArena.ArenaState.Won) { _line = Loc.T("boss.won", "…keep it lit."); _lineUntil = Time.unscaledTime + _lineSeconds; }
             Unbind();
         }
 

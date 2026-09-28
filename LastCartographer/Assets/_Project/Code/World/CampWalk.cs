@@ -50,7 +50,7 @@ namespace OWSBG.World
             ScreenFade.Clear();
             if (wren != null) wren.Frozen = wasFrozen;
             IsWalking = false;
-            Captions.Show("A day's walk with the clan. " + Capital(Camp.NameOfSite(site)) + ", at dusk.", 3.5f);
+            Captions.Show(Loc.F("caption.camp_walk", "A day's walk with the clan. {0}, at dusk.", Capital(Camp.NameOfSite(site))), 3.5f);
             Arrived?.Invoke(site);
         }
 

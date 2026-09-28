@@ -69,7 +69,7 @@ namespace OWSBG.World
             int before = w.BoundMemories.Count;
             if (!Memories.Drop(w, CurrentRoomId(), pos.x, pos.y)) return;
             if (before > 0)
-                Captions.Show("Your memories smudge where you fell. Strike the smudge down to take them back.", 4.5f);
+                Captions.Show(Loc.T("caption.memories_dropped", "Your memories smudge where you fell. Strike the smudge down to take them back."), 4.5f);
             Spawn();
         }
 
@@ -115,7 +115,7 @@ namespace OWSBG.World
             var names = Memories.Describe(w.DroppedMemories);
             int n = Memories.Recover(w);
             Current = null;
-            if (n > 0) Captions.Show("Recovered: " + names + ".", 4f);
+            if (n > 0) Captions.Show(Loc.F("caption.memories_recovered", "Recovered: {0}.", names), 4f);
         }
     }
 }

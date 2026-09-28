@@ -178,7 +178,7 @@ namespace OWSBG.World
             }
             if (!string.IsNullOrEmpty(_beaconVantageId)) w.MarkSurveyed(_beaconVantageId);
             if (RewardCharter.HasValue && w.Equipment.OwnedCharters.Add(RewardCharter.Value))
-                Captions.Show("Charter: " + CharterProfile.For(RewardCharter.Value).DisplayName, 3f);
+                Captions.Show(Loc.F("caption.charter", "Charter: {0}", CharterProfile.For(RewardCharter.Value).DisplayName), 3f);
             if (_rewardAbility != Ability.None)
             {
                 var wren = _wren != null ? _wren : FindFirstObjectByType<WrenController>();

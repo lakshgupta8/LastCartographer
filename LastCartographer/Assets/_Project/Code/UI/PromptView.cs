@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using OWSBG.Narrative;
 using OWSBG.World;
 using UnityEngine;
@@ -28,11 +29,11 @@ namespace OWSBG.UI
 
         public static string TutorialText(string name) => name switch
         {
-            "survey" => "Hold Q at the marker. Let the pen find the line.",
-            "bind" => "Hold E to bind. It costs ink.",
-            "seal" => "Sealed. A wax seal marks where you would come back to.",
-            "strike" => "J strikes. In the air, hold down and strike to bounce off what you hit.",
-            "dash" => "Shift dashes. Wingbeat is a memory of the sky.",
+            "survey" => Loc.T("tutorial.survey", "Hold Q at the marker. Let the pen find the line."),
+            "bind" => Loc.T("tutorial.bind", "Hold E to bind. It costs ink."),
+            "seal" => Loc.T("tutorial.seal", "Sealed. A wax seal marks where you would come back to."),
+            "strike" => Loc.T("tutorial.strike", "J strikes. In the air, hold down and strike to bounce off what you hit."),
+            "dash" => Loc.T("tutorial.dash", "Shift dashes. Wingbeat is a memory of the sky."),
             _ => name,
         };
 

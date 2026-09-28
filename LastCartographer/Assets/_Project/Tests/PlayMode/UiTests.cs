@@ -82,6 +82,26 @@ Sable: Everything here has a price.
             foreach (var go in new[] { _dialogue, _desk, _arenaGo, _bossGo, _ui, _wren, _floor }) if (go != null) Object.Destroy(go);
             Time.timeScale = 1f;
             GameState.NewGame();
+            Loc.Reset(); PlayerPrefs.DeleteKey(Loc.PrefsKey);
+        }
+
+        [UnityTest]
+        public IEnumerator TheHudFollowsThePlayersLanguage()
+        {
+            yield return Frames(3);
+            var death = _hud!.Root.parent.Q<Label>("hud-death");
+            Assert.IsNotNull(death);
+            Assert.AreEqual("the ink runs out", death.text);
+            Loc.SetLocale(Loc.Pseudo);
+            yield return Frames(1);
+            Assert.IsTrue(Loc.LooksPseudo(death.text), "re-texted the moment the locale changes: " + death.text);
+            Loc.Register("fr", new System.Collections.Generic.Dictionary<string, string> { { "hud.death", "l'encre s'épuise" } });
+            Loc.SetLocale("fr");
+            yield return Frames(1);
+            Assert.AreEqual("l'encre s'épuise", death.text);
+            Loc.SetLocale(Loc.Base);
+            yield return Frames(1);
+            Assert.AreEqual("the ink runs out", death.text);
         }
 
         [UnityTest]

@@ -120,7 +120,7 @@ namespace OWSBG.World
                 if (grew)
                 {
                     Seconds = Capacity;
-                    if (level > 1) Captions.Show("Clarity grows.", 3f);
+                    if (level > 1) Captions.Show(Loc.T("caption.clarity_grows", "Clarity grows."), 3f);
                     Grew?.Invoke(this);
                 }
             }
@@ -160,7 +160,7 @@ namespace OWSBG.World
             _ctrl.Teleport(LastTethered);
             IsUntethered = false;
             Seconds = Capacity;
-            Captions.Show(Level == 0 ? "The white will not hold her. Not yet." : "Drawn back to held ground.", 2.5f);
+            Captions.Show(Level == 0 ? Loc.T("caption.clarity_gate", "The white will not hold her. Not yet.") : Loc.T("caption.clarity_empty", "Drawn back to held ground."), 2.5f);
             Emptied?.Invoke(this);
         }
 

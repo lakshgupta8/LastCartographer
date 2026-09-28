@@ -12,44 +12,44 @@ title: Hall_Pell_Minder
 <<if has_flag("halden.hall.pell_minder")>>
     <<jump Hall_Pell_Report>>
 <<endif>>
-Pell: Five things. No, three. Three things, I've been practising.
-Pell: The Hall thinks you drowned. Tam thinks you'll sit the exam with him. I think neither.
--> You wrote it down.
-    Pell: All of it. It's accurate. That's the whole problem, isn't it.
+Pell: Five things. No, three. Three things, I've been practising. #line:0552f00
+Pell: The Hall thinks you drowned. Tam thinks you'll sit the exam with him. I think neither. #line:022f249
+-> You wrote it down. #line:0728e36
+    Pell: All of it. It's accurate. That's the whole problem, isn't it. #line:080f705
     <<voice surveyor halden>>
--> Then don't send it.
-    Pell: If I don't, someone less accurate will. Which, technically, is worse for you.
+-> Then don't send it. #line:0ba9ea1
+    Pell: If I don't, someone less accurate will. Which, technically, is worse for you. #line:04a89c8
     <<voice warden halden>>
--> ...
-    Pell: You do that. Isolde did that. I always talked into it.
+-> ... #line:0028172
+    Pell: You do that. Isolde did that. I always talked into it. #line:0ccb647
     <<voice drift halden>>
-Pell: I'm to walk with you. Minder, they call it. Which means I tell them where you went.
+Pell: I'm to walk with you. Minder, they call it. Which means I tell them where you went. #line:0495cc4
 <<flag halden.hall.pell_minder 1>>
 ===
 
 title: Hall_Pell_Report
 ---
-Pell: It's written. The report. I've read it four times. It doesn't get kinder. It gets more accurate.
--> Let me read it.
+Pell: It's written. The report. I've read it four times. It doesn't get kinder. It gets more accurate. #line:0a62a83
+-> Let me read it. #line:07fe2d8
     <<jump Hall_Pell_Read>>
--> Then send it.
-    Pell: That's what Isolde would say. Isolde isn't here. Which, technically, is the problem.
+-> Then send it. #line:0bdca4f
+    Pell: That's what Isolde would say. Isolde isn't here. Which, technically, is the problem. #line:029dbb9
     <<jump Hall_Pell_Send>>
--> ...
-    Pell: Silence. You know I can't write that down. There isn't a column for it.
+-> ... #line:09a6a9d
+    Pell: Silence. You know I can't write that down. There isn't a column for it. #line:076e54a
     <<jump Hall_Pell_Send>>
 ===
 
 title: Hall_Pell_Read
 ---
-Report: Journeyman Wren entered the Greyfold without a tether and returned unchanged.
-Report: She carries the torn pages of Isolde Marr. She is unlicensed. She has not surrendered them.
-Report: She has, in the minder's view, been kind to everyone she has met. This is not relevant.
-Pell: It's accurate. That's the whole problem.
+Report: Journeyman Wren entered the Greyfold without a tether and returned unchanged. #line:0b11359
+Report: She carries the torn pages of Isolde Marr. She is unlicensed. She has not surrendered them. #line:07b7dd5
+Report: She has, in the minder's view, been kind to everyone she has met. This is not relevant. #line:0da6dc2
+Pell: It's accurate. That's the whole problem. #line:0e78ab4
 <<flag pell.report_read 1>>
 <<if voice_in("halden", "warden") >= 2>>
-    Pell: You'd have carried me out. Of anywhere. I know that now.
-    Pell: One list. One item. I'm not sending it.
+    Pell: You'd have carried me out. Of anywhere. I know that now. #line:06a7ad1
+    Pell: One list. One item. I'm not sending it. #line:062ddd9
     <<flag pell.report_kept 1>>
     <<flag pell.report_decided 1>>
 <<else>>
@@ -59,8 +59,8 @@ Pell: It's accurate. That's the whole problem.
 
 title: Hall_Pell_Send
 ---
-Pell: I'm sending it. I'm telling you to your face, because that's the only fair part.
-Pell: Captain Oriel will read it. She reads everything twice.
+Pell: I'm sending it. I'm telling you to your face, because that's the only fair part. #line:0ffb172
+Pell: Captain Oriel will read it. She reads everything twice. #line:08bda0b
 <<flag pell.report_sent 1>>
 <<flag pell.report_decided 1>>
 ===
@@ -68,8 +68,8 @@ Pell: Captain Oriel will read it. She reads everything twice.
 title: Hall_Pell_After
 ---
 <<if has_flag("pell.report_sent")>>
-    Pell: Three things. The Wardens have it. Oriel has it. I have a copy. I read it at night.
+    Pell: Three things. The Wardens have it. Oriel has it. I have a copy. I read it at night. #line:00f594d
 <<else>>
-    Pell: One thing. It's in my drawer. It's still accurate. It stays there.
+    Pell: One thing. It's in my drawer. It's still accurate. It stays there. #line:0845f6e
 <<endif>>
 ===

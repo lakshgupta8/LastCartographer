@@ -125,7 +125,7 @@ namespace OWSBG.World
             }
             var place = PlaceId;
             if (Atlas.Erase(GameState.World, place))
-                Captions.Show("Erased: " + Atlas.PlaceName(place) + ". Draw it again.", 4f);
+                Captions.Show(Loc.F("caption.erased", "Erased: {0}. Draw it again.", Atlas.PlaceName(place)), 4f);
             Tolled?.Invoke(this, place);
         }
 

@@ -88,7 +88,17 @@ namespace OWSBG.Core
 
         public static DayPhase PhaseIn(WorldState w, string place) => PhaseAt(TimeIn(w, place));
 
+        /// <summary>The phase's name in Yarn and saves: "dawn", "day", "dusk", "night". Never translated.</summary>
         public static string Describe(DayPhase p) => p.ToString().ToLowerInvariant();
+
+        /// <summary>The phase's name for the player, in their language (PRG-19).</summary>
+        public static string Display(DayPhase p) => p switch
+        {
+            DayPhase.Dawn => Loc.T("phase.dawn", "dawn"),
+            DayPhase.Day => Loc.T("phase.day", "day"),
+            DayPhase.Dusk => Loc.T("phase.dusk", "dusk"),
+            _ => Loc.T("phase.night", "night"),
+        };
 
         public static bool TryParse(string s, out DayPhase phase)
         {

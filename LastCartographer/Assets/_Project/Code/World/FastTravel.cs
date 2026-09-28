@@ -64,7 +64,7 @@ namespace OWSBG.World
             if (wren != null) wren.Frozen = wasFrozen;
             IsTravelling = false;
             var w = GameState.World;
-            Captions.Show(Travel.Describe(LastHours) + " on the road. " + Capital(DayClock.Describe(DayClock.PhaseIn(w, to.Place))) + ", day " + DayClock.Day(w) + ".", 3f);
+            Captions.Show(Loc.F("caption.travelled", "{0} on the road. {1}, day {2}.", Travel.Describe(LastHours), Capital(DayClock.Display(DayClock.PhaseIn(w, to.Place))), DayClock.Day(w)), 3f);
             Arrived?.Invoke(to);
         }
 

@@ -122,6 +122,9 @@ full-playthrough matrix (PRO-05) will ask; both should be built on it.
   from the Vault's sixth slot (5.2) and still carries in Thessaly Hollow. Seven homes: Aury, Hollowvein, the Quiet
   House, Windreach, Isolde, Corvin, and the Observatory's own, which never leaves the frame.
 - Whether Windreach should also open from the Bone Bridge by sea (the Ferrymen) for a fourth Act 2 order.
-- The reward for a noticed sequence break (a line, a scrap, a `#still`-free variant).
+- ~~The reward for a noticed sequence break.~~ Noticed (`SequenceBreaks`, `BreakWatcher`): a zone she stands in
+  that no hard way could have brought her to, only a soft gap, gets one line ("Nobody comes this way on foot…"),
+  a scrap of vellum and a flag (`break.noticed.<zone>`), once each. A `#still`-free line from the zone's people
+  (Kettil, Teodor) on that flag is still to write.
 - ~~How the moving camp (PRG-21) changes Windreach's links between its three sites.~~ It doesn't. The sites are rooms
   in three zones, the camp is what stands in them, and the hub's desk stays at the post (`moving-camp.md`).

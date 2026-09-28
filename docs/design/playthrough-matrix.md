@@ -105,9 +105,10 @@ The matrix takes about a hundred seconds in the editor, five seconds a playthrou
 
 - **A fourth Act 2 order.** Windreach by sea from the Bone Bridge (world-map §6) would add an order; it needs the
   Ferrymen's way on the map first.
-- **The reward for a noticed break.** The map says the game "quietly rewards" a pogo across a soft gap. Nothing
-  says it yet: a line, a scrap, a `#still`-free variant. When it exists, the break playthroughs are where it is
-  tested.
+- **The reward for a noticed break** exists now (`SequenceBreaks`): a line, a scrap and a flag on the first room
+  past a soft gap, and the test holds that each break playthrough starts in a zone the game would notice. The
+  replays run scenes, not rooms, so the reward is tested on its own; a `#still`-free variant from the zone's
+  people on the flag is still to write.
 - **Breaks inside Act 2.** The Dry River's gap is soft too, but it is inside Windreach, past the story gate, so
   it changes nothing the matrix can see.
 - **Partial orders inside a leg.** The matrix moves whole legs. Within Emberdown the route's order (the Bell before

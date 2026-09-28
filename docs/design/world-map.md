@@ -123,4 +123,5 @@ full-playthrough matrix (PRO-05) will ask; both should be built on it.
   House, Windreach, Isolde, Corvin, and the Observatory's own, which never leaves the frame.
 - Whether Windreach should also open from the Bone Bridge by sea (the Ferrymen) for a fourth Act 2 order.
 - The reward for a noticed sequence break (a line, a scrap, a `#still`-free variant).
-- How the moving camp (PRG-21) changes Windreach's links between its three sites.
+- ~~How the moving camp (PRG-21) changes Windreach's links between its three sites.~~ It doesn't. The sites are rooms
+  in three zones, the camp is what stands in them, and the hub's desk stays at the post (`moving-camp.md`).

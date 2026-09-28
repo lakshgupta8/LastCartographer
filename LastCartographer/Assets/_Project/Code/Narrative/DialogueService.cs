@@ -130,6 +130,7 @@ namespace OWSBG.Narrative
                 if (!Atlas.Erase(GameState.World, place))
                     Debug.LogWarning("[OWSBG] <<erase " + place + ">> refused: already erased or anchored");
             });
+            runner.AddCommandHandler("camp", (Func<string, YarnTask>)CampAsync);
             runner.AddCommandHandler<string, string>("commission", (id, verb) =>
             {
                 if (!Commissions.Apply(GameState.World, id, verb))
@@ -141,6 +142,15 @@ namespace OWSBG.Narrative
         {
             if (!Places.Decide(GameState.World, place, fate))
                 Debug.LogWarning("[OWSBG] <<" + Places.Describe(fate) + " " + place + ">> refused: already " + Places.Describe(Places.FateOf(GameState.World, place)));
+        }
+
+        /// <summary><c>&lt;&lt;camp walk&gt;&gt;</c>: walk the day with the Windreach camp to its next site, and wait until there.</summary>
+        async YarnTask CampAsync(string verb)
+        {
+            if (verb != "walk") { Debug.LogWarning("[OWSBG] <<camp " + verb + ">>: only \"walk\""); return; }
+            if (!Camp.IsReadyToWalk(GameState.World)) { Debug.LogWarning("[OWSBG] <<camp walk>>: the camp isn't moving yet"); return; }
+            StartCoroutine(CampWalk.Go());
+            while (CampWalk.IsWalking) await YarnTask.Yield();
         }
 
         static async YarnTask PlayCutsceneAsync(string id)
@@ -182,6 +192,14 @@ namespace OWSBG.Narrative
 
         [YarnFunction("day")]
         public static float DayCount() => DayClock.Day(GameState.World);
+
+        /// <summary>The Windreach camp's fire has been had where it stands, and it walks at first light.</summary>
+        [YarnFunction("camp_ready")]
+        public static bool CampReady() => Camp.IsReadyToWalk(GameState.World);
+
+        /// <summary>Where the Windreach camp stands: 0 the fire ring, 1 the riverbed, 2 the high grass.</summary>
+        [YarnFunction("camp_site")]
+        public static float CampSiteIndex() => Camp.Site(GameState.World);
 
         [YarnFunction("seeds")]
         public static float SeedCount() => Economy.Seeds(GameState.World);

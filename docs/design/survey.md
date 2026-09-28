@@ -67,4 +67,5 @@ story's reading. Save version 3.
 - Vantages with a **line of sight** requirement (sighting-lens) and the survey's ink cost, if any.
 - Whether a bell can erase a **held** place (v1: yes; the bounds-walk, DES-13, may answer differently).
 - The Choir (6.6) and the Half-Cathedral bells (6.12) erase the arena and the lantern-radius, not only the page.
-- Travel cost: none in v1. The story may want a day to pass (PRG-21).
+- Travel cost: settled in PRG-21 (`moving-camp.md`). The road takes an hour a way on the macro map, and the day moves
+  on by it.

@@ -75,6 +75,15 @@ namespace OWSBG.Narrative
             b.AddComponent<BoxCollider2D>();
         }
 
+        /// <summary>A shape to look at, not stand on: behind the play plane, no collider.</summary>
+        public static GameObject MakeProp(Transform parent, string name, Vector2 center, Vector3 size, Material mat)
+        {
+            var p = MakeShape(parent, name, PrimitiveType.Cube, ref _cube, "Default", mat, ShadowCastingMode.On);
+            p.transform.position = new Vector3(center.x, center.y, 0.9f);
+            p.transform.localScale = size;
+            return p;
+        }
+
         public static void MakePaper(Room room, string name, float z, float y, Color color, float height)
         {
             var q = MakeShape(room.transform, "Paper_" + name, PrimitiveType.Quad, ref _quad, "Paper", Lit("Paper_" + name, color), ShadowCastingMode.Off);

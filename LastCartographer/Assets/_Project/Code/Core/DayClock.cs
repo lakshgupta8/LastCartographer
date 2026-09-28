@@ -47,10 +47,11 @@ namespace OWSBG.Core
             if (dayFraction <= 0f) return;
             var before = Phase(w);
             float t = Time(w) + dayFraction;
-            int day = Day(w);
-            while (t >= 1f) { t -= 1f; day++; }
+            int day = Day(w), turned = 0;
+            while (t >= 1f) { t -= 1f; day++; turned++; }
             w.Numbers[TimeKey] = t;
             w.Numbers[DayKey] = day;
+            for (int i = 0; i < turned; i++) Camp.NewDay(w);   // first light: the Windreach camp walks on
             var after = PhaseAt(t);
             if (after != before) PhaseChanged?.Invoke(after);
         }
@@ -70,6 +71,7 @@ namespace OWSBG.Core
             w.Numbers[DayKey] = Day(w) + 1;
             var before = Phase(w);
             w.Numbers[TimeKey] = 0.01f;
+            Camp.NewDay(w);
             if (before != DayPhase.Dawn) PhaseChanged?.Invoke(DayPhase.Dawn);
         }
 

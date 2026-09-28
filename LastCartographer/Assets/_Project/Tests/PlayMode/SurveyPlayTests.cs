@@ -215,9 +215,13 @@ namespace OWSBG.Tests
             CollectionAssert.AreEqual(new[] { "lamp.Saltmarrow_Lighthouse" }, atlas.Destinations.Select(d => d.Id).ToArray());
             StringAssert.Contains("● the Reedmother", ((Label)atlas.Panel.Q("place-Saltmarrow_A").Q("vantages")).text);
             Assert.IsNotNull(atlas.Panel.Q("dest-lamp.Saltmarrow_Lighthouse"));
+            float before = DayClock.Time(w);
+            float hours = Travel.Hours(Atlas.FindWaypoint("desk.Saltmarrow_A"), Atlas.FindWaypoint("lamp.Saltmarrow_Lighthouse"));
             Assert.IsTrue(atlas.Confirm(), "J travels");
             Assert.IsFalse(atlas.IsOpen);
             yield return Until(() => rm.CurrentRoom == "Greybox_Saltmarrow_Lighthouse" && !rm.IsTransitioning && !FastTravel.IsTravelling, 15f, "the lighthouse");
+            Assert.AreEqual(hours, FastTravel.LastHours, 1e-4f, "the road along the coast");
+            Assert.AreEqual(before + hours / 24f, DayClock.Time(w), 0.004f, "and the day moved on by it (PRG-21)");
             Assert.AreEqual(3f, wren.Position.x, 0.6f, "Wren stands under the lamp");
             Assert.AreEqual(0f, ScreenFade.Level, 0.01f, "the paper lifts");
             Assert.IsFalse(wren.Frozen);

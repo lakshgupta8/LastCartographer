@@ -1,0 +1,29 @@
+// The Long Grass Camp on the move (PRG-21, docs/design/moving-camp.md). The bedroll: sleep with the clan and walk the
+// day with them to the next fire (<<camp walk>>). The ashes where the camp is not: gone on, or not come yet.
+
+title: Camp_Bedroll
+---
+<<if not camp_ready()>>
+    Bedroll: A clan bedroll, rolled tight. Nobody's walking tomorrow.
+    <<stop>>
+<<endif>>
+Bedroll: The clan sleeps early. They walk at first light, all of them, children first.
+-> Sleep, and walk with them.
+    <<camp walk>>
+-> Not yet.
+    Bedroll: The fire keeps. So will they, till morning.
+===
+
+title: Camp_Ashes_Behind
+---
+<<if camp_site() >= 2>>
+    Ashes: Cold. The grass is flattened on past the Gate, to the high grass.
+<<else>>
+    Ashes: Still warm. The grass is flattened east, toward the riverbed.
+<<endif>>
+===
+
+title: Camp_Ashes_Ahead
+---
+Ashes: Old ashes in a ring of stones. Somebody camps here, some nights.
+===

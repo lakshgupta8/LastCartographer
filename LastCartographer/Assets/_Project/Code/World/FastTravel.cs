@@ -7,13 +7,16 @@ namespace OWSBG.World
 {
     /// <summary>
     /// Travel between waypoints (GDD 5, DES-02): only from the desk or lit lamp Wren stands at, only to one
-    /// whose place is on the page. Paper closes over the screen, the room changes, the paper lifts.
+    /// whose place is on the page. Paper closes over the screen, the room changes, the paper lifts. The road takes
+    /// time (PRG-21, <see cref="Travel"/>): the day moves on by the journey's hours while the paper is closed.
     /// Run the coroutine on any live MonoBehaviour (the atlas page does).
     /// </summary>
     public static class FastTravel
     {
         public static bool IsTravelling { get; private set; }
         public static event Action<Waypoint> Arrived;
+        /// <summary>How long the last journey took, in hours.</summary>
+        public static float LastHours { get; private set; }
 
         public static bool CanTravel(WorldState w, Waypoint to)
         {
@@ -25,6 +28,7 @@ namespace OWSBG.World
         {
             if (IsTravelling || to == null) yield break;
             IsTravelling = true;
+            var from = TravelPoint.Nearby != null ? TravelPoint.Nearby.Definition : null;
             var wren = UnityEngine.Object.FindFirstObjectByType<WrenController>();
             bool wasFrozen = wren != null && wren.Frozen;
             if (wren != null) wren.Frozen = true;
@@ -35,6 +39,7 @@ namespace OWSBG.World
                 yield return null;
             }
             ScreenFade.Set(1f, ScreenFade.Paper);
+            LastHours = Travel.Journey(GameState.World, from, to);
 
             var rm = RoomManager.Instance;
             if (rm != null && rm.CurrentRoom != to.Room)
@@ -58,7 +63,11 @@ namespace OWSBG.World
             ScreenFade.Clear();
             if (wren != null) wren.Frozen = wasFrozen;
             IsTravelling = false;
+            var w = GameState.World;
+            Captions.Show(Travel.Describe(LastHours) + " on the road. " + Capital(DayClock.Describe(DayClock.PhaseIn(w, to.Place))) + ", day " + DayClock.Day(w) + ".", 3f);
             Arrived?.Invoke(to);
         }
+
+        static string Capital(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s.Substring(1);
     }
 }

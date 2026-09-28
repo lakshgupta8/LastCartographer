@@ -8,7 +8,8 @@ The day, where people stand in it, and what an anchored town does with both. Run
   move only on beats (DES-04); the day is texture, not pressure.
 - Four **phases**: dawn, day, dusk, night. A day is 15 minutes of play by default (`DayCycle.DaySeconds`).
   The clock pauses while Wren is frozen: talk, menus, cutscenes.
-- **Resting at a desk sleeps to the next dawn** and counts a day. Nothing else moves the day count.
+- **Resting at a desk sleeps to the next dawn** and counts a day. The day count also turns when the clock passes
+  midnight, by play or on the road: fast travel takes an hour a way on the macro map (PRG-21, `moving-camp.md`).
 - Story beats may set the hour (`<<clock dusk>>`): the prologue's Edge is at dusk; Wren wakes on the shore at dawn.
 - Every NPC with a **schedule** has a post per phase: a spot in its room, a facing, an activity, and optionally
   the Yarn node it starts there. On a phase change it walks along the floor to the new post; a room that loads
@@ -57,5 +58,6 @@ Code: `DayClock.Advance / SetPhase / Sleep / Lock / TimeIn / PhaseIn`, `NpcSched
 - Routes across rooms (an NPC whose dusk post is next door) and platforms: NavMesh or authored paths (the
   plan's NavMesh line; v1 is one floor per room).
 - Shops and **stock that never varies** in anchored towns (DES-05).
-- What sleeping does to commissions (expiry, DES-06 §open) and to the Windreach camp's day-advance (PRG-21).
+- What sleeping does to commissions (expiry, DES-06 §open). What it does to the Windreach camp is settled: a new
+  day walks it on once its fire is had (PRG-21, `moving-camp.md`).
 - Looping props and the locked sky in real art (ENV-09).

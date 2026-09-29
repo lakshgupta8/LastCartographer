@@ -77,6 +77,13 @@ GitHub Actions with GameCI's Unity actions, on every push to `main`, every pull 
 - **Library cache:** the Library folder is cached per job, keyed on the package lock and the editor version.
 - **Checkout:** the build job fetches full history so `git describe` can name the version.
 
+**A manual run** (Actions → CI → Run workflow) has a checkbox per job: Tests, Windows build, Smoke run (on by
+default) and Steam upload (off). A job runs only when everything before it that ran passed. The smoke run and
+Steam use this run's build, so they need the build ticked. Pushes, pull requests and the Monday schedule always run
+tests, build and smoke run; Steam otherwise only follows a `v*` tag, after a passing smoke run. (Before this, a
+manual run that skipped the tests skipped the smoke run too, the ninth run: GitHub skips a job whose chain holds a
+skipped job unless its condition says otherwise.)
+
 **Secrets and variables to set** (repository settings; nothing is in the repository):
 - `UNITY_EMAIL`, `UNITY_PASSWORD`: the Unity account GameCI activates the editor with, inside the container, on
   every run. Without them the editor exits with code 1 and prints nothing (the second run, 2026-09-29). For a

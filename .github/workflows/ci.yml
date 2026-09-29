@@ -11,6 +11,11 @@ on:
   schedule:
     - cron: '0 6 * * 1'     # the week's build (PRO-02): Mondays 06:00 UTC, tests, build and smoke run
 
+# The test runner posts its results as a check run; the repository's default token may only read.
+permissions:
+  contents: read
+  checks: write
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true

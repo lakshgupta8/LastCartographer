@@ -136,7 +136,10 @@ segmentation fault in `ScriptingCoverage::FilterRecordedMethods` during the asse
 switches code coverage on by default and Unity 6 on Linux dies inside it. The action's `coverageEnabled: false`
 didn't take (the fourth run): the action hands it to GameCI's CLI as `--no-coverageEnabled`, and the CLI's parser
 has negation switched off, so it warned "Unknown argument" and left coverage on. The CLI also reads every option
-from a `GAME_CI_`-prefixed environment variable, so the test step sets `GAME_CI_COVERAGE_ENABLED=false`. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
+from a `GAME_CI_`-prefixed environment variable, so the test step sets `GAME_CI_COVERAGE_ENABLED=false`.
+The fifth run: edit mode 185 of 185 on Linux, the job still marked failed because posting the results check was
+refused ("Resource not accessible by integration"); the workflow now asks for `checks: write` (and only
+`contents: read` besides). Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
 
 ## Open
 

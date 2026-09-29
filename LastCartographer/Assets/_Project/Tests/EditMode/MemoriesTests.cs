@@ -62,5 +62,27 @@ namespace OWSBG.Tests
             Assert.AreEqual("", Memories.Describe(new string[0]));
             Assert.AreEqual("the first time she saw you and the count of boats that came back", Memories.Describe(new[] { "isolde.first_sight", "sable.boats_back" }));
         }
+
+        [Test]
+        public void AMemoryBelongsToWhereItsGiverLives()
+        {
+            Assert.AreEqual("Saltmarrow_B", Memories.HomeOf("dotha.nine_songs"), "Dotha lives in Merrow's End");
+            Assert.AreEqual("Saltmarrow_A", Memories.HomeOf("sable.boats_back"), "Sable keeps the quay");
+            Assert.IsNull(Memories.HomeOf("isolde.first_sight"), "Isolde lives nowhere now");
+            foreach (var id in Memories.English.Keys)
+                if (Memories.HomeOf(id) != null) StringAssert.StartsWith("Saltmarrow_", Memories.HomeOf(id), id + "'s home is a built room");
+
+            var w = new WorldState();
+            Assert.IsNull(Memories.BoundFor(w, "Saltmarrow_B"));
+            Memories.Bind(w, "isolde.first_sight");
+            Assert.IsNull(Memories.BoundFor(w, "Saltmarrow_B"), "a memory from elsewhere doesn't anchor here");
+            Memories.Bind(w, "dotha.nine_songs");
+            Assert.AreEqual("dotha.nine_songs", Memories.BoundFor(w, "Saltmarrow_B"));
+            Assert.IsNull(Memories.BoundFor(w, "Saltmarrow_A"));
+            Memories.Drop(w, "Greybox_Saltmarrow_B", 0f, 0f);
+            Assert.IsNull(Memories.BoundFor(w, "Saltmarrow_B"), "a dropped memory isn't carried");
+            Memories.Recover(w);
+            Assert.AreEqual("dotha.nine_songs", Memories.BoundFor(w, "Saltmarrow_B"), "recovered, it is");
+        }
     }
 }

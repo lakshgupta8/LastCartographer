@@ -24,6 +24,29 @@ namespace OWSBG.Core
             { "sable.boats_back", "the count of boats that came back" },
         };
 
+        static readonly Dictionary<string, string> _homes = new Dictionary<string, string>
+        {
+            { "dotha.nine_songs", "Saltmarrow_B" },   // Merrow's End: Dotha lives there
+            { "sable.boats_back", "Saltmarrow_A" },   // the Drowned Quay: Sable's
+        };
+
+        /// <summary>
+        /// The place a memory belongs to: whoever gave it lives there. Isolde's has none; she lives nowhere now. Binding
+        /// a place's memory is the middle of anchoring it (bible 1.3: survey, bind, seal), so the desk asks for one.
+        /// </summary>
+        public static string HomeOf(string id) => _homes.TryGetValue(id ?? "", out var p) ? p : null;
+
+        /// <summary>A memory given by someone in a place the story adds later (and the tests' rooms).</summary>
+        public static void SetHome(string id, string place) { if (place == null) _homes.Remove(id); else _homes[id] = place; }
+
+        /// <summary>A memory she carries that belongs to this place, or null. A dropped memory isn't carried: recover it first.</summary>
+        public static string BoundFor(WorldState w, string place)
+        {
+            if (w == null || string.IsNullOrEmpty(place)) return null;
+            foreach (var id in w.BoundMemories) if (HomeOf(id) == place) return id;
+            return null;
+        }
+
         /// <summary>A memory's words in the player's language ("memory.&lt;id&gt;"; NAR-18).</summary>
         public static string Name(string id) => English.TryGetValue(id ?? "", out var e) ? Loc.T("memory." + id, e) : id;
 

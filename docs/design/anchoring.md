@@ -17,8 +17,9 @@ A fourth state, **Unwritten**, is every place before a decision: fading on story
 ## 2. Rules
 - A fate is **decided once and final**. The story may comment on it forever; it never changes.
 - Deciding is a **story beat**: written from Yarn in the scene where it happens, or from the drafting desk for
-  places Wren seals herself. The desk requires every vantage in the place surveyed; the bind (a true memory from
-  a resident) is a story requirement the desk does not yet check (open).
+  places Wren seals herself. The desk requires every vantage in the place surveyed. To **anchor**, it also asks
+  for the bind: a true memory from someone who lives there, carried now (§9). To **hold**, it asks for the bounds
+  walked. **Release** asks for nothing but the survey.
 - Anchored and Held places **stop fading** (`FadeStages.Advance` refuses). Released places fade on.
 - Wardens hunt unlicensed surveyors: from the end of Act 1 they are hostile to Wren in every anchored town.
 - Endings count fates: the Cartographer's Rest needs zero anchors; the Unwritten ending's world shrinks to what is
@@ -59,8 +60,34 @@ set. Saves need nothing extra.
   in the room is surveyed. Sable notices an anchored Saltmarrow.
 
 ## 8. Open
-- The bind requirement at the desk (a memory from a resident), and whether Wren can anchor without a licence.
+- Whether Wren can anchor without a licence.
+- Whether sealing should spend the memory. It doesn't: she keeps it, and it is still hers to lose to a death and
+  recover. Bible 10's "offering one weakens that place's anchor" is for the doors and birds that ask for memories,
+  which are still to come.
 - Hold is performed by the bounds-walk (`docs/design/bounds-walk.md`, DES-13): the desk refuses Hold until the place is walked.
 - Wardens before Act 1's end measure and look away (above). Whether some should be absent instead (a hub with
   none until the town is anchored) is a per-town choice for DES-09 to DES-11.
 - Whether Release should advance the fade one stage on the spot (the story says it continues, not that it jumps).
+
+## 9. The bind
+
+Anchoring is survey, bind, seal (bible 1.3). The desk checks the middle step with `Memories.BoundFor(world, place)`:
+a memory Wren carries whose giver lives in the place (`Memories.HomeOf`).
+
+| Memory | Given by | Home | Where it's given |
+|---|---|---|---|
+| `dotha.nine_songs` | Dotha | `Saltmarrow_B`, Merrow's End | "Write it as it was" (`Merrow_Dotha_Season`) |
+| `sable.boats_back` | Sable | `Saltmarrow_A`, the Drowned Quay | once the widow is decided (`Quay_Sable_Widow`) |
+| `isolde.first_sight` | Isolde | none: she lives nowhere now | the prologue's lesson |
+
+- **No memory, no anchor.** The desk refuses, and the blurb says "Bind a true memory from someone who lives here
+  first." With one, it names the memory it binds.
+- **Carried means carried.** A memory lost to a death is in the smudge, not in her ink. The desk refuses until she
+  has struck the smudge down.
+- **Sealing doesn't spend it.**
+- **A place with nobody to give one can't be anchored by Wren:** the lighthouses, the Salt Chapel, the Edge. She can
+  still release them.
+- **Story anchors don't ask.** The Guild anchors Lowmarket in the strike scene itself (`<<anchor>>`), and the bind is
+  the Guild's business.
+- Tests: `MemoriesTests.AMemoryBelongsToWhereItsGiverLives` (edit), and
+  `AnchoringTests.DeskAnchorsOnlyWithAMemoryFromThePlace` (play).

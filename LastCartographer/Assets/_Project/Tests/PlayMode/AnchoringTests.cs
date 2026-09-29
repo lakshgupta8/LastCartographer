@@ -189,8 +189,9 @@ namespace OWSBG.Tests
             Assert.AreEqual(0f, HeldState.CurrentLevel, 0.01f, "leaving the room takes the grade with it");
         }
 
-        [UnityTest]
-        public IEnumerator DeskSealsAFateOnlyOnceThePlaceIsSurveyed()
+        DeskMenu? _menu;
+
+        IEnumerator OpenDesk()
         {
             _vantageGo = new GameObject("Vantage_Test") { layer = Layer("Trigger") };
             _vantageGo.transform.SetParent(_room!.transform, false);
@@ -201,10 +202,54 @@ namespace OWSBG.Tests
             _ui = new GameObject("UI");
             _ui.AddComponent<UIDocument>();
             _ui.AddComponent<UiRoot>();
-            var menu = _ui.AddComponent<DeskMenu>();
+            _menu = _ui.AddComponent<DeskMenu>();
             yield return null; yield return null;
-            menu.Open(_ctrl!);
+            _menu.Open(_ctrl!);
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator DeskAnchorsOnlyWithAMemoryFromThePlace()
+        {
+            yield return OpenDesk();
+            var menu = _menu!;
+            var w = GameState.World;
+            w.MarkSurveyed("Anchor_Test/Post");
+            menu.SetRow(menu.FateRow);
+            menu.Step(1);   // -> anchor
+            Assert.AreEqual(PlaceFate.Anchored, menu.Proposed);
+            Assert.IsFalse(menu.Confirm(), "survey, bind, seal: nothing bound from here yet");
+            StringAssert.Contains("true memory", Blurb(menu), "the desk says what it wants");
+
+            Memories.SetHome("test.keeper", "Anchor_Test");
+            try
+            {
+                Memories.Bind(w, "test.keeper");
+                Memories.Drop(w, "Anchor_Test", 0f, 0f);
+                Assert.IsFalse(menu.Confirm(), "a dropped memory isn't carried: recover it first");
+                Memories.Recover(w);
+                menu.Refresh();
+                StringAssert.Contains("test.keeper", Blurb(menu), "the desk names what it binds");
+                Assert.IsTrue(menu.Confirm(), "bound: J seals it");
+                Assert.AreEqual(PlaceFate.Anchored, Places.FateOf(w, "Anchor_Test"));
+                Assert.IsTrue(Memories.Has(w, "test.keeper"), "sealing doesn't spend the memory");
+            }
+            finally { Memories.SetHome("test.keeper", null); }
+            menu.Close();
+        }
+
+        static string Blurb(DeskMenu menu)
+        {
+            var texts = new System.Collections.Generic.List<string>();
+            menu.Panel.Query<Label>().ForEach(l => texts.Add(l.text));
+            return string.Join(" | ", texts);
+        }
+
+        [UnityTest]
+        public IEnumerator DeskSealsAFateOnlyOnceThePlaceIsSurveyed()
+        {
+            yield return OpenDesk();
+            var menu = _menu!;
             int fateRow = menu.FateRow;
             Assert.AreEqual(1 + GameState.World.Equipment.SlotCount, fateRow, "the place row sits under the slots");
             Assert.AreEqual(menu.RowCount, menu.Panel.Q("rows").childCount);
@@ -219,6 +264,7 @@ namespace OWSBG.Tests
             Assert.IsTrue(menu.CanSeal);
             menu.Step(1);   // unwritten -> anchor
             Assert.AreEqual(PlaceFate.Anchored, menu.Proposed);
+            Assert.IsFalse(menu.Confirm(), "anchoring wants a memory from the place (DeskAnchorsOnlyWithAMemoryFromThePlace)");
             menu.Step(1);   // -> hold
             Assert.AreEqual(PlaceFate.Held, menu.Proposed);
             Assert.IsFalse(menu.Confirm(), "hold is the walk's to give, not the seal's (DES-13)");

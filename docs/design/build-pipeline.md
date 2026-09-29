@@ -133,8 +133,10 @@ The second run got the image and died silently: no licence secrets. The third, w
 Input System naming the space key as nothing on a machine with no keyboard, so a prompt read "Hold  ";
 `Controls.DisplayName` now falls back to the binding's own name. Play mode: the editor crashed with a
 segmentation fault in `ScriptingCoverage::FilterRecordedMethods` during the assembly reload for play mode. GameCI
-switches code coverage on by default and Unity 6 on Linux dies inside it; `coverageEnabled: false` on the test
-step leaves it off. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
+switches code coverage on by default and Unity 6 on Linux dies inside it. The action's `coverageEnabled: false`
+didn't take (the fourth run): the action hands it to GameCI's CLI as `--no-coverageEnabled`, and the CLI's parser
+has negation switched off, so it warned "Unknown argument" and left coverage on. The CLI also reads every option
+from a `GAME_CI_`-prefixed environment variable, so the test step sets `GAME_CI_COVERAGE_ENABLED=false`. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
 
 ## Open
 

@@ -49,15 +49,18 @@ jobs:
           df -h /
       - uses: game-ci/unity-test-runner@v4
         id: tests
+        env:
+          # Unity 6 on Linux segfaults in ScriptingCoverage during the play-mode assembly reload (the third run,
+          # 2026-09-29), so coverage stays off. The action's coverageEnabled input reaches the CLI as
+          # --no-coverageEnabled, which the CLI's parser refuses ("Unknown argument", the fourth run); the CLI reads
+          # its options from GAME_CI_* variables too, and this one it takes.
+          GAME_CI_COVERAGE_ENABLED: 'false'
         with:
           projectPath: ${{ env.PROJECT_PATH }}
           unityVersion: ${{ env.UNITY_VERSION }}
           testMode: ${{ matrix.mode }}
           # Our play tests only: the Input System is testable (for its fixture) and would bring its own.
           customParameters: ${{ matrix.mode == 'playmode' && '-assemblyNames OWSBG.Tests.PlayMode' || '' }}
-          # Unity 6 on Linux segfaults in ScriptingCoverage during the play-mode assembly reload (the third run,
-          # 2026-09-29); nobody reads a coverage report here.
-          coverageEnabled: false
           artifactsPath: test-results-${{ matrix.mode }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Test results (${{ matrix.mode }})

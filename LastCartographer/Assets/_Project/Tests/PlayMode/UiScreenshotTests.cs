@@ -37,6 +37,9 @@ namespace OWSBG.Tests
             }
         }
 
+        /// <summary>A frame slower than this is a software rasteriser; this machine draws the scene in a few ms.</summary>
+        const float SlowFrameMs = 250f;
+
         static string OutDir => Path.Combine(Directory.GetParent(Application.dataPath).Parent.FullName, "logs");
 
         [UnityTest]
@@ -51,6 +54,15 @@ namespace OWSBG.Tests
             var ui = UiRoot.Instance;
             Assert.IsNotNull(ui, "UI root in the persistent scene");
             for (int i = 0; i < 40; i++) yield return new WaitForFixedUpdate();
+
+            // The pictures are for a person to look at, drawn through the real pipeline. A machine with no GPU (CI's
+            // runners draw in software) takes seconds a frame over this scene and never finishes the five pages in
+            // time (the fifth CI run: two pictures, then the three-minute timeout). Measure, and step aside there.
+            float frameStart = Time.realtimeSinceStartup;
+            for (int i = 0; i < 10; i++) yield return null;
+            float frameMs = (Time.realtimeSinceStartup - frameStart) * 100f;
+            if (frameMs > SlowFrameMs)
+                Assert.Ignore("frames take " + frameMs.ToString("0") + " ms here (" + SystemInfo.graphicsDeviceName + "); the screenshots want a GPU");
 
             const int w = 1280, h = 720;
             var uiRt = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32);

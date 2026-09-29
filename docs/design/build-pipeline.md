@@ -139,7 +139,10 @@ has negation switched off, so it warned "Unknown argument" and left coverage on.
 from a `GAME_CI_`-prefixed environment variable, so the test step sets `GAME_CI_COVERAGE_ENABLED=false`.
 The fifth run: edit mode 185 of 185 on Linux, the job still marked failed because posting the results check was
 refused ("Resource not accessible by integration"); the workflow now asks for `checks: write` (and only
-`contents: read` besides). Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
+`contents: read` besides). Play mode 261 of 262: `UiScreenshotTests` wrote two of its five pictures and hit its three-minute timeout.
+The runner has no GPU and draws the whole persistent scene in software, seconds a frame (the lantern render
+tests, on a small scene, passed). The test now times ten frames first and reports itself ignored, with the
+number and the device, when a frame takes over 250 ms; on this machine it runs in full (3.3 s). Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
 
 ## Open
 

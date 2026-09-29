@@ -140,9 +140,11 @@ from a `GAME_CI_`-prefixed environment variable, so the test step sets `GAME_CI_
 The fifth run: edit mode 185 of 185 on Linux, the job still marked failed because posting the results check was
 refused ("Resource not accessible by integration"); the workflow now asks for `checks: write` (and only
 `contents: read` besides). Play mode 261 of 262: `UiScreenshotTests` wrote two of its five pictures and hit its three-minute timeout.
-The runner has no GPU and draws the whole persistent scene in software, seconds a frame (the lantern render
-tests, on a small scene, passed). The test now times ten frames first and reports itself ignored, with the
-number and the device, when a frame takes over 250 ms; on this machine it runs in full (3.3 s). Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
+The runner has no GPU and draws in software (the lantern render tests, on a small scene, passed). A first guard
+timed ten plain frames, which were fast enough; the sixth run wrote one picture and timed out again, so the slow
+part is the capture itself (a forced render into a texture, two read-backs and a per-pixel blend), over a minute
+each there. The test now times its first capture and reports itself ignored, with the seconds and the device,
+past ten seconds; here a capture takes well under one and the whole test 4 s. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
 
 ## Open
 

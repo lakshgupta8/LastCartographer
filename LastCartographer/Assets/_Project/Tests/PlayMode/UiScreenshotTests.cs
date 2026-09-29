@@ -37,8 +37,8 @@ namespace OWSBG.Tests
             }
         }
 
-        /// <summary>A frame slower than this is a software rasteriser; this machine draws the scene in a few ms.</summary>
-        const float SlowFrameMs = 250f;
+        /// <summary>A capture slower than this is a software rasteriser: here one takes well under a second.</summary>
+        const float SlowCaptureSeconds = 10f;
 
         static string OutDir => Path.Combine(Directory.GetParent(Application.dataPath).Parent.FullName, "logs");
 
@@ -54,15 +54,6 @@ namespace OWSBG.Tests
             var ui = UiRoot.Instance;
             Assert.IsNotNull(ui, "UI root in the persistent scene");
             for (int i = 0; i < 40; i++) yield return new WaitForFixedUpdate();
-
-            // The pictures are for a person to look at, drawn through the real pipeline. A machine with no GPU (CI's
-            // runners draw in software) takes seconds a frame over this scene and never finishes the five pages in
-            // time (the fifth CI run: two pictures, then the three-minute timeout). Measure, and step aside there.
-            float frameStart = Time.realtimeSinceStartup;
-            for (int i = 0; i < 10; i++) yield return null;
-            float frameMs = (Time.realtimeSinceStartup - frameStart) * 100f;
-            if (frameMs > SlowFrameMs)
-                Assert.Ignore("frames take " + frameMs.ToString("0") + " ms here (" + SystemInfo.graphicsDeviceName + "); the screenshots want a GPU");
 
             const int w = 1280, h = 720;
             var uiRt = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32);
@@ -81,7 +72,15 @@ namespace OWSBG.Tests
             // Some ink and a lost mask so the HUD shows mixed states.
             wren.GetComponent<Inkwell>().Add(4);
             wren.GetComponent<WrenVitals>().Damage(1);
+            // The pictures are for a person to look at, drawn through the real pipeline and read back. On a machine
+            // with no GPU (CI's runners draw in software) one capture takes over a minute and five never finish in the
+            // test's three minutes (CI runs five and six: two pictures, then one). The first capture is the measure:
+            // well under a second here; past SlowCaptureSeconds, step aside and say so.
+            float captureStart = Time.realtimeSinceStartup;
             yield return Capture(cam, camRt, uiRt, "ui-hud.png");
+            float captureSeconds = Time.realtimeSinceStartup - captureStart;
+            if (captureSeconds > SlowCaptureSeconds)
+                Assert.Ignore("one capture took " + captureSeconds.ToString("0.0") + " s here (" + SystemInfo.graphicsDeviceName + "); the screenshots want a GPU");
 
             var svc = DialogueService.Instance;
             Assert.IsNotNull(svc);

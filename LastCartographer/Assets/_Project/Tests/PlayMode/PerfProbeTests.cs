@@ -49,7 +49,7 @@ namespace OWSBG.Tests
             RoomManager.Transitioned += seen;
             var go = new GameObject("~PerfProbe");
             var probe = go.AddComponent<PerfProbe>();
-            probe.Rooms = 2; probe.SampleFrames = 30; probe.SettleFrames = 5; probe.RoomTimeout = 20f;
+            probe.Rooms = 2; probe.SampleFrames = 30; probe.SettleFrames = 5; probe.SettleSeconds = 0.1f; probe.RoomTimeout = 20f;
             probe.OutPath = System.IO.Path.Combine(Application.temporaryCachePath, "perf-test.json");
             try
             {
@@ -78,6 +78,15 @@ namespace OWSBG.Tests
                 }
                 Assert.IsTrue(System.IO.File.Exists(probe.OutPath), "the report is written");
                 StringAssert.Contains("\"transitions\"", System.IO.File.ReadAllText(probe.OutPath));
+
+                // The report reads back as Core's, with the card classed, and a two-room walk proves nothing (PRO-06).
+                var back = PerfReport.FromJson(System.IO.File.ReadAllText(probe.OutPath));
+                Assert.AreEqual(r.rooms.Count, back.rooms.Count);
+                Assert.AreEqual(PerfTarget.Classify(SystemInfo.graphicsDeviceName).cls.ToString(), back.gpuClass);
+                foreach (var room in back.rooms) Assert.GreaterOrEqual(room.loadCollections, 0);
+                var verdict = PerfTarget.Judge(back, "the test's walk");
+                Assert.IsFalse(verdict.Proves);
+                Assert.IsTrue(verdict.Reasons.Exists(x => x.Contains("2 rooms sampled of " + PerfTarget.Rooms)), string.Join("; ", verdict.Reasons));
             }
             finally
             {

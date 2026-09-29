@@ -71,7 +71,7 @@ GitHub Actions with GameCI's Unity actions, on every push to `main`, every pull 
 |---|---|---|
 | Tests (editmode, playmode) | Ubuntu, GameCI's Unity 6000.3.7f1 image | both suites (play mode limited to `OWSBG.Tests.PlayMode`), results as a check and an artifact |
 | Windows build | Ubuntu | `unity-builder` calls `GameBuild.BuildFromCommandLine`; the build is an artifact for 14 days |
-| Smoke run | Windows | downloads the build and runs `tools/smoke.ps1` against it |
+| Smoke run | Windows | downloads the build and runs `tools/smoke.ps1` against it, then the probe headless (`tools/perf.ps1 -Batch`: transitions and garbage, `docs/design/performance.md`) |
 | Steam upload | Ubuntu, `v*` tags only, the `steam` environment | `game-ci/steam-deploy` uploads the build folder as depot 1 and sets it live on `STEAM_BRANCH` (default `beta`) |
 
 - **Library cache:** the Library folder is cached per job, keyed on the package lock and the editor version.

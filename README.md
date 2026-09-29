@@ -38,7 +38,7 @@ how to fly, a map that is forgetting itself, and a small cartographer with a nee
 | `docs/design/gauntlets.md` | The six traversal gauntlets, one per region but the Blank, each around its ability; falls back to solid ground; the Road That Stops' lantern-radius cobbles; Inkthread (the Thread button) and the Windmemory glide |
 | `docs/design/moving-camp.md` | Windreach's hub on the move (`Camp`): three fires at three sites, the camp walking on at first light, the bedroll that walks her with it for a day, ashes where it isn't; and travel that takes an hour a way on the macro map (`Travel`) |
 | `docs/design/localisation.md` | The player's language: `Loc` for UI and captions, Yarn line ids and strings CSVs for dialogue, the catalogs keyed by id (`DataText`, `WorldText`), plurals and lists, the pseudo-locale and its audit of every page, `LocalizationSetup.Refresh`, and what is still open |
-| `docs/design/performance.md` | The 60 fps lock and 60 Hz physics (`FrameRate`), the budgets (`PerfBudget`), the `-perf` probe of a built player (`PerfProbe`, `tools/perf.ps1`), the first measurements, and the per-frame garbage it found and fixed |
+| `docs/design/performance.md` | The 60 fps lock and 60 Hz physics (`FrameRate`), the budgets (`PerfBudget`), the `-perf` probe of a built player (`PerfProbe`, `tools/perf.ps1`), the first measurements, and the per-frame garbage it found and fixed; PRO-06's target: cards classed against a GTX 1060 (`PerfTarget`), the gate that reads testers' runs (`tools/perf-gate.ps1`), and the CPU-side run in CI |
 | `docs/design/feel-test.md` | The controller feel-test (`FeelTest`), the M0 gate: the seven-station course (`FeelCourseRooms`, `-feel`), the twelve questions, what the game records while a tester runs (`FeelRecorder`) and the bar it is held to |
 | `docs/design/tuning.md` | The tuning pass (`Tuning`): a hit takes one mask and a slam two, telegraph floors and each tier's typical read, boss health from tier and access, enemy families, the Charters' quill damage, the Flourishes' ink trades and the Inkwell's tempo; every kit declares its attacks (`Boss.Kit()`) and the audit holds them to the rules |
 | `docs/design/tracker.md` | The plan as data (`Plan`) and the tracker made from it (`tools/tracker.ps1`: milestones, labels, one issue per row), and the weekly build on CI's schedule |
@@ -186,8 +186,10 @@ pwsh tools/build.ps1 -Development     # a development build
 `OWSBG.Build.GameBuild` builds the Addressables content and the 64-bit Windows player, stamped with its version (from the
 git tag) and commit, shown at the foot of the options page. `-smoke` makes a build boot, walk two rooms and start a
 conversation, then quit with 0 or an error code (`tools/smoke.ps1`); `-perf` walks six rooms and measures frames,
-transitions and garbage against the budgets (`tools/perf.ps1`, `docs/design/performance.md`). CI (`.github/workflows/ci.yml`, GameCI) runs both test
-suites, the Windows build and its smoke run on every push, and uploads to Steam from a `v*` tag; the secrets it needs,
+transitions and garbage against the budgets (`tools/perf.ps1`, `docs/design/performance.md`). Testers on the target card
+(a GTX 1060) run `pwsh tools/perf.ps1 -Out logs/perf/<machine>.json`, and `pwsh tools/perf-gate.ps1` says whether PRO-06 is
+met. CI (`.github/workflows/ci.yml`, GameCI) runs both test
+suites, the Windows build, its smoke run and a CPU-side probe (transitions and garbage; the runners have no GPU) on every push, and uploads to Steam from a `v*` tag; the secrets it needs,
 and Steam's depot scripts (`tools/steam-upload.ps1`), are in `docs/design/build-pipeline.md`.
 
 ## Reporting a bug

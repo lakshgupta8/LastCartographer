@@ -14,7 +14,7 @@ namespace OWSBG.Narrative
     /// The performance probe (PRG-24): <c>LastCartographer.exe -batchmode -perf -perfOut perf.json -logFile perf.log</c>.
     /// With the 60 fps cap lifted, so a frame costs what it costs, it walks a route of rooms from the first one, always
     /// taking the first way on to a room it hasn't seen. In each room it waits for the neighbours' bundles, lets things
-    /// settle, then samples frames (each room once; from a dead end it walks back and tries another way): their times, draw batches, SetPass calls, triangles, and the managed memory each
+    /// settle (a second's half at least, then the load's garbage collected), then samples frames (each room once; from a dead end it walks back and tries another way): their times, draw batches, SetPass calls, triangles, and the managed memory each
     /// allocates. It times every transition, and writes the lot as JSON against <see cref="PerfBudget"/>, one
     /// "[OWSBG] perf:" log line per room and transition. It quits with 0 when everything is within budget, 1 when
     /// something is over, and 2 when a room never came in.
@@ -25,41 +25,19 @@ namespace OWSBG.Narrative
         /// <summary>With it, the first room's quiet-frame allocations are put down to the scripts that make them.</summary>
         public const string AttributeArg = "-perfAttribute";
 
-        [Serializable] public sealed class RoomSample
-        {
-            public string room;
-            public int frames;
-            public float avgMs, p50Ms, p95Ms, p99Ms, maxMs, fps;
-            public float batches, setPass, triangles;
-            public float gcBytesPerFrame = -1f;
-            public int gcCollections;
-        }
-
-        [Serializable] public sealed class TransitionSample
-        {
-            public string from, to;
-            public float ms;
-        }
-
-        [Serializable] public sealed class Report
-        {
-            public string version, device, cpu, graphics, resolution;
-            public int refreshHz;
-            public bool rendering;
-            public List<RoomSample> rooms = new List<RoomSample>();
-            public List<TransitionSample> transitions = new List<TransitionSample>();
-            public List<string> overBudget = new List<string>();
-            public bool passed;
-        }
-
-        public int Rooms { get; set; } = 6;
+        public int Rooms { get; set; } = PerfTarget.Rooms;
         public int SampleFrames { get; set; } = 300;
         public int SettleFrames { get; set; } = 60;
+        /// <summary>
+        /// The least a room settles for, whatever the frame rate: uncapped and unrendered, sixty frames can be over in
+        /// six milliseconds, and the load's garbage then lands in the quiet sample.
+        /// </summary>
+        public float SettleSeconds { get; set; } = 0.5f;
         public float RoomTimeout { get; set; } = 60f;
         public bool QuitWhenDone { get; set; }
         public bool Attribute { get; set; }
         public string OutPath { get; set; }
-        public Report Result { get; private set; }
+        public PerfReport Result { get; private set; }
         public bool Done { get; private set; }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -86,7 +64,8 @@ namespace OWSBG.Narrative
         IEnumerator Start()
         {
             FrameRate.Uncap();
-            var report = new Report
+            var (gpuScore, gpuClass) = PerfTarget.Classify(SystemInfo.graphicsDeviceName);
+            var report = new PerfReport
             {
                 version = BuildInfo.Label,
                 device = SystemInfo.deviceModel,
@@ -95,6 +74,9 @@ namespace OWSBG.Narrative
                 resolution = Screen.width + "x" + Screen.height,
                 refreshHz = (int)Math.Round(Screen.currentResolution.refreshRateRatio.value),
                 rendering = SystemInfo.graphicsDeviceType != UnityEngine.Rendering.GraphicsDeviceType.Null,
+                vramMb = SystemInfo.graphicsMemorySize,
+                gpuScore = gpuScore,
+                gpuClass = gpuClass.ToString(),
             };
             Result = report;
 
@@ -115,8 +97,13 @@ namespace OWSBG.Narrative
                 yield return Wait(() => !rooms.IsPreloading, 10f, _ => { });
                 if (sampled) goto Onward;
                 if (Attribute && report.rooms.Count == 0) yield return AttributeGc(here);
-                for (int i = 0; i < SettleFrames; i++) yield return null;
-                var sample = new RoomSample { room = here };
+                int arrivedCollections = GC.CollectionCount(0);
+                float settleUntil = Time.realtimeSinceStartup + SettleSeconds;
+                for (int i = 0; i < SettleFrames || Time.realtimeSinceStartup < settleUntil; i++) yield return null;
+                var sample = new PerfReport.Room { room = here };
+                // The load's garbage is the transition's, not the quiet frame's: count what it cost, then clear it.
+                sample.loadCollections = GC.CollectionCount(0) - arrivedCollections;
+                GC.Collect();
                 yield return Sample(sample);
                 report.rooms.Add(sample);
                 Debug.Log("[OWSBG] perf: room " + here + ": " + sample.fps.ToString("0") + " fps, avg " + sample.avgMs.ToString("0.00") + " ms, p95 " + sample.p95Ms.ToString("0.00") +
@@ -133,7 +120,7 @@ namespace OWSBG.Narrative
                 rooms.Transition(next, SpawnFor(next, here));
                 yield return Wait(() => rooms.CurrentRoom == next && !rooms.IsTransitioning, RoomTimeout, r => ok = r);
                 if (!ok) { report.overBudget.Add(next + " never came in"); yield return Finish(report, 2); yield break; }
-                var t = new TransitionSample { from = here, to = next, ms = rooms.LastTransitionMs };
+                var t = new PerfReport.Transition { from = here, to = next, ms = rooms.LastTransitionMs };
                 report.transitions.Add(t);
                 Debug.Log("[OWSBG] perf: transition " + here + " → " + next + ": " + t.ms.ToString("0") + " ms");
             }
@@ -169,7 +156,7 @@ namespace OWSBG.Narrative
             return null;
         }
 
-        IEnumerator Sample(RoomSample s)
+        IEnumerator Sample(PerfReport.Room s)
         {
             var times = new List<float>(SampleFrames);
             var batches = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Batches Count");
@@ -242,7 +229,7 @@ namespace OWSBG.Narrative
             catch { return -1; }
         }
 
-        IEnumerator Finish(Report report, int code)
+        IEnumerator Finish(PerfReport report, int code)
         {
             report.passed = code == 0;
             FrameRate.Recap();
@@ -252,7 +239,7 @@ namespace OWSBG.Narrative
                 {
                     var dir = Path.GetDirectoryName(Path.GetFullPath(OutPath));
                     if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-                    File.WriteAllText(OutPath, JsonUtility.ToJson(report, true));
+                    File.WriteAllText(OutPath, report.ToJson());
                 }
                 catch (Exception e) { Debug.LogWarning("[OWSBG] perf: couldn't write " + OutPath + ": " + e.Message); }
             }

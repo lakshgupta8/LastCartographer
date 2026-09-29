@@ -23,9 +23,11 @@ if (-not (Test-Path $answersPath)) {
     Write-Host "the header is: tester,goes,stops,weight,lands,tap,late,early,wall,dash,hits,pogo,hour"
     exit 2
 }
-& $Unity -batchmode -nographics -projectPath $project -executeMethod OWSBG.Setup.FeelGateSetup.Run `
-    -feelAnswers $answersPath -feelSessions $sessionsPath -feelReport $reportPath -quit -logFile $log
-$code = $LASTEXITCODE
+# Unity.exe is a windowed program: "&" would not wait for it, and its exit code would be lost.
+$p = Start-Process -FilePath $Unity -PassThru -NoNewWindow -ArgumentList @("-batchmode", "-nographics", "-projectPath", "`"$project`"", "-executeMethod", "OWSBG.Setup.FeelGateSetup.Run", "-feelAnswers", "`"$answersPath`"", "-feelSessions", "`"$sessionsPath`"", "-feelReport", "`"$reportPath`"", "-quit", "-logFile", "`"$log`"")
+$null = $p.Handle
+$p.WaitForExit()
+$code = $p.ExitCode
 if (Test-Path $reportPath) { Get-Content $reportPath | Write-Host }
 Write-Host "feel gate: exit code $code (0 met, 1 not yet, 2 unreadable); log at $log"
 exit $code

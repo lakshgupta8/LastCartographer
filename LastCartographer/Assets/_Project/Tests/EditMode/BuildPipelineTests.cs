@@ -151,6 +151,9 @@ namespace OWSBG.Tests
             StringAssert.Contains("./tools/smoke.ps1", ci);
             StringAssert.Contains("-smoke", File.ReadAllText(Path.Combine(RepoRoot, "tools/smoke.ps1")));
             Assert.AreEqual("-smoke", OWSBG.Narrative.SmokeTest.Arg);
+            StringAssert.Contains("./tools/perf.ps1 -Exe build/LastCartographer.exe -Batch", ci, "the CPU-side probe runs on the build (PRO-06)");
+            StringAssert.Contains(OWSBG.Narrative.PerfProbe.Arg, File.ReadAllText(Path.Combine(RepoRoot, "tools/perf.ps1")));
+            Assert.IsTrue(File.Exists(Path.Combine(RepoRoot, "tools/perf-gate.ps1")));
         }
     }
 }

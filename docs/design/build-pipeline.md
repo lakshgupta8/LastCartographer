@@ -166,10 +166,14 @@ one error), and `BuildPipelineTests` holds it to the CLI's two patterns. Both te
 
 ## Open
 
-- **CI hasn't run.** The workflow was checked by those tests and a YAML parse, not on GitHub; the first push with
-  the secrets set is its real test.
-  - Building Windows on Ubuntu relies on GameCI's `windows-mono` image.
-  - If that image falls short, the build job can move to `windows-latest`.
+- ~~CI hasn't run.~~ Green end to end on the tenth run (2026-09-29): both test suites, the Windows build (7 min
+  with a warm cache, built on Ubuntu from GameCI's `windows-mono` image) and the smoke run of that build on
+  `windows-latest` (25 s). Each run's failure and its fix are above.
+- **Steam upload hasn't run.** It waits on the `steam` environment's secrets and an app id.
+- **Two warnings to tidy:** a duplicate `System.Runtime.CompilerServices.Unsafe.dll` (Collections' test copy and
+  Yarn Spinner's analyser copy; Unity picks the newer on both machines), and GitHub's notice that the v4 actions
+  target Node 20.
+- **Play mode takes about twenty-five minutes on CI**, against nine here; the UI screenshots don't run there.
 - **No Steamworks SDK in the game** (overlay, achievements, cloud saves) and no store assets; this row only
   packages and uploads. An app id and depot id come with the Steamworks partner account.
 - **Not yet in the pipeline:** code signing, a Mac or Linux build, and IL2CPP.

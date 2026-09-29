@@ -23,7 +23,8 @@ namespace OWSBG.World
         public float arenaMinX = 0.5f, arenaMaxX = 17.5f;
         public int lampCount = 4;
         public float lampHeight = 5f;
-        public float beatSeconds = 0.8f;
+        /// <summary>Emberdown's beat (AUD-01): the chorus keeps the roll-call's time.</summary>
+        public float beatSeconds = AudioDirection.BeatOf(Region.Emberdown);
         [Range(0.2f, 1f)] public float litFraction = 0.6f;
         public float bodyHeight = 3f;
         public float waitSeconds = 0.9f;

@@ -32,6 +32,8 @@ namespace OWSBG.World
         [SerializeField] string _id;
         [SerializeField] string _placeId;
         [SerializeField] float _secondsPerBeat = 3f;
+        /// <summary>The name is called this much of a beat ahead: the roll-call's pickup (AudioDirection.RollCall).</summary>
+        public const float CallAhead = 0.5f;
         [SerializeField] int _missesAllowed = 3;
         [SerializeField] List<Verse> _verses = new List<Verse>();
         [Tooltip("Things that should stand still while the walk runs (NPC schedules of the chorus).")]
@@ -134,7 +136,7 @@ namespace OWSBG.World
                 if (_wren == null || _wren.Frozen) return;
                 State = Phase.Walking;
                 SetPaused(true);
-                _t = _secondsPerBeat * 0.5f;   // a half-beat count-in before the first name
+                _t = _secondsPerBeat * CallAhead;   // a half-beat count-in before the first name
                 _called = false;
                 Started?.Invoke(this);
                 Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", VerseTitle(VerseIndex) ?? Loc.T("caption.rollcall.first", "verse one")), 2.5f);
@@ -148,7 +150,7 @@ namespace OWSBG.World
             if (beat == null) { Finish(); return; }
 
             // The name is called half a beat before it lands.
-            if (!_called && _t >= _secondsPerBeat * 0.5f)
+            if (!_called && _t >= _secondsPerBeat * CallAhead)
             {
                 _called = true;
                 Called = beat;

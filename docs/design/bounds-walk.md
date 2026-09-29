@@ -8,7 +8,9 @@ how **Hold** (anchoring.md) is actually performed. Runtime: `BoundsWalk` (World)
 - A walk is **verses**; a verse is **beats**; every beat names a **bound**: a spot in the room with a name the
   people use ("Dotha's stoop", "the tether-post"). The chorus calls the name half a beat ahead; when the beat
   lands Wren must be **standing in the bound** (a radius, 1.6 units). No button: the walk is where you are.
-- A beat is seconds, not frames: 3 s in the greybox (a slow roll-call), 2.4 s in Emberdown's, 3.6 s in Hollowvein's.
+- A beat is seconds, not frames, and a whole number of the region's music beats (AUD-01,
+  `docs/design/audio-direction.md`): 3.6 s at Merrow's End (four of Saltmarrow's), 2.4 s in Emberdown's (three),
+  3.2 s in Hollowvein's (four). The call half a beat ahead is the roll-call's pickup.
   It is deliberately slow and warm; the game's alternative to the Guild's cold seal.
 - **Three misses in a verse** and the verse starts again from its first beat, misses forgiven. Hits are never
   taken back. There is no time limit and no death: the only cost is the verse again.

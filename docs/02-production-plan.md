@@ -172,7 +172,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 
 | ID | Task | M | Ref | after |
 |---|---|---|---|---|
-| AUD-01 `[ ]` | Audio direction: instrumentation per region, the roll-call as leitmotif, combat mix rules | M0 | SB-3.4 | NAR-01 |
+| AUD-01 `[~]` | Audio direction: instrumentation per region, the roll-call as leitmotif, combat mix rules; v1 in `docs/design/audio-direction.md`: each region's beat, mode, instruments, silence and ambience layers to the bible's mood (`AudioDirection`), with the game's rhythms put on its grid (smudges flicker a beat each, the Collapse and the Complete Survey fight to their regions' beats, the Merrow's End walk is four Saltmarrow beats); Runa's roll-call as notes and its nine uses in four forms, whole only in the true ending; a tell per attack kind within the fastest read, and the mix rules that keep them, held against `Mix` and the floors; delivery specs for AUD-02 onward; no sound exists yet | M0 | SB-3.4 | NAR-01 |
 | AUD-02 `[ ]` | The roll-call song (Runa; the whale; the true-ending chorus) | M1 | SB-8.1, 9.2 | AUD-01 |
 | AUD-03 `[ ]` | Wren SFX: strikes, pogo, dash, thread, Bind, survey; hit and kill layers | M1 | CMB-2 | CMB-02 |
 | AUD-04 `[ ]` | Saltmarrow theme, Lamp-Keeper boss theme | M1 | SB-4.1 | AUD-01 |

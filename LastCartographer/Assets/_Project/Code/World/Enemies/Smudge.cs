@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -39,7 +40,15 @@ namespace OWSBG.World
             base.Awake();
             Body.gravityScale = 0f;
             _inkBlock = new MaterialPropertyBlock();
+            // "Their rhythm is the region's music tempo" (combat doc 5, AUD-01): drawn on the beat, undrawn on the
+            // off-beat. A smudge on no region (a test's scene) keeps its own numbers.
+            var region = Mix.RegionOf(gameObject.scene.name);
+            if (region.HasValue) (_drawnSeconds, _undrawnSeconds) = AudioDirection.SmudgeCycle(region.Value);
         }
+
+        /// <summary>One flicker, drawn then undrawn.</summary>
+        public float CycleSeconds => _drawnSeconds + _undrawnSeconds;
+        public float DrawnSeconds => _drawnSeconds;
 
         protected override bool AcceptsHit(in HitInfo hit) => IsDrawn;
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -18,7 +19,8 @@ namespace OWSBG.World
         public float floorY = 0f;
         public float arenaMinX = 0.5f, arenaMaxX = 17.5f;
         public int sections = 6;
-        public float[] beatSeconds = { 0.9f, 0.75f, 0.6f };
+        /// <summary>Each phase fights to its region's beat (AUD-01): Saltmarrow's tide, Emberdown's ash, Halden's late afternoon.</summary>
+        public float[] beatSeconds = { AudioDirection.BeatOf(Region.Saltmarrow), AudioDirection.BeatOf(Region.Emberdown), AudioDirection.BeatOf(Region.Halden) };
         public int verseBeats = 8, breakBeats = 2;
         public float fixSeconds = 0.6f;
         public int fixDamage = 1;

@@ -409,7 +409,7 @@ namespace OWSBG.Tests
 
             while (cs.Phase < 2) cs.ForcePool(2).TakeHit(Strike(Vector2.down));
             Assert.AreEqual(2, cs.Stride, "Emberdown's ash walks two a beat");
-            Assert.AreEqual(0.75f, cs.BeatLength, 0.001f);
+            Assert.AreEqual(AudioDirection.BeatOf(Region.Emberdown), cs.BeatLength, 0.001f, "Emberdown's beat");
             Assert.AreEqual("Emberdown's ash", cs.Ink);
             while (cs.Phase < 3) cs.ForcePool(2).TakeHit(Strike(Vector2.down));
             Assert.AreEqual(3, cs.Stride);

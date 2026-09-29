@@ -27,6 +27,8 @@ namespace OWSBG.Core
     public static class Islands
     {
         public const string GenericNode = "Island_Remnant";
+        /// <summary>The people of an anchored place whose seal was loosened (Offerings): half-remembered, the place itself still standing.</summary>
+        public const string HalfNode = "Island_Half";
         /// <summary>Island rooms are scenes made at runtime (PRG-20), named for what they were.</summary>
         public const string ScenePrefix = "Island_";
         /// <summary>The Hollow's far edge (Blank_Hollow_3), where the chain of islands begins and the first island's west exit leads.</summary>
@@ -41,12 +43,15 @@ namespace OWSBG.Core
             /// <summary>The released place a generic island is made from; null for an authored one.</summary>
             public string PlaceId;
             public Island Island;
+            /// <summary>A half-island: the place is anchored and stands where it is; only its people drift, half-remembered.</summary>
+            public bool IsHalf;
             public bool IsGeneric => Island == null;
         }
 
         public static bool IsIslandScene(string scene) => !string.IsNullOrEmpty(scene) && scene.StartsWith(ScenePrefix);
         public static string SceneOf(Island i) => ScenePrefix + i.Id;
         public static string SceneOfPlace(string place) => ScenePrefix + place;
+        public static string SceneOfHalf(string place) => ScenePrefix + "Half_" + place;
 
         /// <summary>What a released place was called: its plan's name, its atlas name, or its id read aloud.</summary>
         public static string PlaceName(string place)
@@ -58,6 +63,7 @@ namespace OWSBG.Core
             var list = new List<Drift>();
             foreach (var i in Present(w)) list.Add(new Drift { Scene = SceneOf(i), Name = i.Name, Node = i.Node, Island = i });
             foreach (var p in GenericPlaces(w)) list.Add(new Drift { Scene = SceneOfPlace(p), Name = PlaceName(p), Node = GenericNode, PlaceId = p });
+            foreach (var p in HalfPlaces(w)) list.Add(new Drift { Scene = SceneOfHalf(p), Name = PlaceName(p), Node = HalfNode, PlaceId = p, IsHalf = true });
             return list;
         }
 
@@ -103,7 +109,24 @@ namespace OWSBG.Core
             return list;
         }
 
-        /// <summary>How many islands the Blank holds beyond its fixed three.</summary>
-        public static int Count(WorldState w) => Present(w).Count + GenericPlaces(w).Count;
+        /// <summary>
+        /// Anchored places whose seal was loosened, a memory of theirs given away (Offerings.Weakened): the place stays where
+        /// it is, held, and its people drift in as a half-island. Bible 10's cost, seen from inside.
+        /// </summary>
+        public static List<string> HalfPlaces(WorldState w)
+        {
+            var list = new List<string>();
+            foreach (var kv in w.Flags)
+            {
+                if (!kv.Key.StartsWith("place.") || !kv.Key.EndsWith(".weakened") || kv.Value <= 0) continue;
+                var place = kv.Key.Substring("place.".Length, kv.Key.Length - "place.".Length - ".weakened".Length);
+                if (OWSBG.Core.Places.FateOf(w, place) == PlaceFate.Anchored) list.Add(place);
+            }
+            list.Sort(StringComparer.Ordinal);
+            return list;
+        }
+
+        /// <summary>How many islands the Blank holds beyond its fixed three, half-islands counted.</summary>
+        public static int Count(WorldState w) => Present(w).Count + GenericPlaces(w).Count + HalfPlaces(w).Count;
     }
 }

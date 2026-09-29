@@ -25,7 +25,16 @@ namespace OWSBG.Core
             { "kettil.count", "the count at the bell, with you in it" },
             { "teodor.eleven_names", "eleven villages, in the order he sealed them" },
             { "idrenne.standing_place", "where Idrenne stood when she learned it" },
+            { "tam.next_spring", "next spring, eleven years running" },
         };
+
+        /// <summary>
+        /// Memories bound from the Stillness (bible 5.1): true, and the same every year. One binds, and holds nothing:
+        /// it can't be the bind that anchors a place, and nothing that asks will take it. It is carried, and dropped and
+        /// recovered like any ink. The Stillness, in the hand.
+        /// </summary>
+        static readonly HashSet<string> _still = new HashSet<string> { "tam.next_spring" };
+        public static bool IsStill(string id) => _still.Contains(id ?? "");
 
         static readonly Dictionary<string, string> _homes = new Dictionary<string, string>
         {
@@ -34,6 +43,7 @@ namespace OWSBG.Core
             { "kettil.count", "Emberdown_Rest_2" },            // Kettil's Rest, the square: the walk there should hold the same place
             { "teodor.eleven_names", "Verdance_House_2" },     // the Quiet House's cloister: Teodor's
             { "idrenne.standing_place", "Windreach_Camp_1" },  // the walkers' post: the one wagon that stays
+            { "tam.next_spring", "Halden_Hall_2" },            // the Journeyman's Hall: Tam's, and still (it anchors nothing)
         };
 
         /// <summary>
@@ -49,7 +59,7 @@ namespace OWSBG.Core
         public static string BoundFor(WorldState w, string place)
         {
             if (w == null || string.IsNullOrEmpty(place)) return null;
-            foreach (var id in w.BoundMemories) if (HomeOf(id) == place) return id;
+            foreach (var id in w.BoundMemories) if (HomeOf(id) == place && !IsStill(id)) return id;
             return null;
         }
 

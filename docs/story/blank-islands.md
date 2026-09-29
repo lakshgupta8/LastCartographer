@@ -24,6 +24,14 @@ went. Only a broken strike puts Lowmarket in the Blank.
 Remnant voice everywhere: half-sentences, present tense, polite. Everyone asks whether she has eaten (Dotha, who
 was never polite, is the exception). Nobody says "I'm dead" (tested).
 
+## 1a. Half-islands (DES-15)
+
+An anchored place whose seal was loosened, a memory of it given to a door or a bird, sends its people into the Blank
+without the place (`Islands.HalfPlaces`, scene `Island_Half_<place>`, node `Island_Half`). They are paler than the
+Remnant and half-remembered: "There was a place. It's still there. We're not. Somebody gave us away." The place
+stays anchored where it is. A held place, its memory given, sends nobody: its people hold it. `IslandsTests` checks
+both.
+
 ## 2. Aury, and the tether
 - **The tether** (`Chain_Sable_Tether`, the Lantern Chain's tether-post, Act 2, once Wren has asked who keeps the
   third lighthouse): "Tether's fifteen. My rowing's free. Don't read anything into that." Writes `sable.tether_sold`

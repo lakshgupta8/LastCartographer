@@ -54,7 +54,7 @@ namespace OWSBG.Core
         public static string Offerable(WorldState w, string asker, string memory)
         {
             var a = Find(asker);
-            if (a == null || w == null || IsDone(w, asker) || string.IsNullOrEmpty(memory)) return null;
+            if (a == null || w == null || IsDone(w, asker) || string.IsNullOrEmpty(memory) || Memories.IsStill(memory)) return null;   // a still memory is only carried
             return w.BoundMemories.Contains(memory) && a.Accepts(memory) ? memory : null;
         }
 
@@ -131,6 +131,15 @@ namespace OWSBG.Core
                 Brief = "Brek, a clan fledgling beside the Gate's carved stones after Wren's leap, not on them. The young stand " +
                         "on a place, not a dare, and he has none: given where Idrenne stood when she learned it, he stands on " +
                         "her fire's stone for the first time. He jumps next spring, he says. The clan sings anyway.",
+            });
+            // Not a keystone trade: the seventh is given whatever she does. The owl asks for what Isolde saw.
+            _all.Add(new Asker
+            {
+                Id = "archivist", Kind = AskerKind.Bird, Room = "Blank_Capital_4", Node = "Capital_Corvin_Argue",
+                Wants = new[] { "isolde.first_sight" }, Opens = "corvin.saw_her",
+                Brief = "Corvin, when the argument falls short and Wren carries Isolde's memory of first seeing her. He asks to " +
+                        "see what Isolde saw. Given it, he sees his granddaughter at the edge of the white, looking straight at " +
+                        "her, and is persuaded. It is the one memory with no home, so it costs only itself: the first thing ever bound, gone.",
             });
         }
     }

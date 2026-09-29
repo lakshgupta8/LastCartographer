@@ -43,6 +43,34 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void AWeakenedAnchorDriftsInHalf()
+        {
+            var w = new WorldState();
+            Places.Anchor(w, "Saltmarrow_B");
+            Assert.AreEqual(0, Islands.Count(w), "anchored and whole: nothing drifts");
+            Memories.Bind(w, "dotha.nine_songs");
+            Assert.IsTrue(Offerings.Offer(w, "chapel_door", "dotha.nine_songs"), "its songs given to the chapel's door");
+            Assert.AreEqual(1, Offerings.Weakened(w, "Saltmarrow_B"));
+            CollectionAssert.AreEqual(new[] { "Saltmarrow_B" }, Islands.HalfPlaces(w));
+            Assert.AreEqual(1, Islands.Count(w));
+            var drifts = Islands.Drifting(w);
+            Assert.AreEqual(1, drifts.Count);
+            Assert.AreEqual("Island_Half_Saltmarrow_B", drifts[0].Scene);
+            Assert.IsTrue(drifts[0].IsHalf);
+            Assert.IsTrue(drifts[0].IsGeneric, "built like a Remnant island, paler");
+            Assert.AreEqual(Islands.HalfNode, drifts[0].Node);
+            Assert.AreEqual("Merrow's End", drifts[0].Name, "named for what it still is");
+            Assert.IsFalse(Islands.Present(w).Any(i => i.Id == "Merrows_End"), "not the released island: the place is still standing");
+            Assert.AreEqual(drifts[0].Node, Islands.Resolve(w, "Island_Half_Saltmarrow_B").Node);
+
+            var held = new WorldState();
+            Places.Hold(held, "Saltmarrow_B");
+            Memories.Bind(held, "dotha.nine_songs");
+            Offerings.Offer(held, "chapel_door", "dotha.nine_songs");
+            Assert.AreEqual(0, Islands.Count(held), "a held place is held by its people: nothing to halve");
+        }
+
+        [Test]
         public void TheDriftIsOrderedAndNamedForWhatThePlacesWere()
         {
             var w = new WorldState();

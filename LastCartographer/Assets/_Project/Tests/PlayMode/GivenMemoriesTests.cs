@@ -72,6 +72,20 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator TamGivesNextSpringAndItHoldsNothing()
+        {
+            yield return _replay.Boot();
+            var w = GameState.World;
+            yield return _replay.Talk("Tam", "Hall_Tam", new[] { 0 });
+            Assert.IsTrue(Memories.Has(w, "tam.next_spring"), "a page, for luck");
+            Assert.IsTrue(_replay.Heard.Any(l => l.Contains("Take a page")));
+            Assert.IsTrue(Memories.IsStill("tam.next_spring"), "the Stillness, in the hand");
+            Assert.IsNull(Memories.BoundFor(w, "Halden_Hall_2"), "it anchors nothing");
+            foreach (var a in Offerings.All) Assert.IsFalse(Offerings.CanOffer(w, a.Id, "tam.next_spring"), a.Id);
+            Assert.IsNotEmpty(Flavour.ForMemory("tam.next_spring"));
+        }
+
+        [UnityTest]
         public IEnumerator KettilAndTeodorNoticeABreak()
         {
             yield return _replay.Boot();

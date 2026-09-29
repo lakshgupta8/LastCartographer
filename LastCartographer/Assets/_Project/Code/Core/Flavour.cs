@@ -151,6 +151,7 @@ namespace OWSBG.Core
             Add("memory", "kettil.count", "Runa's count, Mother's rule. Everyone in it, and me. Six hundred and twelve, sung.");
             Add("memory", "teodor.eleven_names", "Teodor's eleven, in the order he sealed them. He says them like apologies.");
             Add("memory", "idrenne.standing_place", "Idrenne's answer to how. Not the how: where she was standing. Her fire.");
+            Add("memory", "tam.next_spring", "Tam's next spring. Eleven of them, each the first. It binds, and holds nothing.");
             Add("currency", IrisSeed, "The coast's small change. Everyone takes it; nobody knows who planted the first field.");
             Add("currency", VellumScrap, "Offcuts of good vellum. The Guild counts every sheet; these are the ones it lost.");
         }

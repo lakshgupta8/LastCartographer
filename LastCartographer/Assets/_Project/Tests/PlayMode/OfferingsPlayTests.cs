@@ -87,6 +87,27 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator CorvinAsksForIsoldesMemoryWhenTheWordsFallShort()
+        {
+            yield return _replay.Boot();
+            var w = GameState.World;
+            // Ilse unheard, the sky unflown: the argument falls short on all three. She carries Isolde's memory.
+            Memories.Bind(w, "isolde.first_sight");
+            yield return _replay.Talk("Corvin, given what Isolde saw", "Capital_Corvin", new[] { 1, 1, 1, 1, 0 });
+            Assert.AreEqual(Endings.CorvinPersuaded, w.Get(Endings.CorvinStanceFlag), "persuaded by what he saw");
+            Assert.IsTrue(w.Is("corvin.saw_her"));
+            Assert.IsTrue(Offerings.IsGiven(w, "isolde.first_sight"));
+            Assert.IsFalse(Memories.Has(w, "isolde.first_sight"), "the first thing ever bound, gone");
+            Assert.IsTrue(_replay.Heard.Any(l => l.Contains("Looking straight at her")));
+
+            // Without it, the same argument ends where it did.
+            GameState.NewGame(); w = GameState.World;
+            yield return _replay.Talk("Corvin, nothing to give", "Capital_Corvin", new[] { 1, 1, 1, 1 });
+            Assert.AreEqual(Endings.CorvinUnpersuaded, w.Get(Endings.CorvinStanceFlag));
+            Assert.IsTrue(_replay.Heard.Last().Contains("and I love you"));
+        }
+
+        [UnityTest]
         public IEnumerator TheGannetTakesSablesCount()
         {
             yield return _replay.Boot();

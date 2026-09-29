@@ -81,6 +81,7 @@ a memory Wren carries whose giver lives in the place (`Memories.HomeOf`).
 | `kettil.count` | Runa | `Emberdown_Rest_2`, Kettil's square (the walk there should hold the same place) | named at the bell (`Bell_Runa_Named`) |
 | `teodor.eleven_names` | Teodor | `Verdance_House_2`, the cloister | the grove vigil (`Grove_Teodor_Vigil`) |
 | `idrenne.standing_place` | Idrenne | `Windreach_Camp_1`, the wagon that stays | after the stone (`Fire_Idrenne`) |
+| `tam.next_spring` | Tam | `Halden_Hall_2`, but still: it anchors nothing (`Memories.IsStill`) | his notes (`Hall_Tam`) |
 | `isolde.first_sight` | Isolde | none: she lives nowhere now | the prologue's lesson |
 
 - **No memory, no anchor.** The desk refuses, and the blurb says "Bind a true memory from someone who lives here

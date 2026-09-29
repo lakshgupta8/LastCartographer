@@ -64,6 +64,22 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void AStillMemoryBindsAndHoldsNothing()
+        {
+            Assert.IsTrue(Memories.IsStill("tam.next_spring"), "bound from the Stillness");
+            Assert.IsFalse(Memories.IsStill("dotha.nine_songs"));
+            Assert.IsFalse(Memories.IsStill(null));
+            var w = new WorldState();
+            Assert.IsTrue(Memories.Bind(w, "tam.next_spring"), "it binds");
+            Assert.AreEqual("Halden_Hall_2", Memories.HomeOf("tam.next_spring"), "Tam lives in the Hall");
+            Assert.IsNull(Memories.BoundFor(w, "Halden_Hall_2"), "but it is no bind to anchor with");
+            Memories.Drop(w, "Greybox_X", 0f, 0f);
+            CollectionAssert.Contains(w.DroppedMemories, "tam.next_spring", "it drops like any ink");
+            Assert.AreEqual(1, Memories.Recover(w));
+            Assert.IsTrue(Memories.Has(w, "tam.next_spring"));
+        }
+
+        [Test]
         public void AMemoryBelongsToWhereItsGiverLives()
         {
             Assert.AreEqual("Saltmarrow_B", Memories.HomeOf("dotha.nine_songs"), "Dotha lives in Merrow's End");

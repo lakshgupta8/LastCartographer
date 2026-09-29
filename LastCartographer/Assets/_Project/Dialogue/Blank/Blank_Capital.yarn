@@ -109,6 +109,20 @@ Corvin: And the sky? Break the frame and it scatters. Nobody holds it whole agai
 <<if has_flag("corvin.argued_ilse") and has_flag("corvin.argued_alone") and has_flag("corvin.argued_sky")>>
     Corvin: When I— you are young, and you might be right. I am old. Show me. #line:0e7f2a9
     <<flag corvin.stance 2>>
+<<elseif can_offer("archivist", "isolde.first_sight")>>
+    Corvin: No. You are young, and you are wrong. When I— you carry something of hers. #line:0f48caf
+    Corvin: The first time she saw you. Give it to me. Let me see what she saw. #line:096f7c4
+    -> Take it. Look at me. Only at me. #line:0ffdbc1
+        <<offer archivist isolde.first_sight>>
+        Corvin: When I— a child at the edge of the white. Looking straight at her. Oh. #line:00a8376
+        Corvin: You are young, and you might be right. I am old. Show me. #line:0993981
+        <<flag corvin.stance 2>>
+    -> It's mine. She gave it to me. #line:0000fce
+        Corvin: Then keep it. Somebody should. No. Sit. I love you. #line:0c1d882
+        <<flag corvin.stance 3>>
+    -> ... #line:0326d66
+        Corvin: Silence, and you keep it. The chair, then. Sit. #line:0c5839a
+        <<flag corvin.stance 3>>
 <<else>>
     Corvin: No. You are young, and you are wrong, and I love you. Sit. #line:023f34e
     <<flag corvin.stance 3>>

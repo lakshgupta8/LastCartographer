@@ -88,8 +88,10 @@ namespace OWSBG.Narrative
         /// <summary>A memory given in a scene (Dotha's songs, Sable's count): bound once, captioned once.</summary>
         public static void Bind(string memoryId)
         {
-            if (Memories.Bind(GameState.World, memoryId))
-                Captions.Show(Loc.F("caption.bound", "Bound: {0}", Memories.Name(memoryId)), 4f);
+            if (!Memories.Bind(GameState.World, memoryId)) return;
+            Captions.Show(Memories.IsStill(memoryId)
+                ? Loc.F("caption.bound_still", "Bound, and still: {0}. It holds nothing.", Memories.Name(memoryId))
+                : Loc.F("caption.bound", "Bound: {0}", Memories.Name(memoryId)), 4f);
         }
 
         /// <summary>A memory given to what asks for it: gone for good, and if its place is anchored, the seal loosens.</summary>

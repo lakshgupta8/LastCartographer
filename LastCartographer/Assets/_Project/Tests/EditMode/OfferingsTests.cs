@@ -78,6 +78,27 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void AStillMemoryIsOnlyCarriedAndTheArchivistAsksForIsoldes()
+        {
+            var w = Carrying("tam.next_spring", "isolde.first_sight");
+            foreach (var a in Offerings.All)
+            {
+                Assert.IsFalse(Offerings.CanOffer(w, a.Id, "tam.next_spring"), a.Id + " won't take a still memory");
+                Assert.IsFalse(Offerings.Offer(w, a.Id, "tam.next_spring"));
+            }
+            Assert.IsTrue(Memories.Has(w, "tam.next_spring"), "still carried");
+
+            var corvin = Offerings.Find("archivist");
+            Assert.AreEqual(AskerKind.Bird, corvin.Kind, "an owl, not a keystone: the seventh is given whatever she does");
+            Assert.IsTrue(Offerings.CanOffer(w, "archivist", "isolde.first_sight"));
+            Assert.IsTrue(Offerings.Offer(w, "archivist", "isolde.first_sight"));
+            Assert.IsTrue(w.Is("corvin.saw_her"));
+            Assert.IsTrue(Offerings.IsGiven(w, "isolde.first_sight"), "the first thing ever bound, gone");
+            Assert.IsNull(Memories.HomeOf("isolde.first_sight"), "no home: it costs only itself");
+            Assert.AreEqual(0, w.Flags.Count(kv => kv.Key.EndsWith(".weakened")), "and loosens nothing");
+        }
+
+        [Test]
         public void OfferingAPlacesMemoryWeakensItsAnchor()
         {
             var w = Carrying("dotha.nine_songs");

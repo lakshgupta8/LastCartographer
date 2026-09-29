@@ -23,6 +23,12 @@ the endings and the epilogues are NAR-13's; this act sets every flag they will r
 | The last list | Observatory_2 | `Observatory_Pell_Return`: one item, Wren's most-used voice | `pell.last_list` 1 leaves / 2 her / 3 sky |
 
 ## 2. Corvin's argument (bible 9.2: "persuade Corvin, dialogue built from 5.3, 5.4, 5.6")
+
+**A fourth way, late** (DES-15, `docs/design/offerings.md`): when the three parts fall short and Wren still carries
+Isolde's memory of first seeing her, Corvin asks for it. "The first time she saw you. Give it to me. Let me see what
+she saw." Given it ("Take it. Look at me. Only at me."), he sees a child at the edge of the white looking straight at
+Isolde, and is persuaded (`corvin.stance` 2, `corvin.saw_her`). The memory is gone for good. Kept, or met with
+silence, the argument ends where it did.
 Three rounds, one answer right in each. The fight (6.14) happens whichever way it goes; the stance is what he does after.
 
 | Round | Corvin | The answer that moves him | What it needs |

@@ -54,7 +54,8 @@ namespace OWSBG.Narrative
             RuntimeRooms.MakePaper(room, "Far", 8f, 4f, new Color(0.94f, 0.94f, 0.92f), 14f);
             RuntimeRooms.MakePaper(room, "White", 16f, 6f, new Color(0.97f, 0.96f, 0.93f), 16f);
 
-            if (drift.IsGeneric) RuntimeRooms.MakeNpc(room, "Npc_" + drift.Node, new Vector2(3f, 0f), drift.Node, "Remnant_Pale", new Color(0.72f, 0.72f, 0.70f));
+            // A half-island's people are paler still: half-remembered.
+            if (drift.IsGeneric) RuntimeRooms.MakeNpc(room, "Npc_" + drift.Node, new Vector2(3f, 0f), drift.Node, "Remnant_Pale", drift.IsHalf ? new Color(0.84f, 0.84f, 0.82f) : new Color(0.72f, 0.72f, 0.70f));
             else RuntimeRooms.MakeNpc(room, "Npc_" + drift.Node, new Vector2(3f, 0f), drift.Node, "Remnant_Grey", new Color(0.62f, 0.62f, 0.60f));
 
             RuntimeRooms.MakeSpawn(room, "Start", new Vector2(-17f, 0.5f));

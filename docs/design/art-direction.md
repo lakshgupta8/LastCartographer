@@ -24,6 +24,7 @@ Silksong is painted, gothic, high-contrast, saturated pools of colour in darknes
 
 ## 5. Environments
 - **Modular paper kits per region:** platforms, walls, and props as cut-paper layers with hand-inked edges. Assembled in Unity with ProBuilder greybox first, then swapped for art.
+  The pipeline that draws them, tested on the Quay, is `docs/design/paper-kit.md` (ENV-01): cut-out geometry rendered with Freestyle ink in headless Blender, on the ink shader.
 - **Paper grain** is a full-screen overlay that also modulates by `_Ink`; unpainted areas show more grain.
 - **Region palettes** (max five colours plus ink and paper):
 

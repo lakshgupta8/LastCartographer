@@ -155,7 +155,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 
 | ID | Task | M | Ref | after |
 |---|---|---|---|---|
-| ENV-01 `[ ]` | Paper-kit pipeline test: one Saltmarrow room from greybox to final, with parallax and `_Ink` fade | M0 | ART-5 | PRG-03 |
+| ENV-01 `[~]` | Paper-kit pipeline test: one Saltmarrow room from greybox to final, with parallax and `_Ink` fade; v1 in `docs/design/paper-kit.md`: the Quay's four backdrop strips and boardwalk tile rendered from cut-out geometry with Freestyle ink (`tools/paperkit/`), on the ink shader with world-tiled ground skins; props and a hand pass open | M0 | ART-5 | PRG-03 |
 | ENV-02 `[ ]` | Saltmarrow kit and rooms (vertical slice: 2 rooms final, rest greybox) | M1 | SB-4.1 | ENV-01, DES-08 |
 | ENV-03 `[ ]` | Emberdown kit and rooms | M2 | SB-4.2 | ENV-01 |
 | ENV-04 `[ ]` | Verdance kit and rooms | M2 | SB-4.3 | ENV-01 |

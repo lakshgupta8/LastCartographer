@@ -283,6 +283,7 @@ namespace OWSBG.Setup
             BuildRoomChapel();
             BuildRoomEdge();
             foreach (var recipe in SaltmarrowRecipes()) BuildRecipe(recipe);
+            PlacementSetup.Place();   // the coast's readables and askers stand in the rebuilt rooms
             SetupRenderFeatures();
             BuildPersistent();
             // Rooms stream through Addressables (PRG-07); only the persistent scene is a built-in scene.
@@ -529,7 +530,8 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Mid_Reeds", 3f, 0f, new Color(0.62f, 0.64f, 0.52f), 6f);
             MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f);
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f);
-            MakePaperLayer(room, "Fore_Reeds", -4f, -2.6f, new Color(0.30f, 0.33f, 0.24f), 1.6f);
+            MakePaperLayer(room, "Fore_Reeds", -4f, -0.8f, new Color(0.30f, 0.33f, 0.24f), 1.6f);   // peeks over the walkway
+            foreach (var g in new[] { "Floor", "Platform_A", "Platform_B", "Platform_C", "Stilt_1" }) SkinGround(room, g, "Ground_Boardwalk", 4f);
 
             MakeDummy(room, new Vector2(4f, 0.6f));
             MakeSeeds(room, new Vector2(7f, 5.9f), 2);   // on the high platform, past the crab
@@ -1384,10 +1386,18 @@ namespace OWSBG.Setup
 
         static void MakePaperLayer(Room room, string name, float z, float y, Color color, float height)
         {
-            var mat = MakeLitMaterial("M_Paper_" + name, color);
-            mat.SetFloat("_ReceiveShadows", 0f);
-            mat.EnableKeyword("_RECEIVE_SHADOWS_OFF");
-            EditorUtility.SetDirty(mat);
+            // A region whose paper kit has this layer gets the inked cut-out on the ink shader (ENV-01);
+            // otherwise the greybox's flat wash. The material is shared by every room of the region.
+            var kitTex = KitTexture(room, "Paper_" + name);
+            Material mat;
+            if (kitTex != null) mat = MakePaperMaterial("M_Paper_" + name, kitTex, RegionPaper(RegionOf(room.RoomId)), false);
+            else
+            {
+                mat = MakeLitMaterial("M_Paper_" + name, color);
+                mat.SetFloat("_ReceiveShadows", 0f);
+                mat.EnableKeyword("_RECEIVE_SHADOWS_OFF");
+                EditorUtility.SetDirty(mat);
+            }
             var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
             q.name = "Paper_" + name;
             q.layer = LayerMask.NameToLayer("Paper");
@@ -1478,7 +1488,7 @@ namespace OWSBG.Setup
             var walk = go.AddComponent<BoundsWalk>();
             walk.Id = id;
             walk.PlaceId = room.RoomId;
-            walk.SecondsPerBeat = 3.5f;
+            walk.SecondsPerBeat = AudioDirection.BeatOf(Region.Saltmarrow) * 4f;   // four Saltmarrow beats (audio-direction 3), as the test reads it
             var so = new SerializedObject(walk);
             so.FindProperty("_completeFlag").stringValue = completeFlag;
             so.FindProperty("_completeFlagValue").intValue = completeValue;
@@ -1742,6 +1752,59 @@ namespace OWSBG.Setup
             mat.SetFloat("_Smoothness", 0.1f);
             AssetDatabase.CreateAsset(mat, path);
             return mat;
+        }
+
+        // ---- paper kit (ENV-01, docs/design/paper-kit.md)
+
+        static string RegionOf(string roomId) { int i = roomId.IndexOf('_'); return i < 0 ? roomId : roomId.Substring(0, i); }
+
+        static Texture2D KitTexture(Room room, string layer) =>
+            AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Art/Environment/" + RegionOf(room.RoomId) + "/" + layer + ".png");
+
+        /// <summary>The region's paper colour (art-direction 5): what a drawing washes toward as its ink leaves.</summary>
+        public static Color RegionPaper(string region)
+        {
+            switch (region)
+            {
+                case "Emberdown": return new Color(0.82f, 0.80f, 0.78f);
+                case "Verdance": return new Color(0.94f, 0.90f, 0.72f);
+                case "Halden": return new Color(0.92f, 0.92f, 0.87f);
+                case "Windreach": return new Color(0.93f, 0.88f, 0.70f);
+                case "Greyfold": case "Blank": return new Color(0.98f, 0.98f, 0.97f);
+                default: return new Color(0.93f, 0.89f, 0.80f);   // Saltmarrow: warm cream
+            }
+        }
+
+        /// <summary>An InkSprite material over a kit drawing; a greybox material of the same name is upgraded in place.</summary>
+        static Material MakePaperMaterial(string name, Texture2D tex, Color paper, bool worldUv, float tileUnits = 1f)
+        {
+            var path = Root + "/Art/Materials/" + name + ".mat";
+            var shader = Shader.Find("OWSBG/InkSprite");
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null) { mat = new Material(shader); AssetDatabase.CreateAsset(mat, path); }
+            else if (mat.shader != shader) mat.shader = shader;
+            mat.SetTexture("_BaseMap", tex);
+            mat.SetColor("_BaseColor", Color.white);
+            mat.SetColor("_PaperColor", paper);
+            mat.SetFloat("_ShadowStep", worldUv ? 0.2f : 0f);   // a backdrop lights flat; the walkway takes Wren's shadow
+            mat.SetFloat("_Shadows", worldUv ? 1f : 0f);
+            mat.SetFloat("_WorldUV", worldUv ? 1f : 0f);
+            mat.SetFloat("_Lighting", worldUv ? 0.7f : 0.3f);  // a backdrop keeps its wash under the sun; the ground takes more of the light
+            mat.SetTextureScale("_BaseMap", worldUv ? new Vector2(1f / tileUnits, 1f / tileUnits) : Vector2.one);
+            EditorUtility.SetDirty(mat);
+            return mat;
+        }
+
+        // A ground block drawn from the kit's tile: the block's own material becomes the tile, mapped in world
+        // space by face (the shader picks the plane from the normal), so planks run on across blocks and the top
+        // of a platform reads under the camera's tilt. Skipped when the region has no such tile yet.
+        static void SkinGround(Room room, string groundName, string tile, float tileUnits)
+        {
+            var tex = KitTexture(room, tile);
+            var ground = room.transform.Find(groundName);
+            if (tex == null || ground == null) return;
+            ground.GetComponent<MeshRenderer>().sharedMaterial =
+                MakePaperMaterial("M_" + tile, tex, RegionPaper(RegionOf(room.RoomId)), true, tileUnits);
         }
 
         static Material MakeInkMaterial(string name, Texture2D tex)

@@ -199,11 +199,14 @@ and Steam's depot scripts (`tools/steam-upload.ps1`), are in `docs/design/build-
 ## What can be read on the coast
 **OWSBG → Place the Coast's Readables** (`PlacementSetup`) puts the environmental pieces and the memory askers on the built coast into their rooms as greybox markers: pale blocks to read, ochre ones that ask for a memory. Stand at one and press up. Re-running it replaces only what it placed (`docs/story/environment.md`, `docs/design/offerings.md`).
 
+## The paper kit
+A region's backdrop and ground are drawn by `tools/paperkit/<region>_<room>.py` in headless Blender: cut-out geometry in the region's palette with Freestyle ink lines, written as PNG strips and tiles to `Assets/_Project/Art/Environment/<Region>/` with a `kit.json`. The greybox builder puts any layer the kit has on the ink shader (`Paper_*` strips on the parallax quads, `Ground_*` tiles as world-tiled skins on the ground blocks), so the place's fade thins the drawing. Render, then rebuild: `blender -b -P tools/paperkit/saltmarrow_quay.py` and **OWSBG → Build Bootstrap Scene** (`docs/design/paper-kit.md`).
+
 ## The feel-test
 **OWSBG → Play the Feel Course** or `LastCartographer.exe -feel -tester <name>` runs the controller's seven-station course and writes the session as JSON on quit. Put the testers' answers in `logs/feel/answers.csv` and run `pwsh tools/feel-gate.ps1` for the M0 gate's verdict (`docs/design/feel-test.md`).
 
 ## Tooling
 - **Unity 6 / URP Forward+**, Cinemachine 3, Input System, Addressables, Yarn Spinner 3.
 - **Krita / Aseprite** for hand-drawn frames; **Unity 2D Animation** for boss rigs.
-- **Blender 5.2** for light 3D props behind the play plane.
+- **Blender 5.2** for the paper kits (`tools/paperkit/`) and light 3D props behind the play plane.
 - **Git + LFS**.

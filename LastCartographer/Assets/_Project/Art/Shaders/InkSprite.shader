@@ -15,6 +15,9 @@ Shader "OWSBG/InkSprite"
         _ShadowTint ("Shadow Tint", Color) = (0.62, 0.62, 0.72, 1)
         _GrainScale ("Grain Scale", Float) = 40
         _GrainStrength ("Grain Strength", Range(0, 1)) = 0.12
+        _WorldUV ("World-space UV (0 off, 1 on)", Float) = 0
+        _Shadows ("Receive Shadows (0 off, 1 on)", Float) = 1
+        _Lighting ("Light Influence", Range(0, 1)) = 1
     }
 
     SubShader
@@ -44,6 +47,9 @@ Shader "OWSBG/InkSprite"
             half4 _ShadowTint;
             float _GrainScale;
             half _GrainStrength;
+            half _WorldUV;
+            half _Shadows;
+            half _Lighting;
         CBUFFER_END
 
         // Effective cutoff rises as ink leaves, so thin lines vanish first.
@@ -54,6 +60,16 @@ Shader "OWSBG/InkSprite"
             p = frac(p * float2(123.34, 456.21));
             p += dot(p, p + 45.32);
             return frac(p.x * p.y);
+        }
+
+        // A backdrop strip maps once across its quad; a ground block tiles in world space by face (ENV-01):
+        // front and back in the play plane, the top along it, the ends across it, so planks run on across
+        // blocks and a platform's top reads under the camera's tilt. _BaseMap_ST.xy is 1 / tile size in units.
+        float2 InkUV(float2 uv, float3 positionWS, float3 normalWS)
+        {
+            float3 n = abs(normalWS);
+            float2 p = n.y > max(n.x, n.z) ? positionWS.xz : (n.x > n.z ? positionWS.zy : positionWS.xy);
+            return lerp(TRANSFORM_TEX(uv, _BaseMap), p * _BaseMap_ST.xy + _BaseMap_ST.zw, _WorldUV);
         }
         ENDHLSL
 
@@ -96,7 +112,7 @@ Shader "OWSBG/InkSprite"
                 OUT.positionCS = pos.positionCS;
                 OUT.positionWS = pos.positionWS;
                 OUT.normalWS = TransformObjectToWorldNormal(IN.normalOS);
-                OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.uv = InkUV(IN.uv, pos.positionWS, OUT.normalWS);
                 OUT.fogFactor = ComputeFogFactor(pos.positionCS.z);
                 return OUT;
             }
@@ -112,7 +128,7 @@ Shader "OWSBG/InkSprite"
                 float4 shadowCoord = TransformWorldToShadowCoord(IN.positionWS);
                 Light mainLight = GetMainLight(shadowCoord);
                 half ndl = saturate(dot(n, mainLight.direction));
-                half lit = step(_ShadowStep, ndl * mainLight.shadowAttenuation);
+                half lit = step(_ShadowStep, ndl * lerp(1.0h, mainLight.shadowAttenuation, _Shadows));
                 half3 ambient = SampleSH(n);
                 half3 light = lerp(_ShadowTint.rgb, half3(1, 1, 1), lit) * mainLight.color + ambient * 0.5h;
 
@@ -125,7 +141,7 @@ Shader "OWSBG/InkSprite"
                 half grain = Hash21(floor(IN.positionWS.xy * _GrainScale)) - 0.5h;
                 col += grain * _GrainStrength * (1.0h - 0.6h * _Ink);
 
-                col *= light;
+                col *= lerp(half3(1, 1, 1), light, _Lighting);   // a drawing keeps its wash; _Lighting says how much the lamps tell
                 col = MixFog(col, IN.fogFactor);
                 return half4(col, 1);
             }
@@ -170,7 +186,7 @@ Shader "OWSBG/InkSprite"
                 positionCS.z = max(positionCS.z, UNITY_NEAR_CLIP_VALUE);
             #endif
                 OUT.positionCS = positionCS;
-                OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.uv = InkUV(IN.uv, positionWS, normalWS);
                 return OUT;
             }
 
@@ -194,14 +210,14 @@ Shader "OWSBG/InkSprite"
             #pragma vertex DepthVert
             #pragma fragment DepthFrag
 
-            struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
+            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; };
             struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; };
 
             Varyings DepthVert(Attributes IN)
             {
                 Varyings OUT;
                 OUT.positionCS = TransformObjectToHClip(IN.positionOS.xyz);
-                OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.uv = InkUV(IN.uv, TransformObjectToWorld(IN.positionOS.xyz), TransformObjectToWorldNormal(IN.normalOS));
                 return OUT;
             }
 

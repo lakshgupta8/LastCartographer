@@ -74,11 +74,14 @@ namespace OWSBG.Core
             { "Lighthouse_Lamp", (Beat.Coast, ClimbRoute.Either) },
             { "Lighthouse_Halvard_Hunt", (Beat.Coast, ClimbRoute.Either) },
             { "Merrow_Dotha_Season", (Beat.Coast, ClimbRoute.Either) },
+            { "Chain_Log", (Beat.Coast, ClimbRoute.Either) },            // the rooms' own plants (NAR-15, Dressing)
+            { "Chapel_Tapestry", (Beat.Coast, ClimbRoute.Either) },
             // Act 1's climb: Emberdown.
             { "Overlook_Runa", (Beat.Climb, ClimbRoute.Emberdown) },
             { "Chimneys_Runa_Climb", (Beat.Climb, ClimbRoute.Emberdown) },
             { "Chimneys_Ninth_Agent", (Beat.Climb, ClimbRoute.Emberdown) },
             { "Baths_Kettil_Debate", (Beat.Climb, ClimbRoute.Emberdown) },
+            { "Rest_Lintel", (Beat.Climb, ClimbRoute.Emberdown) },
             // Act 1's climb: the Verdance.
             { "Gate_Inscription", (Beat.Climb, ClimbRoute.Verdance) },
             { "RootChapel_Teodor_Thread", (Beat.Climb, ClimbRoute.Verdance) },
@@ -86,8 +89,15 @@ namespace OWSBG.Core
             { "QuietHouse_Teodor_Keystone", (Beat.Climb, ClimbRoute.Verdance) },
             { "Library_Ansel", (Beat.Climb, ClimbRoute.Verdance) },
             { "Library_Teodor_Ansel", (Beat.Climb, ClimbRoute.Verdance) },
+            { "Library_Lectern", (Beat.Climb, ClimbRoute.Verdance) },
+            { "Road_Milestone", (Beat.Climb, ClimbRoute.Verdance) },
             // Act 1, Halden: the Hall on the way to the orchard, the orchard, the Edge.
             { "Hall_Tam", (Beat.Hall, ClimbRoute.Either) },
+            { "Bridges_TollBoard", (Beat.Hall, ClimbRoute.Emberdown) },   // the bridges are the Overlook road's way in
+            { "Mills_Sheets", (Beat.Hall, ClimbRoute.Verdance) },         // the mills, the canopy road's
+            { "Hall_Roll", (Beat.Hall, ClimbRoute.Either) },
+            { "Hall_Order", (Beat.Hall, ClimbRoute.Either) },
+            { "Hall_ExamPapers", (Beat.Hall, ClimbRoute.Either) },
             { "Orchard_Isolde_Cache", (Beat.Orchard, ClimbRoute.Either) },
             { "Orchard_Keeper", (Beat.Orchard, ClimbRoute.Either) },
             { "Orchard_Gravestone", (Beat.Orchard, ClimbRoute.Either) },
@@ -96,6 +106,8 @@ namespace OWSBG.Core
             { "Bastion_Maren_Audience", (Beat.Act2, ClimbRoute.Either) },
             { "Office_Pell_Drawing", (Beat.Act2, ClimbRoute.Either) },
             { "Vault_Pell_Slot", (Beat.Act2, ClimbRoute.Either) },
+            { "Office_Drawing", (Beat.Act2, ClimbRoute.Either) },
+            { "Bastion_Plaque", (Beat.Act2, ClimbRoute.Either) },
             { "Gate_Idrenne_Leap", (Beat.Act2, ClimbRoute.Either) },
             { "Fire_Idrenne", (Beat.Act2, ClimbRoute.Either) },
             { "Aury_Lighthouse", (Beat.Act2, ClimbRoute.Either) },   // by tether, in Act 2 (blank-islands.md)

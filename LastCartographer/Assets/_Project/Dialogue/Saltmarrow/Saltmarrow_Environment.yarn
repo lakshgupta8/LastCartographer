@@ -1,0 +1,42 @@
+// The Saltmarrow coast, read off its walls (NAR-15, docs/story/environment.md). Environment first (style guide 6):
+// what a post, a board, a log or a tapestry can say, no NPC is asked to. The thing speaks, never a person, and
+// reading it changes nothing: no flags, so every line can be heard again (#still). The catalog is `Dressing`.
+
+title: Shore_Tetherposts
+---
+Post: A tether-post at the tideline. The rope ends a wingspan out, cut clean. #still #line:0682ec2
+Post: Carved low in the wood: "Brin. Back by dark." Eleven notches under it. Then none. #still #line:0dc1eb8
+===
+
+title: Quay_PriceBoard
+---
+Board: Ferrymen's prices. Crossing, six. Tether for a day, forty. Tether, and back again: ask. #still #line:0c22af3
+Board: Chalked under it, in another hand: "Nobody asks." #still #line:0544c54
+===
+
+title: Merrow_Lintels
+---
+Lintel: Over each door, a song's name, carved. "The Heron's Wife." "Low Water." "Nine Nets." #still #line:032d492
+<<if place_fate("Saltmarrow_B") == "held">>
+    Lintel: Fresh chalk in every letter. Someone sings them on the way past. #still #line:05f1f37
+<<elseif place_fate("Saltmarrow_B") == "anchored">>
+    Lintel: The chalk in the letters is fresh. It was fresh yesterday, in the same places. #still #line:0469935
+<<elseif fade_stage("Saltmarrow_B") >= 2>>
+    Lintel: The carving is still sharp. The door under it is paper. #still #line:097e5ba
+<<else>>
+    Lintel: Most of the doors under them are white. #still #line:01e75ef
+<<endif>>
+===
+
+title: Chain_Log
+---
+Log: The first light's log, open on the sill. The old entries read: "Flock south at dusk. Lamp kept." #still #line:093e56b
+Log: Then, in the same hand, every night after: "Lamp lit. No flock." #plant:5.6 #still #line:0a81e4c
+Log: The last page is forty years on. The hand shakes. The line is the same. #still #line:07495cd
+===
+
+title: Chapel_Tapestry
+---
+Tapestry: Salt-stiff, behind the altar. A sky over the sea, and a flock crossing it. #still #line:019685c
+Tapestry: The salt has eaten the birds. Their shapes are holes. The sky is whole. #plant:5.6 #still #line:0a2fde7
+===

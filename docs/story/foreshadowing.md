@@ -155,20 +155,28 @@ anchored epilogue ("Prices are the same.").
 The style guide's sentence ("in an anchored town") now reads as this rule. Anchored towns are where it matters most,
 but the tag means the same everywhere.
 
-## 4. Planned plants (NAR-15)
+## 4. The rooms' plants (NAR-15)
 
-Two rooms carry a plant in their `RoomPlans` description:
+The environmental pass (`docs/story/environment.md`, `Dressing`) dressed the plants this audit was waiting on. The
+readable ones are Yarn scenes where the thing speaks, and they count like any other plant:
 
-- `Halden_Hall_3`: the exam papers, all the same (5.1);
-- `Halden_Bastion_3`: the chick's drawing, framed (5.5).
+| Scene | Room | Line | Plants | Beat |
+|---|---|---|---|---|
+| `Chain_Log` | Saltmarrow_Chain_1 | "Lamp lit. No flock." | 5.6 | Coast |
+| `Chapel_Tapestry` | Saltmarrow_Chapel | "The salt has eaten the birds. Their shapes are holes. The sky is whole." | 5.6 | Coast |
+| `Rest_Lintel` | Emberdown_Rest_1 | "The ladder up to it is newer than the words." | 5.6 | Climb (Emberdown) |
+| `Road_Milestone` | Verdance_Road_2 | "Nine on foot. Bring bread." | 5.6 | Climb (Verdance) |
+| `Library_Lectern` | Verdance_Library_2 | "The pin has rusted into the wood. The list has not yellowed." | 5.1 | Climb (Verdance) |
+| `Bridges_TollBoard` | Halden_Bridges_1 | "Every figure matches the one above." | 5.1 | Hall (Emberdown's way in) |
+| `Mills_Sheets` | Halden_Mills_2 | "The whole loft has the same thumb." | 5.1 | Hall (the Verdance's way in) |
+| `Hall_Roll` | Halden_Hall_2 | "The ninth is chiselled out. The owl's-eye crest beside it was left." | 5.4 | Hall |
+| `Hall_Order` | Halden_Hall_1 | "No exceptions. No requests. The paper is forty years old. The pins are new." | 5.5 | Hall |
+| `Hall_ExamPapers` | Halden_Hall_3 | "The date at the top is forty years old. The ink is wet." | 5.1 | Hall |
+| `Bastion_Plaque` | Halden_Bastion_1 | "There are no stairs between." | 5.6 | Act 2 |
+| `Office_Drawing` | Halden_Bastion_3 | "In one, high up, a small heron waves." | 5.5 | Act 2 |
 
-Three more are named in the bible or the room text:
-
-- the orchard's fallen leaves (`Orchard_1`);
-- the gravestone's crest;
-- the towers without stairs (5.6).
-
-None of these can be seen yet: the environmental pass (NAR-15, ENV-06) dresses them. They don't count toward the three.
+The orchard's fallen leaves and the stilt-roosts' ladders are seen, not read, so they carry their plant in the
+catalog only. The gravestone's crest was already `Orchard_Gravestone`.
 
 ## 5. Tests (`ForeshadowingTests`)
 
@@ -187,10 +195,8 @@ None of these can be seen yet: the environmental pass (NAR-15, ENV-06) dresses t
 
 ## 6. Open
 
-- **5.5 has exactly three plants**, and only the Threshold is on the road. A fourth in Act 1 would help: the Hall, or
-  Sable on the Guildmaster.
-- **Planned plants** (§4) wait for the environmental pass. The Hall_3 papers and the Bastion drawing should count once
-  they can be seen.
+- **5.5 had exactly three plants.** The rooms added two: the Hall's standing order (Act 1, on the road, both climbs)
+  and the framed drawing (Act 2). It now has five.
 - **The reader reads, it doesn't run.** It treats every branch as possible. A line that stands only in a state the
   game never reaches would still be asked for `#still`; none has turned up.
 - **Flags built in code** (`Keys.Of`) aren't seen when the audit looks for flags the code reads.

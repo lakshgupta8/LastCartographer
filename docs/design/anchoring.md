@@ -78,6 +78,9 @@ a memory Wren carries whose giver lives in the place (`Memories.HomeOf`).
 |---|---|---|---|
 | `dotha.nine_songs` | Dotha | `Saltmarrow_B`, Merrow's End | "Write it as it was" (`Merrow_Dotha_Season`) |
 | `sable.boats_back` | Sable | `Saltmarrow_A`, the Drowned Quay | once the widow is decided (`Quay_Sable_Widow`) |
+| `kettil.count` | Runa | `Emberdown_Rest_2`, Kettil's square (the walk there should hold the same place) | named at the bell (`Bell_Runa_Named`) |
+| `teodor.eleven_names` | Teodor | `Verdance_House_2`, the cloister | the grove vigil (`Grove_Teodor_Vigil`) |
+| `idrenne.standing_place` | Idrenne | `Windreach_Camp_1`, the wagon that stays | after the stone (`Fire_Idrenne`) |
 | `isolde.first_sight` | Isolde | none: she lives nowhere now | the prologue's lesson |
 
 - **No memory, no anchor.** The desk refuses, and the blurb says "Bind a true memory from someone who lives here

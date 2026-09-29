@@ -1,0 +1,25 @@
+// What asks for a memory in Emberdown (bible 10, docs/design/offerings.md; `Offerings`). The offer command gives it;
+// can_offer(asker, memory) and offered(asker) ask. A given memory is gone for good. The ninth chimney's door: nobody
+// remembers building it (the Ninth Chimney commission), so it admits only the counted.
+
+title: Ninth_Door
+---
+<<if offered("ninth_door")>>
+    Door: Open. Soot on the sill, and a satchel's shape in the dust where one was. #still #line:0bffeda
+    <<stop>>
+<<endif>>
+Door: A door at the ninth's top. No name cut over it. The soot on the stone is fresh. #still #line:0625be1
+Door: Scratched at talon height: "Counted, come in. Strangers, the stair." #still #line:0ecc2bb
+<<if not can_offer("ninth_door", "kettil.count")>>
+    Door: It waits for a count. Not a number: a count, with you in it. #still #line:0a88672
+    <<stop>>
+<<endif>>
+-> Forty-two, Wren. Forty-three, whoever's next. #line:017fb5a
+    <<offer ninth_door kettil.count>>
+    Door: The stone takes the count. Somewhere below, the bell rings for nobody in particular. #line:0f07bc3
+    Door: Behind it, the builder's satchel. Two scraps of vellum, and a name, rubbed out. #line:0b61997
+-> The count's the town's. Not a door's. #line:07b06b8
+    Door: It waits. Nobody remembers building it. It's used to waiting. #still #line:038879f
+-> ... #line:0f5a970
+    Door: Soot settles. It can wait. #still #line:03e1c26
+===

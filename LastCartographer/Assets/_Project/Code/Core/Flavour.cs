@@ -148,6 +148,9 @@ namespace OWSBG.Core
             Add("memory", "isolde.first_sight", "Isolde's, bound at the edge: the first time she saw me. It is warmer than my own.");
             Add("memory", "dotha.nine_songs", "Dotha's songs, weather first. Everything true is short.");
             Add("memory", "sable.boats_back", "Sable's count of the boats that came back. She never says the other number.");
+            Add("memory", "kettil.count", "Runa's count, Mother's rule. Everyone in it, and me. Six hundred and twelve, sung.");
+            Add("memory", "teodor.eleven_names", "Teodor's eleven, in the order he sealed them. He says them like apologies.");
+            Add("memory", "idrenne.standing_place", "Idrenne's answer to how. Not the how: where she was standing. Her fire.");
             Add("currency", IrisSeed, "The coast's small change. Everyone takes it; nobody knows who planted the first field.");
             Add("currency", VellumScrap, "Offcuts of good vellum. The Guild counts every sheet; these are the ones it lost.");
         }

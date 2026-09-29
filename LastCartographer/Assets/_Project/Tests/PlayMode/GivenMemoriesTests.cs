@@ -38,6 +38,40 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator TheClimbsAndTheSteppeGiveTheirs()
+        {
+            yield return _replay.Boot();
+            var w = GameState.World;
+            // Named at the bell, once she has held a place by walking it: Runa gives the count with her in it.
+            w.Set("emberdown.runa.counted", true);
+            w.Set("emberdown.hollowvein.walked", true);
+            yield return _replay.Talk("Runa, naming her", "Bell_Runa_Count", new int[0]);
+            Assert.IsTrue(Memories.Has(w, "kettil.count"), "the count at the bell");
+            Assert.IsTrue(_replay.Heard.Any(l => l.Contains("Take the count with you")));
+            yield return _replay.Talk("Runa, again", "Bell_Runa_Count", new int[0]);
+            Assert.AreEqual(1, w.BoundMemories.Count(m => m == "kettil.count"), "once");
+
+            // The vigil: eleven villages, in order.
+            yield return _replay.Talk("Teodor, the vigil", "Grove_Teodor_Vigil", new int[0]);
+            Assert.IsTrue(Memories.Has(w, "teodor.eleven_names"));
+            Assert.IsTrue(_replay.Heard.Any(l => l.StartsWith("Teodor") && l.Contains("Carry the eleven")));
+
+            // The fire: where she was standing when she learned it, given after the stone.
+            w.Set("windreach.camp.walked", true);
+            yield return _replay.Talk("Idrenne's Fire", "Fire_Idrenne", new[] { 0, 1 });
+            Assert.IsTrue(w.Is(Steppe.KeystoneFlag), "the stone first");
+            Assert.IsTrue(Memories.Has(w, "idrenne.standing_place"), "then where she stood");
+            Assert.IsTrue(_replay.Heard.Any(l => l.Contains("lighter than the stone")));
+
+            foreach (var id in new[] { "kettil.count", "teodor.eleven_names", "idrenne.standing_place" })
+            {
+                Assert.IsNotEmpty(Flavour.ForMemory(id), id + " has its margin line");
+                Assert.IsNotNull(Memories.HomeOf(id), id + " belongs to where its giver lives");
+                Assert.AreNotEqual(id, Memories.Name(id), id + " has words");
+            }
+        }
+
+        [UnityTest]
         public IEnumerator KettilAndTeodorNoticeABreak()
         {
             yield return _replay.Boot();

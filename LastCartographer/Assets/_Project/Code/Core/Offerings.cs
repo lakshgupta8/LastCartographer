@@ -108,6 +108,30 @@ namespace OWSBG.Core
                 Brief = "A grey gannet on the faded third light's rail, the Remnant who watched the boats go out. She asks " +
                         "who comes back. Only Sable counted. She pays in iris seed from her crop.",
             });
+            _all.Add(new Asker
+            {
+                Id = "ninth_door", Kind = AskerKind.Door, Room = "Emberdown_Chimneys_3", Node = "Ninth_Door",
+                Wants = new[] { "kettil.count" }, Opens = "emberdown.ninth.door_open", Scraps = 2,
+                Brief = "A door at the ninth chimney's top with no builder's name over it and fresh soot on the stone. Nobody " +
+                        "remembers cutting it, so it admits only the counted: a count with the bearer in it is its key. Behind it, " +
+                        "the builder's satchel: two scraps, and a name rubbed out.",
+            });
+            _all.Add(new Asker
+            {
+                Id = "inn_traveller", Kind = AskerKind.Bird, Room = "Verdance_Gate_2", Node = "Inn_Traveller",
+                Wants = new[] { "teodor.eleven_names" }, Seeds = 8,
+                Brief = "A grey traveller at the one-night inn beyond the Overgrown Gate, from a village the Unwriters let go. " +
+                        "She asks which villages still stand; Teodor's eleven, in order, is the answer, and hers not among them " +
+                        "is what she wanted to hear. She pays from a seed purse forty years out of date.",
+            });
+            _all.Add(new Asker
+            {
+                Id = "gate_brek", Kind = AskerKind.Bird, Room = "Windreach_Gate_1", Node = "Gate_Brek",
+                Wants = new[] { "idrenne.standing_place" }, Opens = "windreach.brek.on_the_stone",
+                Brief = "Brek, a clan fledgling beside the Gate's carved stones after Wren's leap, not on them. The young stand " +
+                        "on a place, not a dare, and he has none: given where Idrenne stood when she learned it, he stands on " +
+                        "her fire's stone for the first time. He jumps next spring, he says. The clan sings anyway.",
+            });
         }
     }
 }

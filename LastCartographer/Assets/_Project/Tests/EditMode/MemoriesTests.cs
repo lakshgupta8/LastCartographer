@@ -69,8 +69,16 @@ namespace OWSBG.Tests
             Assert.AreEqual("Saltmarrow_B", Memories.HomeOf("dotha.nine_songs"), "Dotha lives in Merrow's End");
             Assert.AreEqual("Saltmarrow_A", Memories.HomeOf("sable.boats_back"), "Sable keeps the quay");
             Assert.IsNull(Memories.HomeOf("isolde.first_sight"), "Isolde lives nowhere now");
+            Assert.AreEqual("Emberdown_Rest_2", Memories.HomeOf("kettil.count"), "Kettil's square");
+            Assert.AreEqual("Verdance_House_2", Memories.HomeOf("teodor.eleven_names"), "Teodor's cloister");
+            Assert.AreEqual("Windreach_Camp_1", Memories.HomeOf("idrenne.standing_place"), "the wagon that stays");
+            string scenes = System.IO.Path.Combine(UnityEngine.Application.dataPath, "_Project/Scenes/Greybox/Greybox_");
             foreach (var id in Memories.English.Keys)
-                if (Memories.HomeOf(id) != null) StringAssert.StartsWith("Saltmarrow_", Memories.HomeOf(id), id + "'s home is a built room");
+            {
+                var home = Memories.HomeOf(id);
+                if (home == null) continue;
+                Assert.IsTrue(System.IO.File.Exists(scenes + home + ".unity") || RoomPlans.Find(home) != null, id + "'s home is a built or planned room: " + home);
+            }
 
             var w = new WorldState();
             Assert.IsNull(Memories.BoundFor(w, "Saltmarrow_B"));

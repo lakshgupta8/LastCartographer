@@ -22,12 +22,18 @@ namespace OWSBG.Core
             { "isolde.first_sight", "the first time she saw you" },
             { "dotha.nine_songs", "nine songs, and which came first" },
             { "sable.boats_back", "the count of boats that came back" },
+            { "kettil.count", "the count at the bell, with you in it" },
+            { "teodor.eleven_names", "eleven villages, in the order he sealed them" },
+            { "idrenne.standing_place", "where Idrenne stood when she learned it" },
         };
 
         static readonly Dictionary<string, string> _homes = new Dictionary<string, string>
         {
             { "dotha.nine_songs", "Saltmarrow_B" },   // Merrow's End: Dotha lives there
             { "sable.boats_back", "Saltmarrow_A" },   // the Drowned Quay: Sable's
+            { "kettil.count", "Emberdown_Rest_2" },            // Kettil's Rest, the square: the walk there should hold the same place
+            { "teodor.eleven_names", "Verdance_House_2" },     // the Quiet House's cloister: Teodor's
+            { "idrenne.standing_place", "Windreach_Camp_1" },  // the walkers' post: the one wagon that stays
         };
 
         /// <summary>

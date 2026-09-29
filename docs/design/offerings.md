@@ -33,13 +33,36 @@ a door can always be left shut.
 |---|---|---|---|---|---|
 | The Salt Chapel's door (`Chapel_Door`) | Door | Saltmarrow_Chapel | Dotha's songs | the reliquary: 2 scraps; `saltmarrow.chapel.door_open` | "Sing me in." Merrow's End's are the last songs on the coast |
 | The gannet at the faded light (`Chain_Gannet`) | Bird | Saltmarrow_Chain_3 | Sable's count | 6 iris seed | A Remnant who watched the boats go out and asks who comes back. Only Sable counted |
+| The ninth chimney's door (`Ninth_Door`) | Door | Emberdown_Chimneys_3 | Kettil's count | the builder's satchel: 2 scraps; `emberdown.ninth.door_open` | Nobody remembers cutting it, so it admits only the counted. "Counted, come in. Strangers, the stair." |
+| The traveller at the one-night inn (`Inn_Traveller`) | Bird | Verdance_Gate_2 | Teodor's eleven | 8 iris seed | Remnant, from a village the Unwriters let go. She asks which villages still stand, and hers not among them is what she wanted to hear |
+| Brek at the Gate (`Gate_Brek`) | Bird | Windreach_Gate_1 | where Idrenne stood | `windreach.brek.on_the_stone` | A fledgling with no place to stand on. Given Idrenne's, he stands on her fire's stone. Next spring, he says |
 
 - **The door warns you,** in its own way, when Merrow's End is anchored: "The songs are sealed into Merrow's End.
   The door doesn't care."
 - **Without the memory,** the door only waits ("Nobody on this coast sings any more. Nearly nobody."), and the
   gannet's answer is dimmed.
+- **Only after the story lets them:** the inn's traveller is there only the night the road is
+  (`verdance.gate.inn_visited`); Brek stands near the stones only once Wren has jumped (`windreach.leap.done`).
+- **Nothing inland can loosen.** Kettil's Rest is held by its people, the Quiet House is nobody's to seal, and
+  Windreach is never anchored. Inland, a memory's cost is only itself: it can't open its door and anchor its place both.
+  With the licence rule (anchoring §9), only the coast's two are ever both.
 - **Isolde's memory has no asker yet.** It has no home, so giving it would weaken nothing. It would cost only itself.
   That's the kind of choice a late asker should offer.
+
+## 2a. Who gives what
+
+| Memory | Given by | Where | Words |
+|---|---|---|---|
+| `dotha.nine_songs` | Dotha | "Write it as it was" (`Merrow_Dotha_Season`) | nine songs, and which came first |
+| `sable.boats_back` | Sable | once the widow is decided (`Quay_Sable_Widow`) | the count of boats that came back |
+| `kettil.count` | Runa | the night she is named at the bell (`Bell_Runa_Named`, after Hollowvein or a held Merrow's End) | the count at the bell, with you in it |
+| `teodor.eleven_names` | Teodor | the Lantern Grove vigil (`Grove_Teodor_Vigil`) | eleven villages, in the order he sealed them |
+| `idrenne.standing_place` | Idrenne | after the stone, at her fire (`Fire_Idrenne`) | where Idrenne stood when she learned it |
+| `isolde.first_sight` | Isolde | the prologue's lesson | the first time she saw you |
+
+Each giving sits inside a branch its scene already runs once, so nothing standing changed and the `#still` audit
+holds. Runa gives the count only when she names Wren, which needs a place held first: the count with you in it is
+earned the way the town earns it.
 
 ## 3. What it costs, by route
 
@@ -84,9 +107,9 @@ memory worth that exists. The kind is in the enum for it.
 
 ## 6. Open
 
-- **More memories, more askers.** Three memories exist, all on the coast. Every region's people should give one:
-  Kettil's count, Runa's roll-call, Teodor's eleven villages, Idrenne's standing place, Tam's exam, Ilse's. Each region
-  wants a door or a bird that asks for one.
+- **Halden and the Blank have no giver yet.** Halden's is the Stillness's question: Tam's "next spring" is the same
+  every year, and whether a looped memory is true enough to bind is a decision, not an oversight. Ilse's belongs to
+  the Hollow's reveal (NAR-12) and should be written with it.
 - **Placement.** Both askers stand in their rooms as greybox markers (ochre blocks, `PlacementSetup`): the gannet on
   the faded light's rail, the door past the chapel's altar, beyond Halvard's arena. The door
   doesn't open physically yet: its flag is for the door prop (ENV-06) to read.

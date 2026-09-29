@@ -43,6 +43,50 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator TheDoorTheTravellerAndBrekTakeTheirs()
+        {
+            yield return _replay.Boot();
+            var w = GameState.World;
+
+            // The ninth chimney's door: a count with her in it. Kettil's Rest is held, so nothing loosens.
+            yield return _replay.Talk("the ninth door, uncounted", "Ninth_Door", new int[0]);
+            Assert.IsTrue(_replay.Heard.Any(l => l.Contains("waits for a count")));
+            Memories.Bind(w, "kettil.count");
+            Places.Hold(w, "Emberdown_Rest_2");
+            int scraps = Commissions.Scraps(w);
+            yield return _replay.Talk("the ninth door, counted", "Ninth_Door", new[] { 0 });
+            Assert.IsTrue(w.Is("emberdown.ninth.door_open"), "open");
+            Assert.AreEqual(scraps + 2, Commissions.Scraps(w), "the builder's satchel");
+            Assert.IsFalse(Memories.Has(w, "kettil.count"));
+            Assert.AreEqual(0, FadeStages.Get(w, "Emberdown_Rest_2"), "a held place is held by its people");
+            Assert.AreEqual(0, Offerings.Weakened(w, "Emberdown_Rest_2"));
+
+            // The traveller at the one-night inn: nobody there until the road is, then the eleven names for seed.
+            yield return _replay.Talk("the inn, no road", "Inn_Traveller", new int[0]);
+            Assert.IsTrue(_replay.Heard.Last().Contains("nobody on it tonight"));
+            w.Set("verdance.gate.inn_visited", true);
+            Memories.Bind(w, "teodor.eleven_names");
+            int seeds = Economy.Seeds(w);
+            yield return _replay.Talk("the inn, the names", "Inn_Traveller", new[] { 0 });
+            Assert.AreEqual(seeds + 8, Economy.Seeds(w), "seed, for the names");
+            Assert.IsTrue(_replay.Heard.Any(l => l.Contains("Mine was let go")));
+            yield return _replay.Talk("the inn, after", "Inn_Traveller", new int[0]);
+            Assert.IsTrue(_replay.Heard.Last().Contains("in order"));
+
+            // Brek: near the stones until she has jumped; his answer dimmed until she carries Idrenne's place.
+            yield return _replay.Talk("Brek, before the leap", "Gate_Brek", new int[0]);
+            Assert.IsTrue(_replay.Heard.Last().Contains("near them"));
+            w.Set("windreach.leap.done", true);
+            yield return _replay.Talk("Brek, no place to give", "Gate_Brek", new[] { 1 });
+            Assert.IsFalse(Offerings.IsDone(w, "gate_brek"));
+            Memories.Bind(w, "idrenne.standing_place");
+            yield return _replay.Talk("Brek, her fire", "Gate_Brek", new[] { 0 });
+            Assert.IsTrue(w.Is("windreach.brek.on_the_stone"), "he stands on it");
+            Assert.IsTrue(Offerings.IsGiven(w, "idrenne.standing_place"));
+            Assert.IsTrue(_replay.Heard.Any(l => l.Contains("I'm on the stone")));
+        }
+
+        [UnityTest]
         public IEnumerator TheGannetTakesSablesCount()
         {
             yield return _replay.Boot();

@@ -149,6 +149,9 @@ is. The code is `Flavour` (Core); the keys are "flavour.<kind>.<id>", harvested 
 | isolde.first_sight | Isolde's, bound at the edge: the first time she saw me. It is warmer than my own. |
 | dotha.nine_songs | Dotha's songs, weather first. Everything true is short. |
 | sable.boats_back | Sable's count of the boats that came back. She never says the other number. |
+| kettil.count | Runa's count, Mother's rule. Everyone in it, and me. Six hundred and twelve, sung. |
+| teodor.eleven_names | Teodor's eleven, in the order he sealed them. He says them like apologies. |
+| idrenne.standing_place | Idrenne's answer to how. Not the how: where she was standing. Her fire. |
 
 ### Purses
 
@@ -176,7 +179,7 @@ is. The code is `Flavour` (Core); the keys are "flavour.<kind>.<id>", harvested 
 
 ## 5. Open
 
-- ~~**Bound memories.**~~ All three are given in scenes now, with `<<bind id>>` (`DialogueService.Bind`, the "Bound:"
+- ~~**Bound memories.**~~ All six are given in scenes now (the inland three in `docs/design/offerings.md` §2a), with `<<bind id>>` (`DialogueService.Bind`, the "Bound:"
   caption):
   - Isolde's, in the prologue's lesson;
   - Dotha's, when Wren writes Merrow's End as it was ("Weather first"). She has nine songs, not eleven, so the id is

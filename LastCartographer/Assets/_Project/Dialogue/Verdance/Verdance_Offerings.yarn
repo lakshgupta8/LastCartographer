@@ -1,0 +1,25 @@
+// What asks for a memory in the Verdance (bible 10, docs/design/offerings.md; `Offerings`). The offer command gives
+// it; can_offer(asker, memory) and offered(asker) ask. A given memory is gone for good. The traveller is at the
+// one-night inn beyond the Overgrown Gate (Gate_Inn): Remnant, from a village the Unwriters let go.
+
+title: Inn_Traveller
+---
+<<if not has_flag("verdance.gate.inn_visited")>>
+    Traveller: The road ends at the gate. There is nobody on it tonight. #still #line:0a1ab72
+    <<stop>>
+<<endif>>
+<<if offered("inn_traveller")>>
+    Traveller: Eleven. I say them to the road, in order. It has not gone yet. #still #line:00791f0
+    <<stop>>
+<<endif>>
+Traveller: Have you eaten? Sit. I am from a village. It had a name. The road... #still #line:02658a4
+Traveller: Which villages are still there? Say them. In the order they were made sure of. #still #line:0ba0710
+-> Wenlow, Harrowby, Coldmere. Eleven, in order. <<if can_offer("inn_traveller", "teodor.eleven_names")>> #line:0e24c06
+    <<offer inn_traveller teodor.eleven_names>>
+    Traveller: Wenlow. Harrowby. Yes. Mine is not among them. Good. Mine was let go. #line:0db8918
+    Traveller: Seed, for the names. From home. It is a long time since it was seed. #line:071884e
+-> I don't know them. #line:077cf79
+    Traveller: Nobody does. Somebody sits with them, I think. Ask him. #still #line:0543b8c
+-> ... #line:0d671dc
+    Traveller: Quiet. The road is quiet too, before it goes. #still #line:0f3b817
+===

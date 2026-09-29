@@ -8,6 +8,11 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip both test suites and go straight to the Windows build (pushes always run them)'
+        type: boolean
+        default: false
   schedule:
     - cron: '0 6 * * 1'     # the week's build (PRO-02): Mondays 06:00 UTC, tests, build and smoke run
 
@@ -30,6 +35,7 @@ env:
 jobs:
   tests:
     name: Tests (${{ matrix.mode }})
+    if: ${{ !inputs.skip_tests }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
@@ -78,6 +84,8 @@ jobs:
   build-windows:
     name: Windows build
     needs: tests
+    # After the tests pass, or when a manual run skipped them; never after a failure.
+    if: ${{ !cancelled() && (needs.tests.result == 'success' || needs.tests.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

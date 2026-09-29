@@ -228,6 +228,11 @@ namespace OWSBG.Tests
                 Memories.Drop(w, "Anchor_Test", 0f, 0f);
                 Assert.IsFalse(menu.Confirm(), "a dropped memory isn't carried: recover it first");
                 Memories.Recover(w);
+                Licence.Revoke(w);
+                menu.Refresh();
+                Assert.IsFalse(menu.Confirm(), "unlicensed: the Guild's seal needs the Guild's licence");
+                StringAssert.Contains("licence", Blurb(menu), "the desk says why");
+                w.Set(Licence.UnlicensedFlag, false);   // a journeyman again, for the rest of this test
                 menu.Refresh();
                 StringAssert.Contains("test.keeper", Blurb(menu), "the desk names what it binds");
                 Assert.IsTrue(menu.Confirm(), "bound: J seals it");

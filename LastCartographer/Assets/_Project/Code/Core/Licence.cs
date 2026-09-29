@@ -33,6 +33,12 @@ namespace OWSBG.Core
             return w.Is(ReportSentFlag) || IsUnlicensed(w);
         }
 
+        /// <summary>
+        /// The Guild's seal needs the Guild's licence (anchoring §9): an unlicensed cartographer can't anchor a place at
+        /// the desk. Holding and releasing were never the Guild's to allow.
+        /// </summary>
+        public static bool MayAnchor(WorldState w) => !IsUnlicensed(w);
+
         public static string Describe(WorldState w) => IsUnlicensed(w) ? "unlicensed" : "journeyman";
     }
 }

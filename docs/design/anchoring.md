@@ -60,7 +60,8 @@ set. Saves need nothing extra.
   in the room is surveyed. Sable notices an anchored Saltmarrow.
 
 ## 8. Open
-- Whether Wren can anchor without a licence.
+- ~~Whether Wren can anchor without a licence.~~ She can't (decided 2026-09-29): the Guild's seal needs the Guild's
+  licence (§9).
 - ~~Whether sealing should spend the memory.~~ It doesn't: she keeps it, to lose to a death and recover, or to give
   to a door or a bird, which loosens the seal (`docs/design/offerings.md`).
 - Hold is performed by the bounds-walk (`docs/design/bounds-walk.md`, DES-13): the desk refuses Hold until the place is walked.
@@ -83,6 +84,10 @@ a memory Wren carries whose giver lives in the place (`Memories.HomeOf`).
   first." With one, it names the memory it binds.
 - **Carried means carried.** A memory lost to a death is in the smudge, not in her ink. The desk refuses until she
   has struck the smudge down.
+- **The licence.** An unlicensed cartographer can't anchor at the desk (`Licence.MayAnchor`): "Unlicensed. The
+  Guild's seal needs the Guild's licence. Hold it, or let it go." Halvard's count at the lit lamp revokes her, so Wren
+  anchors only on the coast before the fourth light. After that, anchoring is the Guild's own (Lowmarket) and hers is
+  the holding or the letting go.
 - **Sealing doesn't spend it.** Giving it away later does, and loosens the seal a stage (`docs/design/offerings.md`).
 - **A place with nobody to give one can't be anchored by Wren:** the lighthouses, the Salt Chapel, the Edge. She can
   still release them.

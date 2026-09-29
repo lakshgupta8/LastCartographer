@@ -192,6 +192,8 @@ same greybox on a laptop, most likely on a different power plan; it is far insid
 
 ## Open
 
+- **The target is decided** (2026-09-29): a GTX 1060-class card, for the widest reach. The development machine's card
+  says nothing about the game's specs, so its runs stay "Above".
 - **Target hardware.** PRO-06 is met the day a tester's GTX 1060-class run passes the gate. None has been run yet.
 - **The painted rooms.** Real art brings sprite atlases, overdraw from the paper layers, and texture memory per room
   bundle. The budgets for those (batches, texture MB per room, resident bundles) get set when a painted room exists

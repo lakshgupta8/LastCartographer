@@ -11,8 +11,8 @@ namespace OWSBG.UI
     /// The drafting-desk page (PRG-11): opens when Wren rests. Row 0 is the Charter (left/right or
     /// 1-3), the rows below are the Instrument slots (left/right cycles what sits there; a tool held
     /// elsewhere swaps places). The last row is the place: once every vantage here is surveyed it proposes
-    /// anchor / hold / release and J seals it, once and for all (PRG-13). Anchoring needs a memory from someone who
-    /// lives there (survey, bind, seal); holding needs the bounds walked. J / Space / Esc / East closes and saves.
+    /// anchor / hold / release and J seals it, once and for all (PRG-13). Anchoring needs the Guild's licence and a
+    /// memory from someone who lives there (survey, bind, seal); holding needs the bounds walked. J / Space / Esc / East closes and saves.
     /// </summary>
     public sealed class DeskMenu : MonoBehaviour
     {
@@ -144,6 +144,7 @@ namespace OWSBG.UI
             }
             if (Row != FateRow || !CanSeal || Proposed == PlaceFate.Unwritten) return false;
             if (Proposed == PlaceFate.Held && !BoundsWalks.IsWalked(GameState.World, PlaceId)) return false;   // the people hold it, not the seal (DES-13)
+            if (Proposed == PlaceFate.Anchored && !Licence.MayAnchor(GameState.World)) return false;   // the Guild's seal, the Guild's licence
             if (Proposed == PlaceFate.Anchored && Memories.BoundFor(GameState.World, PlaceId) == null) return false;   // survey, bind, seal (bible 1.3)
             bool ok = Places.Decide(GameState.World, PlaceId, Proposed);
             if (ok) GameState.Save();
@@ -293,6 +294,8 @@ namespace OWSBG.UI
             switch (Proposed)
             {
                 case PlaceFate.Anchored:
+                    if (!Licence.MayAnchor(GameState.World))
+                        return Loc.T("desk.propose.anchor_unlicensed", "Unlicensed. The Guild's seal needs the Guild's licence. Hold it, or let it go.");
                     var memory = Memories.BoundFor(GameState.World, PlaceId);
                     return memory != null
                         ? Loc.F("desk.propose.anchor_bound", "Survey, bind, seal: {0}. Nothing fades. Nothing changes. Wardens.", Memories.Name(memory))

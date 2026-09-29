@@ -63,7 +63,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 |---|---|---|---|---|
 | DES-01 `[x]` | Game design overview | M0 | GDD | NAR-01 |
 | DES-02 `[~]` | Survey spec: vantage points, atlas inking animation, fast travel, erasure/re-survey; v1 in `docs/design/survey.md`, the page's inking animation and line-of-sight vantages open | M0 | SB-10 | DES-01 |
-| DES-03 `[~]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns; v1 in `docs/design/anchoring.md`; the bind is a memory from a resident, carried (§9); licence rules open | M0 | SB-1.3, 10 | DES-02 |
+| DES-03 `[~]` | Anchor / hold / release spec; held-state rules; Warden patrols in anchored towns; v1 in `docs/design/anchoring.md`; the bind is a memory from a resident, carried (§9); no anchoring unlicensed | M0 | SB-1.3, 10 | DES-02 |
 | DES-04 `[~]` | Fade-stage spec (0–4, story-beat advancement, `_Ink` values per stage); v1 in `docs/design/fade-stages.md`, per-region curves open | M0 | SB-10, ART-3 | DES-01 |
 | DES-05 `[~]` | Economy: iris seeds, vellum scraps, Instrument prices, mask/quill upgrades; v1 in `docs/design/economy.md` with seeds, drops, Sable's shop, desk mask and belt upgrades in the greybox; quill upgrades and caches open | M1 | CMB-6 | DES-01 |
 | DES-06 `[~]` | Commissions system spec (ledger, states, rewards, Blank-island flags); v1 in `docs/design/commissions.md`, failure and expiry rules open | M1 | SB-8 | DES-01 |

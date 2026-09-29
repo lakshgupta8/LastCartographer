@@ -13,7 +13,9 @@ namespace OWSBG.Tests
             Assert.IsFalse(Licence.IsUnlicensed(w));
             Assert.AreEqual("journeyman", Licence.Describe(w));
             Assert.IsFalse(Licence.WardensHostile(w), "Wardens measure a journeyman");
+            Assert.IsTrue(Licence.MayAnchor(w), "a journeyman may seal");
             Assert.IsTrue(Licence.Revoke(w));
+            Assert.IsFalse(Licence.MayAnchor(w), "the Guild's seal needs the Guild's licence");
             Assert.IsFalse(Licence.Revoke(w), "once");
             Assert.IsTrue(Licence.IsUnlicensed(w));
             Assert.AreEqual("unlicensed", Licence.Describe(w));

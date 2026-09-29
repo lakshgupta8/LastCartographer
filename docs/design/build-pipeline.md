@@ -80,8 +80,9 @@ GitHub Actions with GameCI's Unity actions, on every push to `main`, every pull 
 **Secrets and variables to set** (repository settings; nothing is in the repository):
 - `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`: a Unity licence for GameCI. Without them the editor in the
   container exits with code 1 and prints nothing (the second run, 2026-09-29). To get them, for a Personal licence:
-  1. Actions → **Unity activation file** → Run workflow (`.github/workflows/activation.yml`, no secrets needed).
-     Download its artifact, `Unity_v6000.3.7f1.alf`.
+  1. On a machine with the editor: `Unity.exe -batchmode -nographics -createManualActivationFile -quit` writes
+     `Unity_v6000.3.7f1.alf` into the working directory (GameCI's old request-activation-file action is retired).
+     It's an activation request, not a licence, and is still never committed (`*.alf`, `*.ulf` are ignored).
   2. At https://license.unity3d.com/manual, signed in with the Unity account, upload the `.alf`, choose Personal,
      and download the `Unity_v6000.x.ulf` it gives back.
   3. Settings → Secrets and variables → Actions → New repository secret: `UNITY_LICENSE` is the whole text of the

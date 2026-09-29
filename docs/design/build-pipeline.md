@@ -78,7 +78,17 @@ GitHub Actions with GameCI's Unity actions, on every push to `main`, every pull 
 - **Checkout:** the build job fetches full history so `git describe` can name the version.
 
 **Secrets and variables to set** (repository settings; nothing is in the repository):
-- `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`: a Unity licence for GameCI (see GameCI's activation guide).
+- `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`: a Unity licence for GameCI. Without them the editor in the
+  container exits with code 1 and prints nothing (the second run, 2026-09-29). To get them, for a Personal licence:
+  1. Actions → **Unity activation file** → Run workflow (`.github/workflows/activation.yml`, no secrets needed).
+     Download its artifact, `Unity_v6000.3.7f1.alf`.
+  2. At https://license.unity3d.com/manual, signed in with the Unity account, upload the `.alf`, choose Personal,
+     and download the `Unity_v6000.x.ulf` it gives back.
+  3. Settings → Secrets and variables → Actions → New repository secret: `UNITY_LICENSE` is the whole text of the
+     `.ulf` file (open it in an editor, copy everything); `UNITY_EMAIL` and `UNITY_PASSWORD` are the Unity
+     account's. Then re-run the failed jobs.
+  A Pro or Plus licence uses `UNITY_SERIAL` with the email and password instead, and the workflow would need
+  that variable added to its `env`.
 - In the `steam` environment:
   - `STEAM_USERNAME`: a Steamworks build account;
   - `STEAM_CONFIG_VDF`: its cached `config.vdf` after one Steam Guard login, base64 (see steam-deploy's docs);

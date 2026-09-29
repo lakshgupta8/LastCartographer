@@ -87,8 +87,9 @@ memory worth that exists. The kind is in the enum for it.
 - **More memories, more askers.** Three memories exist, all on the coast. Every region's people should give one:
   Kettil's count, Runa's roll-call, Teodor's eleven villages, Idrenne's standing place, Tam's exam, Ilse's. Each region
   wants a door or a bird that asks for one.
-- **Placement.** Neither asker stands in its room yet. As with the environmental pieces, a prop with an `NpcTalker` on
-  the node is ENV-06's. The chapel door's flag is for the door prop to read.
+- **Placement.** Both askers stand in their rooms as greybox markers (ochre blocks, `PlacementSetup`): the gannet on
+  the faded light's rail, the door past the chapel's altar, beyond Halvard's arena. The door
+  doesn't open physically yet: its flag is for the door prop (ENV-06) to read.
 - **A weakened anchor in the Blank.** Whether an anchored place with a loosened seal should appear in Act 3 as a
   half-island (its people half-remembered) is for the Blank generator (PRG-20).
 - **Held places and the walk.** A held place's walk might someday ask for a memory, not just a rhythm.

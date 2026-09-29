@@ -202,8 +202,10 @@ one ends with nothing to choose, and the world is byte for byte what it was.
 
 ## 7. Open
 
-- **Nothing is placed yet.** The Saltmarrow rooms exist, but their props are ENV-06's. A piece becomes readable in
-  play when its prop gets an `NpcTalker` on its node, the way the lamp's inscription is wired (`Lighthouse_Lamp`).
+- **The coast's pieces are placed; the rest wait for their rooms.** `PlacementSetup` (OWSBG → Place the Coast's
+  Readables) puts the five read pieces in built Saltmarrow rooms as a trigger with an `NpcTalker` on the node, plus a
+  parchment-coloured block to find it by. `PlacementTests` stands Wren at each one and checks up reads it. The art
+  (ENV-06) swaps the block for the prop. Pieces in planned rooms are placed when the rooms are built.
 - **The fledgling loop is data, not animation.** CHR-14 reads `Dressing.At` for the room's place and Wren's
   abilities.
 - **An anchored place freezes at zero,** not at whatever the fledglings had reached when it was anchored. Recording

@@ -196,6 +196,9 @@ and Steam's depot scripts (`tools/steam-upload.ps1`), are in `docs/design/build-
 ## Reporting a bug
 **F12** in the game writes a folder under `%USERPROFILE%\AppData\LocalLow\<company>\LastCartographer\BugReports\`: `report.md` (the build, the room, the first exception, the last log lines), the save, `log.txt` and a screenshot. A built player writes one by itself after its first exception. Attach it to a **Bug report** issue; the form's severities and areas are the bar's (`docs/design/bug-bar.md`). `pwsh tools/triage.ps1 -Labels` makes the tracker's labels and `pwsh tools/triage.ps1 -Milestone rc` counts the open bugs against the bar.
 
+## What can be read on the coast
+**OWSBG → Place the Coast's Readables** (`PlacementSetup`) puts the environmental pieces and the memory askers on the built coast into their rooms as greybox markers: pale blocks to read, ochre ones that ask for a memory. Stand at one and press up. Re-running it replaces only what it placed (`docs/story/environment.md`, `docs/design/offerings.md`).
+
 ## The feel-test
 **OWSBG → Play the Feel Course** or `LastCartographer.exe -feel -tester <name>` runs the controller's seven-station course and writes the session as JSON on quit. Put the testers' answers in `logs/feel/answers.csv` and run `pwsh tools/feel-gate.ps1` for the M0 gate's verdict (`docs/design/feel-test.md`).
 

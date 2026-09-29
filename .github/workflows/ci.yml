@@ -26,6 +26,7 @@ jobs:
   tests:
     name: Tests (${{ matrix.mode }})
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -54,6 +55,9 @@ jobs:
           testMode: ${{ matrix.mode }}
           # Our play tests only: the Input System is testable (for its fixture) and would bring its own.
           customParameters: ${{ matrix.mode == 'playmode' && '-assemblyNames OWSBG.Tests.PlayMode' || '' }}
+          # Unity 6 on Linux segfaults in ScriptingCoverage during the play-mode assembly reload (the third run,
+          # 2026-09-29); nobody reads a coverage report here.
+          coverageEnabled: false
           artifactsPath: test-results-${{ matrix.mode }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Test results (${{ matrix.mode }})

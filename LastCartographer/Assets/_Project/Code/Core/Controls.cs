@@ -110,7 +110,15 @@ namespace OWSBG.Core
             int i = BindingIndex(a, d);
             if (i < 0) return "-";
             var s = a.GetBindingDisplayString(i);
-            return string.IsNullOrEmpty(s) ? "-" : s;
+            if (!string.IsNullOrWhiteSpace(s)) return s;
+            // No device of that kind is attached (a headless machine, a pad unplugged), so the layout had no name
+            // to give: name the binding from its path instead ("<Keyboard>/space" is "Space").
+            s = InputControlPath.ToHumanReadableString(a.bindings[i].effectivePath, InputControlPath.HumanReadableStringOptions.OmitDevice);
+            if (!string.IsNullOrWhiteSpace(s)) return s;
+            string path = a.bindings[i].effectivePath ?? "";
+            int slash = path.LastIndexOf('/');
+            string control = slash >= 0 ? path.Substring(slash + 1) : path;
+            return control.Length == 0 ? "-" : char.ToUpperInvariant(control[0]) + control.Substring(1);
         }
 
         /// <summary>The key for <paramref name="action"/> on the device the player is using.</summary>

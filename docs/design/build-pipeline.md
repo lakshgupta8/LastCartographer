@@ -128,6 +128,14 @@ doesn't use (.NET, Android, Haskell, CodeQL, Boost) and pruning Docker's images,
 failure of this kind shows its number. The "no files found at test-results" warnings were the same failure: nothing
 ran, so nothing was written.
 
+The second run got the image and died silently: no licence secrets. The third, with `UNITY_EMAIL` and
+`UNITY_PASSWORD` set, ran the tests. Edit mode: 184 of 185, the one failure a real bug the runner found, the
+Input System naming the space key as nothing on a machine with no keyboard, so a prompt read "Hold  ";
+`Controls.DisplayName` now falls back to the binding's own name. Play mode: the editor crashed with a
+segmentation fault in `ScriptingCoverage::FilterRecordedMethods` during the assembly reload for play mode. GameCI
+switches code coverage on by default and Unity 6 on Linux dies inside it; `coverageEnabled: false` on the test
+step leaves it off. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
+
 ## Open
 
 - **CI hasn't run.** The workflow was checked by those tests and a YAML parse, not on GitHub; the first push with

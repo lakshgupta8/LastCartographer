@@ -96,7 +96,9 @@ jobs:
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL /usr/local/share/boost /usr/local/.ghcup
           sudo docker image prune --all --force
           df -h /
-      - uses: game-ci/unity-builder@v4
+      # v6 wraps GameCI's CLI, which signs the editor in with UNITY_EMAIL and UNITY_PASSWORD as the test runner
+      # does; v4 demanded a licence file, which a Personal seat can no longer get (the seventh run).
+      - uses: game-ci/unity-builder@v6
         with:
           projectPath: ${{ env.PROJECT_PATH }}
           unityVersion: ${{ env.UNITY_VERSION }}
@@ -104,6 +106,8 @@ jobs:
           buildName: LastCartographer
           buildMethod: OWSBG.Build.GameBuild.BuildFromCommandLine
           versioning: Semantic
+          # Where the upload below looks, whatever path the CLI passes itself: GameBuild takes the last one given.
+          customParameters: -buildOutput /github/workspace/build/StandaloneWindows64
       - uses: actions/upload-artifact@v4
         with:
           name: LastCartographer-Windows

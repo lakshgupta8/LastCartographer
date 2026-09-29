@@ -144,7 +144,12 @@ The runner has no GPU and draws in software (the lantern render tests, on a smal
 timed ten plain frames, which were fast enough; the sixth run wrote one picture and timed out again, so the slow
 part is the capture itself (a forced render into a texture, two read-backs and a per-pixel blend), over a minute
 each there. The test now times its first capture and reports itself ignored, with the seconds and the device,
-past ten seconds; here a capture takes well under one and the whole test 4 s. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
+past ten seconds; here a capture takes well under one and the whole test 4 s.
+
+The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
+`UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,
+which signs in with the account, so the build job now uses v6. It also passes `-buildOutput` to the folder the
+upload step reads, so the build lands there whatever path the CLI hands Unity. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
 
 ## Open
 

@@ -147,7 +147,7 @@ is. The code is `Flavour` (Core); the keys are "flavour.<kind>.<id>", harvested 
 | Memory | Line |
 |---|---|
 | isolde.first_sight | Isolde's, bound at the edge: the first time she saw me. It is warmer than my own. |
-| dotha.eleven_songs | Dotha's songs, weather first. Everything true is short. |
+| dotha.nine_songs | Dotha's songs, weather first. Everything true is short. |
 | sable.boats_back | Sable's count of the boats that came back. She never says the other number. |
 
 ### Purses
@@ -176,8 +176,14 @@ is. The code is `Flavour` (Core); the keys are "flavour.<kind>.<id>", harvested 
 
 ## 5. Open
 
-- **Bound memories:** only Isolde's can be bound so far. Dotha's songs and Sable's count have lines waiting for their
-  scenes (DES-06, NAR-13).
+- ~~**Bound memories.**~~ All three are given in scenes now, with `<<bind id>>` (`DialogueService.Bind`, the "Bound:"
+  caption):
+  - Isolde's, in the prologue's lesson;
+  - Dotha's, when Wren writes Merrow's End as it was ("Weather first"). She has nine songs, not eleven, so the id is
+    `dotha.nine_songs`;
+  - Sable's, once the widow is decided. Sable gives the count of boats that came back, for free, and never the other
+    number.
+  `GivenMemoriesTests` checks them.
 - **Zones with no rooms yet** have their notes ready. The atlas shows them once those places are on its page.
 - **Quill upgrades** (DES-10) and **Charter silhouettes** (CHR-05) will want lines when they exist.
 - **Item pickups:** the hidden vellum caches and seed caches say nothing when found. A caption with the purse's line

@@ -17,7 +17,8 @@ namespace OWSBG.Narrative
     ///   &lt;&lt;flag key value&gt;&gt;     set a narrative flag (int)        e.g. &lt;&lt;flag prologue.started 1&gt;&gt;
     ///   &lt;&lt;survey_hint&gt;&gt;         tutorial hook (raises Tutorial "survey")
     ///   &lt;&lt;tutorial name&gt;&gt;       tutorial hook (raises Tutorial name)
-    ///   &lt;&lt;bind_prompt memoryId&gt;&gt; offer a memory to bind (raises BindPrompt)
+    ///   &lt;&lt;bind_prompt memoryId&gt;&gt; offer a memory to bind (raises BindPrompt; the prologue's lesson binds it)
+    ///   &lt;&lt;bind memoryId&gt;&gt;        bind a memory someone gives her, with the "Bound:" caption
     ///   &lt;&lt;commission id verb&gt;&gt;  post | take | fulfil | close | fail a commission (PRG-12)
     ///   &lt;&lt;cutscene id&gt;&gt;          play a Cutscene and wait for it (PRG-16)
     ///   &lt;&lt;fade place stage&gt;&gt;     advance a place's fade stage 0-4 (PRG-14); anchored places ignore it
@@ -83,12 +84,20 @@ namespace OWSBG.Narrative
             RegisterCommands(_runner);
         }
 
+        /// <summary>A memory given in a scene (Dotha's songs, Sable's count): bound once, captioned once.</summary>
+        public static void Bind(string memoryId)
+        {
+            if (Memories.Bind(GameState.World, memoryId))
+                Captions.Show(Loc.F("caption.bound", "Bound: {0}", Memories.Name(memoryId)), 4f);
+        }
+
         void RegisterCommands(DialogueRunner runner)
         {
             runner.AddCommandHandler<string, int>("flag", (key, value) => GameState.World.Set(key, value));
             runner.AddCommandHandler("survey_hint", () => Tutorial?.Invoke("survey"));
             runner.AddCommandHandler<string>("tutorial", name => Tutorial?.Invoke(name));
             runner.AddCommandHandler<string>("bind_prompt", id => BindPrompt?.Invoke(id));
+            runner.AddCommandHandler<string>("bind", Bind);
             runner.AddCommandHandler("cutscene", (Func<string, YarnTask>)PlayCutsceneAsync);
             runner.AddCommandHandler<string, int>("fade", (place, stage) => FadeStages.Advance(GameState.World, place, stage));
             runner.AddCommandHandler<string>("anchor", place => Decide(place, PlaceFate.Anchored));

@@ -124,7 +124,8 @@ full-playthrough matrix (PRO-05) will ask; both should be built on it.
 - Whether Windreach should also open from the Bone Bridge by sea (the Ferrymen) for a fourth Act 2 order.
 - ~~The reward for a noticed sequence break.~~ Noticed (`SequenceBreaks`, `BreakWatcher`): a zone she stands in
   that no hard way could have brought her to, only a soft gap, gets one line ("Nobody comes this way on foot…"),
-  a scrap of vellum and a flag (`break.noticed.<zone>`), once each. A `#still`-free line from the zone's people
-  (Kettil, Teodor) on that flag is still to write.
+  a scrap of vellum and a flag (`break.noticed.<zone>`), once each. The zone's people say so once, in their first
+  scene: Kettil ("Up the stair and no wings to speak of. Ha! I'll count you twice, then.") for the Furnace Stair,
+  Teodor for the iris gap onto the Old Road (`GivenMemoriesTests`).
 - ~~How the moving camp (PRG-21) changes Windreach's links between its three sites.~~ It doesn't. The sites are rooms
   in three zones, the camp is what stands in them, and the hub's desk stays at the post (`moving-camp.md`).

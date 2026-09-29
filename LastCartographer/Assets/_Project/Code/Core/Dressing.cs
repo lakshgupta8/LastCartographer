@@ -87,9 +87,9 @@ namespace OWSBG.Core
             P("Emberdown_Rest_1", DressingKind.Inscription, "rest.lintel", "Rest_Lintel", "5.6",
                 "Roosts cut into the cliff over the gate, doors high up for flyers, words cut over one; ladders bolted up the basalt to each, rungs worn pale.");
             P("Emberdown_Rest_2", DressingKind.Inscription, "rest.tally_wall", "Rest_TallyWall", null,
-                "Kettil's tally wall behind the porch: a year and a count cut for every year since the town began. Every number different; one drop of forty.");
+                "Kettil's tally wall behind the porch: a year and a count cut for every year since the town began. Every number different; one drop of thirty-one.");
             P("Emberdown_Rest_3", DressingKind.Remains, "pithead.cups", "PitHead_Cups", null,
-                "A trestle by the boarded mine mouth set with forty cups, turned down, a name scratched in each.",
+                "A trestle by the boarded mine mouth set with thirty-one cups, turned down, a name scratched in each.",
                 "After the walk down Hollowvein: right side up and washed.");
             P("Emberdown_Chimneys_3", DressingKind.Inscription, "chimneys.foot", "Chimneys_Foot", null,
                 "At the ninth chimney's foot, a bare stone where the other eight have their builders' names cut; fresh soot on it (the Ninth Chimney commission).");
@@ -98,7 +98,7 @@ namespace OWSBG.Core
                 "After the walk: every lamp lit.");
             P("Emberdown_Hollow_4", DressingKind.Remains, "hollow.bottom", null, null,
                 "Under the rubble where the Collapse lay: a boot, a lamp, a pick with a name on the haft. Kept small and out of the light.",
-                "After the walk: the rubble cleared, the stone swept, forty names chalked on the wall by the families.");
+                "After the walk: the rubble cleared, the stone swept, thirty-one names chalked on the wall by the families.");
 
             // ---- the Verdance -----------------------------------------------------------------------------------------
             P("Verdance_Road_2", DressingKind.Inscription, "road.milestone", "Road_Milestone", "5.6",

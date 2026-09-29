@@ -146,7 +146,7 @@ namespace OWSBG.Core
 
             // ---- bound memories and the purses ---------------------------------------------------------------------
             Add("memory", "isolde.first_sight", "Isolde's, bound at the edge: the first time she saw me. It is warmer than my own.");
-            Add("memory", "dotha.eleven_songs", "Dotha's songs, weather first. Everything true is short.");
+            Add("memory", "dotha.nine_songs", "Dotha's songs, weather first. Everything true is short.");
             Add("memory", "sable.boats_back", "Sable's count of the boats that came back. She never says the other number.");
             Add("currency", IrisSeed, "The coast's small change. Everyone takes it; nobody knows who planted the first field.");
             Add("currency", VellumScrap, "Offcuts of good vellum. The Guild counts every sheet; these are the ones it lost.");

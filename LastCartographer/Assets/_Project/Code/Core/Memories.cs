@@ -20,7 +20,7 @@ namespace OWSBG.Core
         public static readonly IReadOnlyDictionary<string, string> English = new Dictionary<string, string>
         {
             { "isolde.first_sight", "the first time she saw you" },
-            { "dotha.eleven_songs", "eleven songs, and which came first" },
+            { "dotha.nine_songs", "nine songs, and which came first" },
             { "sable.boats_back", "the count of boats that came back" },
         };
 

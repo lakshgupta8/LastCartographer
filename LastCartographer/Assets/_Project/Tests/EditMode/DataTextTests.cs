@@ -102,7 +102,7 @@ namespace OWSBG.Tests
                 Atlas.PlaceName("Saltmarrow_A"), Atlas.VantageName("Saltmarrow_A/Reedmother"), Atlas.WaypointName("desk.Saltmarrow_A"),
                 InstrumentInfo.Of(InstrumentKind.CompassDart).Name, InstrumentInfo.Of(InstrumentKind.CompassDart).Blurb,
                 CharterProfile.For(CharterKind.Warden).LocalName, Commissions.TitleOf(def), Commissions.StepOf(def, 0),
-                Bosses.NameOf(boss.Name), Bosses.LineOf(boss.Name, 1, boss.Entry), Memories.Name("dotha.eleven_songs"),
+                Bosses.NameOf(boss.Name), Bosses.LineOf(boss.Name, 1, boss.Entry), Memories.Name("dotha.nine_songs"),
                 FadeStages.Display(2), Places.Display(PlaceFate.Held), Economy.PitchOf(stock),
                 BoundsWalks.BoundName("merrows_end", "Dotha's stoop"), AbilityNames.Of(Ability.Talonhold), Commissions.HubName(def.Hub),
             });

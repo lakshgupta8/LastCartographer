@@ -56,11 +56,11 @@ bible section it plants.
 | Room | Piece | What it carries | P |
 |---|---|---|---|
 | Rest_1 | `Rest_Lintel` | "Land soft. Leave light." over a roost door; the ladder is newer than the words | 5.6 |
-| Rest_2 | `Rest_TallyWall` | A count cut for every year, every number different: the Holdfast holding without freezing. One year it falls by forty | |
-| Rest_3 | `PitHead_Cups` | Forty cups by the boards, turned down, a name in each. After the walk: right side up, and clean | |
+| Rest_2 | `Rest_TallyWall` | A count cut for every year, every number different: the Holdfast holding without freezing. One year it falls by thirty-one | |
+| Rest_3 | `PitHead_Cups` | Thirty-one cups by the boards, turned down, a name in each. After the walk: right side up, and clean | |
 | Chimneys_3 | `Chimneys_Foot` | Eight chimneys have builders' names; the ninth's stone is bare, the soot fresh | |
-| Hollow_2 | `Hollow_Lamps` | A lamp on a hook for each miner. After the walk: lit, all forty | |
-| Hollow_4 | the bottom | A boot, a lamp, a pick with a name on it, kept small. After: swept, forty names chalked | |
+| Hollow_2 | `Hollow_Lamps` | A lamp on a hook for each miner. After the walk: lit, all thirty-one | |
+| Hollow_4 | the bottom | A boot, a lamp, a pick with a name on it, kept small. After: swept, thirty-one names chalked | |
 
 ### The Verdance
 

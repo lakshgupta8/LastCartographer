@@ -23,6 +23,9 @@ namespace OWSBG.Tests
         DialogueView _view = null!;
         DialogueService _svc = null!;
 
+        /// <summary>Every line shown since the replay booted, as "Speaker: text".</summary>
+        public readonly System.Collections.Generic.List<string> Heard = new System.Collections.Generic.List<string>();
+
         public static void Prepare()
         {
             Time.timeScale = 1f;
@@ -83,7 +86,12 @@ namespace OWSBG.Tests
                     _presenter.Choose(c);
                     yield return null;
                 }
-                else if (_presenter.IsShowingLine) _presenter.Advance();
+                else if (_presenter.IsShowingLine)
+                {
+                    string heard = _view.SpeakerText + ": " + _view.LineText;
+                    if (Heard.Count == 0 || Heard[Heard.Count - 1] != heard) Heard.Add(heard);
+                    _presenter.Advance();
+                }
                 t += Time.deltaTime;
                 yield return null;
             }

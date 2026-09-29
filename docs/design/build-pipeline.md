@@ -78,18 +78,15 @@ GitHub Actions with GameCI's Unity actions, on every push to `main`, every pull 
 - **Checkout:** the build job fetches full history so `git describe` can name the version.
 
 **Secrets and variables to set** (repository settings; nothing is in the repository):
-- `UNITY_LICENSE`, `UNITY_EMAIL`, `UNITY_PASSWORD`: a Unity licence for GameCI. Without them the editor in the
-  container exits with code 1 and prints nothing (the second run, 2026-09-29). To get them, for a Personal licence:
-  1. On a machine with the editor: `Unity.exe -batchmode -nographics -createManualActivationFile -quit` writes
-     `Unity_v6000.3.7f1.alf` into the working directory (GameCI's old request-activation-file action is retired).
-     It's an activation request, not a licence, and is still never committed (`*.alf`, `*.ulf` are ignored).
-  2. At https://license.unity3d.com/manual, signed in with the Unity account, upload the `.alf`, choose Personal,
-     and download the `Unity_v6000.x.ulf` it gives back.
-  3. Settings → Secrets and variables → Actions → New repository secret: `UNITY_LICENSE` is the whole text of the
-     `.ulf` file (open it in an editor, copy everything); `UNITY_EMAIL` and `UNITY_PASSWORD` are the Unity
-     account's. Then re-run the failed jobs.
-  A Pro or Plus licence uses `UNITY_SERIAL` with the email and password instead, and the workflow would need
-  that variable added to its `env`.
+- `UNITY_EMAIL`, `UNITY_PASSWORD`: the Unity account GameCI activates the editor with, inside the container, on
+  every run. Without them the editor exits with code 1 and prints nothing (the second run, 2026-09-29). For a
+  Personal licence these two are the whole of it: Unity no longer issues offline licence files (`.ulf`) to
+  Personal seats ("offline activation is available only for Enterprise and Industry seats", 2026-09-29), so
+  `UNITY_LICENSE` stays unset and GameCI signs the editor in with the account instead. The account must be able
+  to sign in from a command line: two-factor authentication on it will stop the container, and a fresh account
+  has to have opened the Hub once to hold a Personal licence.
+- `UNITY_LICENSE`: only for a licence file, which Personal seats can't get now; `UNITY_SERIAL` (with the email
+  and password) for a Pro or Plus seat, which the workflow's `env` would need added.
 - In the `steam` environment:
   - `STEAM_USERNAME`: a Steamworks build account;
   - `STEAM_CONFIG_VDF`: its cached `config.vdf` after one Steam Guard login, base64 (see steam-deploy's docs);

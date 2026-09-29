@@ -38,6 +38,20 @@ namespace OWSBG.Core
             return true;
         }
 
+        /// <summary>
+        /// A seal losing its bind (a memory of the place given away, <see cref="Offerings"/>): one stage further even when
+        /// anchored, but never to blank. The fate stays; the ink thins. False when erased or already at the last stage.
+        /// </summary>
+        public static bool Loosen(WorldState w, string place)
+        {
+            if (string.IsNullOrEmpty(place) || IsErased(w, place)) return false;
+            int stage = Get(w, place);
+            if (stage >= Max - 1) return false;
+            w.Set(Key(place), stage + 1);
+            Changed?.Invoke(place, stage + 1);
+            return true;
+        }
+
         /// <summary>A Cantor's bell: the ink goes blank now, the stage it had is kept for Recover. False when
         /// already erased or anchored (the Guild's seal holds against a field bell).</summary>
         public static bool Erase(WorldState w, string place)

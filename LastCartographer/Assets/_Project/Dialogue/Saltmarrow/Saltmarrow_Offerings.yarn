@@ -1,0 +1,44 @@
+// What asks for a memory on the coast (bible 10, docs/design/offerings.md; `Offerings`). A given memory is gone for
+// good; if its place is anchored, the seal loosens a stage. The offer command gives it; can_offer(asker, memory)
+// and offered(asker) ask.
+
+title: Chapel_Door
+---
+<<if offered("chapel_door")>>
+    Door: Open. The reliquary behind it is empty now, and dry. #still #line:099e11a
+    <<stop>>
+<<endif>>
+Door: Salt-eaten paper behind the altar, cut with one line: "Sing me in." #still #line:02032f7
+<<if not can_offer("chapel_door", "dotha.nine_songs")>>
+    Door: It waits. Nobody on this coast sings any more. Nearly nobody. #still #line:04b66c0
+    <<stop>>
+<<endif>>
+<<if place_fate("Saltmarrow_B") == "anchored">>
+    Door: The songs are sealed into Merrow's End. The door doesn't care. #still #line:070e4ba
+<<endif>>
+-> Weather first. Then the rest. #line:0f11ec6
+    <<offer chapel_door dotha.nine_songs>>
+    Door: The paper takes the songs, weather first. It opens like a page turning. #line:0e5e53e
+    Door: Behind it, the reliquary: two scraps of good vellum, and nothing else. #line:0243a46
+-> Not these. They're Dotha's. #line:09b2a06
+    Door: It waits. Doors are patient on this coast. #still #line:091e6ff
+-> ... #line:058c806
+    Door: Salt settles on the line. It can wait. #still #line:0780568
+===
+
+title: Chain_Gannet
+---
+<<if offered("chain_gannet")>>
+    Gannet: Eleven hundred and six. I tell the water. It likes a number. #still #line:07f1968
+    <<stop>>
+<<endif>>
+Gannet: Have you eaten? Good. The boats go out every morning. Who comes back? #still #line:0db1151
+-> Eleven hundred and six. Sable counted. <<if can_offer("chain_gannet", "sable.boats_back")>> #line:052deca
+    <<offer chain_gannet sable.boats_back>>
+    Gannet: Eleven hundred and six. More than I thought. Fewer than go. #line:071f692
+    Gannet: Seed, for the number. I kept it for whoever knew. #line:0160e93
+-> I don't know. #line:08991ed
+    Gannet: Nobody knows. Ask the one who names the prices. #still #line:0e4fbc1
+-> ... #line:01f5cba
+    Gannet: Quiet. They are quiet too, going out. #still #line:05cca27
+===

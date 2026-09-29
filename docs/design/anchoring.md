@@ -61,9 +61,8 @@ set. Saves need nothing extra.
 
 ## 8. Open
 - Whether Wren can anchor without a licence.
-- Whether sealing should spend the memory. It doesn't: she keeps it, and it is still hers to lose to a death and
-  recover. Bible 10's "offering one weakens that place's anchor" is for the doors and birds that ask for memories,
-  which are still to come.
+- ~~Whether sealing should spend the memory.~~ It doesn't: she keeps it, to lose to a death and recover, or to give
+  to a door or a bird, which loosens the seal (`docs/design/offerings.md`).
 - Hold is performed by the bounds-walk (`docs/design/bounds-walk.md`, DES-13): the desk refuses Hold until the place is walked.
 - Wardens before Act 1's end measure and look away (above). Whether some should be absent instead (a hub with
   none until the town is anchored) is a per-town choice for DES-09 to DES-11.
@@ -84,7 +83,7 @@ a memory Wren carries whose giver lives in the place (`Memories.HomeOf`).
   first." With one, it names the memory it binds.
 - **Carried means carried.** A memory lost to a death is in the smudge, not in her ink. The desk refuses until she
   has struck the smudge down.
-- **Sealing doesn't spend it.**
+- **Sealing doesn't spend it.** Giving it away later does, and loosens the seal a stage (`docs/design/offerings.md`).
 - **A place with nobody to give one can't be anchored by Wren:** the lighthouses, the Salt Chapel, the Edge. She can
   still release them.
 - **Story anchors don't ask.** The Guild anchors Lowmarket in the strike scene itself (`<<anchor>>`), and the bind is

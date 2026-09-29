@@ -19,6 +19,7 @@ namespace OWSBG.Narrative
     ///   &lt;&lt;tutorial name&gt;&gt;       tutorial hook (raises Tutorial name)
     ///   &lt;&lt;bind_prompt memoryId&gt;&gt; offer a memory to bind (raises BindPrompt; the prologue's lesson binds it)
     ///   &lt;&lt;bind memoryId&gt;&gt;        bind a memory someone gives her, with the "Bound:" caption
+    ///   &lt;&lt;offer asker memoryId&gt;&gt; give a memory to a door, bird or keystone that asks (Offerings), with the "Given:" caption
     ///   &lt;&lt;commission id verb&gt;&gt;  post | take | fulfil | close | fail a commission (PRG-12)
     ///   &lt;&lt;cutscene id&gt;&gt;          play a Cutscene and wait for it (PRG-16)
     ///   &lt;&lt;fade place stage&gt;&gt;     advance a place's fade stage 0-4 (PRG-14); anchored places ignore it
@@ -91,6 +92,25 @@ namespace OWSBG.Narrative
                 Captions.Show(Loc.F("caption.bound", "Bound: {0}", Memories.Name(memoryId)), 4f);
         }
 
+        /// <summary>A memory given to what asks for it: gone for good, and if its place is anchored, the seal loosens.</summary>
+        public static void Offer(string asker, string memoryId)
+        {
+            var w = GameState.World;
+            var home = Memories.HomeOf(memoryId);
+            int before = home != null ? Offerings.Weakened(w, home) : 0;
+            if (!Offerings.Offer(w, asker, memoryId)) return;
+            bool loosened = home != null && Offerings.Weakened(w, home) > before;
+            Captions.Show(loosened
+                ? Loc.F("caption.given_loosens", "Given: {0}. {1}'s seal loosens.", Memories.Name(memoryId), Atlas.PlaceName(home))
+                : Loc.F("caption.given", "Given: {0}", Memories.Name(memoryId)), 4f);
+        }
+
+        [YarnFunction("can_offer")]
+        public static bool CanOffer(string asker, string memoryId) => Offerings.CanOffer(GameState.World, asker, memoryId);
+
+        [YarnFunction("offered")]
+        public static bool OfferedTo(string asker) => Offerings.IsDone(GameState.World, asker);
+
         void RegisterCommands(DialogueRunner runner)
         {
             runner.AddCommandHandler<string, int>("flag", (key, value) => GameState.World.Set(key, value));
@@ -98,6 +118,7 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("tutorial", name => Tutorial?.Invoke(name));
             runner.AddCommandHandler<string>("bind_prompt", id => BindPrompt?.Invoke(id));
             runner.AddCommandHandler<string>("bind", Bind);
+            runner.AddCommandHandler<string, string>("offer", Offer);
             runner.AddCommandHandler("cutscene", (Func<string, YarnTask>)PlayCutsceneAsync);
             runner.AddCommandHandler<string, int>("fade", (place, stage) => FadeStages.Advance(GameState.World, place, stage));
             runner.AddCommandHandler<string>("anchor", place => Decide(place, PlaceFate.Anchored));

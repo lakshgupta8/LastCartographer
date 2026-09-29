@@ -55,7 +55,7 @@ namespace OWSBG.Core
 
         public static bool Bind(WorldState w, string id)
         {
-            if (string.IsNullOrEmpty(id) || w.BoundMemories.Contains(id)) return false;
+            if (string.IsNullOrEmpty(id) || w.BoundMemories.Contains(id) || Offerings.IsGiven(w, id)) return false;   // given is gone
             w.BoundMemories.Add(id);
             Bound?.Invoke(id);
             return true;

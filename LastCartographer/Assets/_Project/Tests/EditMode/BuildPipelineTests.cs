@@ -17,6 +17,33 @@ namespace OWSBG.Tests
     {
         static string RepoRoot => Path.GetFullPath(Path.Combine(Application.dataPath, "..", ".."));
 
+        /// <summary>
+        /// GameCI's CLI (v0.1.69, unity-build-validation.ts) passes a build whose log has "Build succeeded!", or a
+        /// block matching these two patterns with no errors; a custom build method has to print the block itself.
+        /// </summary>
+        [Test]
+        public void TheResultsBlockIsTheOneGameCIsCliReads()
+        {
+            var block = new Regex(@"^#\s*Build results\s*#(.*)^Size:", RegexOptions.Multiline | RegexOptions.Singleline);
+            var errors = new Regex(@"^Errors:\s*(\d+)$", RegexOptions.Multiline);
+            // As the log shows it: after the build method's own line, before Unity's shutdown chatter.
+            string log = "[OWSBG] build Succeeded in 121 s\n" +
+                         GameBuild.ResultsBlock(true, System.TimeSpan.FromSeconds(121), 0, 0, 105_600_000UL) +
+                         "\nInput System module state changed to: Shutdown.\n";
+            var m = block.Match(log);
+            Assert.IsTrue(m.Success, "the block is found:\n" + log);
+            var e = errors.Match(m.Groups[1].Value);
+            Assert.IsTrue(e.Success, "with its Errors line");
+            Assert.AreEqual("0", e.Groups[1].Value, "a good build reads as passed");
+            StringAssert.Contains("Duration: 00:02:01", log);
+
+            string failed = GameBuild.ResultsBlock(false, System.TimeSpan.FromSeconds(3), 0, 0, 0UL);
+            var fm = block.Match(failed);
+            Assert.IsTrue(fm.Success);
+            Assert.AreNotEqual("0", errors.Match(fm.Groups[1].Value).Groups[1].Value, "a failed build never reads as passed, even with no errors counted");
+            Assert.AreEqual("4", errors.Match(block.Match(GameBuild.ResultsBlock(false, System.TimeSpan.Zero, 1, 4, 0UL)).Groups[1].Value).Groups[1].Value);
+        }
+
         [Test]
         public void VersionsComeFromTags()
         {

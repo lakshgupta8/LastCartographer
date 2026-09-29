@@ -141,6 +141,8 @@ namespace OWSBG.Build
                 var s = report.summary;
                 Debug.Log("[OWSBG] build " + s.result + " in " + s.totalTime.TotalSeconds.ToString("0") + " s: " +
                           (s.totalSize / (1024f * 1024f)).ToString("0.0") + " MB, " + s.totalErrors + " errors, " + s.totalWarnings + " warnings");
+                // GameCI's CLI judges a build by its log: this block, as its own build method prints it (the eighth run).
+                Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, null, "{0}", ResultsBlock(s));
                 if (s.result != BuildResult.Succeeded) return report;
 
                 File.WriteAllText(Path.Combine(o.OutputDir, "build_info.json"), json);
@@ -158,6 +160,30 @@ namespace OWSBG.Build
                 File.WriteAllText(BuildInfoAsset, previousInfo);
                 AssetDatabase.ImportAsset(BuildInfoAsset, ImportAssetOptions.ForceSynchronousImport);
             }
+        }
+
+        /// <summary>
+        /// GameCI's build summary, the one its own build method prints and its CLI reads to decide a build passed
+        /// (a "# Build results #" block down to a "Size:" line, with "Errors: 0"). A failed build never reads as
+        /// passed: it reports at least one error.
+        /// </summary>
+        public static string ResultsBlock(BuildSummary s) =>
+            ResultsBlock(s.result == BuildResult.Succeeded, s.totalTime, s.totalWarnings, s.totalErrors, s.totalSize);
+
+        public static string ResultsBlock(bool succeeded, TimeSpan time, int warnings, int errorCount, ulong size)
+        {
+            int errors = succeeded ? errorCount : Math.Max(1, errorCount);
+            return string.Join("\n", new[]
+            {
+                "###########################",
+                "#      Build results      #",
+                "###########################",
+                "",
+                "Duration: " + time.ToString(@"hh\:mm\:ss"),
+                "Warnings: " + warnings,
+                "Errors: " + errors,
+                "Size: " + size + " bytes (" + (size / (1024f * 1024f)).ToString("0.0") + " MB)",
+            });
         }
 
         static string Label(this Options o) => string.IsNullOrEmpty(o.Commit) ? o.Version : o.Version + " (" + o.Commit + ")";

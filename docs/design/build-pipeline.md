@@ -149,7 +149,13 @@ past ten seconds; here a capture takes well under one and the whole test 4 s.
 The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
 `UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,
 which signs in with the account, so the build job now uses v6. It also passes `-buildOutput` to the folder the
-upload step reads, so the build lands there whatever path the CLI hands Unity. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
+upload step reads, so the build lands there whatever path the CLI hands Unity.
+
+The eighth run built the game (100.7 MB, no errors, in `build/StandaloneWindows64`) and was still marked failed.
+The CLI decides a build passed by reading the log: `Build succeeded!`, or a `# Build results #` block down to a
+`Size:` line with `Errors: 0`, which GameCI's own build method prints and a custom one doesn't. `GameBuild` now
+prints that block after every player build (`GameBuild.ResultsBlock`; a failed build always reports at least
+one error), and `BuildPipelineTests` holds it to the CLI's two patterns. Both test jobs have a ninety-minute limit now, in case a play-mode hang is next.
 
 ## Open
 

@@ -48,6 +48,7 @@ Silksong is painted, gothic, high-contrast, saturated pools of colour in darknes
 
 ## 7. VFX
 - Ink is the VFX language: strikes leave brief ink splashes that soak into the paper; Flourishes are pen scribbles; Bind redraws Wren's outline; erasure (Cantor bells) rubs the image out with a visible eraser texture; the Blank's edge is wet paper.
+  Version one draws each as a one-shot sheet clip from geometry in Blender and spawns it through `InkFx` (`docs/design/ink-fx.md`, ENV-12); the strips are the hand-off for the hand-drawn pass.
 - Fledglings leap in the background of every region; after each ability Wren learns, they glide a little further. This is a hand-animated background loop, not a system.
 
 ## 8. Reference board (for the team, not for tracing)

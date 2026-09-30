@@ -91,7 +91,8 @@ namespace OWSBG.World
                         var dir = new Vector2(_facing, 0f);
                         var center = _ctrl.Position + Vector2.up * originHeight + dir * (crosshatchReach * 0.5f);
                         HitBox(center, new Vector2(crosshatchReach, crosshatchHeight), dir, Tuning.CrosshatchDamage, false);
-                        _visual?.Slash(new Vector2(_facing, (_hitsDone % 2 == 0 ? 0.35f : -0.35f)));
+                        if (_hitsDone == 1 && _visual != null && _visual.Scribble("crosshatch", center, dir)) { }
+                        else if (!(_hitsDone > 1 && _visual != null && InkFx.Ready)) _visual?.Slash(new Vector2(_facing, (_hitsDone % 2 == 0 ? 0.35f : -0.35f)));
                     }
                     if (_hitsDone >= crosshatchHits && _frame >= crosshatchHits * crosshatchInterval + recoveryFrames) End();
                     break;
@@ -102,8 +103,11 @@ namespace OWSBG.World
                         var dir = new Vector2(_facing, 0f);
                         var center = _ctrl.Position + Vector2.up * originHeight + dir * (longstrokeReach * 0.5f);
                         HitBox(center, new Vector2(longstrokeReach, longstrokeThickness), dir, longstrokeDamage, false);
-                        _visual?.Slash(dir);
-                        _visual?.Burst(_ctrl.Position + Vector2.up * originHeight + dir * longstrokeReach, dir, 5);
+                        if (_visual == null || !_visual.Scribble("longstroke", _ctrl.Position + Vector2.up * originHeight, dir))
+                        {
+                            _visual?.Slash(dir);
+                            _visual?.Burst(_ctrl.Position + Vector2.up * originHeight + dir * longstrokeReach, dir, 5);
+                        }
                     }
                     if (_frame >= longstrokeStartup + recoveryFrames) End();
                     break;
@@ -113,7 +117,7 @@ namespace OWSBG.World
                     {
                         var origin = _ctrl.Position + Vector2.up * originHeight;
                         HitCircle(origin, blotRadius, Tuning.BlotDamage);
-                        _visual?.Burst(origin, Vector2.zero, 14, 11f);
+                        if (_visual == null || !_visual.Scribble("blot", origin, Vector2.right)) _visual?.Burst(origin, Vector2.zero, 14, 11f);
                     }
                     if (_frame >= blotStartup + recoveryFrames) End();
                     break;

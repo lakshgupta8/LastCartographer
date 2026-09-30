@@ -128,6 +128,9 @@ namespace OWSBG.World
             var place = PlaceId;
             if (Atlas.Erase(GameState.World, place))
                 Captions.Show(Loc.F("caption.erased", "Erased: {0}. Draw it again.", Atlas.PlaceName(place)), 4f);
+            // The erasure (ENV-12): an eraser dragged across the page, three sweeps out from the bell.
+            for (int k = -1; k <= 1; k++)
+                InkFx.Spawn("eraser", (Vector2)transform.position + new Vector2(k * 2.6f, 0.4f - 0.6f * Mathf.Abs(k)), 0f, 1.4f);
             Tolled?.Invoke(this, place);
         }
 

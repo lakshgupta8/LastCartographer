@@ -20,12 +20,18 @@ namespace OWSBG.World
         float _flashUntil, _crumbleT = -1f;
         Vector3 _baseScale;
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        static readonly int InkId = Shader.PropertyToID("_Ink");
+        static readonly Color BlockRest = new Color(0.58f, 0.50f, 0.36f), DrawnFlash = new Color(1.8f, 1.7f, 1.4f);
+
+        /// <summary>On the kit's cracked planks (ENV-12) rather than the greybox block.</summary>
+        public bool IsDrawn { get; private set; }
 
         void Awake()
         {
             _renderer = GetComponentInChildren<Renderer>();
             _mpb = new MaterialPropertyBlock();
             _baseScale = transform.localScale;
+            IsDrawn = _renderer != null && _renderer.sharedMaterial != null && _renderer.sharedMaterial.HasProperty(InkId);
         }
 
         public bool TakeHit(in HitInfo hit)
@@ -36,6 +42,9 @@ namespace OWSBG.World
             IsBroken = true;
             _crumbleT = 0f;
             foreach (var c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
+            // Drawn: the planks go at once and the crumble plays where they were; the block shrinks as before.
+            var b = _renderer != null ? _renderer.bounds : new Bounds(transform.position, Vector3.one);
+            if (InkFx.Spawn("crumble", new Vector2(b.center.x, b.max.y), 0f, Mathf.Max(0.8f, b.size.x / 2.4f)) != null && _renderer != null) _renderer.enabled = false;
             Broke?.Invoke(this);
             return true;
         }
@@ -45,7 +54,7 @@ namespace OWSBG.World
             if (_renderer != null)
             {
                 _renderer.GetPropertyBlock(_mpb);
-                _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? Color.white : new Color(0.58f, 0.50f, 0.36f));
+                _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? (IsDrawn ? DrawnFlash : Color.white) : (IsDrawn ? Color.white : BlockRest));
                 _renderer.SetPropertyBlock(_mpb);
             }
             if (_crumbleT < 0f) return;

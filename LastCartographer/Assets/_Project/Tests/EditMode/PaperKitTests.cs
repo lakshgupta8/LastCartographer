@@ -20,7 +20,7 @@ namespace OWSBG.Tests
             "Fore_Reeds", "Mid_Reeds", "Far_Roosts", "Farther_Cliffs", "Mid_Reeds_Faded", "Far_Roosts_Faded", "Farther_Cliffs_Faded",
             "Mid_Salt", "Far_Chapel", "Far_Tower", "Farther_Sea",
         };
-        static readonly string[] Tiles = { "Ground_Boardwalk", "Ground_Boardwalk_Faded", "Ground_Shallows", "Ground_Stone" };
+        static readonly string[] Tiles = { "Ground_Boardwalk", "Ground_Boardwalk_Faded", "Ground_Shallows", "Ground_Stone", "Ground_Boardwalk_Weak", "Ground_Boardwalk_Hidden" };
         // ENV-09's props: cut-outs at the sprite density, feet at the bottom edge (docs/design/paper-kit.md §2a)
         public static readonly string[] Props =
         {

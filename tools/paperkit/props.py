@@ -12,12 +12,15 @@ keeps the greybox block when the drawing is missing. Nothing here is a behaviour
 import json, math, os, random, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy
-from saltmarrow import (OUT, PAPER, SILVER, OLIVE, RUST, INK, TILE_PPU, Palette, lerp, reset_scene, box, polygon,
+from saltmarrow import (OUT, PAPER, SILVER, OLIVE, RUST, INK, PPU, TILE_PPU, Palette, lerp, reset_scene, box, polygon,
                         setup_render, render)
+
+KITS = os.path.dirname(OUT)   # Art/Environment: one folder and kit.json per region
 
 BRASS = (0.78, 0.62, 0.30)
 ROPE = (0.66, 0.56, 0.38)
 GLOW = (0.96, 0.82, 0.42)
+WET = (0.80, 0.78, 0.74)
 STEEL = (0.30, 0.32, 0.36)
 
 
@@ -237,15 +240,35 @@ def prop_tether(rng, p):
     return 1.0, 3.0, 2.0
 
 
+def prop_wetedge(rng, p):
+    """Prop_WetEdge: where the paper is wet before it is white: a fibrous damp band, the white bleeding in from
+    the right, drawn tall so the Edge room can stretch it over the whole height. No ink line: it is not a thing."""
+    wet, damp, white = p("wet", WET), p("damp", lerp(WET, PAPER, 0.45)), p("white", (0.97, 0.96, 0.93))
+    box("white", 1.6, 6.0, 1.6, 12.4, white, y=0.2)
+    for k in range(240):
+        z = 0.025 + 11.95 * k / 239
+        reach = 0.9 + 0.7 * math.sin(z * 1.7) * math.sin(z * 0.6 + 1.0) + 0.18 * math.sin(z * 9.0) + rng.uniform(-0.12, 0.12)
+        box("damp_%d" % k, 0.8 - reach * 0.5, z, reach + 0.6, 0.06, damp, y=0.1)
+        box("wet_%d" % k, 0.9 - reach * 0.2, z, reach * 0.5 + rng.uniform(0.1, 0.5), 0.04, wet, y=0.0)
+    for k in range(40):
+        z = rng.uniform(0.0, 12.0)
+        x = 0.9 + rng.uniform(-1.4, 0.2)
+        box("fibre_%d" % k, x, z, rng.uniform(0.15, 0.5), 0.02, wet, y=-0.05)
+    return 4.0, 12.0, 0.0
+
+
 PROPS = [
     ("Prop_Desk", prop_desk), ("Prop_Ledger", prop_ledger), ("Prop_Dummy", prop_dummy), ("Prop_Stall", prop_stall),
     ("Prop_Vantage", prop_vantage), ("Prop_Lamp", prop_lamp), ("Prop_LampGlow", prop_lampglow), ("Prop_Seeds", prop_seeds),
     ("Prop_Bound", prop_bound), ("Prop_Nets", prop_nets), ("Prop_Stoop", prop_stoop), ("Prop_Boat", prop_boat),
     ("Prop_Tether", prop_tether),
+    ("Prop_WetEdge", prop_wetedge, "Greyfold"),   # the Edge room is Greyfold's: its own kit, this its first layer
 ]
 
 
-def build(name, fn):
+def build(name, fn, region="Saltmarrow"):
+    out = os.path.join(KITS, region)
+    os.makedirs(out, exist_ok=True)
     reset_scene()
     seed = sum(ord(c) for c in name)
     rng = random.Random(seed)
@@ -253,26 +276,34 @@ def build(name, fn):
     w, h, line_px = fn(rng, p)
     sc = setup_render(w, h, TILE_PPU, 0.0, max(line_px, 0.1), p.ink(), seed % 1000)
     sc.render.use_freestyle = line_px > 0
-    size = render(os.path.join(OUT, name + ".png"))
+    size = render(os.path.join(out, name + ".png"))
     return w, h, size
 
 
 def main():
     only = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-    manifest_path = os.path.join(OUT, "kit.json")
-    with open(manifest_path) as f:
-        kit = json.load(f)
-    for name, fn in PROPS:
+    kits = {}
+    for entry in PROPS:
+        name, fn = entry[0], entry[1]
+        region = entry[2] if len(entry) > 2 else "Saltmarrow"
         if only and name not in only:
             continue
-        w, h, size = build(name, fn)
-        print("[props] %s %dx%d px %d bytes" % (name, w * TILE_PPU, h * TILE_PPU, size))
-        entry = {"name": name, "kind": "prop", "widthUnits": w, "heightUnits": h, "ppu": TILE_PPU,
+        if region not in kits:
+            path = os.path.join(KITS, region, "kit.json")
+            if os.path.exists(path):
+                with open(path) as f:
+                    kits[region] = json.load(f)
+            else:
+                kits[region] = {"region": region, "ppu": PPU, "tilePpu": TILE_PPU, "paper": PAPER, "layers": []}
+        w, h, size = build(name, fn, region)
+        print("[props] %s %dx%d px %d bytes (%s)" % (name, w * TILE_PPU, h * TILE_PPU, size, region))
+        layer = {"name": name, "kind": "prop", "widthUnits": w, "heightUnits": h, "ppu": TILE_PPU,
                  "widthPx": int(round(w * TILE_PPU)), "heightPx": int(round(h * TILE_PPU)), "file": name + ".png", "faded": False}
-        kit["layers"] = [l for l in kit["layers"] if l["name"] != name] + [entry]
-    with open(manifest_path, "w") as f:
-        json.dump(kit, f, indent=2)
-    print("[props] wrote kit.json with %d layers" % len(kit["layers"]))
+        kits[region]["layers"] = [l for l in kits[region]["layers"] if l["name"] != name] + [layer]
+    for region, kit in kits.items():
+        with open(os.path.join(KITS, region, "kit.json"), "w") as f:
+            json.dump(kit, f, indent=2)
+        print("[props] wrote %s/kit.json with %d layers" % (region, len(kit["layers"])))
 
 
 if __name__ == "__main__":

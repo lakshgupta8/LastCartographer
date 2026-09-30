@@ -420,6 +420,54 @@ def tile_boardwalk(rng, faded):
     return (4, 1, TILE_PPU, 0.0, 2.2, p.ink())
 
 
+def tile_boardwalk_weak(rng, faded):
+    """Ground_Boardwalk_Weak: the quay planks rotten through: cracks, a missing board, nails pulled (the weak floor)."""
+    p = Palette(0.0, faded)
+    plank = p("plank", lerp(RUST, SILVER, 0.62))
+    plank2 = p("plank2", lerp(RUST, OLIVE, 0.45))
+    crack = p("crack", INK)
+    rot = p("rot", lerp(OLIVE, INK, 0.5))
+    gap = 0.08
+    x = -2.0
+    i = 0
+    while x < 2.0 - 1e-6:
+        w = 1.5 if i % 2 == 0 else 0.8
+        if x + w > 2.0:
+            w = 2.0 - x
+        if i != 2:   # a board missing
+            box("plank_%d" % i, x + w / 2, 0.5, w - gap, 0.82, plank if i % 2 == 0 else plank2)
+            for c in range(2):
+                cx = x + w * rng.uniform(0.2, 0.8)
+                box("crack_%d_%d" % (i, c), cx, 0.5 + rng.uniform(-0.25, 0.25), 0.018, rng.uniform(0.25, 0.6), crack, y=-0.2)
+            box("rot_%d" % i, x + w * rng.uniform(0.3, 0.7), 0.2, w * 0.5, 0.12, rot, y=-0.1)
+        x += w
+        i += 1
+    box("beam", 0, 0.05, 4.2, 0.1, plank2, y=0.3)
+    box("beam_sag", 0.6, 0.02, 1.2, 0.06, rot, y=0.25)
+    return (4, 1, TILE_PPU, 0.0, 2.2, p.ink())
+
+
+def tile_boardwalk_hidden(rng, faded):
+    """Ground_Boardwalk_Hidden: planks a Field lantern draws: a dotted outline with the boards barely washed in."""
+    p = Palette(0.0, faded)
+    faint = p("faint", lerp(RUST, PAPER, 0.75))
+    dot = p("dot", lerp(INK, PAPER, 0.15))
+    x = -2.0
+    i = 0
+    while x < 2.0 - 1e-6:
+        w = 1.0
+        box("plank_%d" % i, x + w / 2, 0.5, w - 0.06, 0.84, faint, y=0.1)
+        x += w
+        i += 1
+    for k in range(20):
+        box("dot_top_%d" % k, -1.95 + 0.2 * k, 0.9, 0.08, 0.035, dot, y=-0.2)
+        box("dot_bot_%d" % k, -1.95 + 0.2 * k, 0.1, 0.08, 0.035, dot, y=-0.2)
+    for k in range(4):
+        for j in range(4):
+            box("dot_side_%d_%d" % (k, j), -2.0 + k, 0.2 + 0.2 * j, 0.035, 0.08, dot, y=-0.2)
+    return (4, 1, TILE_PPU, 0.0, 1.6, p.ink())
+
+
 def tile_shallows(rng, faded):
     """Ground_Shallows: a 4 x 1 unit tile of the tide over the mud: pale water, wave lines, a darker bed."""
     p = Palette(0.0, faded)
@@ -478,6 +526,8 @@ LAYERS = [
     ("Ground_Boardwalk", "tile", tile_boardwalk, False),
     ("Ground_Boardwalk_Faded", "tile", tile_boardwalk, True),
     ("Ground_Shallows", "tile", tile_shallows, False),
+    ("Ground_Boardwalk_Weak", "tile", tile_boardwalk_weak, False),
+    ("Ground_Boardwalk_Hidden", "tile", tile_boardwalk_hidden, False),
     ("Ground_Stone", "tile", tile_stone, False),
 ]
 

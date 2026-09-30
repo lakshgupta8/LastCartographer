@@ -381,6 +381,17 @@ namespace OWSBG.Setup
             uiGo.AddComponent<OWSBG.UI.OptionsView>();
 
             // Dialogue service drawing through the UI's dialogue view.
+            // The ink effects (ENV-12): every clip fx.py packed, on one shared ink material, ready for anything to spawn.
+            var fxSheets = LoadSheets("Fx", out float fxCell);
+            if (fxSheets != null)
+            {
+                var fxGo = new GameObject("InkFx");
+                var fxMat = MakeInkMaterial("M_Fx", fxSheets[0].Sheet);
+                foreach (var (prop, v) in new[] { ("_Lighting", 0f), ("_Shadows", 0f), ("_GrainStrength", 0f), ("_ShadowStep", 0f) })
+                    if (mat_has(fxMat, prop) && fxMat.GetFloat(prop) != v) { fxMat.SetFloat(prop, v); EditorUtility.SetDirty(fxMat); }
+                fxGo.AddComponent<InkFx>().Configure(fxSheets, fxMat, fxCell);
+            }
+
             var dlgGo = new GameObject("DialogueService");
             dlgGo.AddComponent<WorldStateVariableStorage>();
             var presenter = dlgGo.AddComponent<ViewDialoguePresenter>();
@@ -478,6 +489,7 @@ namespace OWSBG.Setup
             var flourishes = go.AddComponent<Flourishes>();
             flourishes.hitMask = LayerMask.GetMask("Hittable", "Enemy");
             var strikeVisual = go.AddComponent<StrikeVisual>();
+            go.AddComponent<WrenFx>();   // the Bind's redraw, a hit's splash (ENV-12)
             var svSo = new SerializedObject(strikeVisual);
             svSo.FindProperty("_inkMaterial").objectReferenceValue = MakeLitMaterial("M_Ink_Black", new Color(0.06f, 0.06f, 0.08f));
             svSo.ApplyModifiedPropertiesWithoutUndo();
@@ -958,6 +970,9 @@ namespace OWSBG.Setup
             EditorUtility.SetDirty(mat);
             float[] z = { 0.6f, 4.5f, 10f, 18f };   // between the paper layers, never on one
             float[] x0 = { 16f, 14f, 12f, 10f };
+            // Where the paper is wet before it is white (ENV-12): the kit's fibrous edge over the nearest sheet's start.
+            var wet = MakeProp(room, room.transform, "WetEdge", new Vector2(x0[0] - 1.2f, -9f), 0.55f);
+            if (wet != null) { wet.transform.localScale = new Vector3(wet.transform.localScale.x, 30f, 1f); wet.transform.localPosition = new Vector3(x0[0] - 1.2f, 6f, 0.55f); }
             for (int i = 0; i < z.Length; i++)
             {
                 var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
@@ -1348,7 +1363,7 @@ namespace OWSBG.Setup
             }
             // The props (ENV-09) thin with the place and never drop: a desk stays a desk to the last.
             foreach (var r in room.GetComponentsInChildren<MeshRenderer>(true))
-                if (r.gameObject.name.StartsWith("Prop_") && r.gameObject.name != "Prop_LampGlow") group.AddLayer(r, 5);
+                if (r.gameObject.name.StartsWith("Prop_") && r.gameObject.name != "Prop_LampGlow" && r.gameObject.name != "Prop_WetEdge") group.AddLayer(r, 5);
             Debug.Log("[OWSBG] fade group " + room.RoomId + ": " + group.Layers.Count + " layers");
         }
 
@@ -1390,6 +1405,7 @@ namespace OWSBG.Setup
         {
             var mat = MakeLitMaterial("M_Greybox_WeakFloor", new Color(0.58f, 0.50f, 0.36f));
             MakeGround(room, name, center, size, mat);
+            SkinGround(room, name, "Ground_Boardwalk_Weak", 4f);   // the rotten planks (ENV-12), when the kit has them
             var go = room.transform.Find(name).gameObject;
             go.AddComponent<WeakFloor>();
         }
@@ -1399,6 +1415,7 @@ namespace OWSBG.Setup
         {
             var mat = MakeLitMaterial("M_Greybox_Hidden", new Color(0.52f, 0.46f, 0.36f));
             MakeGround(room, name, center, size, mat);
+            SkinGround(room, name, "Ground_Boardwalk_Hidden", 4f);   // the lantern-drawn planks (ENV-12)
             var go = room.transform.Find(name).gameObject;
             go.AddComponent<HiddenPlatform>();
         }
@@ -1985,6 +2002,8 @@ namespace OWSBG.Setup
             r.shadowCastingMode = ShadowCastingMode.TwoSided;
             return r;
         }
+
+        static bool mat_has(Material m, string prop) => m != null && m.HasProperty(prop);
 
         static Material MakeInkMaterial(string name, Texture2D tex)
         {

@@ -78,7 +78,7 @@ namespace OWSBG.World
         readonly Collider2D[] _overlaps = new Collider2D[4];
         int _frames, _patternIndex;
         float _pause, _approachT, _surveyX;
-        bool _telegraphStarted, _hitThisAttack;
+        bool _telegraphStarted, _hitThisAttack, _drawnMarks;
         Vector3 _baseScale;
         Attack _forced = Attack.None;
 
@@ -253,6 +253,14 @@ namespace OWSBG.World
             x = Mathf.Clamp(x, arenaMinX, arenaMaxX);
             foreach (var m in _marks) if (Mathf.Abs(m - x) < markWidth * 0.5f) return;
             _marks.Add(x);
+            var drawn = InkFx.Mark("mark", new Vector2(x, floorY + 0.08f), markWidth / 1.6f);   // the clip's square is 1.6 wide in a 3-unit cell
+            if (drawn != null)
+            {
+                drawn.SetParent(transform.parent, true);
+                _markVisuals.Add(drawn);
+                _drawnMarks = true;
+                return;
+            }
             var q = GameObject.CreatePrimitive(PrimitiveType.Cube);
             q.name = "Mark";
             Destroy(q.GetComponent<Collider>());
@@ -272,13 +280,19 @@ namespace OWSBG.World
 
         void EruptCheck()
         {
-            for (int i = 0; i < _markVisuals.Count; i++)
+            if (_drawnMarks)
             {
-                var v = _markVisuals[i];
-                if (v == null) continue;
-                v.position = new Vector3(_marks[i], floorY + eruptHeight * 0.5f, 0f);
-                v.localScale = new Vector3(markWidth * 0.9f, eruptHeight, 0.2f);
+                // Drawn: each mark erupts as a column of ink once, the square staying under it.
+                if (_frames == 0) foreach (var x in _marks) InkFx.Spawn("erupt", new Vector2(x, floorY + 1.1f), 0f, Mathf.Max(0.8f, markWidth / 1.4f));
             }
+            else
+                for (int i = 0; i < _markVisuals.Count; i++)
+                {
+                    var v = _markVisuals[i];
+                    if (v == null) continue;
+                    v.position = new Vector3(_marks[i], floorY + eruptHeight * 0.5f, 0f);
+                    v.localScale = new Vector3(markWidth * 0.9f, eruptHeight, 0.2f);
+                }
             if (_hitThisAttack) return;
             foreach (var x in _marks)
                 if (Hit(new Vector2(x, floorY + eruptHeight * 0.5f), new Vector2(markWidth, eruptHeight))) return;

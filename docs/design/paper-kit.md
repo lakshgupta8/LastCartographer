@@ -58,6 +58,8 @@ The tiles, 4 × 1 units at 96 px/unit, mapped in world space:
 | `Ground_Boardwalk_Faded` | Chain_3 | the same planks washed and thinned |
 | `Ground_Shallows` | the Boardwalk's two gaps | the tide over mud: pale water, wave lines, a darker bed, weed |
 | `Ground_Stone` | Lighthouse, Chapel | salt-crusted stone in two staggered courses |
+| `Ground_Boardwalk_Weak` | every weak floor | the planks rotten through: cracks, a missing board, a sagging beam (ENV-12) |
+| `Ground_Boardwalk_Hidden` | every hidden platform | planks a Field lantern draws: a dotted outline, the boards barely washed in (ENV-12) |
 
 A faded layer is the same geometry (the random seed comes from the name without `_Faded`) with the
 depth wash raised by 0.3 and the line at 0.6 of its thickness.
@@ -86,6 +88,7 @@ group at dropout 5: it thins with the place and never drops, so a desk stays a d
 | `Prop_Stoop` | 2 × 1.25 | Merrow's End, behind Dotha | two stone steps, a bench, a pot with a dead reed |
 | `Prop_Boat` | 3 × 1 | the Quay's west end, the Shore | a beached rowing boat, an oar across it |
 | `Prop_Tether` | 1 × 3 | Merrow's End by the vantage, the Tetherline ×4, the Ferry ×2 | a tether-post, its rope running up and away into the white |
+| `Prop_WetEdge` (the Greyfold kit's first layer: `Art/Environment/Greyfold/`) | 4 × 12, stretched to 30 tall | the Edge, over the first white sheet's start | where the paper is wet before it is white: a fibrous damp band, no ink line, outside the fade group (ENV-12, `ink-fx.md` §3) |
 
 Depth wash is how far each colour is lerped toward the region's paper: aerial perspective as thinning ink
 (art-direction 3). Ink lines thin the same way.
@@ -134,8 +137,8 @@ palette; Blender's view transform is Standard, not AgX.
 
 ## 7. Open
 
-- Weak floors and hidden platforms keep their greybox materials: they carry behaviours and need their own
-  drawings (a cracked plank, a lantern-drawn outline) with the VFX pass (ENV-12).
+- The weak floors' and hidden platforms' tiles are drawn (ENV-12); the Shore's sea-fade sheets and the rest of
+  the Blank's look are ENV-08's.
 - The Shore's sea-fade sheets stay white quads: the Blank's look is ENV-08's.
 - The Greyfold Edge's three strips (`Mid_Edge`, `Far_Cathedral`, `Farther_Edge`) are ENV-08's.
 - Per-region `_Ink` curves (fade-stages.md §7) can now be tuned against real layers.

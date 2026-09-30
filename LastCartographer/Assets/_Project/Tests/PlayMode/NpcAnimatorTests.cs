@@ -111,6 +111,7 @@ namespace OWSBG.Tests
             float t = 0f;
             while (_schedule.IsWalking && t < 6f) { t += Time.deltaTime; yield return null; }
             yield return null;
+            yield return null;   // the arrival frame still carries the last step's velocity
             Assert.AreEqual("singing to the water", _schedule.Activity);
             Assert.AreEqual("idle", _anim.Clip, "no singing clip on this bird: idle at the post");
         }

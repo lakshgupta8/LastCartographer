@@ -112,6 +112,99 @@ namespace OWSBG.Tests
             Assert.AreEqual(0f, RollCallSong.Semitones(RollCallSong.Hz(tonic, 12), last), 0.7f, "and comes home to the tonic, in the boss's region's key");
         }
 
+        static readonly Region[] Others = { Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach };
+
+        [Test]
+        public void TheOtherRegionsThemesAreScoredToTheirRowsOfTheTable()
+        {
+            // AUD-06: each to its mode, beat, band and silence share; whole bars; every note before the rest; one combat drive each.
+            foreach (var r in Others)
+            {
+                var t = Score.ThemeOf(r);
+                Assert.IsNotNull(t, r + "'s theme");
+                Assert.AreEqual(r, t.Region); Assert.IsNull(t.Boss);
+                foreach (var need in Score.RequiredStems) Assert.IsNotNull(t.Stem(need), t.Id + " has a " + need + " stem (audio-direction 6)");
+                Assert.AreEqual(AudioDirection.BeatOf(r) * 4f, t.BarSeconds, 1e-4f, r + ": bars of four at the region's beat");
+                Assert.AreEqual(1, t.Stems.Count(s => s.Combat), r + ": one combat drive");
+                Assert.IsTrue(t.Stems.All(s => s.Phase == 0), r + ": no phases in a region theme");
+                var band = Score.BandOf(r);
+                Assert.AreEqual(AudioDirection.Of(r).Instruments.Length, band.Length, r + "'s band is the direction's, instrument for instrument");
+                foreach (var s in t.Stems)
+                {
+                    Assert.IsNotEmpty(s.Notes, t.Id + "/" + s.Id);
+                    Assert.AreEqual(s.Instrument, Score.InstrumentOf(s.Instrument).Id, t.Id + "/" + s.Id + " plays a known instrument");
+                    CollectionAssert.Contains(band, s.Instrument, t.Id + "/" + s.Id + " plays from " + r + "'s band");
+                    foreach (var n in s.Notes)
+                    {
+                        Assert.IsTrue(Score.InMode(r, Score.Semitones(r, n.Degree)), t.Id + "/" + s.Id + " " + n + " is in " + AudioDirection.Of(r).Mode);
+                        Assert.LessOrEqual(n.Start + n.Beats, t.Bars * Score.BeatsPerBar + 1e-3f, t.Id + "/" + s.Id + " " + n + " ends before the rest");
+                        Assert.GreaterOrEqual(n.Start, 0f);
+                    }
+                }
+                Assert.AreEqual(AudioDirection.Of(r).Silence, t.Silence, 0.03f, r + "'s rests are its silence share as near as whole bars come (designed " + t.Silence + ")");
+            }
+            Assert.AreEqual(0.1f, Score.ThemeOf(Region.Emberdown).Silence, 1e-4f); Assert.AreEqual(0.7f, Score.ThemeOf(Region.Verdance).Silence, 1e-4f);
+            Assert.AreEqual(0.15f, Score.ThemeOf(Region.Halden).Silence, 1e-4f); Assert.AreEqual(0.375f, Score.ThemeOf(Region.Windreach).Silence, 1e-4f);
+            Assert.AreEqual(5, Score.Mode(Region.Windreach).Length, "pentatonic: five degrees, the sixth the octave");
+            Assert.AreEqual(12, Score.Semitones(Region.Windreach, 5));
+        }
+
+        [Test]
+        public void EachThemeKeepsItsBrief()
+        {
+            // Emberdown: the anvil keeps the count, on two and four of every sounding bar; everyone sings (the chorus is the lead).
+            var ember = Score.ThemeOf(Region.Emberdown);
+            var anvil = ember.Stem("count");
+            Assert.IsNotNull(anvil); Assert.AreEqual("anvil", anvil.Instrument);
+            for (int bar = 0; bar < ember.Bars; bar++)
+            {
+                Assert.IsTrue(anvil.Notes.Any(n => Mathf.Approximately(n.Start, bar * 4f + 1f)), "the anvil on two of bar " + (bar + 1));
+                Assert.IsTrue(anvil.Notes.Any(n => Mathf.Approximately(n.Start, bar * 4f + 3f)), "and on four");
+            }
+            Assert.AreEqual("choir", ember.Stem("lead").Instrument, "nobody solos: the lead is the chorus");
+            Assert.AreEqual(0, ember.Stem("lead").Notes.OrderBy(n => n.Start).Last().Degree, "the work-song comes home");
+            // The Verdance: mostly nothing, one bowed voice, and it stops before it resolves.
+            var verd = Score.ThemeOf(Region.Verdance);
+            Assert.AreEqual("gamba", verd.Stem("lead").Instrument);
+            Assert.AreEqual(1, verd.Stem("lead").Notes.OrderBy(n => n.Start).Last().Degree, "stops on the flat second, unresolved");
+            Assert.AreEqual(3, verd.Bars); Assert.AreEqual(7, verd.RestBars, "seven bars of the very large room");
+            // Halden: a bar it never finishes; the fifth never comes home.
+            var hald = Score.ThemeOf(Region.Halden);
+            Assert.AreEqual(17, hald.Bars, "four phrases and the bar that is cut");
+            var lead = hald.Stem("lead").Notes.OrderBy(n => n.Start).ToList();
+            Assert.AreNotEqual(0, ((lead.Last().Degree % 7) + 7) % 7, "the loop's last note is not the tonic");
+            Assert.Less(lead.Last().Start + lead.Last().Beats, 17 * 4f - 1f, "the seventeenth bar stops short");
+            var bass = hald.Stem("bed").Notes.OrderBy(n => n.Start).Select(n => ((n.Degree % 7) + 7) % 7).ToList();
+            for (int i = 0; i + 1 < bass.Count; i++) if (bass[i] == 4) Assert.AreEqual(5, bass[i + 1], "V goes to vi, never to I: the cadence that never comes");
+            Assert.AreEqual("musicbox", hald.Stem("pulse").Instrument, "the clockwork ticks");
+            // Windreach: a long flute, wide and slow.
+            var wind = Score.ThemeOf(Region.Windreach);
+            Assert.AreEqual("flute", wind.Stem("lead").Instrument);
+            Assert.GreaterOrEqual(wind.Stem("lead").Notes.Average(n => n.Beats), 1.5f, "long notes");
+            Assert.AreEqual("handdrum", wind.Stem("pulse").Instrument, "the camp's drum");
+        }
+
+        [Test]
+        public void TheOtherThemesRenderToTheirLoopsAndTheirSilences()
+        {
+            foreach (var r in Others)
+            {
+                var t = Score.ThemeOf(r);
+                var stems = Score.Render(t);
+                int len = (int)Math.Round(t.LoopSeconds * Score.SampleRate);
+                foreach (var kv in stems) Assert.AreEqual(len, kv.Value.Length, t.Id + "/" + kv.Key + " is exactly the loop");
+                var mix = new float[len];
+                foreach (var s in stems.Values) for (int i = 0; i < len; i++) mix[i] += s[i];
+                Assert.AreEqual(AudioDirection.SfxPeakDbtp, RollCallSong.PeakDb(mix), 0.05f, t.Id + ": the stems together peak at the ceiling");
+                float silence = Score.MeasuredSilence(stems.Values);
+                Assert.AreEqual(t.Silence, silence, 0.06f, t.Id + ": the rests are the silence, measured " + silence);
+                int q = Score.SampleRate / 4;
+                float tail = 0f;
+                for (int i = 0; i < q; i++) tail += mix[len - 1 - i] * mix[len - 1 - i];
+                Assert.Less(Math.Sqrt(tail / q), 0.02f, t.Id + ": quiet at the join");
+            }
+        }
+
         [Test]
         public void TheFilesAreTheSpecAndTheDeliverablesAreRendered()
         {
@@ -140,6 +233,18 @@ namespace OWSBG.Tests
                 Assert.IsTrue(File.Exists(Path.Combine(dir, "saltmarrow_music_" + t.Id + "_67.mid")), t.Id + " as MIDI");
             }
             Assert.IsTrue(File.Exists(Path.Combine(dir, "saltmarrow_music_resolution_67.wav")), "the resolution");
+            // AUD-06: the other regions' themes and resolutions.
+            var bpm = new System.Collections.Generic.Dictionary<Region, int> { [Region.Emberdown] = 75, [Region.Verdance] = 50, [Region.Halden] = 100, [Region.Windreach] = 60 };
+            foreach (var r in Others)
+            {
+                var t = Score.ThemeOf(r);
+                string region = r.ToString().ToLowerInvariant();
+                Assert.AreEqual(region + "_music_lead_" + bpm[r] + ".wav", Score.FileName(t, t.Stem("lead")));
+                foreach (var s in t.Stems) Assert.IsTrue(File.Exists(Path.Combine(dir, Score.FileName(t, s))), Score.FileName(t, s));
+                Assert.IsTrue(File.Exists(Path.Combine(dir, region + "_music_all-stems_" + bpm[r] + ".wav")), region + " mix");
+                Assert.IsTrue(File.Exists(Path.Combine(dir, region + "_music_" + t.Id + "_" + bpm[r] + ".mid")), t.Id + " as MIDI");
+                Assert.IsTrue(File.Exists(Path.Combine(dir, region + "_music_resolution_" + bpm[r] + ".wav")), region + "'s resolution");
+            }
         }
     }
 }

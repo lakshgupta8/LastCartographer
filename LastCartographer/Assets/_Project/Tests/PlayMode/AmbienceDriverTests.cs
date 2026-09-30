@@ -140,9 +140,17 @@ namespace OWSBG.Tests
             Assert.AreEqual(Region.Greyfold, Driver.Wanted);
             yield return Until(() => Driver.Current == Region.Greyfold, 60f);
             Assert.AreEqual(Region.Greyfold, Driver.Current);
-            Assert.IsNull(Driver.Source("reeds"), "the coast's layers are gone");
+            Assert.IsNull(Driver.Source("reeds"), "the coast's layers are no longer the room's");
             Assert.IsNotNull(Driver.Source("footsteps, too close"), "the Greyfold's are here");
             Assert.AreEqual(2, Driver.LayersLeft);
+            // AUD-06: a crossfade, not a cut: the coast's layers go out over the fade as the Greyfold's come in.
+            Assert.AreEqual(Ambience.Of(Region.Saltmarrow).Count, Driver.OutgoingCount, "the coast's layers are still going out");
+            Assert.Greater(Driver.OutgoingVolume, 0f);
+            yield return new WaitForSecondsRealtime(AmbienceDriver.FadeSeconds * 0.5f);
+            Assert.Greater(Driver.OutgoingVolume, 0f, "halfway: still there, lower");
+            Assert.Greater(Driver.Level("footsteps, too close"), 0f, "and the Greyfold's coming in under them");
+            yield return new WaitForSecondsRealtime(AmbienceDriver.FadeSeconds * 0.6f);
+            Assert.AreEqual(0, Driver.OutgoingCount, "faded and gone");
         }
     }
 }

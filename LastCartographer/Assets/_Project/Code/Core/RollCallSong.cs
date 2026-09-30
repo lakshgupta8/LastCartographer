@@ -320,7 +320,7 @@ namespace OWSBG.Core
                     phase += f / SampleRate;
                     if (phase >= 1) phase -= 1;
                     float pos = (float)(phase * TableSize);
-                    int i0 = (int)pos; int i1 = (i0 + 1) % TableSize;
+                    int i0 = Math.Min((int)pos, TableSize - 1); int i1 = (i0 + 1) % TableSize;   // the float rounds up to the table's end just under a period
                     float s = table[i0] + (table[i1] - table[i0]) * (pos - i0);
                     if (voice.Breath > 0f)
                     {

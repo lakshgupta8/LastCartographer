@@ -71,4 +71,5 @@ by region and name in the driver's cache (`_clips`); a loader is the whole chang
 - **Per-room layers** (the camp at night, the Choir's room, the Lighthouse's lamp) are the same driver with a room
   key; nothing asks for one yet.
 - **Loudness** is RMS, not LUFS.
-- **Crossfades between regions** are a stop and a start, like the music's (AUD-06).
+- **Crossfades between regions** are a fade out over the layers' fade as the next region's come in (AUD-06);
+  the music's handover waits for the bar line, the ambience's does not.

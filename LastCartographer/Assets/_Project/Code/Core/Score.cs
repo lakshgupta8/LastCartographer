@@ -90,8 +90,43 @@ namespace OWSBG.Core
             I(new Instrument { Id = "psaltery", Harmonics = Saw(24, 0.7f), Attack = 0.12f, Decay = 0.8f, Sustain = 0.6f, Release = 0.5f, VibratoRate = 0.3f, VibratoDepth = 0.05f, Noise = 0.03f, Transpose = 0 });
             I(new Instrument { Id = "drone", Harmonics = new[] { 1f, 0.6f, 0.35f, 0.25f, 0.15f, 0.1f, 0.07f, 0.05f }, Attack = 0.8f, Decay = 1f, Sustain = 1f, Release = 1.2f, Detune = 6f, LowPass = 700f, Transpose = -24 });
             I(new Instrument { Id = "bell", Harmonics = new[] { 1f, 0.6f, 0f, 0.35f, 0f, 0.2f, 0f, 0.1f }, Attack = 0.003f, Decay = 1.2f, Sustain = 0.1f, Release = 0.8f, Inharmonic = 0.02f, Transpose = 12 });
+            // The other regions' bands (AUD-06, audio-direction 2).
+            // Emberdown: work-song chorus, hurdy-gurdy, frame drum, anvil, tuba.
+            I(new Instrument { Id = "choir", Harmonics = new[] { 1f, 0.9f, 0.7f, 0.8f, 0.35f, 0.2f, 0.12f, 0.08f, 0.05f }, Attack = 0.16f, Decay = 0.6f, Sustain = 0.9f, Release = 0.3f, VibratoRate = 5f, VibratoDepth = 0.1f, Noise = 0.07f, Detune = 11f });
+            I(new Instrument { Id = "hurdygurdy", Harmonics = Saw(22, 0.8f), Attack = 0.05f, Decay = 0.3f, Sustain = 0.95f, Release = 0.12f, VibratoRate = 6.5f, VibratoDepth = 0.03f, Noise = 0.05f, Detune = 7f });
+            I(new Instrument { Id = "framedrum", Harmonics = new[] { 1f, 0.35f, 0.12f }, Attack = 0.002f, Decay = 0.22f, Sustain = 0f, Release = 0.25f, Inharmonic = 0.05f, LowPass = 900f, Transpose = -12 });
+            I(new Instrument { Id = "anvil", Harmonics = new[] { 1f, 0f, 0.8f, 0f, 0f, 0.6f, 0f, 0f, 0.4f, 0f, 0f, 0.3f }, Attack = 0.001f, Decay = 0.5f, Sustain = 0f, Release = 0.35f, Inharmonic = 0.14f, Transpose = 12 });
+            I(new Instrument { Id = "tuba", Harmonics = new[] { 1f, 0.7f, 0.45f, 0.3f, 0.15f, 0.08f }, Attack = 0.08f, Decay = 0.4f, Sustain = 0.9f, Release = 0.2f, Noise = 0.03f, LowPass = 1200f, Transpose = -12 });
+            // The Verdance: viola da gamba (harmonics), bowed glass, the root-chapel's organ pedal, Cantor handbells.
+            I(new Instrument { Id = "gamba", Harmonics = Saw(14, 1.2f), Attack = 0.3f, Decay = 0.8f, Sustain = 0.85f, Release = 0.5f, VibratoRate = 4.2f, VibratoDepth = 0.06f, Noise = 0.06f, Transpose = 12 });
+            I(new Instrument { Id = "glass", Harmonics = new[] { 1f, 0.05f, 0.02f }, Attack = 0.6f, Decay = 1f, Sustain = 1f, Release = 1.2f, Detune = 3f, Transpose = 12 });
+            I(new Instrument { Id = "organ", Harmonics = new[] { 1f, 0.5f, 0.6f, 0.3f, 0.4f, 0.2f }, Attack = 0.3f, Decay = 1f, Sustain = 1f, Release = 0.7f, LowPass = 500f, Transpose = -24 });
+            I(new Instrument { Id = "handbell", Harmonics = new[] { 1f, 0.4f, 0f, 0.6f, 0f, 0.25f, 0f, 0.15f }, Attack = 0.002f, Decay = 1.4f, Sustain = 0.05f, Release = 1f, Inharmonic = 0.03f, Transpose = 12 });
+            // Halden: harpsichord, string quartet, music box, Guild brass.
+            I(new Instrument { Id = "harpsichord", Harmonics = Saw(30, 0.6f), Attack = 0.002f, Decay = 0.45f, Sustain = 0.12f, Release = 0.08f, Detune = 2f });
+            I(new Instrument { Id = "strings", Harmonics = Saw(16, 1.1f), Attack = 0.2f, Decay = 0.6f, Sustain = 0.9f, Release = 0.4f, VibratoRate = 5f, VibratoDepth = 0.1f, Noise = 0.03f, Detune = 5f });
+            I(new Instrument { Id = "musicbox", Harmonics = new[] { 1f, 0.3f, 0.6f, 0.1f, 0.2f }, Attack = 0.001f, Decay = 0.4f, Sustain = 0f, Release = 0.3f, Inharmonic = 0.02f, Transpose = 24 });
+            I(new Instrument { Id = "brass", Harmonics = Saw(10, 0.9f), Attack = 0.06f, Decay = 0.3f, Sustain = 0.85f, Release = 0.15f, Noise = 0.02f, LowPass = 3000f });
+            // Windreach: long flute, cittern, overtone voice, wind harp, the hand drum at the fire.
+            I(new Instrument { Id = "flute", Harmonics = new[] { 1f, 0.25f, 0.1f, 0.05f }, Attack = 0.12f, Decay = 0.5f, Sustain = 0.85f, Release = 0.25f, VibratoRate = 4.8f, VibratoDepth = 0.12f, Noise = 0.15f, Transpose = 12 });
+            I(new Instrument { Id = "cittern", Harmonics = Saw(20, 0.8f), Attack = 0.003f, Decay = 0.6f, Sustain = 0.1f, Release = 0.2f, Detune = 5f });
+            I(new Instrument { Id = "overtone", Harmonics = new[] { 1f, 0.2f, 0.15f, 0.1f, 0.9f, 0.1f, 0.05f, 0.6f, 0.05f, 0.3f }, Attack = 0.3f, Decay = 1f, Sustain = 1f, Release = 0.5f, Noise = 0.04f, Transpose = -12 });
+            I(new Instrument { Id = "windharp", Harmonics = new[] { 1f, 0.4f, 0.3f, 0.2f, 0.15f }, Attack = 0.6f, Decay = 2f, Sustain = 0.7f, Release = 1.5f, Detune = 8f, VibratoRate = 0.2f, VibratoDepth = 0.04f, Noise = 0.06f });
+            I(new Instrument { Id = "handdrum", Harmonics = new[] { 1f, 0.4f, 0.1f }, Attack = 0.002f, Decay = 0.2f, Sustain = 0f, Release = 0.2f, Inharmonic = 0.04f, LowPass = 1200f, Transpose = -12 });
             Compose();
+            ComposeRegions();
         }
+
+        /// <summary>The instruments a region's theme may use: audio-direction 2's bands, as ids (the coast's with the drone and bell its theme leans on).</summary>
+        public static string[] BandOf(Region r) => r switch
+        {
+            Region.Saltmarrow => new[] { "fiddle", "whistle", "drum", "concertina", "psaltery", "drone", "bell" },
+            Region.Emberdown => new[] { "choir", "hurdygurdy", "framedrum", "anvil", "tuba" },
+            Region.Verdance => new[] { "gamba", "glass", "organ", "handbell" },
+            Region.Halden => new[] { "harpsichord", "strings", "musicbox", "brass" },
+            Region.Windreach => new[] { "flute", "cittern", "overtone", "windharp", "handdrum" },
+            _ => new string[0],
+        };
 
         static float[] Saw(int n, float tilt) { var h = new float[n]; for (int k = 1; k <= n; k++) h[k - 1] = (float)Math.Pow(1.0 / k, tilt); return h; }
         static float[] Square(int n) { var h = new float[n]; for (int k = 1; k <= n; k++) h[k - 1] = k % 2 == 1 ? 1f / k : 0f; return h; }
@@ -235,6 +270,107 @@ namespace OWSBG.Core
             }
         }
 
+        /// <summary>The four regions' themes (AUD-06), each to its row of the direction's table: mode, beat, band, brief and silence share.</summary>
+        static void ComposeRegions()
+        {
+            // ---- Emberdown: a work-song for many voices; everyone sings, nobody solos, the anvil keeps the count. ----
+            // Nine bars, then one of rest: a tenth of the loop is the room alone (silence 10%).
+            var ember = new Theme { Id = "emberdown", Region = Region.Emberdown, Bars = 9, RestBars = 1 };
+            _themes.Add(ember);
+            ember.Add("bed", "hurdygurdy", 0.55f).Add(0, 0f, 35f, 1f).Add(4, 0f, 35f, 0.6f);          // the wheel's bourdon, tonic and fifth, drawn back a beat before the rest
+            var epulse = ember.Add("pulse", "framedrum", 0.8f);
+            var count = ember.Add("count", "anvil", 0.5f);
+            for (int bar = 0; bar < 9; bar++)
+            {
+                float b = bar * 4f;
+                epulse.Add(0, b, 0.5f, 1f).Add(0, b + 1.5f, 0.5f, 0.6f).Add(-3, b + 2f, 0.5f, 0.9f).Add(0, b + 3f, 0.5f, 0.7f);   // the frame drum: one, two-and, three, four
+                count.Add(7, b + 1f, 0.5f, 1f).Add(7, b + 3f, 0.5f, 0.8f);                                                  // the anvil on two and four
+            }
+            var elead = ember.Add("lead", "choir", 0.9f);
+            var song = new (int d, float beats)[][]
+            {
+                new[] { (0, 1f), (0, 0.5f), (2, 0.5f), (4, 1f), (4, 1f) },        // the call
+                new[] { (5, 1f), (4, 1f), (2, 1.5f), (0, 0.5f) },
+                new[] { (0, 1f), (2, 1f), (4, 1f), (6, 1f) },                     // up to the flat seventh
+                new[] { (4, 2f), (2, 1f), (0, 1f) },
+                new[] { (4, 1f), (4, 0.5f), (5, 0.5f), (7, 1f), (7, 1f) },        // the second call, higher
+                new[] { (6, 1f), (4, 1f), (2, 1.5f), (0, 0.5f) },
+                new[] { (0, 1f), (2, 1f), (4, 1f), (2, 1f) },
+                new[] { (1, 1f), (-1, 1f), (0, 2f) },
+                new[] { (0, 1f), (4, 1f), (0, 1.5f) },                            // the tag, a beat short of the rest
+            };
+            for (int bar = 0; bar < song.Length; bar++)
+            {
+                float at = bar * 4f;
+                foreach (var (d, beats) in song[bar]) { elead.Add(d, at, beats, at % 4f == 0f ? 1f : 0.85f); at += beats; }
+            }
+            var evoices = ember.Add("voices", "tuba", 0.6f);
+            int[] roots = { -7, -7, -4, -7, -7, -3, -4, -3, -7 };
+            for (int bar = 0; bar < 9; bar++) evoices.Add(roots[bar], bar * 4f, bar == 8 ? 3.5f : 4f, 0.9f);              // the tuba on the roots
+            var edrive = ember.Add("drive", "hurdygurdy", 0.6f, combat: true);
+            for (int bar = 0; bar < 9; bar++)
+            {
+                float b = bar * 4f;
+                foreach (var (d, at) in new[] { (0, 0f), (0, 0.5f), (4, 1f), (0, 1.5f), (0, 2f), (0, 2.5f), (4, 3f), (6, 3.5f) })
+                    edrive.Add(d, b + at, 0.5f, at % 1f == 0f ? 0.9f : 0.6f);                                             // the trompette's buzz in eighths
+            }
+
+            // ---- The Verdance: mostly nothing; one bowed voice in a very large room, and it stops before it resolves. ----
+            // Three bars, then seven of rest (silence 70%).
+            var verd = new Theme { Id = "verdance", Region = Region.Verdance, Bars = 3, RestBars = 7 };
+            _themes.Add(verd);
+            verd.Add("bed", "organ", 0.5f).Add(0, 0f, 11f, 1f);                                                       // the root-chapel's pedal, under the phrase only
+            verd.Add("lead", "gamba", 0.9f).Add(0, 0f, 3f).Add(1, 3f, 2f).Add(3, 5f, 2f).Add(2, 7f, 2f).Add(1, 9f, 2.5f);   // ...and stops on the flat second, unresolved
+            verd.Add("pulse", "handbell", 0.45f).Add(0, 0f, 1f, 0.9f).Add(4, 8f, 1f, 0.6f);                            // two handbells in three bars
+            verd.Add("voices", "glass", 0.35f).Add(7, 1f, 9f, 1f);                                                     // the glass, high and held
+            var vdrive = verd.Add("drive", "handbell", 0.5f, combat: true);
+            for (int bar = 0; bar < 3; bar++)
+                for (int beat = 0; beat < 4; beat++)
+                    vdrive.Add(beat % 2 == 0 ? 0 : 1, bar * 4f + beat, 0.5f, beat == 0 ? 0.9f : 0.6f);                   // the Cantors' bells, a beat each, tonic and second
+
+            // ---- Halden: a handsome clockwork piece that loops a bar it never finishes. ----
+            // Four phrases of I IV V vi (the fifth never comes home), then the first bar again, cut short by three of rest (silence 15%).
+            var hald = new Theme { Id = "halden", Region = Region.Halden, Bars = 17, RestBars = 3 };
+            _themes.Add(hald);
+            var chords = new (int root, int[] tones)[] { (0, new[] { 0, 2, 4 }), (3, new[] { 3, 5, 7 }), (4, new[] { 4, 6, 8 }), (5, new[] { 5, 7, 9 }) };
+            var hlead = hald.Add("lead", "harpsichord", 0.8f);
+            var hbed = hald.Add("bed", "strings", 0.5f);
+            var hvoices = hald.Add("voices", "strings", 0.45f);
+            var hpulse = hald.Add("pulse", "musicbox", 0.4f);
+            var hdrive = hald.Add("drive", "brass", 0.55f, combat: true);
+            for (int bar = 0; bar < 17; bar++)
+            {
+                float b = bar * 4f;
+                var (root, tones) = chords[bar % 4];
+                bool cut = bar == 16;                                                                                     // the seventeenth bar stops after two beats
+                int[] figure = { tones[0], tones[2], tones[1], tones[2] };                                                // the broken chord: low, high, middle, high
+                for (int i = 0; i < (cut ? 4 : 8); i++) hlead.Add(figure[i % 4], b + i * 0.5f, 0.5f, i % 4 == 0 ? 0.9f : 0.7f);
+                float held = cut ? 2f : 4f;
+                hbed.Add(root - 7, b, held, 0.9f);                                                                        // the quartet's cello on the root
+                hvoices.Add(tones[2] + (bar % 4 == 3 ? 0 : 7), b, held, 0.8f);                                           // its violin on the top tone, dropping for vi
+                for (int beat = 0; beat < (cut ? 2 : 4); beat++) hpulse.Add(beat % 2 == 0 ? 7 : 9, b + beat, 0.5f, beat == 0 ? 0.8f : 0.5f);   // the music box ticks
+                for (int i = 0; i < (cut ? 4 : 8); i++) hdrive.Add(i % 2 == 0 ? root : tones[2], b + i * 0.5f, 0.5f, i % 2 == 0 ? 0.9f : 0.6f);   // the Guild's brass in eighths
+            }
+
+            // ---- Windreach: open air; a long flute and a plucked string over the wind, the camp's drum when the fire is lit. ----
+            // Five bars, then three of rest (silence 37.5%: the direction's 35% as near as whole bars come).
+            var wind = new Theme { Id = "windreach", Region = Region.Windreach, Bars = 5, RestBars = 3 };
+            _themes.Add(wind);
+            wind.Add("bed", "windharp", 0.55f).Add(0, 0f, 19f, 1f).Add(3, 0f, 19f, 0.7f).Add(5, 0f, 19f, 0.5f);         // the wind harp: tonic, fifth, octave
+            wind.Add("lead", "flute", 0.9f).Add(5, 0f, 3f).Add(4, 3f, 1f).Add(3, 4f, 3f).Add(1, 7f, 1f).Add(2, 8f, 2f).Add(3, 10f, 2f)
+                .Add(4, 12f, 1.5f).Add(3, 13.5f, 0.5f).Add(1, 14f, 2f).Add(0, 16f, 3.5f);                                 // the long flute, wide and slow, home at the end
+            var wpulse = wind.Add("pulse", "handdrum", 0.45f);
+            for (int bar = 0; bar < 5; bar++) wpulse.Add(0, bar * 4f, 0.5f, 0.6f).Add(0, bar * 4f + 2f, 0.5f, 0.4f);      // the hand drum, soft, on one and three
+            wind.Add("voices", "overtone", 0.5f).Add(-5, 0f, 19f, 1f);                                                    // the overtone singer's drone, an octave under
+            var wdrive = wind.Add("drive", "cittern", 0.6f, combat: true);
+            for (int bar = 0; bar < 5; bar++)
+            {
+                float b = bar * 4f;
+                foreach (var (d, at) in new[] { (0, 0f), (3, 0.5f), (5, 1f), (3, 1.5f), (0, 2f), (3, 2.5f), (4, 3f), (3, 3.5f) })
+                    wdrive.Add(d, b + at, 0.5f, at % 1f == 0f ? 0.9f : 0.6f);                                             // the cittern picked in eighths
+            }
+        }
+
         // ---- the synth ----
 
         const int TableSize = 2048;
@@ -295,12 +431,12 @@ namespace OWSBG.Core
                     else env = (ins.Sustain + (1f - ins.Sustain) * (float)Math.Exp(-(hold / (float)SampleRate) / Math.Max(0.001f, ins.Decay))) * (1f - (i - hold) / (float)Math.Max(1, rel));
                     float vib = ins.VibratoDepth > 0f ? (float)Math.Pow(2.0, Math.Sin(2 * Math.PI * ins.VibratoRate * t) * ins.VibratoDepth * Math.Min(1f, t / 0.4f) / 12.0) : 1f;
                     ph += hz * vib / SampleRate; if (ph >= 1) ph -= 1;
-                    float pos = (float)(ph * TableSize); int i0 = (int)pos; int i1 = (i0 + 1) % TableSize;
+                    float pos = (float)(ph * TableSize); int i0 = Math.Min((int)pos, TableSize - 1); int i1 = (i0 + 1) % TableSize;   // the float rounds up to the table's end just under a period
                     float s = table[i0] + (table[i1] - table[i0]) * (pos - i0);
                     if (ins.Detune > 0f)
                     {
                         ph2 += hz * vib * detune / SampleRate; if (ph2 >= 1) ph2 -= 1;
-                        float p2 = (float)(ph2 * TableSize); int j0 = (int)p2; int j1 = (j0 + 1) % TableSize;
+                        float p2 = (float)(ph2 * TableSize); int j0 = Math.Min((int)p2, TableSize - 1); int j1 = (j0 + 1) % TableSize;
                         s = 0.6f * s + 0.4f * (table[j0] + (table[j1] - table[j0]) * (p2 - j0));
                     }
                     if (ins.Noise > 0f) { noise += (((float)rng.NextDouble() * 2f - 1f) - noise) * 0.2f; s += noise * ins.Noise * 2f; }
@@ -412,7 +548,15 @@ namespace OWSBG.Core
                 var b = new List<byte>();
                 var name = Encoding.ASCII.GetBytes(stem.Id + " (" + ins.Id + ")");
                 VarLen(b, 0); b.AddRange(new byte[] { 0xFF, 0x03 }); VarLen(b, name.Length); b.AddRange(name);
-                int program = ins.Id switch { "fiddle" => 110, "whistle" => 75, "drum" => 116, "concertina" => 21, "psaltery" => 46, "bell" => 14, _ => 48 };
+                int program = ins.Id switch
+                {
+                    "fiddle" => 110, "whistle" => 75, "drum" => 116, "concertina" => 21, "psaltery" => 46, "bell" => 14,
+                    "choir" => 52, "hurdygurdy" => 109, "framedrum" => 117, "anvil" => 113, "tuba" => 58,
+                    "gamba" => 42, "glass" => 92, "organ" => 19, "handbell" => 112,
+                    "harpsichord" => 6, "strings" => 48, "musicbox" => 10, "brass" => 61,
+                    "flute" => 73, "cittern" => 25, "overtone" => 54, "windharp" => 89, "handdrum" => 118,
+                    _ => 48,
+                };
                 VarLen(b, 0); b.AddRange(new[] { (byte)(0xC0 | (ch % 16)), (byte)program });
                 int last = 0;
                 foreach (var e in events)

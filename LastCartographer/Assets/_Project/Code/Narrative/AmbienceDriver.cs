@@ -12,7 +12,8 @@ namespace OWSBG.Narrative
     /// renders that region's layers once on a worker thread, and plays each on its own looping source (loops of
     /// different lengths, started together, drifting apart) at its level times the Ambience bus's gain, under the
     /// bus's low-pass (which the mix already dulls by the place's fade stage). The stage also takes the layers away,
-    /// last first, each fading over a second and a half; an erased place has none. Nothing is loaded from disk.
+    /// last first, each fading over a second and a half; an erased place has none. Another region's room is a crossfade:
+    /// the old layers go out over the same fade as the new come in. Nothing is loaded from disk.
     /// </summary>
     public sealed class AmbienceDriver : MonoBehaviour
     {
@@ -30,7 +31,14 @@ namespace OWSBG.Narrative
         readonly Dictionary<string, AudioLowPassFilter> _filters = new Dictionary<string, AudioLowPassFilter>();
         readonly Dictionary<string, float> _levels = new Dictionary<string, float>();
         readonly Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
+        sealed class Outgoing { public AudioSource Src; public AudioLowPassFilter Filter; public float Level; public double From; }
+        readonly List<Outgoing> _outgoing = new List<Outgoing>();
         AudioListener _listener;
+
+        /// <summary>Layers of a previous region still going out over the fade.</summary>
+        public int OutgoingCount => _outgoing.Count;
+        /// <summary>The loudest outgoing layer's volume now (0 with none).</summary>
+        public float OutgoingVolume => _outgoing.Count == 0 ? 0f : _outgoing.Max(o => o.Src != null ? o.Src.volume : 0f);
 
         public Region? Current { get; private set; }
         /// <summary>Where a point layer sits in the room (null for a layer heard from everywhere).</summary>
@@ -75,7 +83,7 @@ namespace OWSBG.Narrative
             Wanted = Mix.RegionOf(Room);
             if (Wanted != Current)
             {
-                if (!Wanted.HasValue) Stop();
+                if (!Wanted.HasValue) Release();
                 else if (IsReady(Wanted.Value)) Start(Wanted.Value);
                 else Request(Wanted.Value);
             }
@@ -111,7 +119,7 @@ namespace OWSBG.Narrative
 
         void Start(Region r)
         {
-            Stop();
+            Release();
             Current = r;
             var clips = _clips[r];
             double at = AudioSettings.dspTime + 0.05;
@@ -147,9 +155,12 @@ namespace OWSBG.Narrative
             }
         }
 
-        void Stop()
+        /// <summary>The playing layers go out over the fade from now (a region change is a crossfade, not a cut).</summary>
+        void Release()
         {
-            foreach (var src in _sources.Values) if (src != null) Destroy(src.gameObject);
+            double now = AudioSettings.dspTime;
+            foreach (var kv in _sources)
+                if (kv.Value != null) _outgoing.Add(new Outgoing { Src = kv.Value, Filter = _filters[kv.Key], Level = _levels[kv.Key], From = now });
             _sources.Clear(); _filters.Clear(); _levels.Clear(); _points.Clear();
             Current = null;
         }
@@ -166,9 +177,19 @@ namespace OWSBG.Narrative
 
         void Tick()
         {
-            if (!Current.HasValue) return;
             float gain = Mix.Live != null ? Mix.Live.Gain(Mix.Bus.Ambience) : Options.Get(Options.Volume.Master) * Options.Get(Options.Volume.Sound);
             float cutoff = Mix.Live != null ? Mix.Live.Cutoff(Mix.Bus.Ambience) : Mix.StageCutoff(Stage);
+            double now = AudioSettings.dspTime;
+            for (int i = _outgoing.Count - 1; i >= 0; i--)
+            {
+                var o = _outgoing[i];
+                if (o.Src == null) { _outgoing.RemoveAt(i); continue; }
+                float k = (float)((now - o.From) / FadeSeconds);
+                if (k >= 1f) { Destroy(o.Src.gameObject); _outgoing.RemoveAt(i); continue; }
+                o.Src.volume = o.Level * (1f - k) * gain;
+                o.Filter.cutoffFrequency = cutoff;
+            }
+            if (!Current.HasValue) return;
             var targets = Ambience.LevelsAt(Current.Value, Stage);
             var layers = Ambience.Of(Current.Value);
             float step = Time.unscaledDeltaTime / FadeSeconds;

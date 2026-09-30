@@ -40,10 +40,13 @@ namespace OWSBG.Setup
                 File.WriteAllBytes(Path.Combine(Root, midi), Score.Midi(theme));
                 written.Add(midi);
             }
-            var res = Score.Resolution(Region.Saltmarrow);
-            string resFile = RollCallSong.FileName(Region.Saltmarrow, "music", "resolution", 60f / AudioDirection.BeatOf(Region.Saltmarrow));
-            File.WriteAllBytes(Path.Combine(Root, resFile), RollCallSong.Wav(res));
-            written.Add(resFile);
+            foreach (var region in new[] { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach })
+            {
+                var res = Score.Resolution(region);
+                string resFile = RollCallSong.FileName(region, "music", "resolution", 60f / AudioDirection.BeatOf(region));
+                File.WriteAllBytes(Path.Combine(Root, resFile), RollCallSong.Wav(res));
+                written.Add(resFile);
+            }
             Debug.Log("[OWSBG] ScoreExport: " + written.Count + " files to " + Root + "\n" + string.Join("\n", written));
         }
     }

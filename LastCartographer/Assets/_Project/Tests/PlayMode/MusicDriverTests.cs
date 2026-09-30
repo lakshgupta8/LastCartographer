@@ -150,6 +150,38 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator ARegionChangeHandsOverOnTheBarLineAndCrossesOver()
+        {
+            yield return PlayTheCoast();
+            yield return new WaitForSecondsRealtime(MusicDriver.FadeSeconds + 0.2f);
+            var salt = Score.ThemeOf(Region.Saltmarrow);
+            var ember = Score.ThemeOf(Region.Emberdown);
+            double coastStart = Driver.StartAt;
+            Driver.RoomOverride = "Greybox_Emberdown_Rest_1";
+            yield return null;
+            Assert.AreSame(ember, Driver.Wanted, "the highland's theme is asked for");
+            Assert.AreSame(salt, Driver.Current, "the coast plays on while it renders");
+            yield return Until(() => Driver.Current == ember, 60f);
+            Assert.AreSame(ember, Driver.Current, "rendered and scheduled");
+            double at = Driver.StartAt;
+            double bars = (at - coastStart) / salt.BarSeconds;
+            Assert.AreEqual(System.Math.Round(bars), bars, 0.01, "the highland's stems are scheduled on the coast's bar line (" + bars + " bars in)");
+            Assert.Greater(at, AudioSettings.dspTime, "which is still ahead");
+            Assert.AreEqual(salt.Stems.Count, Driver.OutgoingCount, "the coast's stems are still going, to hand over there");
+            Assert.Greater(Driver.OutgoingVolume, 0f);
+            Assert.AreEqual(0f, Driver.Level("lead"), 0.001f, "the highland waits for its bar line");
+            yield return Until(() => AudioSettings.dspTime >= at + 0.4, (float)salt.BarSeconds + 1f);
+            Assert.Greater(Driver.Level("lead"), 0f, "past the bar line the highland's lead is coming in");
+            Assert.Less(Driver.Level("lead"), ember.Stem("lead").Level * 0.6f, "over the crossfade, not cut");
+            Assert.Greater(Driver.OutgoingVolume, 0f, "and the coast is going out under it");
+            Assert.Less(Driver.OutgoingVolume, salt.Stems.Max(s => s.Level) * Mix.Live!.Gain(Mix.Bus.Music), "lower than it was");
+            yield return new WaitForSecondsRealtime(MusicDriver.CrossfadeSeconds);
+            Assert.AreEqual(0, Driver.OutgoingCount, "the coast is gone");
+            Assert.AreEqual(ember.Stem("lead").Level, Driver.Level("lead"), 0.02f, "the highland at its level");
+            Assert.AreEqual(ember.LoopSeconds, Driver.Source("lead")!.clip.length, 0.01f, "its loop: nine bars and one of rest");
+        }
+
+        [UnityTest]
         public IEnumerator TheStemsSitUnderTheMusicBus()
         {
             yield return PlayTheCoast();

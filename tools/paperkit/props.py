@@ -12,8 +12,10 @@ keeps the greybox block when the drawing is missing. Nothing here is a behaviour
 import json, math, os, random, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy
-from saltmarrow import (OUT, PAPER, SILVER, OLIVE, RUST, INK, PPU, TILE_PPU, Palette, lerp, reset_scene, box, polygon,
+from saltmarrow import (OUT, PAPER, SILVER, OLIVE, RUST, INK, PPU, TILE_PPU, lerp, reset_scene, box, polygon,
                         setup_render, render)
+from kitlib import Palette as _Palette
+import emberdown as _ember
 
 KITS = os.path.dirname(OUT)   # Art/Environment: one folder and kit.json per region
 
@@ -22,6 +24,15 @@ ROPE = (0.66, 0.56, 0.38)
 GLOW = (0.96, 0.82, 0.42)
 WET = (0.80, 0.78, 0.74)
 STEEL = (0.30, 0.32, 0.36)
+
+# The same drawings in another region's palette (ENV-03): the colour names above rebound before each render.
+REGIONS = {
+    "Saltmarrow": dict(paper=PAPER, ink=INK, colours=dict(PAPER=PAPER, SILVER=SILVER, OLIVE=OLIVE, RUST=RUST, INK=INK, BRASS=BRASS, ROPE=ROPE, GLOW=GLOW, WET=WET, STEEL=STEEL)),
+    "Greyfold": dict(paper=PAPER, ink=INK, colours=dict(PAPER=PAPER, SILVER=SILVER, OLIVE=OLIVE, RUST=RUST, INK=INK, BRASS=BRASS, ROPE=ROPE, GLOW=GLOW, WET=WET, STEEL=STEEL)),
+    "Emberdown": dict(paper=_ember.PAPER, ink=_ember.INK, colours=dict(
+        PAPER=_ember.PAPER, SILVER=_ember.CHARCOAL, OLIVE=_ember.SULPHUR, RUST=(0.36, 0.26, 0.20), INK=_ember.INK,
+        BRASS=(0.58, 0.46, 0.22), ROPE=(0.46, 0.40, 0.32), GLOW=_ember.EMBER, WET=(0.55, 0.53, 0.52), STEEL=(0.20, 0.20, 0.22))),
+}
 
 
 def ring(name, cx, cz, r_out, r_in, material, y=0.0, n=24):
@@ -257,12 +268,77 @@ def prop_wetedge(rng, p):
     return 4.0, 12.0, 0.0
 
 
+def prop_bell(rng, p):
+    """Prop_Bell: the Roll-Call Bell: a timber frame on a stone foot, the bell hung in it, the rope down to a cleat."""
+    timber, dark, brass, stone, rope = p("timber", lerp(RUST, INK, 0.2)), p("dark", lerp(INK, RUST, 0.2)), p("brass", BRASS), p("stone", SILVER), p("rope", ROPE)
+    box("foot", 0.0, 0.3, 1.8, 0.6, stone, y=0.1)
+    for dx in (-0.85, 0.85):
+        polygon("leg_%s" % dx, [(dx - 0.13, 0.6), (dx + 0.13, 0.6), (dx * 0.65 + 0.1, 3.1), (dx * 0.65 - 0.1, 3.1)], timber, y=0.0)
+    box("beam", 0.0, 3.1, 1.7, 0.18, timber, y=-0.02)
+    box("brace", 0.0, 1.9, 1.5, 0.12, timber, y=0.03)
+    polygon("cap", [(-1.15, 3.19), (1.15, 3.19), (0.0, 3.5)], dark, y=-0.05)
+    polygon("bell", [(-0.17, 2.98), (0.17, 2.98), (0.28, 2.5), (0.55, 2.05), (-0.55, 2.05), (-0.28, 2.5)], brass, y=-0.1)
+    box("lip", 0.0, 2.02, 1.12, 0.08, dark, y=-0.12)
+    disc("clapper", 0.0, 1.92, 0.09, dark, y=-0.14, n=8)
+    line("rope", 0.0, 1.9, 0.62, 0.7, 0.035, rope, y=-0.06)
+    box("cleat", 0.62, 0.66, 0.16, 0.1, dark, y=-0.05)
+    return 2.5, 3.5, 2.0
+
+
+def prop_anvil(rng, p):
+    """Prop_Anvil: the smith's: an anvil on a stump, a hammer leaning, a quench bucket, tongs on a hook."""
+    iron, stump, wood, water = p("iron", STEEL), p("stump", lerp(RUST, INK, 0.3)), p("wood", RUST), p("water", lerp(WET, INK, 0.3))
+    box("stump", -0.3, 0.3, 0.7, 0.6, stump, y=0.05)
+    polygon("anvil", [(-0.85, 0.6), (0.25, 0.6), (0.25, 0.78), (0.6, 0.78), (0.72, 0.95), (0.3, 1.0), (-0.65, 1.0), (-0.95, 0.9), (-0.95, 0.72)], iron, y=0.0)
+    box("waist", -0.3, 0.68, 0.36, 0.16, iron, y=0.02)
+    line("hammer_shaft", 0.45, 0.02, 0.62, 0.7, 0.05, wood, y=-0.05)
+    box("hammer_head", 0.64, 0.74, 0.26, 0.14, iron, y=-0.08)
+    box("bucket", 0.75, 0.24, 0.42, 0.48, wood, y=0.02)
+    box("water", 0.75, 0.46, 0.34, 0.05, water, y=-0.02)
+    box("band", 0.75, 0.12, 0.44, 0.05, iron, y=-0.03)
+    return 2.0, 1.5, 2.0
+
+
+def prop_boards(rng, p):
+    """Prop_Boards: the pit-head's mine mouth, boarded: a dark arch in the rock with planks nailed across at angles."""
+    rock, dark, plank, nail = p("rock", SILVER), p("dark", INK), p("plank", lerp(RUST, OLIVE, 0.3)), p("nail", STEEL)
+    polygon("rock", [(-1.5, 0.0), (1.5, 0.0), (1.5, 1.9), (1.0, 2.5), (-1.0, 2.5), (-1.5, 1.9)], rock, y=0.1)
+    polygon("arch", [(-0.95, 0.0), (0.95, 0.0), (0.95, 1.4), (0.55, 2.05), (-0.55, 2.05), (-0.95, 1.4)], dark, y=0.0)
+    for i, (z0, z1, t) in enumerate(((0.35, 0.55, 0.22), (0.95, 0.8, 0.2), (1.5, 1.7, 0.2), (0.15, 1.95, 0.16))):
+        line("plank_%d" % i, -1.15, z0, 1.15, z1, t, plank, y=-0.05 - 0.01 * i)
+        for x in (-0.95, 0.9):
+            zz = z0 + (z1 - z0) * (x + 1.15) / 2.3
+            disc("nail_%d_%s" % (i, x), x, zz, 0.03, nail, y=-0.12, n=6)
+    return 3.0, 2.5, 2.0
+
+
+def prop_porch(rng, p):
+    """Prop_Porch: Kettil's porch: a step, two posts, a lean-to roof with ash on it, a stool, a lantern hook."""
+    wood, dark, ash, stone = p("wood", lerp(RUST, INK, 0.2)), p("dark", lerp(INK, RUST, 0.15)), p("ash", lerp(PAPER, OLIVE, 0.15)), p("stone", SILVER)
+    box("step", 0.0, 0.12, 2.8, 0.24, stone, y=0.05)
+    for x in (-1.2, 1.2):
+        box("post_%s" % x, x, 0.24 + 0.85, 0.16, 1.7, wood, y=0.0)
+    polygon("roof", [(-1.5, 1.94), (1.5, 1.94), (1.5, 1.7), (-1.5, 1.4)], dark, y=-0.05)
+    box("ash", 0.0, 1.98, 2.2, 0.06, ash, y=-0.1)
+    box("stool", 0.55, 0.5, 0.5, 0.08, wood, y=-0.02)
+    for x in (0.38, 0.72):
+        box("stool_leg_%s" % x, x, 0.36, 0.06, 0.26, wood, y=-0.01)
+    box("hook", -1.0, 1.35, 0.06, 0.2, dark, y=-0.04)
+    return 3.0, 2.0, 2.0
+
+
 PROPS = [
     ("Prop_Desk", prop_desk), ("Prop_Ledger", prop_ledger), ("Prop_Dummy", prop_dummy), ("Prop_Stall", prop_stall),
     ("Prop_Vantage", prop_vantage), ("Prop_Lamp", prop_lamp), ("Prop_LampGlow", prop_lampglow), ("Prop_Seeds", prop_seeds),
     ("Prop_Bound", prop_bound), ("Prop_Nets", prop_nets), ("Prop_Stoop", prop_stoop), ("Prop_Boat", prop_boat),
     ("Prop_Tether", prop_tether),
     ("Prop_WetEdge", prop_wetedge, "Greyfold"),   # the Edge room is Greyfold's: its own kit, this its first layer
+    # Emberdown (ENV-03): the coast's furniture in the highland's palette, and the town's own.
+    ("Prop_Desk", prop_desk, "Emberdown"), ("Prop_Ledger", prop_ledger, "Emberdown"), ("Prop_Vantage", prop_vantage, "Emberdown"),
+    ("Prop_Lamp", prop_lamp, "Emberdown"), ("Prop_LampGlow", prop_lampglow, "Emberdown"), ("Prop_Seeds", prop_seeds, "Emberdown"),
+    ("Prop_Bound", prop_bound, "Emberdown"),
+    ("Prop_Bell", prop_bell, "Emberdown"), ("Prop_Anvil", prop_anvil, "Emberdown"), ("Prop_Boards", prop_boards, "Emberdown"),
+    ("Prop_Porch", prop_porch, "Emberdown"),
 ]
 
 
@@ -272,7 +348,9 @@ def build(name, fn, region="Saltmarrow"):
     reset_scene()
     seed = sum(ord(c) for c in name)
     rng = random.Random(seed)
-    p = Palette(0.0, False)
+    spec = REGIONS.get(region, REGIONS["Saltmarrow"])
+    globals().update(spec["colours"])   # the prop functions name their colours; each region rebinds them
+    p = _Palette(spec["paper"], spec["ink"], 0.0, False)
     w, h, line_px = fn(rng, p)
     sc = setup_render(w, h, TILE_PPU, 0.0, max(line_px, 0.1), p.ink(), seed % 1000)
     sc.render.use_freestyle = line_px > 0
@@ -286,7 +364,7 @@ def main():
     for entry in PROPS:
         name, fn = entry[0], entry[1]
         region = entry[2] if len(entry) > 2 else "Saltmarrow"
-        if only and name not in only:
+        if only and name not in only and (region + ":" + name) not in only:   # a bare name, or Region:Name for a shared drawing
             continue
         if region not in kits:
             path = os.path.join(KITS, region, "kit.json")
@@ -294,7 +372,7 @@ def main():
                 with open(path) as f:
                     kits[region] = json.load(f)
             else:
-                kits[region] = {"region": region, "ppu": PPU, "tilePpu": TILE_PPU, "paper": PAPER, "layers": []}
+                kits[region] = {"region": region, "ppu": PPU, "tilePpu": TILE_PPU, "paper": REGIONS.get(region, REGIONS["Saltmarrow"])["paper"], "layers": []}
         w, h, size = build(name, fn, region)
         print("[props] %s %dx%d px %d bytes (%s)" % (name, w * TILE_PPU, h * TILE_PPU, size, region))
         layer = {"name": name, "kind": "prop", "widthUnits": w, "heightUnits": h, "ppu": TILE_PPU,

@@ -101,8 +101,8 @@ voices).
 
 - **It is a synth.** Formant voices sing the notes; they do not sing words. The names in the walk ("Dotha's stoop")
   are the caption strip's; the composer's recordings will carry them.
-- **The Bone Bridge has no room.** The whale sings when the Reedmother is drawn, which is where Sable says it sang;
-  when the Bridge is built (ENV-05) it should sing there, under the boards, on a loop at a distance.
+- **The Bone Bridge** is built (ENV-03): drawing the whale's bones there sings it too (`RollCallSinger.WhaleVantages`).
+  A looped, distant version under the boards is still to do.
 - **Kettil's Rest and Hollowvein** are unbuilt; their walks will sing Runa, Kettil and the families through the
   same events, Hollowvein one voice fewer each verse (a per-verse chorus, not yet in `WalkChorus`).
 - **The Complete Survey and the Blank** are AUD-07's and AUD-08's: `Form.Call` at each phase's beat and the reversed

@@ -53,6 +53,18 @@ straight down, because the long roll-call is walked downward (bounds-walk.md: Ho
 | **Hollow_4** The bottom | Hollowvein | The collapse itself: the Collapse wakes on the fourth verse (6.4). The keystone is under it. | — | — | arena: collapse, walk: hollowvein | up → Hollow_3 |
 <!-- /table -->
 
+**Built (ENV-03).** All twenty-one rooms are scenes from recipes (`ProjectSetup.EmberdownRecipes`), on the
+highland's kit (paper-kit.md §2b): the stair's iron landings over `Paper_Mid_Furnaces` with Brann's arena behind
+two doors in Stair_3; the town on `Ground_Ash` with the desk, Kettil's ledger, her porch and the smith's anvil in
+the square, Kettil at the gate, the square and the bell, the boarded mine mouth at the pit-head; the Bell with
+Runa, Kettil, the Bell prop and the lesson walk (three verses of five bounds at three Emberdown beats, `<<walk
+kettils_rest>>`); the chimneys as Talonhold shafts (two walls four units apart) with Ostry at the ninth; the
+baths' boardwalks over pools with the debate's two speakers; the Overlook's Warden and the Greyfold white on its
+horizon, Runa and a desk at the end; Hollowvein's four rooms straight down on timber, the Collapse's arena at the
+bottom. The Bone Bridge (`Saltmarrow_BoneBridge`) joins the chapel to Stair_1 under the whale's bones. Not yet:
+cave-bats and salamanders (no drawings or code), so their rooms stand empty of them; the Hollowvein walk (it
+crosses four rooms, §4); Overlook_2's road to the Plateau (ENV-05); Brann's and Lorne's talks before their scenes.
+
 ## 2. The Verdance (19 rooms, 8 vantages)
 
 ```

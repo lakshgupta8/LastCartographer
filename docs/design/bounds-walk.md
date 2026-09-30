@@ -27,7 +27,7 @@ how **Hold** (anchoring.md) is actually performed. Runtime: `BoundsWalk` (World)
 | Walk | Place | Verses × beats | Chorus | What it holds |
 |---|---|---|---|---|
 | **Merrow's End** (greybox now) | `Saltmarrow_B` | 2 × 4: the stoop, the tether-post, the shaft's foot, the reed steps; back by the steps | Dotha alone, nine songs short | The village, the Holdfast way: Dotha's third choice (`saltmarrow.dotha.decided` = 3) |
-| **Kettil's Rest** (Emberdown, the lesson) | `Emberdown.KettilsRest` | 3 × 5, nightly; Runa leads | Runa, Kettil, the families | Teaches the walk (`holdfast.walk_learned`); the town is already held, so this one only teaches: misses restart, nothing is lost |
+| **Kettil's Rest** (built, ENV-03: `Emberdown_Bell_2`) | `Emberdown.KettilsRest` | 3 × 5 at 2.4 s (three Emberdown beats): the well-cap, the bell's foot, the rope post, the east rail, the stair head; Runa leads | Runa, Kettil, the families | Teaches the walk (`holdfast.walk_learned`); the town is already held, so this one only teaches: misses restart, nothing is lost |
 | **Hollowvein** (the descent, boss 6.4) | `Emberdown.Hollowvein` | 4 × 6 going down; every bound is a dead miner's name | The families, one voice fewer each verse | Wakes the Collapse between verses 3 and 4; walked to the end, the dead are recovered and the keystone is free |
 
 Later, unauthored: the Blank's last walk (bible 9.2, the true ending) is the whole cast singing every bound in

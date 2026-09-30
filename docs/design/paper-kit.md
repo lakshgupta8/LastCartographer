@@ -64,6 +64,36 @@ The tiles, 4 × 1 units at 96 px/unit, mapped in world space:
 A faded layer is the same geometry (the random seed comes from the name without `_Faded`) with the
 depth wash raised by 0.3 and the line at 0.6 of its thickness.
 
+`Paper_Mid_Bones` (z 3, 0 … 6, the Bone Bridge) is the coast's twelfth strip (ENV-03): the whale faded to its bones
+across the channel, skull to the west, ribs into the flat, the flukes east.
+
+### 2b. The Emberdown kit (ENV-03)
+
+`tools/paperkit/emberdown.py`, on the plumbing both kits share (`tools/paperkit/kitlib.py`: materials, cut-out
+helpers, the Freestyle render, the build loop). Smoke-grey paper (0.82, 0.80, 0.78), charcoal, sulphur, ember
+orange, black ink (art-direction 5). The strips sit at the coast's depths (3 / 8 / 16) and the recipes pick three a
+room (`EmberdownPapers(mid, far, farther)`).
+
+| Layer | z | Rooms | What it is |
+|---|---|---|---|
+| `Paper_Fore_Slag` | −4 | the square | cinder and slag heaps in front of the walk, ember flecks in them |
+| `Paper_Mid_Roosts` | 3 | the town, the bell, the chimneys, the Overlook | the cliff behind the town, roosts cut into it on ledges, ladders, ash on every sill |
+| `Paper_Mid_Furnaces` | 3 | the stair | iron furnace fronts, glowing doors, pipes, a landing rail |
+| `Paper_Mid_Springs` | 3 | the baths | sulphur pools in the rock, steam standing over them, boardwalk posts |
+| `Paper_Mid_Gallery` | 3 | the flue road, Hollowvein | timber props and lintels, a lamp for each name, rubble at the foot |
+| `Paper_Far_Chimneys` | 8 | the stair, the pit-head, the chimneys, the Overlook | the nine chimneys on the skyline, head-frames, mine mouths lit red, smoke going east |
+| `Paper_Far_Bell` | 8 | the town, the bell | Kettil's Rest from below: ashed roofs, the bell tower over them |
+| `Paper_Far_Dark` | 8 | the flue road, Hollowvein | the mine's dark: a charcoal wash, faint beams, a rope going down |
+| `Paper_Farther_Ridge` | 16 | most rooms | the basalt highland, two ridges nearly paper, ash in the air |
+| `Paper_Farther_White` | 16 | the Overlook | the Greyfold from outside: a white mass on the horizon, bigger than it looks |
+
+Tiles: `Ground_Basalt` (black blocks, cracks lit faintly from below), `Ground_Iron` (riveted plates, a rust
+bloom), `Ground_Timber` (rough planks over a beam), `Ground_Ash` (grey stone, ash drifted along the top). Props
+(`props.py`, region `Emberdown`): the coast's desk, ledger, vantage stake, lamp and glow, seeds and bound stake
+redrawn in the highland's colours, plus `Prop_Bell` (the Roll-Call Bell on its frame, 2.5 × 3.5), `Prop_Anvil` (the
+smith's, 2 × 1.5), `Prop_Boards` (the pit-head's mine mouth, boarded, 3 × 2.5) and `Prop_Porch` (Kettil's, 3 × 2).
+Render a shared drawing for one region with `-- Emberdown:Prop_Desk`.
+
 ### 2a. Props (ENV-09)
 
 `tools/paperkit/props.py` draws the hubs' furniture with the same helpers: one cut-out each at 96 px/unit, feet at

@@ -34,147 +34,16 @@ FADED_WASH = 0.3  # how much further a _Faded layer is washed toward paper
 FADED_LINE = 0.6  # and how much thinner its line is
 
 
-def lerp(a, b, t):
-    return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from kitlib import (lerp, reset_scene, flat_material, mesh_object, polygon, box, ridge, disc, blob, setup_render, render,
+                    run_kit, Palette as _Palette)
 
 
-# ---------------------------------------------------------------- scene plumbing
-
-def reset_scene():
-    for o in list(bpy.data.objects):
-        bpy.data.objects.remove(o, do_unlink=True)
-    for m in list(bpy.data.meshes):
-        bpy.data.meshes.remove(m)
-    for m in list(bpy.data.materials):
-        bpy.data.materials.remove(m)
-
-
-class Palette:
-    """Materials for one layer: every colour washed toward paper by the layer's depth (and more if faded)."""
+class Palette(_Palette):
+    """The coast's palette at a layer's depth (kitlib.Palette bound to Saltmarrow's paper and ink)."""
 
     def __init__(self, depth, faded):
-        self.depth = min(0.92, depth + (FADED_WASH if faded else 0.0))
-        self._cache = {}
-
-    def wash(self, rgb, extra=0.0):
-        return lerp(rgb, PAPER, min(0.95, self.depth + extra))
-
-    def ink(self):
-        return self.wash(INK, 0.0)
-
-    def __call__(self, name, rgb, extra=0.0):
-        key = (name, extra)
-        if key not in self._cache:
-            self._cache[key] = flat_material(name, self.wash(rgb, extra))
-        return self._cache[key]
-
-
-def flat_material(name, rgb):
-    """An unlit wash: exact palette colour, no shading, so the drawing stays a drawing."""
-    m = bpy.data.materials.new(name)
-    m.use_nodes = True
-    nodes = m.node_tree.nodes
-    for n in list(nodes):
-        nodes.remove(n)
-    out = nodes.new("ShaderNodeOutputMaterial")
-    emit = nodes.new("ShaderNodeEmission")
-    emit.inputs["Color"].default_value = (*rgb, 1.0)
-    emit.inputs["Strength"].default_value = 1.0
-    m.node_tree.links.new(emit.outputs["Emission"], out.inputs["Surface"])
-    return m
-
-
-def mesh_object(name, verts, faces, material, location=(0, 0, 0)):
-    me = bpy.data.meshes.new(name)
-    me.from_pydata(verts, [], faces)
-    me.update()
-    ob = bpy.data.objects.new(name, me)
-    ob.location = location
-    ob.data.materials.append(material)
-    bpy.context.scene.collection.objects.link(ob)
-    return ob
-
-
-def polygon(name, points_xz, material, y=0.0):
-    """A filled cut-out from a closed 2D outline (x, z). Nearer the camera is more negative y."""
-    verts = [(x, y, z) for x, z in points_xz]
-    return mesh_object(name, verts, [list(range(len(verts)))], material)
-
-
-def box(name, cx, cz, w, h, material, y=0.0, d=0.4):
-    verts = [(cx - w / 2, y - d / 2, cz - h / 2), (cx + w / 2, y - d / 2, cz - h / 2),
-             (cx + w / 2, y - d / 2, cz + h / 2), (cx - w / 2, y - d / 2, cz + h / 2),
-             (cx - w / 2, y + d / 2, cz - h / 2), (cx + w / 2, y + d / 2, cz - h / 2),
-             (cx + w / 2, y + d / 2, cz + h / 2), (cx - w / 2, y + d / 2, cz + h / 2)]
-    faces = [(0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)]
-    return mesh_object(name, verts, faces, material)
-
-
-def setup_render(width_units, height_units, ppu, bottom, line_thickness, ink_rgb, seed):
-    sc = bpy.context.scene
-    sc.render.engine = "CYCLES"
-    sc.cycles.samples = 16
-    sc.cycles.use_denoising = False
-    sc.render.film_transparent = True
-    sc.render.resolution_x = int(round(width_units * ppu))
-    sc.render.resolution_y = int(round(height_units * ppu))
-    sc.render.resolution_percentage = 100
-    sc.render.image_settings.file_format = "PNG"
-    sc.render.image_settings.color_mode = "RGBA"
-    sc.render.image_settings.color_depth = "8"
-    try:
-        sc.view_settings.view_transform = "Standard"
-    except TypeError:
-        pass
-    sc.view_settings.look = "None"
-    # Orthographic camera looking down +Y, framing exactly [-w/2, w/2] x [bottom, bottom + h].
-    cam_data = bpy.data.cameras.new("Cam")
-    cam_data.type = "ORTHO"
-    cam_data.ortho_scale = max(width_units, height_units)
-    cam = bpy.data.objects.new("Cam", cam_data)
-    sc.collection.objects.link(cam)
-    cam.location = (0.0, -20.0, bottom + height_units / 2)
-    cam.rotation_euler = (math.radians(90), 0, 0)
-    sc.camera = cam
-    # Freestyle ink: one line around every silhouette and crease, a little noise so it reads as a pen.
-    sc.render.use_freestyle = True
-    sc.render.line_thickness_mode = "ABSOLUTE"
-    sc.render.line_thickness = line_thickness
-    fs = sc.view_layers[0].freestyle_settings
-    fs.crease_angle = math.radians(120)
-    while fs.linesets:
-        fs.linesets.remove(fs.linesets[0])
-    ls = fs.linesets.new("Ink")
-    ls.select_silhouette = True
-    ls.select_border = True
-    ls.select_crease = True
-    ls.select_contour = False
-    st = ls.linestyle
-    st.color = ink_rgb
-    st.thickness = line_thickness
-    st.caps = "ROUND"
-    st.use_chaining = True
-    st.chaining = "PLAIN"
-    noise = st.geometry_modifiers.new("Pen", "PERLIN_NOISE_1D")
-    noise.frequency = 8.0
-    noise.amplitude = 0.6
-    noise.octaves = 2
-    noise.seed = seed
-    cal = st.thickness_modifiers.new("Nib", "CALLIGRAPHY")
-    cal.orientation = math.radians(35)
-    cal.thickness_min = line_thickness * 0.5
-    cal.thickness_max = line_thickness * 1.4
-    along = st.thickness_modifiers.new("Taper", "ALONG_STROKE")
-    along.mapping = "CURVE"
-    along.influence = 0.5
-    return sc
-
-
-def render(path):
-    sc = bpy.context.scene
-    sc.render.filepath = path
-    bpy.ops.render.render(write_still=True)
-    return os.path.getsize(path)
+        super().__init__(PAPER, INK, depth, faded, FADED_WASH)
 
 
 # ---------------------------------------------------------------- shapes
@@ -198,18 +67,6 @@ def reed_bank(rng, x0, x1, base_z, count, h_range, blade, head, spacing_jitter=0
         h = rng.uniform(*h_range)
         reed("reed_%d_%d" % (int(base_z * 10), i), x, base_z, h, rng.uniform(-0.35, 0.35) * h * 0.35, width * rng.uniform(0.8, 1.3), blade,
              head if (head is not None and rng.random() < head_chance) else None)
-
-
-def ridge(name, rng, x0, x1, base_z, mean_h, amp, segments, material, y=0.0):
-    """A hill, dune or crust line: a filled outline with a wandering top edge."""
-    pts = [(x0, base_z)]
-    for i in range(segments + 1):
-        t = i / segments
-        x = x0 + (x1 - x0) * t
-        z = base_z + mean_h + amp * (math.sin(t * math.pi * rng.uniform(1.5, 3.5) + rng.uniform(0, 6.28)) * 0.6 + rng.uniform(-0.4, 0.4))
-        pts.append((x, z))
-    pts.append((x1, base_z))
-    return polygon(name, pts, material, y=y)
 
 
 def roost(name, x, ground_z, w, h, stilt_h, walls, roof, stilt, y=0.0):
@@ -510,6 +367,37 @@ def tile_stone(rng, faded):
 
 # ---------------------------------------------------------------- the kit
 
+def layer_mid_bones(rng, faded):
+    """Paper_Mid_Bones: the Bone Bridge: a whale faded to its bones lying across the channel, ribs arching over
+    the water, the skull to the west, salt flat and dead reeds under it."""
+    p = Palette(0.15, faded)
+    flat, bone, dark, blade = p("flat", lerp(SILVER, PAPER, 0.35)), p("bone", lerp(PAPER, SILVER, 0.25)), p("dark", lerp(INK, SILVER, 0.4)), p("blade", OLIVE, 0.1)
+    ridge("flat", rng, -40, 40, 0.0, 0.5, 0.15, 40, flat, y=0.3)
+    # the spine: a long low arch of vertebrae from the skull at x=-14 to the tail at x=16
+    for i in range(22):
+        t = i / 21
+        x = -13 + 29 * t
+        z = 2.2 + 1.6 * math.sin(t * math.pi)
+        box("vert_%d" % i, x, z, 1.1, 0.55 + 0.2 * math.sin(t * math.pi), bone, y=0.0)
+    # ribs down from the spine into the flat, pairs, thinning toward the tail
+    for i in range(9):
+        t = (i + 1) / 10
+        x = -11 + 25 * t
+        z = 2.2 + 1.6 * math.sin(t * math.pi)
+        rl = 2.4 * (1 - 0.5 * t) + 0.3
+        for side, dx in (("a", -0.45), ("b", 0.45)):
+            polygon("rib_%d%s" % (i, side), [(x + dx - 0.16, z), (x + dx + 0.16, z), (x + dx * 3.2 + 0.12, z - rl), (x + dx * 3.2 - 0.12, z - rl * 0.98)], bone, y=-0.05)
+    # the skull: a long wedge, the eye socket dark, the jaw hanging
+    polygon("skull", [(-20.5, 0.6), (-13.5, 1.2), (-12.6, 2.4), (-14.5, 3.4), (-19.5, 2.6)], bone, y=-0.02)
+    polygon("jaw", [(-20.2, 0.5), (-14.0, 0.9), (-14.3, 1.5), (-19.8, 1.3)], bone, y=-0.04)
+    disc("socket", -16.0, 2.4, 0.42, dark, y=-0.1)
+    # the tail flukes
+    polygon("fluke", [(15.6, 2.0), (19.8, 3.4), (20.6, 2.2), (19.2, 1.5), (16.2, 1.5)], bone, y=-0.03)
+    reed_bank(rng, -40, -21, 0.4, 26, (0.8, 1.8), blade, None, width=0.09)
+    reed_bank(rng, 21, 40, 0.4, 26, (0.8, 1.8), blade, None, width=0.09)
+    return STRIP_WIDTH, 6.0, PPU, 0.0, 2.0, p.ink()
+
+
 LAYERS = [
     # name, kind, builder, faded
     ("Paper_Fore_Reeds", "strip", layer_fore_reeds, False),
@@ -523,6 +411,7 @@ LAYERS = [
     ("Paper_Far_Chapel", "strip", layer_far_chapel, False),
     ("Paper_Far_Tower", "strip", layer_far_tower, False),
     ("Paper_Farther_Sea", "strip", layer_farther_sea, False),
+    ("Paper_Mid_Bones", "strip", layer_mid_bones, False),
     ("Ground_Boardwalk", "tile", tile_boardwalk, False),
     ("Ground_Boardwalk_Faded", "tile", tile_boardwalk, True),
     ("Ground_Shallows", "tile", tile_shallows, False),
@@ -532,38 +421,8 @@ LAYERS = [
 ]
 
 
-def build(name, kind, fn, faded):
-    reset_scene()
-    seed = sum(ord(c) for c in name.replace("_Faded", ""))   # a faded layer draws the same shapes as its original
-    rng = random.Random(seed)
-    w, h, ppu, bottom, line, ink = fn(rng, faded)
-    if faded:
-        line *= FADED_LINE
-    setup_render(w, h, ppu, bottom, line, ink, seed % 1000)
-    size = render(os.path.join(OUT, name + ".png"))
-    return w, h, ppu, size
-
-
 def main():
-    only = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-    manifest_path = os.path.join(OUT, "kit.json")
-    kit = {"region": "Saltmarrow", "ppu": PPU, "tilePpu": TILE_PPU, "paper": PAPER, "layers": []}
-    if only and os.path.exists(manifest_path):
-        with open(manifest_path) as f:
-            kit = json.load(f)
-    for name, kind, fn, faded in LAYERS:
-        if only and name not in only:
-            continue
-        w, h, ppu, size = build(name, kind, fn, faded)
-        print("[paperkit] %s %dx%d px (%s) %d bytes" % (name, w * ppu, h * ppu, kind, size))
-        entry = {"name": name, "kind": kind, "widthUnits": w, "heightUnits": h, "ppu": ppu,
-                 "widthPx": int(round(w * ppu)), "heightPx": int(round(h * ppu)), "file": name + ".png", "faded": faded}
-        kit["layers"] = [l for l in kit["layers"] if l["name"] != name] + [entry]
-    order = [l[0] for l in LAYERS]
-    kit["layers"].sort(key=lambda l: order.index(l["name"]) if l["name"] in order else 99)
-    with open(manifest_path, "w") as f:
-        json.dump(kit, f, indent=2)
-    print("[paperkit] wrote kit.json with %d layers" % len(kit["layers"]))
+    run_kit(OUT, "Saltmarrow", PPU, TILE_PPU, PAPER, LAYERS, FADED_LINE)
 
 
 if __name__ == "__main__":

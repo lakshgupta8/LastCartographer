@@ -20,6 +20,8 @@ namespace OWSBG.Narrative
 
         /// <summary>The vantage whose drawing the whale sings under (the Reedmother's roots look over the Bone Bridge).</summary>
         public const string WhaleVantage = "Saltmarrow_A/Reedmother";
+        /// <summary>And on the Bone Bridge itself, once it is built (ENV-03): drawing the whale's bones.</summary>
+        public static readonly string[] WhaleVantages = { WhaleVantage, "Saltmarrow_BoneBridge/Whale" };
         /// <summary>Seconds after the drawing before the whale is heard: the "Drawn:" caption first.</summary>
         public const float WhaleDelay = 1.5f;
 
@@ -158,7 +160,7 @@ namespace OWSBG.Narrative
 
         void OnSurveyed(string vantageId)
         {
-            if (vantageId == WhaleVantage) _whaleIn = WhaleDelay;
+            if (System.Array.IndexOf(WhaleVantages, vantageId) >= 0) _whaleIn = WhaleDelay;
         }
 
         // ---- the walk ----

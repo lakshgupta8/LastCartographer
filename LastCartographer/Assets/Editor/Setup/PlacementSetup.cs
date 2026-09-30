@@ -29,6 +29,13 @@ namespace OWSBG.Setup
             ("Saltmarrow_Chain_3", "Chain_Gannet", 2f, 4.8f, "Talk", true),         // the faded light's rail
             ("Saltmarrow_Chapel", "Chapel_Tapestry", 15.9f, 0f, "Read", false),     // behind the altar, west side
             ("Saltmarrow_Chapel", "Chapel_Door", 18.6f, 0f, "Read", true),          // the door in the east wall, past the altar
+            // Emberdown (ENV-03): the highland's readables in their rooms.
+            ("Emberdown_Rest_1", "Rest_Lintel", -14f, 0f, "Read", false),           // the roosts over the gate, as you come in from the stair
+            ("Emberdown_Rest_2", "Rest_TallyWall", -5.5f, 0f, "Read", false),       // behind Kettil's porch
+            ("Emberdown_Rest_3", "PitHead_Cups", 9f, 0f, "Read", false),            // the trestle by the boarded mine mouth
+            ("Emberdown_Chimneys_3", "Chimneys_Foot", 3f, 0f, "Read", false),       // the bare stone at the ninth chimney's foot
+            ("Emberdown_Hollow_2", "Hollow_Lamps", 15f, 0f, "Read", false),         // the lamps down the gallery wall
+            ("Emberdown_Chimneys_3", "Ninth_Door", 11f, 0f, "Talk", true),          // the ninth chimney's door, which asks (Offerings)
         };
 
         [MenuItem("OWSBG/Place the Coast's Readables")]

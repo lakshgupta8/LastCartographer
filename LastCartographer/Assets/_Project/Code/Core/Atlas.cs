@@ -228,6 +228,16 @@ namespace OWSBG.Core
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_B/Tetherpost", Name = "the tether-post" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Lighthouse/Lamp", Name = "the lamp" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Chapel/Altar", Name = "the altar" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_BoneBridge", Name = "The Bone Bridge", Region = "The Saltmarrow" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_BoneBridge/Whale", Name = "the whale" });
+            // Emberdown's page (ENV-03) is the plan's: every room a place, every planned vantage, a desk waypoint where the plan puts a desk.
+            foreach (var plan in RoomPlans.All)
+            {
+                if (!plan.Id.StartsWith("Emberdown_")) continue;
+                _places.Add(new AtlasPlace { Id = plan.Id, Name = plan.Name, Region = "Emberdown" });
+                if (plan.Vantage != null) _vantages.Add(new AtlasVantage { Id = plan.VantageId, Name = "the " + plan.Vantage.ToLowerInvariant() });
+                if (plan.Desk) _waypoints.Add(new Waypoint { Id = "desk." + plan.Id, Kind = WaypointKind.Desk, Place = plan.Id, Room = "Greybox_" + plan.Id, Spawn = "Desk", Name = plan.Name.ToLowerInvariant() + "'s desk" });
+            }
 
             _waypoints.Add(new Waypoint { Id = "desk.Saltmarrow_A", Kind = WaypointKind.Desk, Place = "Saltmarrow_A", Room = "Greybox_Saltmarrow_A", Spawn = "Desk", Name = "the quay's desk" });
             _waypoints.Add(new Waypoint { Id = "desk.Saltmarrow_Lighthouse", Kind = WaypointKind.Desk, Place = "Saltmarrow_Lighthouse", Room = "Greybox_Saltmarrow_Lighthouse", Spawn = "Desk", Name = "the lighthouse desk" });

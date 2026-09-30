@@ -38,6 +38,7 @@ Shore ── Quay (A) ── Stilts ── Boardwalk ── Merrow's End (B) ─
 | **Roots_2** | Reedmother's Roots | The Bole vantage on the floor, then a climb to a top exit. | Bole | skimmer, crab | W → Roots_1, up → Roots_3 |
 | **Roots_3** | Reedmother's Roots | Among the roots: a smudge in the dark, a skimmer in the light; the gap drops back down. | — | smudge, skimmer | down → Roots_2, E → Roots_4 |
 | **Roots_4** | Reedmother's Roots | The crown: three platforms up to the highest vantage on the coast; the view is the point. | Crown | crab, skimmer | W → Roots_3 |
+| **BoneBridge** (ENV-03) | Bone Bridge | The whale faded to its bones over the channel (`Paper_Mid_Bones`); a six-unit Wingbeat gap; the whale sings when its bones are drawn. The chapel opens east onto it under the altar's wall. | Whale | crab, smudge | W → Chapel, E → Emberdown Stair_1 |
 | **Greyfold_Edge** (hand-built) | Half-Cathedral | The prologue. | HalfCathedral | 3 smudges | the white → A "Shore" |
 
 Vantages in the slice: 8 (Tideline, Reedmother, Tetherpost, Bole, Crown, FirstLamp, SecondLamp, Lamp).

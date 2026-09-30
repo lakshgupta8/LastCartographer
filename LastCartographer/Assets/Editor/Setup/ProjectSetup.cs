@@ -283,6 +283,7 @@ namespace OWSBG.Setup
             BuildRoomChapel();
             BuildRoomEdge();
             foreach (var recipe in SaltmarrowRecipes()) BuildRecipe(recipe);
+            foreach (var recipe in EmberdownRecipes()) BuildRecipe(recipe);   // the highland (ENV-03)
             PlacementSetup.Place();   // the coast's readables and askers stand in the rebuilt rooms
             SetupRenderFeatures();
             BuildPersistent();
@@ -768,7 +769,7 @@ namespace OWSBG.Setup
             var doorMat = MakeLitMaterial("M_Greybox_Door", new Color(0.30f, 0.26f, 0.24f));
             MakeGround(room, "Bank_W", new Vector2(-16f, -0.5f), new Vector2(8f, 1f), floorMat);      // -20..-12
             MakeGround(room, "Floor", new Vector2(8.5f, -0.5f), new Vector2(23f, 1f), floorMat);       // -3..20
-            MakeGround(room, "Wall_E", new Vector2(19.5f, 5f), new Vector2(1f, 14f), platMat);
+            MakeGround(room, "Wall_E", new Vector2(19.5f, 10.5f), new Vector2(1f, 7f), platMat);   // the upper wall; the way to the Bone Bridge runs under it (ENV-03)
             MakeGround(room, "Altar", new Vector2(17f, 0.8f), new Vector2(2.4f, 1.6f), platMat);
             SkinGrounds(room, "Ground_Stone", "Bank_W", "Floor", "Wall_E", "Altar");
             MakeTide(room, "Tide", new Vector2(-7.5f, -3f), new Vector2(9f, 3f), new Vector2(-12.6f, 0f), new Vector2(-2.4f, 0f));
@@ -783,6 +784,9 @@ namespace OWSBG.Setup
             MakeSpawn(room, "Start", new Vector2(-17f, 0f));
             MakeSpawn(room, "West", new Vector2(-17.5f, 0f));
             MakeTransition(room, "To_Lighthouse", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f), Scene("Saltmarrow_Lighthouse"), "East");
+            // Past the altar, the way east to the Bone Bridge and the climb to Emberdown (world-map: Wingbeat, soft).
+            MakeSpawn(room, "East", new Vector2(18.9f, 0f));
+            MakeTransition(room, "To_BoneBridge", new Vector2(19.6f, 3f), new Vector2(0.8f, 6f), Scene("Saltmarrow_BoneBridge"), "West");
 
             var doorW = MakeDoor(room, "Door_W", new Vector2(-1f, 3f), new Vector2(1f, 6f), doorMat);
             var doorE = MakeDoor(room, "Door_E", new Vector2(15f, 3f), new Vector2(1f, 6f), doorMat);
@@ -1124,6 +1128,15 @@ namespace OWSBG.Setup
             public readonly List<(System.Type type, string name, Vector2 pos, Vector2 size)> Enemies = new List<(System.Type, string, Vector2, Vector2)>();
             public readonly List<(Vector2 pos, int n)> Seeds = new List<(Vector2, int)>();
             public readonly List<(string name, Vector2 pos)> Props = new List<(string, Vector2)>();
+            // The region's dressing (ENV-03): the kit tiles the ground wears, the paper layers behind, and who stands here.
+            public string FloorTile = "Ground_Boardwalk", PlatTile = "Ground_Boardwalk";
+            public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
+            public readonly List<(string name, Vector2 pos, string node, Color tint)> Npcs = new List<(string, Vector2, string, Color)>();
+            public readonly List<Vector2> Desks = new List<Vector2>();
+            public (string hub, Vector2 pos)? LedgerAt;
+            public string WalkId, WalkFlag; public int WalkValue; public float WalkSeconds;
+            public readonly List<(string title, (string name, Vector2 pos)[] beats)> Verses = new List<(string, (string, Vector2)[])>();
+            public (System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward)? ArenaOf;
 
             public RoomRecipe(string id) { Id = id; }
             public RoomRecipe Tall() { Bounds = new Rect(-20f, -3f, 40f, 19f); return this; }
@@ -1144,6 +1157,30 @@ namespace OWSBG.Setup
             public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
             public RoomRecipe Prop(string name, float x, float y = 0f) { Props.Add((name, new Vector2(x, y))); return this; }
             public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
+            public RoomRecipe Warden(float x) { Enemies.Add((typeof(Warden), "Warden_" + Enemies.Count, new Vector2(x, 0.8f), new Vector2(0.7f, 1.6f))); return this; }
+            public RoomRecipe Tiles(string floor, string plat) { FloorTile = floor; PlatTile = plat; return this; }
+            public RoomRecipe Paper(string name, float z, float y, Color color, float height) { Papers.Add((name, z, y, color, height)); return this; }
+            /// <summary>The highland's usual three: the cliff and its roosts, the chimneys, the ridge.</summary>
+            public RoomRecipe EmberdownPapers(string mid = "Mid_Roosts", string far = "Far_Chimneys", string farther = "Farther_Ridge")
+            {
+                Paper(mid, 3f, 0f, new Color(0.40f, 0.38f, 0.38f), 6f);
+                Paper(far, 8f, 2f, new Color(0.52f, 0.50f, 0.49f), 10f);
+                if (farther != null) Paper(farther, 16f, 6f, new Color(0.66f, 0.64f, 0.63f), 16f);
+                return this;
+            }
+            public RoomRecipe Wall(float x, float y, float h) { Ground.Add(("Wall_" + Ground.Count, new Vector2(x, y + h * 0.5f), new Vector2(1f, h))); return this; }
+            public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f) { Npcs.Add((name, new Vector2(x, y), node, tint)); return this; }
+            public RoomRecipe Desk(float x, float y = 0f) { Desks.Add(new Vector2(x, y)); return this; }
+            public RoomRecipe Ledger(string hub, float x) { LedgerAt = (hub, new Vector2(x, 0f)); return this; }
+            public RoomRecipe Walk(string id, string flag, int value, float seconds) { WalkId = id; WalkFlag = flag; WalkValue = value; WalkSeconds = seconds; return this; }
+            public RoomRecipe Verse(string title, params (string name, float x, float y)[] beats)
+            {
+                var list = new (string, Vector2)[beats.Length];
+                for (int i = 0; i < beats.Length; i++) list[i] = (beats[i].name, new Vector2(beats[i].x, beats[i].y));
+                Verses.Add((title, list));
+                return this;
+            }
+            public RoomRecipe Arena(System.Type type, string bossId, float x, Vector2 size, float doorW, float doorE, Ability reward = Ability.None) { ArenaOf = (type, bossId, new Vector2(x, size.y * 0.5f), size, doorW, doorE, reward); return this; }
         }
 
         static string Scene(string id) => "Greybox_" + id;
@@ -1203,6 +1240,117 @@ namespace OWSBG.Setup
                     .Floor(-20f, 20f).Plat(0f, 3f, 3f).Plat(5f, 6f, 3f).Plat(10f, 9f, 4f).Vantage("Crown", 10f, 9.3f)
                     .Crab(-6f).Skimmer(5f, 8f).Seed(12f, 9.8f, 5)
                     .West(Scene("Saltmarrow_Roots_3")),
+                // The Bone Bridge (bible 8.1, [F 3.4]): the whale's bones over the channel, a Wingbeat gap in the way east,
+                // the climb to Emberdown past it. The whale sings here (roll-call.md).
+                new RoomRecipe("Saltmarrow_BoneBridge")
+                    .Floor(-20f, -4f).Floor(2f, 20f).Plat(-9f, 2.5f, 3f).Vantage("Whale", -12f, 0f)
+                    .Paper("Mid_Bones", 3f, 0f, new Color(0.62f, 0.64f, 0.56f), 6f)
+                    .Paper("Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f)
+                    .Paper("Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f)
+                    .Crab(-15f).Smudge(10f)
+                    .West(Scene("Saltmarrow_Chapel")).East(Scene("Emberdown_Stair_1")),
+            };
+        }
+
+        /// <summary>
+        /// Emberdown's twenty-one rooms (DES-09, ENV-03), on the highland's kit: the stair climbs, the town is flat, and
+        /// everything past the town goes up by the wall or down into the mine. Bats and salamanders have no drawings
+        /// yet, so their rooms stand empty of them; the Overlook's road to the Plateau waits for Halden (ENV-05).
+        /// </summary>
+        static List<RoomRecipe> EmberdownRecipes()
+        {
+            var kettil = new Color(0.36f, 0.33f, 0.30f);
+            var runa = new Color(0.44f, 0.36f, 0.30f);
+            var stranger = new Color(0.48f, 0.48f, 0.50f);
+            string E(string id) => Scene("Emberdown_" + id);
+            return new List<RoomRecipe>
+            {
+                // ---- the Furnace Stair: a climb of iron landings over live furnaces ----
+                new RoomRecipe("Emberdown_Stair_1").Tall().Tiles("Ground_Basalt", "Ground_Iron").EmberdownPapers("Mid_Furnaces")
+                    .Floor(-20f, -8f).Floor(-2f, 20f).Plat(4f, 3f, 3f).Plat(9f, 6f, 3f).Plat(14f, 9f, 3f).Plat(10f, 12f, 4f)
+                    .West(Scene("Saltmarrow_BoneBridge")).Up(E("Stair_2"), 10f, 12.3f),
+                new RoomRecipe("Emberdown_Stair_2").Tall().Tiles("Ground_Iron", "Ground_Iron").EmberdownPapers("Mid_Furnaces")
+                    .Floor(-20f, -12f).Floor(-8f, 20f).Plat(-4f, 3f, 3f).Plat(2f, 6f, 3f).Plat(8f, 9f, 3f).Plat(2f, 12f, 5f).Vantage("Landing", 2f, 12.3f)
+                    .Npc("Hask", -4f, "Stair_Rescue", stranger, 3.3f)
+                    .Down(E("Stair_1"), -10f).Up(E("Stair_3"), 2f, 12.3f),
+                new RoomRecipe("Emberdown_Stair_3").Tiles("Ground_Iron", "Ground_Basalt").EmberdownPapers("Mid_Furnaces")
+                    .Floor(-20f, -17f).Floor(-13f, 20f).Desk(-10f)
+                    .Arena(typeof(Brann), "brann", 8f, new Vector2(0.9f, 1.9f), -6f, 15f)
+                    .Down(E("Stair_2"), -15f).East(E("Rest_1")),
+                // ---- Kettil's Rest: the town, flat, counted ----
+                new RoomRecipe("Emberdown_Rest_1").Tiles("Ground_Ash", "Ground_Ash").EmberdownPapers("Mid_Roosts", "Far_Bell")
+                    .Floor(-20f, 20f).Npc("Kettil", -4f, "Rest_Kettil", kettil)
+                    .West(E("Stair_3")).East(E("Rest_2")),
+                new RoomRecipe("Emberdown_Rest_2").Tiles("Ground_Ash", "Ground_Ash").EmberdownPapers("Mid_Roosts", "Far_Bell")
+                    .Paper("Fore_Slag", -4f, -0.8f, new Color(0.22f, 0.21f, 0.22f), 1.6f)
+                    .Floor(-20f, 20f).Plat(11f, 3f, 3f).Plat(15f, 6f, 3f).Plat(15f, 9f, 4f).Vantage("Square", 0f, 0f)
+                    .Desk(-12f).Ledger("Emberdown", -8f).Prop("Porch", -3f).Prop("Anvil", 5f).Npc("Kettil", -1f, "Rest_Kettil", kettil)
+                    .West(E("Rest_1")).East(E("Rest_3")).Up(E("Bell_1"), 15f, 9.3f),
+                new RoomRecipe("Emberdown_Rest_3").Tiles("Ground_Ash", "Ground_Basalt").EmberdownPapers("Mid_Roosts")
+                    .Floor(-20f, -2f).Floor(2f, 20f).Prop("Boards", 12f).Npc("Runa", -8f, "Hollowvein_Runa_Walk", runa)
+                    .West(E("Rest_2")).East(E("Chimneys_1")).Down(E("Hollow_1"), 0f),
+                // ---- the Roll-Call Bell ----
+                new RoomRecipe("Emberdown_Bell_1").Tall().Tiles("Ground_Ash", "Ground_Timber").EmberdownPapers("Mid_Roosts", "Far_Bell")
+                    .Floor(-20f, -12f).Floor(-8f, 20f).Plat(-4f, 3f, 3f).Plat(2f, 6f, 3f).Plat(8f, 9f, 3f).Plat(14f, 12f, 4f)
+                    .Down(E("Rest_2"), -10f).East(E("Bell_2")),
+                new RoomRecipe("Emberdown_Bell_2").Tiles("Ground_Ash", "Ground_Timber").EmberdownPapers("Mid_Roosts", "Far_Bell")
+                    .Floor(-20f, 20f).Plat(-8f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Prop("Bell", 6f).Vantage("Bell", 8.5f, 0f)
+                    .Npc("Runa", 2f, "Bell_Runa_Count", runa).Npc("Kettil", -12f, "Rest_Kettil", kettil)
+                    // The lesson walk (bounds-walk.md): three verses of five at three Emberdown beats a bound; the town is already held, so it only teaches.
+                    .Walk("kettils_rest", "", 0, AudioDirection.BeatOf(Region.Emberdown) * 3f)
+                    .Verse("the well and the bell", ("the well-cap", -4f, 0f), ("the bell's foot", 6f, 0f), ("the rope post", 10f, 0f), ("the east rail", 12f, 2.8f), ("the bell's foot", 6f, 0f))
+                    .Verse("round the square", ("the stair head", -8f, 2.8f), ("the well-cap", -4f, 0f), ("the bell's foot", 6f, 0f), ("the rope post", 10f, 0f), ("the well-cap", -4f, 0f))
+                    .Verse("and home", ("the east rail", 12f, 2.8f), ("the rope post", 10f, 0f), ("the bell's foot", 6f, 0f), ("the well-cap", -4f, 0f), ("the stair head", -8f, 2.8f))
+                    .West(E("Bell_1")),
+                // ---- the Nine Chimneys: up by the wall ----
+                new RoomRecipe("Emberdown_Chimneys_1").Tall().Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers()
+                    .Floor(-20f, 20f).Wall(6f, 0f, 12f).Wall(10f, 0f, 12f).Plat(8f, 12f, 3f).Npc("Runa", -6f, "Chimneys_Runa_Climb", runa)
+                    .West(E("Rest_3")).Up(E("Chimneys_2"), 8f, 12.3f),
+                new RoomRecipe("Emberdown_Chimneys_2").Tall().Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers()
+                    .Floor(-20f, 6f).Floor(10f, 20f).Wall(-14f, 0f, 12f).Wall(-10f, 0f, 12f).Wall(-2f, 0f, 12f).Wall(2f, 0f, 12f).Wall(13f, 0f, 12f).Wall(17f, 0f, 12f)
+                    .Plat(-12f, 12f, 3f).Plat(0f, 12f, 3f).Vantage("Shaft", -12f, 12.3f)
+                    .Down(E("Chimneys_1"), 8f).Up(E("Chimneys_3"), 0f, 12.3f),
+                new RoomRecipe("Emberdown_Chimneys_3").Tall().Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers()
+                    .Floor(-20f, -10f).Floor(-6f, 20f).Desk(-2f).Wall(6f, 0f, 10f).Wall(10f, 0f, 10f).Plat(8f, 10.3f, 3f).Vantage("Ninth", 8f, 10.6f)
+                    .Npc("Ostry", 14f, "Chimneys_Ninth_Agent", stranger)
+                    .Down(E("Chimneys_2"), -8f).East(E("Chimneys_4")),
+                new RoomRecipe("Emberdown_Chimneys_4").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Gallery", "Far_Dark")
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(2f, 4f, 3f).Plat(10f, 2.5f, 3f)
+                    .West(E("Chimneys_3")).East(E("Baths_1")),
+                // ---- the Cinder Baths ----
+                new RoomRecipe("Emberdown_Baths_1").Tiles("Ground_Timber", "Ground_Basalt").EmberdownPapers("Mid_Springs")
+                    .Floor(-20f, -8f).Floor(-4f, 4f).Floor(8f, 20f).Shallows(-8f, -4f).Shallows(4f, 8f).Smudge(0f)
+                    .West(E("Chimneys_4")).East(E("Baths_2")),
+                new RoomRecipe("Emberdown_Baths_2").Tiles("Ground_Timber", "Ground_Basalt").EmberdownPapers("Mid_Springs")
+                    .Floor(-20f, 20f).Vantage("Baths", 0f, 0f).Npc("Kettil", -6f, "Baths_Kettil_Debate", kettil).Npc("Runa", 6f, "Baths_Runa_Debate", runa)
+                    .West(E("Baths_1")).East(E("Baths_3")),
+                new RoomRecipe("Emberdown_Baths_3").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Springs")
+                    .Floor(-20f, 20f).Plat(-10f, 3f, 3f).Plat(-4f, 5.5f, 3f).Plat(4f, 8f, 3f)
+                    .West(E("Baths_2")).East(E("Overlook_1")),
+                // ---- the Overlook: the Greyfold from outside ----
+                new RoomRecipe("Emberdown_Overlook_1").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Roosts", "Far_Chimneys", "Farther_White")
+                    .Floor(-20f, 20f).Warden(4f)
+                    .West(E("Baths_3")).East(E("Overlook_2")),
+                new RoomRecipe("Emberdown_Overlook_2").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Roosts", "Far_Chimneys", "Farther_White")
+                    .Floor(-20f, 20f).Plat(8f, 3f, 3f).Plat(13f, 6f, 4f).Vantage("Overlook", 13f, 6.3f).Desk(-10f).Npc("Runa", 4f, "Overlook_Runa", runa)
+                    .West(E("Overlook_1")),
+                // ---- Hollowvein: four rooms straight down ----
+                new RoomRecipe("Emberdown_Hollow_1").Tall().Tiles("Ground_Timber", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
+                    .Floor(-20f, -12f).Floor(-8f, 20f).Plat(0f, 12f, 4f).Plat(-5f, 9f, 3f).Plat(1f, 6f, 3f).Plat(7f, 3f, 3f)
+                    .Npc("Runa", 6f, "Hollowvein_Runa_After", runa)
+                    .Up(E("Rest_3"), 0f, 12.3f).Down(E("Hollow_2"), -10f),
+                new RoomRecipe("Emberdown_Hollow_2").Tall().Tiles("Ground_Timber", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
+                    .Floor(-20f, 8f).Floor(12f, 20f).Plat(-10f, 12f, 4f).Plat(-4f, 9f, 3f).Plat(2f, 6f, 3f).Plat(-2f, 3f, 3f).Vantage("Gallery", 0f, 0f)
+                    .Smudge(-6f).Smudge(4f)
+                    .Up(E("Hollow_1"), -10f, 12.3f).Down(E("Hollow_3"), 10f),
+                new RoomRecipe("Emberdown_Hollow_3").Tall().Tiles("Ground_Timber", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
+                    .Floor(-20f, -18f).Floor(-14f, -6f).Shallows(-6f, 6f).Floor(6f, 20f).Plat(10f, 12f, 4f).Plat(6f, 9f, 3f).Plat(10f, 6f, 3f).Plat(14f, 3f, 3f)
+                    .Desk(12f).Smudge(-10f)
+                    .Up(E("Hollow_2"), 10f, 12.3f).Down(E("Hollow_4"), -16f),
+                new RoomRecipe("Emberdown_Hollow_4").Tall().Tiles("Ground_Basalt", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
+                    .Floor(-20f, 20f).Plat(-16f, 12f, 4f).Plat(-12f, 9f, 3f).Plat(-16f, 6f, 3f).Plat(-12f, 3f, 3f)
+                    .Arena(typeof(Collapse), "collapse", 6f, new Vector2(2.2f, 2.6f), -6f, 18f)
+                    .Up(E("Hollow_3"), -16f, 12.3f),
             };
         }
 
@@ -1216,10 +1364,15 @@ namespace OWSBG.Setup
             foreach (var g in r.Ground)
             {
                 MakeGround(room, g.name, g.c, g.s, g.name.StartsWith("Shallows") ? waterMat : g.name.StartsWith("Floor") ? floorMat : platMat);
-                SkinGround(room, g.name, g.name.StartsWith("Shallows") ? "Ground_Shallows" : r.Faded ? "Ground_Boardwalk_Faded" : "Ground_Boardwalk", 4f);
+                string tile = g.name.StartsWith("Shallows") ? "Ground_Shallows" : r.Faded ? "Ground_Boardwalk_Faded" : g.name.StartsWith("Floor") ? r.FloorTile : r.PlatTile;
+                SkinGround(room, g.name, tile, 4f);
             }
 
-            if (r.Faded)
+            if (r.Papers.Count > 0)
+            {
+                foreach (var p in r.Papers) MakePaperLayer(room, p.name, p.z, p.y, p.color, p.height);
+            }
+            else if (r.Faded)
             {
                 MakePaperLayer(room, "Mid_Reeds_Faded", 3f, 0f, new Color(0.80f, 0.80f, 0.74f), 6f);
                 MakePaperLayer(room, "Far_Roosts_Faded", 8f, 2f, new Color(0.86f, 0.85f, 0.80f), 10f);
@@ -1238,16 +1391,84 @@ namespace OWSBG.Setup
             foreach (var v in r.Vantages) MakeVantage(room, v.name, r.Id + "/" + v.name, v.pos);
             foreach (var sd in r.Seeds) MakeSeeds(room, sd.pos, sd.n);
             foreach (var p in r.Props) MakeProp(room, room.transform, p.name, p.pos, 0.7f);
+            foreach (var d in r.Desks) MakeDesk(room, d);
+            if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
+            foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint);
+            if (!string.IsNullOrEmpty(r.WalkId))
+            {
+                var walk = MakeBoundsWalk(room, r.WalkId, r.WalkFlag, r.WalkValue);
+                walk.SecondsPerBeat = r.WalkSeconds;
+                foreach (var v in r.Verses) walk.AddVerse(v.title, v.beats);
+                MakeBoundMarkers(room, walk);
+            }
             foreach (var e in r.Enemies)
             {
                 if (e.type == typeof(MarshCrab)) MakeEnemy<MarshCrab>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(ReedSkimmer)) MakeEnemy<ReedSkimmer>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Smudge)) MakeEnemy<Smudge>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Cantor)) MakeEnemy<Cantor>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);
+            }
+            if (r.ArenaOf.HasValue)
+            {
+                var a = r.ArenaOf.Value;
+                MakeArena(room, a.type, a.bossId, a.pos, a.size, a.doorW, a.doorE, a.reward);
             }
             MakeFadeGroup(room);
             EditorSceneManager.SaveScene(scene, RoomPath(r.Id));
             Debug.Log("[OWSBG] saved " + RoomPath(r.Id));
+        }
+
+        static int Enemies_Index(RoomRecipe r, string name) => r.Enemies.FindIndex(e => e.name == name);
+
+        /// <summary>
+        /// A boss arena from a recipe (ENV-03): the boss on its sheet (name, tier, lines, tuned health), two doors, the
+        /// zone between them, a fixed camera on it. The staged intro cutscene is the hand-built rooms'; a recipe arena
+        /// opens straight onto the fight.
+        /// </summary>
+        static void MakeArena(Room room, System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward)
+        {
+            var doorMat = MakeLitMaterial("M_Greybox_Door", new Color(0.30f, 0.26f, 0.24f));
+            var dW = MakeDoor(room, "Door_W", new Vector2(doorW, 3f), new Vector2(1f, 6f), doorMat);
+            var dE = MakeDoor(room, "Door_E", new Vector2(doorE, 3f), new Vector2(1f, 6f), doorMat);
+            Boss boss;
+            if (type == typeof(Brann)) { var b = MakeBoss<Brann>(room, "Brann", pos, size); ((Brann)b).arenaMinX = doorW + 0.5f; ((Brann)b).arenaMaxX = doorE - 0.5f; boss = b; }
+            else if (type == typeof(Collapse)) { var b = MakeBoss<Collapse>(room, "Collapse", pos, size); ((Collapse)b).arenaMinX = doorW + 0.5f; ((Collapse)b).arenaMaxX = doorE - 0.5f; boss = b; }
+            else throw new System.InvalidOperationException("no recipe arena for " + type.Name);
+            var bossSo = new SerializedObject(boss);
+            int health = Tuning.BossHealth(bossId);
+            if (health > 0) bossSo.FindProperty("_maxHealth").intValue = health;
+            bossSo.FindProperty("_contactDamage").intValue = 1;
+            var sheet = Bosses.Find(bossId);
+            if (sheet != null)
+            {
+                bossSo.FindProperty("_bossName").stringValue = sheet.Name;
+                bossSo.FindProperty("_tier").intValue = sheet.Tier;
+                var lines = bossSo.FindProperty("_phaseLines");
+                lines.arraySize = 3;
+                for (int i = 0; i < 3; i++) lines.GetArrayElementAtIndex(i).stringValue = sheet.Lines[i];
+            }
+            bossSo.ApplyModifiedPropertiesWithoutUndo();
+
+            float cx = (doorW + doorE) * 0.5f, w = doorE - doorW;
+            var arenaGo = new GameObject("Arena_" + type.Name) { layer = LayerMask.NameToLayer("Trigger") };
+            arenaGo.transform.SetParent(room.transform, false);
+            arenaGo.transform.position = new Vector3(cx, 5f, 0f);
+            var zone = arenaGo.AddComponent<BoxCollider2D>();
+            zone.isTrigger = true;
+            zone.size = new Vector2(w - 2f, 11f);
+            var arena = arenaGo.AddComponent<BossArena>();
+            var arSo = new SerializedObject(arena);
+            arSo.FindProperty("_bossId").stringValue = bossId;
+            arSo.FindProperty("_boss").objectReferenceValue = boss;
+            var doors = arSo.FindProperty("_doors");
+            doors.arraySize = 2;
+            doors.GetArrayElementAtIndex(0).objectReferenceValue = dW;
+            doors.GetArrayElementAtIndex(1).objectReferenceValue = dE;
+            arSo.FindProperty("_rewardAbility").intValue = (int)reward;
+            arSo.FindProperty("_vellumScraps").intValue = 1;
+            arSo.FindProperty("_arenaCamera").objectReferenceValue = MakeShot(room, "CM Arena", new Vector3(cx, 4.2f, -21f));
+            arSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
         // Iris seeds lying about (DES-05): a small sphere and a trigger.
@@ -1299,6 +1520,7 @@ namespace OWSBG.Setup
         {
             var list = new List<string> { RoomAScenePath, RoomBScenePath, RoomCScenePath, RoomChapelScenePath, RoomEdgeScenePath };
             foreach (var r in SaltmarrowRecipes()) list.Add(RoomPath(r.Id));
+            foreach (var r in EmberdownRecipes()) list.Add(RoomPath(r.Id));
             return list;
         }
 

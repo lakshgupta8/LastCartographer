@@ -252,6 +252,10 @@ namespace OWSBG.Core
             _placeZones["Saltmarrow_Chain_3"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Lighthouse"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Chapel"] = "Saltmarrow.SaltChapel";
+            _placeZones["Saltmarrow_BoneBridge"] = "Saltmarrow.BoneBridge";
+            // The highland's rooms (ENV-03) are the plan's, zone by zone.
+            foreach (var plan in RoomPlans.All)
+                if (plan.Id.StartsWith("Emberdown_") && !_placeZones.ContainsKey(plan.Id)) _placeZones[plan.Id] = plan.Zone;
         }
     }
 }

@@ -289,7 +289,68 @@ namespace OWSBG.Tests
             }
             Assert.IsNull(Score.ThemeOfBoss("Hale"), "an optional has no theme of its own");
             Assert.IsNull(Score.SharedThemeOf(Region.Greyfold), "and a region without a theme has nothing to share");
-            Assert.AreEqual(5, Score.SharedThemes.Count());
+            Assert.AreEqual(6, Score.SharedThemes.Count(), "the five regions' and the Blank's");
+        }
+
+        [Test]
+        public void TheBlankRemembersEverythingWrongAndEachEndingResolvesItsWay()
+        {
+            // AUD-08: the Blank's theme, in its own mode at its slow beat, 40% rest; its lead every region's opening backwards; the roll-call reversed under.
+            var blank = Score.ThemeOf(Region.Blank);
+            Assert.IsNotNull(blank); Assert.AreEqual(Ending.None, blank.Coda); Assert.IsNull(blank.Boss);
+            Assert.AreEqual(AudioDirection.Of(Region.Blank).Silence, blank.Silence, 1e-4f, "two bars in five are the white");
+            Assert.AreEqual(AudioDirection.BeatOf(Region.Blank) * 4f, blank.BarSeconds, 1e-4f);
+            foreach (var need in Score.RequiredStems) Assert.IsNotNull(blank.Stem(need));
+            Assert.AreEqual(1, blank.Stems.Count(s => s.Combat));
+            foreach (var s in blank.Stems)
+            {
+                CollectionAssert.Contains(Score.BandOf(Region.Blank), s.Instrument, s.Id + " from the Blank's band");
+                foreach (var n in s.Notes)
+                {
+                    Assert.IsTrue(Score.InMode(Region.Blank, Score.Semitones(Region.Blank, n.Degree)), s.Id + " " + n + " in the Blank's mode");
+                    Assert.LessOrEqual(n.Start + n.Beats, blank.Bars * Score.BeatsPerBar + 1e-3f, s.Id + " " + n + " before the white");
+                }
+            }
+            var coastOpening = Score.ThemeOf(Region.Saltmarrow).Stem("lead").Notes.OrderBy(n => n.Start).Take(4).Select(n => n.Degree).Reverse().ToArray();
+            CollectionAssert.AreEqual(coastOpening, blank.Stem("lead").Notes.OrderBy(n => n.Start).Take(4).Select(n => n.Degree), "the coast's fiddle, backwards, first");
+            Assert.AreEqual("reversedpiano", blank.Stem("lead").Instrument);
+            Assert.AreEqual(20, blank.Stem("lead").Notes.Count, "four notes of each of the five regions");
+            var reversed = Score.PhraseDegrees(Region.Blank, RollCallSong.Form.Reversed).Select(d => d + 7).ToArray();
+            CollectionAssert.AreEqual(reversed, blank.Stem("voices").Notes.OrderBy(n => n.Start).Select(n => n.Degree), "the Remnant sing the roll-call the wrong way round");
+            Assert.AreEqual("remnant", blank.Stem("voices").Instrument);
+
+            // The codas: one an ending, in its key, never mistaken for the region's theme, and each resolving as its ending does.
+            var fixedWorld = Score.CodaOf(Ending.Fixed); var open = Score.CodaOf(Ending.Open); var unwritten = Score.CodaOf(Ending.Unwritten); var rest = Score.CodaOf(Ending.Rest);
+            Assert.IsNull(Score.CodaOf(Ending.None));
+            Assert.AreEqual(Region.Halden, fixedWorld.Region); Assert.AreEqual(Region.Saltmarrow, open.Region); Assert.AreEqual(Region.Verdance, unwritten.Region); Assert.AreEqual(Region.Blank, rest.Region);
+            foreach (var t in new[] { fixedWorld, open, unwritten, rest })
+            {
+                Assert.AreNotSame(t, Score.ThemeOf(t.Region), t.Id + " is not the region's theme");
+                Assert.AreEqual(0, t.RestBars, t.Id + ": no rest at the end");
+                foreach (var need in Score.RequiredStems) Assert.IsNotNull(t.Stem(need), t.Id + " has its " + need);
+                foreach (var s in t.Stems) foreach (var n in s.Notes)
+                {
+                    Assert.IsTrue(Score.InMode(t.Region, Score.Semitones(t.Region, n.Degree)), t.Id + "/" + s.Id + " " + n);
+                    Assert.LessOrEqual(n.Start + n.Beats, t.Bars * Score.BeatsPerBar + 1e-3f, t.Id + "/" + s.Id + " " + n);
+                }
+                Assert.IsTrue(Score.ComesHome(t.Stem("lead")) || t == rest, t.Id + "'s lead comes home");
+            }
+            Assert.AreEqual(1, Score.CodaOf(Ending.Fixed).Stem("lead").Notes.Count(n => n.Beats >= 4f && (n.Degree % 7 + 7) % 7 == 0), "the Fixed World: the bar finished, the chord held");
+            var phrase = Score.PhraseDegrees(Region.Saltmarrow, RollCallSong.Form.Whole);
+            CollectionAssert.AreEqual(phrase, open.Stem("lead").Notes.OrderBy(n => n.Start).Take(phrase.Length).Select(n => n.Degree), "the Open World: everyone sings the roll-call");
+            Assert.AreEqual("choir", open.Stem("lead").Instrument);
+            Assert.AreEqual(5f, unwritten.Stem("lead").Notes.OrderBy(n => n.Start).Last().Beats, "the Unwritten: the gamba resolves and holds");
+            var upright = Score.PhraseDegrees(Region.Blank, RollCallSong.Form.Whole).Select(d => d + 7).ToArray();
+            CollectionAssert.AreEqual(upright, rest.Stem("lead").Notes.OrderBy(n => n.Start).Take(upright.Length).Select(n => n.Degree), "the Rest: the tune the right way round");
+            foreach (var t in new[] { blank, fixedWorld, open, unwritten, rest })
+            {
+                var stems = Score.Render(t);
+                int len = (int)Math.Round(t.LoopSeconds * Score.SampleRate);
+                var mix = new float[len];
+                foreach (var s in stems.Values) { Assert.AreEqual(len, s.Length, t.Id); for (int i = 0; i < len; i++) mix[i] += s[i]; }
+                Assert.AreEqual(AudioDirection.SfxPeakDbtp, RollCallSong.PeakDb(mix), 0.05f, t.Id + " at the ceiling");
+            }
+            Assert.AreEqual(blank.Silence, Score.MeasuredSilence(Score.Render(blank).Values), 0.06f, "the white, measured");
         }
 
         [Test]
@@ -339,6 +400,9 @@ namespace OWSBG.Tests
                 ("emberdown_music_brann-glow_75.wav", "Brann's glow"), ("greyfold_music_voss-white_40.wav", "Voss's white"), ("blank_music_archivist-frame_33.wav", "the Archivist's frame"),
                 ("blank_music_archivist_33.mid", "the Archivist as MIDI"), ("saltmarrow_music_shared-lead_67.wav", "the coast's motif fought in"), ("windreach_music_shared-drive_60.wav", "Windreach's"),
                 ("greyfold_music_resolution_40.wav", "the Threshold's resolution"), ("blank_music_resolution_33.wav", "the Blank's"),
+                ("blank_music_lead_33.wav", "the Blank's own theme"), ("blank_music_all-stems_33.wav", "its mix"), ("blank_music_blank_33.mid", "as MIDI"),
+                ("halden_music_coda-fixed-lead_100.wav", "the Fixed World's coda"), ("saltmarrow_music_coda-open-lead_67.wav", "the Open World's"),
+                ("verdance_music_coda-unwritten-lead_50.wav", "the Unwritten's"), ("blank_music_coda-rest-lead_33.wav", "the Rest's"), ("blank_music_coda-rest-all-stems_33.wav", "and its mix"),
             })
                 Assert.IsTrue(File.Exists(Path.Combine(dir, file)), why + ": " + file);
         }

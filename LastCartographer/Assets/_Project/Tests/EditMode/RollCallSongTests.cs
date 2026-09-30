@@ -127,7 +127,7 @@ namespace OWSBG.Tests
             foreach (var u in RollCallSong.Uses) Assert.IsNotEmpty(u.Caption, u.Id + " has a caption for a deaf player");
             CollectionAssert.AreEqual(new[] { "dotha" }, RollCallSong.WalkChorus("merrows_end"), "Dotha alone, nine songs short");
             Assert.AreEqual("runa", RollCallSong.WalkChorus("kettils_rest")[0], "Runa leads the Holdfast's");
-            foreach (var f in new[] { "Emberdown/Emberdown_Bell_Runa.yarn", "Saltmarrow/Saltmarrow_MerrowsEnd_Dotha.yarn" })
+            foreach (var f in new[] { "Emberdown/Emberdown_Bell_Runa.yarn", "Saltmarrow/Saltmarrow_MerrowsEnd_Dotha.yarn", "Blank/Blank_Islands.yarn", "Blank/Blank_Capital.yarn" })
                 StringAssert.Contains("<<sing ", File.ReadAllText(Path.Combine(Application.dataPath, "_Project/Dialogue/" + f)), f + " sings");
         }
 

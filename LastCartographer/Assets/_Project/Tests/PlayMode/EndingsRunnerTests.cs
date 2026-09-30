@@ -104,6 +104,7 @@ namespace OWSBG.Tests
             Assert.AreEqual(ScreenFade.White, ScreenFade.Color);
             Assert.IsFalse(runner.IsWalking);
             Assert.IsFalse(DialogueService.Instance!.IsRunning);
+            Assert.AreSame(Score.CodaOf(Ending.Fixed), MusicDriver.Instance!.Coda, "the Fixed World's coda plays the title out (AUD-08)");
         }
 
         [UnityTest]

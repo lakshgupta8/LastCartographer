@@ -55,6 +55,10 @@ namespace OWSBG.Narrative
         public Score.Theme Current { get; private set; }
         /// <summary>The theme the state asks for now (it may still be rendering).</summary>
         public Score.Theme Wanted { get; private set; }
+        /// <summary>The ending's coda once the walk is done (AUD-08): over everything until a new game.</summary>
+        public Score.Theme Coda { get; private set; }
+        /// <summary>The endings runner, as the screen goes white: the chosen ending's coda from here on.</summary>
+        public void BeginCoda(Ending e) => Coda = Score.CodaOf(e);
         /// <summary>The DSP time the current theme's stems started, or will start.</summary>
         public double StartAt => _start;
         /// <summary>Stems of a previous theme still going out over their crossfade.</summary>
@@ -110,7 +114,7 @@ namespace OWSBG.Narrative
         /// <summary>The room the music reads: the override, else the room manager's.</summary>
         public string Room => RoomOverride ?? (RoomManager.Instance != null ? RoomManager.Instance.CurrentRoom : null);
 
-        void OnNewGame() { Watch(null); _resolvingUntil = 0; }
+        void OnNewGame() { Watch(null); _resolvingUntil = 0; Coda = null; }
 
         void OnTelegraphed(Enemy e, AttackKind kind)
         {
@@ -156,6 +160,7 @@ namespace OWSBG.Narrative
         /// <summary>The theme the state asks for: the fight that told, else the room's region, else nothing; nothing while a theme resolves.</summary>
         public Score.Theme Decide()
         {
+            if (Coda != null) return Coda;
             if (IsResolving) return null;
             var r = Mix.RegionOf(Room);
             if (_boss != null && _boss.IsFightActive)

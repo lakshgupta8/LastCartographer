@@ -261,6 +261,31 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator TheBlanksIslandsPlayTheBlankAndACodaEndsTheGame()
+        {
+            Driver.RoomOverride = "Island_Merrow";
+            var blank = Score.ThemeOf(Region.Blank);
+            yield return null;
+            Assert.AreSame(blank, Driver.Wanted, "an island is the Blank's room");
+            yield return Until(() => Driver.Current == blank, 60f);
+            Assert.AreSame(blank, Driver.Current);
+            Assert.AreEqual(blank.LoopSeconds, Driver.Source("lead")!.clip.length, 0.01f, "three bars and two of the white");
+            Driver.BeginCoda(Ending.Fixed);
+            var coda = Score.CodaOf(Ending.Fixed);
+            yield return null;
+            Assert.AreSame(coda, Driver.Wanted, "the ending's coda over everything");
+            yield return Until(() => Driver.Current == coda, 60f);
+            Assert.AreSame(coda, Driver.Current, "handed over on the Blank's bar line");
+            Driver.RoomOverride = "Greybox_Saltmarrow_A";
+            yield return null;
+            Assert.AreSame(coda, Driver.Wanted, "no room changes it");
+            GameState.NewGame();
+            yield return null;
+            Assert.IsNull(Driver.Coda, "a new game lets it go");
+            Assert.AreSame(Score.ThemeOf(Region.Saltmarrow), Driver.Wanted);
+        }
+
+        [UnityTest]
         public IEnumerator TheStemsSitUnderTheMusicBus()
         {
             yield return PlayTheCoast();

@@ -14,7 +14,7 @@ key at any beat, and the same renders go out as WAV and MIDI for the composer to
 | The Roll-Call Bell | Runa and the Holdfast | a verse: three names and the answer | Emberdown's G, 75 bpm | `<<sing runa>>` as she counts Wren in |
 | Merrow's End, Dotha's Last Season | Dotha | whole, one voice | Saltmarrow's D, 67 bpm | `<<sing dotha>>` when she keeps the songs and sings them to the water |
 | The Open World's chorus | everyone met, in order, Runa first, Isolde last | a verse with a name for every voice | the coast's D where it was first heard, at Runa's 75 bpm | `<<sing chorus>>` in `Observatory_Runa_Chorus` |
-| The Blank's islands | the Remnant, three | reversed | D, at the Blank's beat | `<<sing blank>>` (AUD-08 places it) |
+| The Blank's islands | the Remnant, three | reversed | D, at the Blank's beat | `<<sing blank>>` on the Remnant's island (`Island_Remnant`, AUD-08); the Blank's theme has the Remnant sing it reversed too |
 | The Archivist | Corvin | inverted about the reciting tone | Halden's C, 100 bpm | `<<sing archivist>>` in `Capital_Corvin`, as he says the sky stays held (AUD-07); his theme's lead is the same inversion |
 
 Only the true ending has everyone, and its roster is not a list in the code but the world: `RollCallSong.Chorus`

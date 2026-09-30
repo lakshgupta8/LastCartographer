@@ -123,6 +123,7 @@ namespace OWSBG.Core
             Compose();
             ComposeRegions();
             ComposeBosses();
+            ComposeBlank();
         }
 
         /// <summary>The instruments a region's theme may use: audio-direction 2's bands, as ids (the coast's with the drone and bell its theme leans on).</summary>
@@ -133,6 +134,7 @@ namespace OWSBG.Core
             Region.Verdance => new[] { "gamba", "glass", "organ", "handbell" },
             Region.Halden => new[] { "harpsichord", "strings", "musicbox", "brass" },
             Region.Windreach => new[] { "flute", "cittern", "overtone", "windharp", "handdrum" },
+            Region.Blank => new[] { "reversedpiano", "celesta", "remnant" },
             _ => new string[0],
         };
 
@@ -183,6 +185,8 @@ namespace OWSBG.Core
             public Region Region;
             /// <summary>The boss it is for, by family; null for a region's theme.</summary>
             public string Boss;
+            /// <summary>The ending it closes (AUD-08); None for a region's or a boss's theme.</summary>
+            public Ending Coda;
             /// <summary>Bars that sound, then bars of rest, per loop.</summary>
             public int Bars, RestBars;
             public List<Stem> Stems = new List<Stem>();
@@ -205,7 +209,9 @@ namespace OWSBG.Core
 
         static readonly List<Theme> _themes = new List<Theme>();
         public static IReadOnlyList<Theme> Themes => _themes;
-        public static Theme ThemeOf(Region r) => _themes.FirstOrDefault(t => t.Region == r && t.Boss == null);
+        public static Theme ThemeOf(Region r) => _themes.FirstOrDefault(t => t.Region == r && t.Boss == null && t.Coda == Ending.None);
+        /// <summary>The ending's coda: what plays as the screen goes white and the title comes (AUD-08).</summary>
+        public static Theme CodaOf(Ending e) => _themes.FirstOrDefault(t => t.Coda == e && e != Ending.None);
         public static Theme ThemeOfBoss(string family) => _themes.FirstOrDefault(t => t.Boss == family);
         /// <summary>A boss's theme in the region it is fought in (Halvard's count travels: three keys), else its first, else none.</summary>
         public static Theme ThemeOfBoss(string family, Region? region) =>
@@ -215,7 +221,7 @@ namespace OWSBG.Core
         public const string SharedBoss = "*";
         static readonly Dictionary<Region, Theme> _shared = new Dictionary<Region, Theme>();
         /// <summary>The shared themes built so far (the exporter renders every region's).</summary>
-        public static IEnumerable<Theme> SharedThemes => new[] { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach }.Select(SharedThemeOf).Where(t => t != null);
+        public static IEnumerable<Theme> SharedThemes => new[] { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach, Region.Blank }.Select(SharedThemeOf).Where(t => t != null);
         /// <summary>
         /// The optionals' theme (AUD-07, "shared motifs for optionals"): the region's own theme fought in, its rests
         /// gone and its stems by phase: the bed, the pulse and the drive from the first telegraph, the lead in the
@@ -415,6 +421,9 @@ namespace OWSBG.Core
             }
         }
 
+        /// <summary>Whether a stem's last note (by start) is the tonic in some octave: a line that comes home.</summary>
+        public static bool ComesHome(Stem s) => s.Notes.Count > 0 && ((s.Notes.OrderBy(n => n.Start).Last().Degree % 7) + 7) % 7 == 0;
+
         /// <summary>The Guild motif written into a stem from a beat, transposed by degrees.</summary>
         static void Guild(Stem lead, float at, int up = 0, float level = 1f)
         {
@@ -506,6 +515,98 @@ namespace OWSBG.Core
             }
             var frame = arch.Add("frame", "reversedpiano", 0.7f, phase: 3);
             for (int bar = 0; bar < 4; bar++) for (int k = 0; k < 4; k++) frame.Add(bar + 1 + k, bar * 4f + k, 1f, 0.8f);          // phase 3: the frame closes, a wingspan a beat
+        }
+
+        /// <summary>The regions whose themes the Blank remembers wrong, in the order the world is walked.</summary>
+        static readonly Region[] Heard = { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach };
+
+        /// <summary>The Blank's theme and the four endings' codas (AUD-08).</summary>
+        static void ComposeBlank()
+        {
+            // ---- The Blank: everything the player has heard, remembered wrong; motifs reversed, the Remnant's voices under them. ----
+            // Three bars at the Blank's slow beat, then two of rest (silence 40%).
+            var blank = new Theme { Id = "blank", Region = Region.Blank, Bars = 3, RestBars = 2 };
+            _themes.Add(blank);
+            blank.Add("bed", "remnant", 0.6f).Add(0, 0f, 11f, 1f).Add(-3, 0f, 11f, 0.6f);                                  // the Remnant's voices under
+            var kpulse = blank.Add("pulse", "celesta", 0.4f);
+            for (int bar = 0; bar < 3; bar++) kpulse.Add(7, bar * 4f + 0.5f, 0.5f, 0.7f).Add(9, bar * 4f + 2.5f, 0.5f, 0.5f);   // a clock, off the beat
+            var klead = blank.Add("lead", "reversedpiano", 0.9f);
+            float at = 1f;
+            foreach (var r in Heard)
+            {
+                // Each region's lead as it opens, backwards, in the Blank's own mode: the tune remembered wrong.
+                foreach (var n in ThemeOf(r).Stem("lead").Notes.OrderBy(n => n.Start).Take(4).Reverse()) { klead.Add(n.Degree, at, 0.5f, 0.8f); at += 0.5f; }
+            }
+            var kvoices = blank.Add("voices", "remnant", 0.5f);
+            var reversed = PhraseDegrees(Region.Blank, RollCallSong.Form.Reversed);
+            var rbeats = RollCallSong.Notes(RollCallSong.Form.Reversed, 1).Select(n => n.Beats).ToArray();
+            at = 4f;
+            for (int i = 0; i < reversed.Length; i++) { kvoices.Add(reversed[i] + 7, at, rbeats[i], 0.9f); at += rbeats[i]; }   // the roll-call, the wrong way round
+            var kdrive = blank.Add("drive", "celesta", 0.5f, combat: true);
+            for (int bar = 0; bar < 3; bar++) for (int k = 0; k < 8; k++) kdrive.Add(k % 2 == 0 ? 7 : 9, bar * 4f + k * 0.5f, 0.5f, k % 4 == 0 ? 0.9f : 0.5f);
+
+            // ---- The Fixed World: Halden's clockwork with the bar finished at last: I IV V I, and the last chord held. Nothing will ever fade. ----
+            var fixedWorld = new Theme { Id = "coda-fixed", Region = Region.Halden, Coda = Ending.Fixed, Bars = 8, RestBars = 0 };
+            _themes.Add(fixedWorld);
+            var fchords = new (int root, int[] tones)[] { (0, new[] { 0, 2, 4 }), (3, new[] { 3, 5, 7 }), (4, new[] { 4, 6, 8 }), (0, new[] { 0, 2, 4 }) };
+            var flead = fixedWorld.Add("lead", "harpsichord", 0.8f);
+            var fbed = fixedWorld.Add("bed", "strings", 0.5f);
+            var fvoices = fixedWorld.Add("voices", "strings", 0.45f);
+            var fpulse = fixedWorld.Add("pulse", "musicbox", 0.4f);
+            for (int bar = 0; bar < 8; bar++)
+            {
+                float b = bar * 4f;
+                var (root, tones) = fchords[bar % 4];
+                if (bar == 7) { foreach (var d in tones.Reverse()) flead.Add(d, b, 4f, 0.9f); }                                            // the last bar: the chord, held
+                else { int[] figure = { tones[0], tones[2], tones[1], tones[2] }; for (int i = 0; i < 8; i++) flead.Add(figure[i % 4], b + i * 0.5f, 0.5f, i % 4 == 0 ? 0.9f : 0.7f); }
+                fbed.Add(root - 7, b, 4f, 0.9f);
+                fvoices.Add(tones[2] + 7, b, 4f, 0.8f);
+                for (int beat = 0; beat < 4; beat++) fpulse.Add(beat % 2 == 0 ? 7 : 9, b + beat, 0.5f, beat == 0 ? 0.8f : 0.5f);
+            }
+
+            // ---- The Open World: everyone she has met singing roll-call, and the answer, home. ----
+            var open = new Theme { Id = "coda-open", Region = Region.Saltmarrow, Coda = Ending.Open, Bars = 8, RestBars = 0 };
+            _themes.Add(open);
+            open.Add("bed", "drone", 0.8f).Add(0, 0f, 32f, 1f).Add(4, 0f, 32f, 0.6f);
+            var opulse = open.Add("pulse", "drum", 0.6f);
+            for (int bar = 0; bar < 8; bar++) opulse.Add(0, bar * 4f, 1f, 0.9f).Add(-3, bar * 4f + 2f, 1f, 0.6f);
+            var olead = open.Add("lead", "choir", 0.9f);
+            var phrase = PhraseDegrees(Region.Saltmarrow, RollCallSong.Form.Whole);
+            var pbeats = RollCallSong.Notes(RollCallSong.Form.Whole, 1).Select(n => n.Beats).ToArray();
+            foreach (float start in new[] { 2f, 10f })
+            {
+                at = start;
+                for (int i = 0; i < phrase.Length; i++) { olead.Add(phrase[i], at, pbeats[i], 1f); at += pbeats[i]; }             // the roll-call, everyone
+            }
+            var oanswer = AnswerDegrees(Region.Saltmarrow);
+            at = 20f;
+            for (int i = 0; i < oanswer.Length; i++) { float beats = i == oanswer.Length - 1 ? 6f : AudioDirection.RollCall.Answer[i].Beats; olead.Add(oanswer[i], at, beats, 1f); at += beats; }   // and the answer, held home
+            var ovoices = open.Add("voices", "fiddle", 0.6f);
+            at = 16f;
+            for (int i = 0; i < oanswer.Length; i++) { ovoices.Add(oanswer[i] + 7, at, AudioDirection.RollCall.Answer[i].Beats, 0.8f); at += AudioDirection.RollCall.Answer[i].Beats; }   // the fiddle answers above, first
+
+            // ---- The Unwritten: the Verdance's one bowed voice, resolving at last. ----
+            var unwritten = new Theme { Id = "coda-unwritten", Region = Region.Verdance, Coda = Ending.Unwritten, Bars = 4, RestBars = 0 };
+            _themes.Add(unwritten);
+            unwritten.Add("bed", "organ", 0.5f).Add(0, 0f, 16f, 1f);
+            unwritten.Add("lead", "gamba", 0.9f).Add(0, 0f, 3f).Add(1, 3f, 2f).Add(3, 5f, 2f).Add(2, 7f, 2f).Add(1, 9f, 2f).Add(0, 11f, 5f);   // ...and comes home, held
+            unwritten.Add("pulse", "handbell", 0.45f).Add(0, 0f, 1f, 0.9f).Add(0, 11f, 1f, 0.7f);
+            unwritten.Add("voices", "glass", 0.35f).Add(7, 2f, 13f, 1f);
+
+            // ---- The Cartographer's Rest: the Blank's tune the right way round, quiet, and the clock set right. ----
+            var rest = new Theme { Id = "coda-rest", Region = Region.Blank, Coda = Ending.Rest, Bars = 4, RestBars = 0 };
+            _themes.Add(rest);
+            rest.Add("bed", "remnant", 0.5f).Add(0, 0f, 16f, 1f).Add(4, 0f, 16f, 0.5f);
+            var rpulse = rest.Add("pulse", "celesta", 0.35f);
+            for (int bar = 0; bar < 4; bar++) rpulse.Add(7, bar * 4f, 0.5f, 0.6f).Add(7, bar * 4f + 2f, 0.5f, 0.4f);            // on the beat now
+            var rlead = rest.Add("lead", "celesta", 0.7f);
+            var upright = PhraseDegrees(Region.Blank, RollCallSong.Form.Whole);
+            foreach (float start in new[] { 0f, 8f })
+            {
+                at = start;
+                for (int i = 0; i < upright.Length; i++) { rlead.Add(upright[i] + 7, at, pbeats[i], 0.8f); at += pbeats[i]; }     // the roll-call, forwards again
+            }
+            rest.Add("voices", "reversedpiano", 0.4f).Add(0, 4f, 4f, 0.8f).Add(4, 12f, 4f, 0.7f);
         }
 
         // ---- the synth ----
@@ -642,7 +743,7 @@ namespace OWSBG.Core
 
         /// <summary>A stem's delivery name: region_music_theme-stem_bpm.wav (audio-direction 6).</summary>
         public static string FileName(Theme theme, Stem stem) =>
-            RollCallSong.FileName(theme.Region, "music", (theme.Boss != null ? theme.Id + "-" : "") + stem.Id, 60f / theme.Beat);
+            RollCallSong.FileName(theme.Region, "music", (theme.Boss != null || theme.Coda != Ending.None ? theme.Id + "-" : "") + stem.Id, 60f / theme.Beat);
 
         /// <summary>A standard MIDI file of the theme: the tempo, one track per stem with its notes at their times (format 1, 480 a beat).</summary>
         public static byte[] Midi(Theme theme)

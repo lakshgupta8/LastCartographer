@@ -34,7 +34,7 @@ namespace OWSBG.Setup
                 }
                 var mix = new float[len];
                 foreach (var s in stems.Values) for (int i = 0; i < len; i++) mix[i] += s[i];
-                string all = RollCallSong.FileName(theme.Region, "music", (theme.Boss != null ? theme.Id + "-" : "") + "all-stems", 60f / theme.Beat);
+                string all = RollCallSong.FileName(theme.Region, "music", (theme.Boss != null || theme.Coda != Ending.None ? theme.Id + "-" : "") + "all-stems", 60f / theme.Beat);
                 File.WriteAllBytes(Path.Combine(Root, all), RollCallSong.Wav(mix));
                 written.Add(all);
                 string midi = theme.Region.ToString().ToLowerInvariant() + "_music_" + theme.Id + "_" + Mathf.RoundToInt(60f / theme.Beat) + ".mid";

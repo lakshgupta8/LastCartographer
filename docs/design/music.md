@@ -1,4 +1,4 @@
-# The Score: the regions and the bosses (AUD-04, AUD-06, AUD-07, v1)
+# The Score: the regions, the bosses, the Blank and the endings (AUD-04, AUD-06, AUD-07, AUD-08, v1)
 
 The direction (audio-direction 2, 4, 6) asks for music as stems looping on whole bars at the region's beat, with
 the region's silence share as a target, a boss theme that arrives with the first telegraph, adds or changes a layer
@@ -130,6 +130,27 @@ Collapse, the Gatekeeper, Oriel, the Bells, Corra's Drawing and the Complete Sur
 The resolution is rendered in every key a boss falls in, the Greyfold's and the Blank's too. `<<sing archivist>>`
 now sounds in Corvin's scene (`Capital_Corvin`), the roll-call pulled the other way, before the choice.
 
+## 3c. The Blank and the endings (AUD-08)
+
+**The Blank** (`blank`): *everything the player has heard, remembered wrong.* The Blank's D at 33 bpm, three bars
+and two of rest (40%). Its lead is the reversed piano playing each region's lead as it opens, backwards, in the
+Blank's own mode (so Windreach's pentatonic degrees land on Dorian steps: the tune remembered wrong); the Remnant's
+voices hold under it and sing the roll-call the wrong way round above; a celesta ticks off the beat; in combat it
+ticks every half-beat. The Blank's islands are runtime rooms (`Island_*`) and now read as the Blank's
+(`Mix.RegionOf`), so they get this theme and the Blank's ambience; the epilogue's stand-ins (`Epilogue_<zone>`)
+read as their zones' regions. `<<sing blank>>` sounds on the Remnant's island (`Island_Remnant`).
+
+**The codas** (`Score.CodaOf(Ending)`): the endings runner, at the last fade to white, tells the music to begin
+the chosen ending's coda (`MusicDriver.BeginCoda`); it hands over on the bar line like a region and plays over
+everything, whatever room, until a new game.
+
+| Ending | Key | What |
+|---|---|---|
+| The Fixed World (`coda-fixed`) | Halden's C, 100 | the clockwork with the bar finished at last: I IV V I, twice, the last chord held; nothing will ever fade |
+| The Open World (`coda-open`) | the coast's D, 67 | the chorus sings the roll-call, twice, over the drone and the drum; the fiddle answers above; the answer comes home and holds |
+| The Unwritten (`coda-unwritten`) | the Verdance's E, 50 | the gamba's one phrase, resolving to the tonic at last and holding, the glass over it |
+| The Cartographer's Rest (`coda-rest`) | the Blank's D, 33 | the celesta plays the roll-call the right way round, the clock on the beat now, the Remnant under |
+
 ## 4. The pipeline
 
 ```
@@ -152,7 +173,7 @@ arrangement.
 
 ## 6. Verification
 
-- `ScoreTests` (EditMode, 10): both coast themes have the stems the direction asks for, at bars of four at the coast's
+- `ScoreTests` (EditMode, 11): both coast themes have the stems the direction asks for, at bars of four at the coast's
   beat, every note in D Dorian and before the rest, the instruments the coast's band, the silence shares 20% and 0;
   the lead waits two bars, quotes the answer in the mode and comes home; the stems are exactly the loop, the mix at
   the ceiling, the measured silence the designed one, the join quiet, a render the same every time, the fiddle's
@@ -165,13 +186,17 @@ arrangement.
   loops; the Wardens open on the Guild's motif on brass; Halvard's theme is picked by the region he is fought in;
   Brann's roar and Voss's tone leave at phase 3; the Archivist's lead is the inverted roll-call and her drawing
   answers it upright; every region's shared theme is its own stems, fought in, by phase; the files are there.
-- `MusicDriverTests` (PlayMode, 6): the coast's stems play in step within 50 ms at their levels under the bus, the
+  AUD-08: the Blank's theme rests two bars in five, opens on the coast's fiddle backwards, has the Remnant sing the
+  roll-call reversed; each coda is in its ending's key, is never the region's theme, resolves its way and renders.
+- `MusicDriverTests` (PlayMode, 7): the coast's stems play in step within 50 ms at their levels under the bus, the
   drive waiting; a blow brings the drive in over its fade and the fight's end takes it away; a boss fight's start is
   not the theme's start, its first telegraph is, phase 2 waits for the bar line and enters, phase 3 does not, and
   its death stops the stems and resolves; paused, the theme plays on at the snapshot's gain and cutoff; a walk from
   the coast into the highland schedules the highland's stems on the coast's bar line, the coast still going until
   then, and crosses over there; Brann's third phase takes the roar away on the bar line and brings the glow, and
-  Hale, with no theme of her own, fights to Windreach's motif with its drive in and its flute waiting.
+  Hale, with no theme of her own, fights to Windreach's motif with its drive in and its flute waiting; an island
+  plays the Blank, a coda takes over from it and outlasts any room until a new game. `EndingsRunnerTests`: the
+  Fixed World's walk ends with its coda begun.
 
 ## 7. Open
 
@@ -180,8 +205,11 @@ arrangement.
 - **Loudness** is by peak (−1 dBTP across the stems), not the spec's −18 LUFS.
 - **The handover is on the old theme's bar line**, not on a shared one: the beats differ by region, so the new
   theme starts a bar on the old bar's line and keeps its own beat from there.
-- **The remaining themes**: the Blank and the endings (AUD-08) are themes and instruments in the same table.
-  Windreach's "drum when the fire is lit" is its pulse, always soft: the camp's fire is no state yet.
+- **The Blank remembers all five regions** whether or not the player has heard them; the direction's "everything
+  the player has heard" would take the lead from the regions drawn, a theme variant per set.
+- Windreach's "drum when the fire is lit" is its pulse, always soft: the camp's fire is no state yet.
+- **The codas loop.** The title holds for eight seconds and the game stops there (M4's credits); a coda that ends
+  rather than loops wants that roll to end with.
 - **The rhythm bosses** (the Collapse, the Complete Survey) fight to their regions' motifs for now; the direction
   wants them scored to the beat the fight keeps, which the shared theme is only by being at the region's beat.
   The Gatekeeper, Oriel, the Bells and Corra's Drawing likewise wait for themes of their own.

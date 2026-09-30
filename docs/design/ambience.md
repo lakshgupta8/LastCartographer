@@ -69,7 +69,8 @@ by region and name in the driver's cache (`_clips`); a loader is the whole chang
 
 - **Recipes are sketches.** Filtered noise is a tide by suggestion; the sound designer's recordings are the point.
 - **Per-room layers** (the camp at night, the Choir's room, the Lighthouse's lamp) are the same driver with a room
-  key; nothing asks for one yet.
+  key; nothing asks for one yet. The Blank's islands and the epilogue's stand-ins read as their regions since
+  AUD-08 (`Mix.RegionOf`), so they have their beds.
 - **Loudness** is RMS, not LUFS.
 - **Crossfades between regions** are a fade out over the layers' fade as the next region's come in (AUD-06);
   the music's handover waits for the bar line, the ambience's does not.

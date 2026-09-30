@@ -138,7 +138,9 @@ namespace OWSBG.Core
         public static Region? RegionOf(string room)
         {
             if (string.IsNullOrEmpty(room)) return null;
+            if (Islands.IsIslandScene(room)) return Region.Blank;                                  // the Blank's islands are runtime rooms (AUD-08)
             string id = room.StartsWith(WorldGraph.GreyboxPrefix, StringComparison.Ordinal) ? room.Substring(WorldGraph.GreyboxPrefix.Length) : room;
+            if (id.StartsWith("Epilogue_", StringComparison.Ordinal)) id = id.Substring("Epilogue_".Length);   // the epilogue's stand-ins are named for their zones
             var plan = RoomPlans.Find(id);
             string head = plan != null ? plan.Zone : id;
             int cut = head.IndexOfAny(new[] { '.', '_', '/' });

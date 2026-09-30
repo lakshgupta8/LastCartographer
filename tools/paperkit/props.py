@@ -14,8 +14,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy
 from saltmarrow import (OUT, PAPER, SILVER, OLIVE, RUST, INK, PPU, TILE_PPU, lerp, reset_scene, box, polygon,
                         setup_render, render)
-from kitlib import Palette as _Palette
+from kitlib import Palette as _Palette, ridge
 import emberdown as _ember
+import verdance as _verd
 
 KITS = os.path.dirname(OUT)   # Art/Environment: one folder and kit.json per region
 
@@ -32,6 +33,10 @@ REGIONS = {
     "Emberdown": dict(paper=_ember.PAPER, ink=_ember.INK, colours=dict(
         PAPER=_ember.PAPER, SILVER=_ember.CHARCOAL, OLIVE=_ember.SULPHUR, RUST=(0.36, 0.26, 0.20), INK=_ember.INK,
         BRASS=(0.58, 0.46, 0.22), ROPE=(0.46, 0.40, 0.32), GLOW=_ember.EMBER, WET=(0.55, 0.53, 0.52), STEEL=(0.20, 0.20, 0.22))),
+    # The Verdance (ENV-04): pale gold paper, deep green, moss, bone white, sepia ink; the furniture is wood and bone.
+    "Verdance": dict(paper=_verd.PAPER, ink=_verd.INK, colours=dict(
+        PAPER=_verd.PAPER, SILVER=lerp(_verd.BONE, _verd.MOSS, 0.3), OLIVE=_verd.MOSS, RUST=_verd.BARK, INK=_verd.INK,
+        BRASS=(0.72, 0.60, 0.34), ROPE=lerp(_verd.BARK, _verd.PAPER, 0.4), GLOW=(0.96, 0.86, 0.52), WET=lerp(_verd.MOSS, _verd.PAPER, 0.5), STEEL=lerp(_verd.INK, _verd.MOSS, 0.4))),
 }
 
 
@@ -327,6 +332,86 @@ def prop_porch(rng, p):
     return 3.0, 2.0, 2.0
 
 
+def prop_milestone(rng, p):
+    """Prop_Milestone: a flying-age milestone: a tall slab, rounded, its letters cut large and high, chalk low down."""
+    stone, dark, chalk, moss = p("stone", lerp(SILVER, PAPER, 0.15)), p("dark", lerp(INK, SILVER, 0.3)), p("chalk", PAPER), p("moss", OLIVE)
+    w = 0.9
+    pts = [(-w / 2, 0.0), (w / 2, 0.0), (w / 2, 2.05)]
+    for i in range(1, 6):
+        a = math.pi * i / 6
+        pts.append((w / 2 * math.cos(a), 2.05 + w / 2 * math.sin(a)))
+    pts.append((-w / 2, 2.05))
+    polygon("slab", pts, stone, y=0.05)
+    for i in range(3):
+        box("cut_%d" % i, 0.0, 1.95 - i * 0.32, rng.uniform(0.3, 0.5), 0.1, dark, y=-0.05)
+    for i in range(2):
+        line("chalk_%d" % i, -0.3, 0.55 - i * 0.14, -0.3 + rng.uniform(0.3, 0.55), 0.55 - i * 0.14, 0.03, chalk, y=-0.08)
+    ridge("moss", rng, -0.5, 0.5, 0.0, 0.12, 0.05, 6, moss, y=-0.1)
+    return 1.5, 2.5, 2.0
+
+
+def prop_lantern(rng, p):
+    """Prop_Lantern: a grove lantern on its cord: a paper body ribbed with cane, a cap, the light behind it."""
+    body, dark, glow = p("body", lerp(PAPER, SILVER, 0.15)), p("dark", lerp(INK, RUST, 0.3)), p("glow", lerp(GLOW, PAPER, 0.5))
+    box("cord", 0.0, 2.05, 0.03, 0.9, dark, y=0.05)
+    disc("glow", 0.0, 0.85, 0.75, glow, y=0.12, n=24)
+    polygon("body", [(-0.22, 0.2), (0.22, 0.2), (0.34, 0.55), (0.34, 1.15), (0.2, 1.5), (-0.2, 1.5), (-0.34, 1.15), (-0.34, 0.55)], body, y=0.0)
+    box("cap", 0.0, 1.53, 0.34, 0.08, dark, y=-0.02)
+    box("foot", 0.0, 0.17, 0.28, 0.07, dark, y=-0.02)
+    for i in range(3):
+        box("rib_%d" % i, 0.0, 0.45 + i * 0.32, 0.64, 0.025, dark, y=-0.03)
+    disc("flame", 0.0, 0.85, 0.1, p("flame", GLOW), y=-0.06, n=10, squash=1.4)
+    return 1.0, 2.5, 2.0
+
+
+def prop_lectern(rng, p):
+    """Prop_Lectern: Brother Ansel's lectern: a post on a foot, a slanted board, a book open on page 214, dust on it."""
+    wood, dark, page, ink, dustm = p("wood", lerp(RUST, SILVER, 0.2)), p("dark", lerp(RUST, INK, 0.5)), p("page", PAPER), p("ink", INK), p("dust", lerp(SILVER, PAPER, 0.5))
+    polygon("foot", [(-0.4, 0.0), (0.4, 0.0), (0.25, 0.12), (-0.25, 0.12)], wood, y=0.05)
+    box("post", 0.0, 0.6, 0.12, 1.0, wood, y=0.05)
+    polygon("board", [(-0.55, 1.05), (0.55, 1.05), (0.55, 1.2), (-0.55, 1.35)], wood, y=0.0)
+    polygon("book_l", [(-0.5, 1.12), (-0.02, 1.12), (-0.02, 1.25), (-0.5, 1.4)], page, y=-0.05)
+    polygon("book_r", [(0.02, 1.12), (0.5, 1.12), (0.5, 1.18), (0.02, 1.25)], page, y=-0.05)
+    for i in range(4):
+        line("text_%d" % i, -0.44, 1.2 + i * 0.045, -0.1, 1.17 + i * 0.045, 0.012, ink, y=-0.1)
+        line("text_r%d" % i, 0.08, 1.2 + i * 0.03, 0.42, 1.14 + i * 0.03, 0.012, ink, y=-0.1)
+    for i in range(6):
+        disc("dust_%d" % i, rng.uniform(-0.5, 0.5), rng.uniform(1.25, 1.5), 0.025, dustm, y=-0.12, n=6)
+    return 1.5, 1.5, 2.0
+
+
+def prop_bunting(rng, p):
+    """Prop_Bunting: Aldermere's last day: two poles and a sagging cord of small flags between them."""
+    wood, cord, flag_a, flag_b = p("wood", lerp(RUST, INK, 0.2)), p("cord", RUST), p("flag_a", lerp(OLIVE, INK, 0.3)), p("flag_b", lerp(SILVER, PAPER, 0.3))
+    for x in (-1.85, 1.85):
+        box("pole_%s" % x, x, 1.2, 0.1, 2.4, wood, y=0.05)
+    n = 9
+    prev = None
+    for i in range(n + 1):
+        t = i / n
+        px = -1.85 + 3.7 * t
+        pz = 2.3 - 0.55 * math.sin(t * math.pi)
+        if prev is not None:
+            line("cord_%d" % i, prev[0], prev[1], px, pz, 0.025, cord, y=0.0)
+        if 0 < i < n:
+            polygon("flag_%d" % i, [(px - 0.14, pz), (px + 0.14, pz), (px + rng.uniform(-0.04, 0.04), pz - 0.4)], flag_a if i % 2 else flag_b, y=-0.03)
+        prev = (px, pz)
+    return 4.0, 2.5, 2.0
+
+
+def prop_anchor(rng, p):
+    """Prop_Anchor: an anchor-point in the branches: a knot of root round a bone ring, which is what the thread
+    catches; drawn at the point itself (feet half a unit below it)."""
+    bark, dark, bone = p("bark", RUST), p("dark", lerp(RUST, INK, 0.5)), p("bone", lerp(SILVER, PAPER, 0.5))
+    for i in range(4):
+        a = math.pi / 2 * i + 0.4
+        ob = box("knot_%d" % i, 0.0, 0.5, 0.75, 0.16, bark if i % 2 else dark, y=0.02 * i)
+        ob.rotation_euler = (0, a, 0)
+    disc("ring", 0.0, 0.5, 0.26, bone, y=-0.1, n=16)
+    disc("hole", 0.0, 0.5, 0.13, p("hole", PAPER), y=-0.14, n=12)
+    return 1.0, 1.0, 2.0
+
+
 PROPS = [
     ("Prop_Desk", prop_desk), ("Prop_Ledger", prop_ledger), ("Prop_Dummy", prop_dummy), ("Prop_Stall", prop_stall),
     ("Prop_Vantage", prop_vantage), ("Prop_Lamp", prop_lamp), ("Prop_LampGlow", prop_lampglow), ("Prop_Seeds", prop_seeds),
@@ -339,6 +424,12 @@ PROPS = [
     ("Prop_Bound", prop_bound, "Emberdown"),
     ("Prop_Bell", prop_bell, "Emberdown"), ("Prop_Anvil", prop_anvil, "Emberdown"), ("Prop_Boards", prop_boards, "Emberdown"),
     ("Prop_Porch", prop_porch, "Emberdown"),
+    # The Verdance (ENV-04): the shared furniture in the forest's palette, and the forest's own.
+    ("Prop_Desk", prop_desk, "Verdance"), ("Prop_Ledger", prop_ledger, "Verdance"), ("Prop_Vantage", prop_vantage, "Verdance"),
+    ("Prop_Lamp", prop_lamp, "Verdance"), ("Prop_LampGlow", prop_lampglow, "Verdance"), ("Prop_Seeds", prop_seeds, "Verdance"),
+    ("Prop_Bound", prop_bound, "Verdance"),
+    ("Prop_Milestone", prop_milestone, "Verdance"), ("Prop_Lantern", prop_lantern, "Verdance"), ("Prop_Lectern", prop_lectern, "Verdance"),
+    ("Prop_Bunting", prop_bunting, "Verdance"), ("Prop_Anchor", prop_anchor, "Verdance"),
 ]
 
 

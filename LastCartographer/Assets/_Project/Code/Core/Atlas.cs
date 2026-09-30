@@ -230,11 +230,14 @@ namespace OWSBG.Core
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Chapel/Altar", Name = "the altar" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_BoneBridge", Name = "The Bone Bridge", Region = "The Saltmarrow" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_BoneBridge/Whale", Name = "the whale" });
-            // Emberdown's page (ENV-03) is the plan's: every room a place, every planned vantage, a desk waypoint where the plan puts a desk.
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_IrisFields", Name = "The Pale Iris Fields", Region = "The Saltmarrow" });
+            _vantages.Add(new AtlasVantage { Id = "Saltmarrow_IrisFields/Irises", Name = "the irises" });
+            // Emberdown's (ENV-03) and the Verdance's (ENV-04) pages are the plan's: every room a place, every planned vantage, a desk waypoint where the plan puts a desk.
             foreach (var plan in RoomPlans.All)
             {
-                if (!plan.Id.StartsWith("Emberdown_")) continue;
-                _places.Add(new AtlasPlace { Id = plan.Id, Name = plan.Name, Region = "Emberdown" });
+                string region = plan.Id.StartsWith("Emberdown_") ? "Emberdown" : plan.Id.StartsWith("Verdance_") ? "The Verdance" : null;
+                if (region == null) continue;
+                _places.Add(new AtlasPlace { Id = plan.Id, Name = plan.Name, Region = region });
                 if (plan.Vantage != null) _vantages.Add(new AtlasVantage { Id = plan.VantageId, Name = "the " + plan.Vantage.ToLowerInvariant() });
                 if (plan.Desk) _waypoints.Add(new Waypoint { Id = "desk." + plan.Id, Kind = WaypointKind.Desk, Place = plan.Id, Room = "Greybox_" + plan.Id, Spawn = "Desk", Name = plan.Name.ToLowerInvariant() + "'s desk" });
             }

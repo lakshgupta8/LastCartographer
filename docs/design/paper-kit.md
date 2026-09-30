@@ -94,6 +94,38 @@ redrawn in the highland's colours, plus `Prop_Bell` (the Roll-Call Bell on its f
 smith's, 2 × 1.5), `Prop_Boards` (the pit-head's mine mouth, boarded, 3 × 2.5) and `Prop_Porch` (Kettil's, 3 × 2).
 Render a shared drawing for one region with `-- Emberdown:Prop_Desk`.
 
+### 2c. The Verdance kit (ENV-04)
+
+`tools/paperkit/verdance.py`, on the same plumbing. Pale gold paper (0.94, 0.90, 0.72), deep green, moss, bone white,
+sepia ink (art-direction 5). The strips sit at the coast's depths (3 / 8 / 16) and the recipes pick three a room
+(`VerdancePapers(mid, far, farther)`); the road and the House's doors add the fern line in front.
+
+| Layer | z | Rooms | What it is |
+|---|---|---|---|
+| `Paper_Fore_Ferns` | −4 | the road, the east door | ferns and grasses in front of the walk, dark, a thick line |
+| `Paper_Mid_Trunks` | 3 | the road | trunks eighty wingspans tall leaving the top of the strip, buttress roots, moss on the north side |
+| `Paper_Mid_Roots` | 3 | the House, the chapel | one tree's roots as a wall, doors and windows cut in them, lanterns hung from the roots |
+| `Paper_Mid_Branches` | 3 | the grove | branches across the strip, lanterns on cords, the knots the threads catch, leaves |
+| `Paper_Mid_Shelves` | 3 | the library | bookcases the floor swallowed, roots through them, dust that does not fall |
+| `Paper_Mid_Village` | 3 | Aldermere's lane and square | low houses under deep roofs, bunting between them, bread on the sills |
+| `Paper_Mid_Ash` | 3 | the ash field | the same houses already paper: outline only, bone and paper, the bunting still up |
+| `Paper_Mid_Gate` | 3 | the gate | two stone gateposts, the landing ledge between them, the inscription's band, roots up the stone |
+| `Paper_Far_Canopy` | 8 | most rooms | the trunks going on up, leaves in masses, light in shafts between them |
+| `Paper_Far_Lanterns` | 8 | the chapel, the grove | lanterns hung in the canopy by birds who could reach it, some still lit |
+| `Paper_Farther_Forest` | 16 | most rooms | the forest behind the forest, trunks nearly paper, the light through them |
+
+Tiles: `Ground_Root` (bark and root in bands, moss in the joins), `Ground_Moss` (packed earth, moss along the top),
+`Ground_Flag` (pale flagstones, a fern in a crack), `Ground_Lane` (Aldermere's lane: cart ruts, patches already paper).
+Props (`props.py`, region `Verdance`): the coast's desk, ledger, vantage stake, lamp and glow, seeds and bound stake in the
+forest's colours, plus `Prop_Milestone` (a flying-age milestone, 1.5 × 2.5), `Prop_Lantern` (a grove lantern on its cord,
+1 × 2.5; eleven of them ring the vigil), `Prop_Lectern` (Ansel's, page 214 open on it, 1.5 × 1.5), `Prop_Bunting` (two poles
+and a cord of flags, 4 × 2.5) and `Prop_Anchor` (an anchor-point: a knot of root round a bone ring, 1 × 1, drawn on every
+placed `TetherAnchor`). Since ENV-04 a prop's material is per region (`M_Prop_Desk`, `M_Prop_Desk_Emberdown`,
+`M_Prop_Desk_Verdance`): before, the last region built overwrote the coast's drawings with its own.
+
+The coast's kit gained `Paper_Mid_Irises` for the Pale Iris Fields: irises to the horizon, pale, and the Reedmother's
+reed-nest in the middle of them.
+
 ### 2a. Props (ENV-09)
 
 `tools/paperkit/props.py` draws the hubs' furniture with the same helpers: one cut-out each at 96 px/unit, feet at

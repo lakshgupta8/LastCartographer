@@ -74,7 +74,14 @@ namespace OWSBG.Core
             return list;
         }
         /// <summary>The scene of the zone's first built room, or null if none is built yet.</summary>
-        public static string BuiltRoomScene(string zone) { var p = PlacesOf(zone); return p.Count == 0 ? null : GreyboxPrefix + p[0]; }
+        public static string BuiltRoomScene(string zone)
+        {
+            var p = PlacesOf(zone);
+            if (p.Count == 0) return null;
+            // A planned zone's room with someone standing in it first (the epilogue walks to the speaker's room), else the first.
+            foreach (var id in p) { var plan = RoomPlans.Find(id); if (plan != null && plan.Npcs.Length > 0) return GreyboxPrefix + id; }
+            return GreyboxPrefix + p[0];
+        }
 
         public static int RoomCount() { int n = 0; foreach (var z in Zones) n += z.Rooms; return n; }
         public static int VantageCount() { int n = 0; foreach (var z in Zones) n += z.Vantages; return n; }
@@ -253,9 +260,10 @@ namespace OWSBG.Core
             _placeZones["Saltmarrow_Lighthouse"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Chapel"] = "Saltmarrow.SaltChapel";
             _placeZones["Saltmarrow_BoneBridge"] = "Saltmarrow.BoneBridge";
-            // The highland's rooms (ENV-03) are the plan's, zone by zone.
+            _placeZones["Saltmarrow_IrisFields"] = "Saltmarrow.IrisFields";
+            // The highland's (ENV-03) and the forest's (ENV-04) rooms are the plan's, zone by zone.
             foreach (var plan in RoomPlans.All)
-                if (plan.Id.StartsWith("Emberdown_") && !_placeZones.ContainsKey(plan.Id)) _placeZones[plan.Id] = plan.Zone;
+                if ((plan.Id.StartsWith("Emberdown_") || plan.Id.StartsWith("Verdance_")) && !_placeZones.ContainsKey(plan.Id)) _placeZones[plan.Id] = plan.Zone;
         }
     }
 }

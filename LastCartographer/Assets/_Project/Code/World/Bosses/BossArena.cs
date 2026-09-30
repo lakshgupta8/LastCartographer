@@ -33,6 +33,7 @@ namespace OWSBG.World
         [SerializeField] Ability _rewardAbility = Ability.None;
         [SerializeField] int _vellumScraps = 1;
         [SerializeField] string _beaconVantageId = "";
+        [SerializeField] string _requiresFlag = "";
         [SerializeField] LayerMask _playerMask;
 
         public ArenaState State { get; private set; }
@@ -93,9 +94,13 @@ namespace OWSBG.World
             SetDoors(false);
         }
 
+        /// <summary>An optional fight's condition (ENV-04: the Choir sings only if Wren tries to stop Aldermere's last day): a flag that must be set before the arena wakes.</summary>
+        public string RequiresFlag { get => _requiresFlag; set => _requiresFlag = value ?? ""; }
+        public bool IsWaitingForFlag => !string.IsNullOrEmpty(_requiresFlag) && GameState.World.Get(_requiresFlag) == 0;
+
         void FixedUpdate()
         {
-            if (State != ArenaState.Idle || _boss == null || IsDefeated) return;
+            if (State != ArenaState.Idle || _boss == null || IsDefeated || IsWaitingForFlag) return;
             bool inside = WrenInside();
             if (!_armed) { if (!inside) _armed = true; return; }
             if (!inside) return;

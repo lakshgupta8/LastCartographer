@@ -398,6 +398,33 @@ def layer_mid_bones(rng, faded):
     return STRIP_WIDTH, 6.0, PPU, 0.0, 2.0, p.ink()
 
 
+def layer_mid_irises(rng, faded):
+    """Paper_Mid_Irises: the Pale Iris Fields: irises to the horizon, pale, their seed pods split, and in the middle
+    of them the Reedmother's reed-nest, a heap of bent reed with the marsh behind."""
+    p = Palette(0.15, faded)
+    flat, blade, petal, petal2, pod, nest, dark = (p("flat", lerp(SILVER, PAPER, 0.3)), p("blade", lerp(OLIVE, PAPER, 0.15)), p("petal", lerp(PAPER, SILVER, 0.2)),
+                                                    p("petal2", lerp(PAPER, RUST, 0.12)), p("pod", lerp(RUST, INK, 0.3)), p("nest", lerp(OLIVE, RUST, 0.4)), p("dark", lerp(INK, OLIVE, 0.4)))
+    ridge("flat", rng, -41, 41, 0.0, 0.6, 0.2, 30, flat, y=0.3)
+    reed_bank(rng, -40, 40, 0.3, 120, (1.2, 2.6), blade, None, width=0.09)
+    for i in range(90):
+        x = rng.uniform(-40, 40)
+        h = rng.uniform(1.4, 3.0)
+        reed("iris_%d" % i, x, 0.4, h, rng.uniform(-0.2, 0.2), 0.08, blade)
+        top = 0.4 + h
+        mat = petal if i % 3 else petal2
+        for s in (-1, 1):
+            polygon("petal_%d%s" % (i, "a" if s < 0 else "b"), [(x, top - 0.1), (x + s * 0.32, top + 0.05), (x + s * 0.22, top + 0.42), (x, top + 0.2)], mat, y=-0.02)
+        polygon("standard_%d" % i, [(x - 0.1, top + 0.1), (x + 0.1, top + 0.1), (x + 0.05, top + 0.55), (x - 0.05, top + 0.55)], mat, y=-0.03)
+        if rng.random() < 0.3:
+            box("pod_%d" % i, x + 0.25, top - 0.4, 0.12, 0.3, pod, y=-0.04)
+    ridge("nest", rng, -6, 6, 0.4, 2.6, 0.5, 14, nest, y=0.1)
+    for i in range(18):
+        x0 = rng.uniform(-5.5, 5.5)
+        polygon("bent_%d" % i, [(x0 - 0.06, 0.5), (x0 + 0.06, 0.5), (x0 + rng.uniform(-2.5, 2.5) + 0.05, rng.uniform(1.5, 3.4)), (x0 + rng.uniform(-2.5, 2.5) - 0.05, rng.uniform(1.5, 3.4))], dark, y=0.0)
+    disc("hollow", 0.0, 1.6, 1.1, dark, y=0.05, n=14)
+    return STRIP_WIDTH, 6.0, PPU, 0.0, 2.0, p.ink()
+
+
 LAYERS = [
     # name, kind, builder, faded
     ("Paper_Fore_Reeds", "strip", layer_fore_reeds, False),
@@ -412,6 +439,7 @@ LAYERS = [
     ("Paper_Far_Tower", "strip", layer_far_tower, False),
     ("Paper_Farther_Sea", "strip", layer_farther_sea, False),
     ("Paper_Mid_Bones", "strip", layer_mid_bones, False),
+    ("Paper_Mid_Irises", "strip", layer_mid_irises, False),
     ("Ground_Boardwalk", "tile", tile_boardwalk, False),
     ("Ground_Boardwalk_Faded", "tile", tile_boardwalk, True),
     ("Ground_Shallows", "tile", tile_shallows, False),

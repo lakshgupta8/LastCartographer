@@ -106,6 +106,21 @@ and below.
 | **Gate_2** The Overgrown Gate | OvergrownGate | The Gatekeeper's arena (6.7); beyond it, the canopy road to the Paper Mills. | Gate | — | arena: gatekeeper | W → Gate_1, E → Mills_1 [Inkthread] |
 <!-- /table -->
 
+**Built (ENV-04).** All nineteen rooms are scenes from recipes (`ProjectSetup.VerdanceRecipes`), on the forest's kit
+(paper-kit.md §2c): the road on `Ground_Moss` under the trunks, with three milestones and the mill's two speakers (Wend and
+Tobin, `Road_Solvent`) in the first trees; the House on `Ground_Root` in `Paper_Mid_Roots` with the desk, Teodor's ledger,
+Teodor and the tapestry in the cloister and the root stair down from its floor; the chapel with Teodor and a ten-unit gap
+east that only a thread crosses, two anchor-points over it; the grove's gauntlet of three anchor-points, the vigil's eleven
+lanterns in a ring over Teodor, the canopy by thread and the thread line east; the library on `Ground_Flag` under
+`Paper_Mid_Shelves` with Ansel at his lectern and Teodor beside him; Aldermere's lane and square with the bunting, Hollin and
+Teodor, and the Choir's arena, which waits for `verdance.aldermere.stopped` (`BossArena.RequiresFlag`) and erases the
+square's three platforms; the ash field already paper (`Paper_Mid_Ash`); the gate with the Gatekeeper's arena, its roots as
+its anchors, the inn's keeper (a Remnant) and the traveller who asks. Anchor-points are permanent `TetherAnchor`s (the
+thread's component) under the kit's knot; the Wingbeat gap to the fields is in Road_1 with a skimmer over it. The coast
+gained the Pale Iris Fields (`Saltmarrow_IrisFields`, `Paper_Mid_Irises`, the Irises vantage, seeds) between Reedmother's
+crown and the road. Not yet: Gate_2's east road to the Paper Mills (ENV-05); the Reedmother's Brood (6.2); the brothers
+who bow and do not speak; Aldermere's after-state (§4).
+
 ## 3. Rules these plans follow
 - **Gates between zones are the map's.** An exit that crosses from one zone to another carries exactly the
   macro map's gate (ability, flag, soft). Inside a zone, only the ability the zone grants may gate a room.
@@ -123,7 +138,7 @@ and below.
 - Whether a bounds-walk may cross rooms (Hollowvein's does, four rooms deep); bounds-walk.md has the question.
 - Emberdown's second vantage in the chimneys: the ninth chimney's top may belong to the Guild agent's commission
   and not be reachable until it is resolved.
-- Aldermere after its last day: attended, the three rooms go to fade stage 4 and the ash field becomes the way
+- Aldermere after its last day (ENV-04 builds one state: the script releases the three rooms and they thin with their fade stage, but the square and the bunting stay): attended, the three rooms go to fade stage 4 and the ash field becomes the way
   (the square is gone); stopped, the rooms stay and the Choir's erasure is the scar. Both need a recipe variant.
 - Runa at Merrow's End in Act 2 (character-bibles.md §3) needs a way back to the coast from Kettil's Rest
   that is not the whole climb: the Ferrymen, or fast travel only.

@@ -25,12 +25,17 @@ namespace OWSBG.Tests
             "Greybox_Greyfold_Edge", "Greybox_Saltmarrow_Shore", "Greybox_Saltmarrow_A", "Greybox_Saltmarrow_Stilts", "Greybox_Saltmarrow_Boardwalk",
             "Greybox_Saltmarrow_B", "Greybox_Saltmarrow_Tetherline", "Greybox_Saltmarrow_Ferry", "Greybox_Saltmarrow_Chain_1", "Greybox_Saltmarrow_Chain_2",
             "Greybox_Saltmarrow_Chain_3", "Greybox_Saltmarrow_Lighthouse", "Greybox_Saltmarrow_Chapel", "Greybox_Saltmarrow_Roots_1", "Greybox_Saltmarrow_Roots_2", "Greybox_Saltmarrow_Roots_3",
-            "Greybox_Saltmarrow_Roots_4", "Greybox_Saltmarrow_BoneBridge",
+            "Greybox_Saltmarrow_Roots_4", "Greybox_Saltmarrow_BoneBridge", "Greybox_Saltmarrow_IrisFields",
             // The highland (ENV-03): twenty-one rooms past the bridge.
             "Greybox_Emberdown_Stair_1", "Greybox_Emberdown_Stair_2", "Greybox_Emberdown_Stair_3", "Greybox_Emberdown_Rest_1", "Greybox_Emberdown_Rest_2", "Greybox_Emberdown_Rest_3",
             "Greybox_Emberdown_Bell_1", "Greybox_Emberdown_Bell_2", "Greybox_Emberdown_Chimneys_1", "Greybox_Emberdown_Chimneys_2", "Greybox_Emberdown_Chimneys_3", "Greybox_Emberdown_Chimneys_4",
             "Greybox_Emberdown_Baths_1", "Greybox_Emberdown_Baths_2", "Greybox_Emberdown_Baths_3", "Greybox_Emberdown_Overlook_1", "Greybox_Emberdown_Overlook_2",
             "Greybox_Emberdown_Hollow_1", "Greybox_Emberdown_Hollow_2", "Greybox_Emberdown_Hollow_3", "Greybox_Emberdown_Hollow_4",
+            // The forest (ENV-04): nineteen rooms past the iris gap.
+            "Greybox_Verdance_Road_1", "Greybox_Verdance_Road_2", "Greybox_Verdance_Road_3", "Greybox_Verdance_House_1", "Greybox_Verdance_House_2", "Greybox_Verdance_House_3",
+            "Greybox_Verdance_Chapel_1", "Greybox_Verdance_Chapel_2", "Greybox_Verdance_Grove_1", "Greybox_Verdance_Grove_2", "Greybox_Verdance_Grove_3", "Greybox_Verdance_Grove_4",
+            "Greybox_Verdance_Library_1", "Greybox_Verdance_Library_2", "Greybox_Verdance_Aldermere_1", "Greybox_Verdance_Aldermere_2", "Greybox_Verdance_Aldermere_3",
+            "Greybox_Verdance_Gate_1", "Greybox_Verdance_Gate_2",
         };
 
         sealed class Info
@@ -118,10 +123,12 @@ namespace OWSBG.Tests
             while (open.Count > 0)
                 foreach (var e in infos[open.Pop()].Exits)
                     if (seen.Add(e.target)) open.Push(e.target);
-            CollectionAssert.AreEquivalent(Rooms.Where(r => r != "Greybox_Greyfold_Edge"), seen, "every coast and highland room is reachable on foot from the shore");
+            CollectionAssert.AreEquivalent(Rooms.Where(r => r != "Greybox_Greyfold_Edge"), seen, "every coast, highland and forest room is reachable on foot from the shore");
 
             int vantages = infos.Values.Sum(i => i.Vantages.Count);
-            Assert.AreEqual(18, vantages, "eight coast vantages to stand at, the whale's, the Edge's (the fourth lamp is the boss's beacon), and Emberdown's eight");
+            Assert.AreEqual(27, vantages, "eight coast vantages to stand at, the whale's, the irises', the Edge's (the fourth lamp is the boss's beacon), Emberdown's eight and the Verdance's eight");
+            var forest = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Verdance")).ToList();
+            CollectionAssert.AreEquivalent(RoomPlans.All.Where(p => p.Id.StartsWith("Verdance_") && p.Vantage != null).Select(p => p.VantageId), forest, "the forest's vantages are the plan's");
             var highland = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Emberdown")).ToList();
             CollectionAssert.AreEquivalent(RoomPlans.All.Where(p => p.Id.StartsWith("Emberdown_") && p.Vantage != null).Select(p => p.VantageId), highland, "the highland's vantages are the plan's");
             var slice = Atlas.AllVantages.Where(v => v.Id.StartsWith("Saltmarrow")).Select(v => v.Id).ToList();

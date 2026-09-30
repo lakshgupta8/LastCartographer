@@ -284,6 +284,7 @@ namespace OWSBG.Setup
             BuildRoomEdge();
             foreach (var recipe in SaltmarrowRecipes()) BuildRecipe(recipe);
             foreach (var recipe in EmberdownRecipes()) BuildRecipe(recipe);   // the highland (ENV-03)
+            foreach (var recipe in VerdanceRecipes()) BuildRecipe(recipe);    // the forest (ENV-04)
             PlacementSetup.Place();   // the coast's readables and askers stand in the rebuilt rooms
             SetupRenderFeatures();
             BuildPersistent();
@@ -1131,12 +1132,15 @@ namespace OWSBG.Setup
             // The region's dressing (ENV-03): the kit tiles the ground wears, the paper layers behind, and who stands here.
             public string FloorTile = "Ground_Boardwalk", PlatTile = "Ground_Boardwalk";
             public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
-            public readonly List<(string name, Vector2 pos, string node, Color tint)> Npcs = new List<(string, Vector2, string, Color)>();
+            public readonly List<(string name, Vector2 pos, string node, Color tint, NpcInkState ink)> Npcs = new List<(string, Vector2, string, Color, NpcInkState)>();
+            // The forest's (ENV-04): anchor-points the thread catches, and the roots a Gatekeeper holds by.
+            public readonly List<Vector2> Anchors = new List<Vector2>();
+            public readonly List<Vector2> Roots = new List<Vector2>();
             public readonly List<Vector2> Desks = new List<Vector2>();
             public (string hub, Vector2 pos)? LedgerAt;
             public string WalkId, WalkFlag; public int WalkValue; public float WalkSeconds;
             public readonly List<(string title, (string name, Vector2 pos)[] beats)> Verses = new List<(string, (string, Vector2)[])>();
-            public (System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward)? ArenaOf;
+            public (System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward, string flag)? ArenaOf;
 
             public RoomRecipe(string id) { Id = id; }
             public RoomRecipe Tall() { Bounds = new Rect(-20f, -3f, 40f, 19f); return this; }
@@ -1173,7 +1177,21 @@ namespace OWSBG.Setup
                 return this;
             }
             public RoomRecipe Wall(float x, float y, float h) { Ground.Add(("Wall_" + Ground.Count, new Vector2(x, y + h * 0.5f), new Vector2(1f, h))); return this; }
-            public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f) { Npcs.Add((name, new Vector2(x, y), node, tint)); return this; }
+            public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f) { Npcs.Add((name, new Vector2(x, y), node, tint, NpcInkState.Drawn)); return this; }
+            /// <summary>Someone drawn with the ink removed (a Remnant: the one-night inn's keeper).</summary>
+            public RoomRecipe Remnant(string name, float x, string node, Color tint) { Npcs.Add((name, new Vector2(x, 0f), node, tint, NpcInkState.Remnant)); return this; }
+            /// <summary>A permanent Inkthread anchor-point (ENV-04): the thread catches it from nine units.</summary>
+            public RoomRecipe Anchor(float x, float y) { Anchors.Add(new Vector2(x, y)); return this; }
+            /// <summary>Where a Gatekeeper's roots hold: its anchors, spawned by the boss for the fight.</summary>
+            public RoomRecipe Root(float x, float y) { Roots.Add(new Vector2(x, y)); return this; }
+            /// <summary>The forest's usual three: the trunks, the canopy, the forest behind the forest.</summary>
+            public RoomRecipe VerdancePapers(string mid = "Mid_Trunks", string far = "Far_Canopy", string farther = "Farther_Forest")
+            {
+                Paper(mid, 3f, 0f, new Color(0.40f, 0.46f, 0.32f), 6f);
+                Paper(far, 8f, 2f, new Color(0.56f, 0.60f, 0.44f), 10f);
+                if (farther != null) Paper(farther, 16f, 6f, new Color(0.72f, 0.72f, 0.56f), 16f);
+                return this;
+            }
             public RoomRecipe Desk(float x, float y = 0f) { Desks.Add(new Vector2(x, y)); return this; }
             public RoomRecipe Ledger(string hub, float x) { LedgerAt = (hub, new Vector2(x, 0f)); return this; }
             public RoomRecipe Walk(string id, string flag, int value, float seconds) { WalkId = id; WalkFlag = flag; WalkValue = value; WalkSeconds = seconds; return this; }
@@ -1184,7 +1202,7 @@ namespace OWSBG.Setup
                 Verses.Add((title, list));
                 return this;
             }
-            public RoomRecipe Arena(System.Type type, string bossId, float x, Vector2 size, float doorW, float doorE, Ability reward = Ability.None) { ArenaOf = (type, bossId, new Vector2(x, size.y * 0.5f), size, doorW, doorE, reward); return this; }
+            public RoomRecipe Arena(System.Type type, string bossId, float x, Vector2 size, float doorW, float doorE, Ability reward = Ability.None, string flag = null) { ArenaOf = (type, bossId, new Vector2(x, size.y * 0.5f), size, doorW, doorE, reward, flag); return this; }
         }
 
         static string Scene(string id) => "Greybox_" + id;
@@ -1243,7 +1261,16 @@ namespace OWSBG.Setup
                 new RoomRecipe("Saltmarrow_Roots_4")
                     .Floor(-20f, 20f).Plat(0f, 3f, 3f).Plat(5f, 6f, 3f).Plat(10f, 9f, 4f).Vantage("Crown", 10f, 9.3f)
                     .Crab(-6f).Skimmer(5f, 8f).Seed(12f, 9.8f, 5)
-                    .West(Scene("Saltmarrow_Roots_3")),
+                    .West(Scene("Saltmarrow_Roots_3")).East(Scene("Saltmarrow_IrisFields")),
+                // The Pale Iris Fields (world-map §3, saltmarrow-rooms.md §3): irises to the horizon, the Ferrymen's purse,
+                // the Reedmother's nest in the middle of them (the Brood, 6.2, is not built); the road east to the Verdance.
+                new RoomRecipe("Saltmarrow_IrisFields")
+                    .Floor(-20f, 20f).Plat(-14f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Vantage("Irises", -10f, 0f)
+                    .Paper("Mid_Irises", 3f, 0f, new Color(0.70f, 0.70f, 0.58f), 6f)
+                    .Paper("Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f)
+                    .Paper("Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f)
+                    .Seed(-16f, 0.5f, 3).Seed(4f, 0.5f, 2).Seed(16f, 0.5f, 2).Crab(6f).Skimmer(12f, 4.5f)
+                    .West(Scene("Saltmarrow_Roots_4")).East(Scene("Verdance_Road_1")),
                 // The Bone Bridge (bible 8.1, [F 3.4]): the whale's bones over the channel, a Wingbeat gap in the way east,
                 // the climb to Emberdown past it. The whale sings here (roll-call.md).
                 new RoomRecipe("Saltmarrow_BoneBridge")
@@ -1362,6 +1389,114 @@ namespace OWSBG.Setup
             };
         }
 
+        /// <summary>
+        /// The Verdance's nineteen rooms (DES-09, ENV-04), on the forest's kit: flat and long and quiet. The road runs
+        /// east into the trees, the House sits in the roots, and the region's two directions are down (the chapel, the
+        /// thread) and east (Aldermere, the gate). Anchor-points stand where only a thread crosses; the Choir's arena
+        /// waits for `verdance.aldermere.stopped`; the Gatekeeper's east road to the Paper Mills waits for Halden (ENV-05).
+        /// </summary>
+        static List<RoomRecipe> VerdanceRecipes()
+        {
+            var teodor = new Color(0.30f, 0.34f, 0.30f);
+            var ansel = new Color(0.70f, 0.66f, 0.56f);
+            var hollin = new Color(0.46f, 0.36f, 0.26f);
+            var wend = new Color(0.78f, 0.78f, 0.74f);
+            var tobin = new Color(0.62f, 0.58f, 0.48f);
+            var remnant = new Color(0.72f, 0.72f, 0.70f);
+            var ferns = new Color(0.20f, 0.30f, 0.20f);
+            string V(string id) => Scene("Verdance_" + id);
+            return new List<RoomRecipe>
+            {
+                // ---- the Old Road: east into the trees ----
+                new RoomRecipe("Verdance_Road_1").Tiles("Ground_Moss", "Ground_Root").VerdancePapers()
+                    .Paper("Fore_Ferns", -4f, -0.8f, ferns, 1.6f)
+                    .Floor(-20f, -9f).Floor(-3f, 20f).Plat(6f, 3f, 3f).Skimmer(-6f, 3f).Crab(10f).Seed(14f, 0.5f, 2)   // the iris gap: six units, a skimmer over it (soft: a pogo crosses)
+                    .West(Scene("Saltmarrow_IrisFields")).East(V("Road_2")),
+                new RoomRecipe("Verdance_Road_2").Tiles("Ground_Moss", "Ground_Root").VerdancePapers()
+                    .Floor(-20f, 20f).Plat(-6f, 3f, 3f).Plat(4f, 2.5f, 3f).Prop("Milestone", -14f).Prop("Milestone", 0f).Prop("Milestone", 12f).Vantage("Milestone", -11f, 0f)
+                    .Smudge(6f).Crab(15f)
+                    .West(V("Road_1")).East(V("Road_3")),
+                new RoomRecipe("Verdance_Road_3").Tiles("Ground_Moss", "Ground_Root").VerdancePapers()
+                    .Paper("Fore_Ferns", -4f, -0.8f, ferns, 1.6f)
+                    .Floor(-20f, 20f).Plat(-4f, 3f, 3f).Plat(10f, 3f, 3f).Cantor(6f)
+                    .Npc("Wend", -13f, "Road_Solvent", wend).Npc("Tobin", -10f, "Road_Solvent", tobin)   // the mill's question, asked on the road
+                    .West(V("Road_2")).East(V("House_1")),
+                // ---- the Quiet House: in the roots of one tree ----
+                new RoomRecipe("Verdance_House_1").Tiles("Ground_Root", "Ground_Root").VerdancePapers("Mid_Roots")
+                    .Floor(-20f, 20f).Plat(4f, 2.5f, 3f).Prop("Lantern", -8f).Prop("Lantern", 12f)
+                    .West(V("Road_3")).East(V("House_2")),
+                new RoomRecipe("Verdance_House_2").Tiles("Ground_Root", "Ground_Root").VerdancePapers("Mid_Roots")
+                    .Floor(-20f, -4f).Floor(0f, 20f).Plat(14f, 3f, 3f).Vantage("Cloister", 10f, 0f)
+                    .Desk(-12f).Ledger("Verdance", -8f).Npc("Teodor", 6f, "QuietHouse_Teodor", teodor).Prop("Lantern", -19f).Prop("Lantern", 17f)
+                    .West(V("House_1")).East(V("House_3")).Down(V("Chapel_1"), -2f),
+                new RoomRecipe("Verdance_House_3").Tiles("Ground_Root", "Ground_Moss").VerdancePapers("Mid_Roots")
+                    .Paper("Fore_Ferns", -4f, -0.8f, ferns, 1.6f)
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(6f, 2.5f, 3f).Prop("Lantern", -12f).Seed(10f, 0.5f, 2)
+                    .West(V("House_2")).East(V("Aldermere_1")),
+                // ---- the Root Chapel: down through the roots, then the thread ----
+                new RoomRecipe("Verdance_Chapel_1").Tall().Tiles("Ground_Root", "Ground_Root").VerdancePapers("Mid_Roots", "Far_Canopy", null)
+                    .Floor(-20f, 6f).Floor(10f, 20f).Plat(-2f, 12f, 4f).Plat(4f, 9f, 3f).Plat(-2f, 6f, 3f).Plat(4f, 3f, 3f)
+                    .Prop("Lantern", -2f, 12.3f).Prop("Lantern", 4f, 3.3f).Smudge(-12f)
+                    .Up(V("House_2"), -2f, 12.3f).Down(V("Chapel_2"), 8f),
+                new RoomRecipe("Verdance_Chapel_2").Tall().Tiles("Ground_Root", "Ground_Root").VerdancePapers("Mid_Roots", "Far_Lanterns", null)
+                    .Floor(-20f, 4f).Floor(14f, 20f).Plat(8f, 12f, 4f).Plat(2f, 9f, 3f).Plat(-4f, 6f, 3f).Plat(1f, 3f, 3f)
+                    .Anchor(9f, 4f).Anchor(13f, 5f)   // the grove is across a gap only a thread crosses (ten units)
+                    .Vantage("Chapel", -14f, 0f).Npc("Teodor", -8f, "RootChapel_Teodor_Thread", teodor).Prop("Lantern", -17f).Prop("Lantern", -3f)
+                    .Up(V("Chapel_1"), 8f, 12.3f).East(V("Grove_1")),
+                // ---- the Lantern Grove: anchor-points in the branches ----
+                new RoomRecipe("Verdance_Grove_1").Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
+                    .Floor(-20f, -12f).Plat(-3f, 2.5f, 3f).Plat(8f, 4f, 3f).Floor(16f, 20f)
+                    .Anchor(-8f, 4f).Anchor(3f, 5.5f).Anchor(13f, 7f).Skimmer(-6f, 5f).Skimmer(10f, 8f)   // the first thread gauntlet
+                    .West(V("Chapel_2")).East(V("Grove_2")),
+                new RoomRecipe("Verdance_Grove_2").Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(6f, 2.5f, 3f).Plat(11f, 5f, 3f).Plat(15f, 8f, 4f)
+                    .Desk(-16f).Vantage("Lanterns", -11f, 0f).Npc("Teodor", 0f, "Grove_Teodor_Vigil", teodor)
+                    // eleven lanterns in a ring (seen from the side: an arch over the vigil)
+                    .Prop("Lantern", -10f, 0.2f).Prop("Lantern", -8f, 2.2f).Prop("Lantern", -6f, 3.4f).Prop("Lantern", -4f, 4f).Prop("Lantern", -2f, 4.2f).Prop("Lantern", 0f, 4.3f)
+                    .Prop("Lantern", 2f, 4.2f).Prop("Lantern", 4f, 4f).Prop("Lantern", 6f, 3.4f).Prop("Lantern", 8f, 2.2f).Prop("Lantern", 10f, 0.2f)
+                    .West(V("Grove_1")).Up(V("Grove_3"), 15f, 8.3f),
+                new RoomRecipe("Verdance_Grove_3").Tall().Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
+                    .Floor(-20f, -16f).Floor(-12f, 20f).Plat(-6f, 3f, 3f).Plat(4f, 6f, 3f).Plat(12f, 9f, 3f).Anchor(-1f, 7f).Anchor(8f, 10.5f).Vantage("Canopy", 12f, 9.3f)
+                    .Cantor(2f).Skimmer(-6f, 5f)
+                    .Down(V("Grove_2"), -14f).East(V("Grove_4")),
+                new RoomRecipe("Verdance_Grove_4").Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
+                    .Floor(-20f, -6f).Plat(-1f, 3f, 3f).Plat(5f, 6f, 3f).Plat(11f, 8f, 3f).Floor(14f, 20f).Anchor(9f, 9f).Anchor(15f, 10f)   // a thread line east drops to the library's roof
+                    .Smudge(-12f).Prop("Lantern", -1f, 3.3f).Prop("Lantern", 11f, 8.3f)
+                    .West(V("Grove_3")).East(V("Library_1")),
+                // ---- the Sunken Library: anchored, and it shows ----
+                new RoomRecipe("Verdance_Library_1").Tiles("Ground_Flag", "Ground_Flag").VerdancePapers("Mid_Shelves", "Far_Canopy", null)
+                    .Floor(-20f, -15f).Floor(-9f, 8f).Floor(12f, 20f).Anchor(-13f, 5f).Anchor(-8f, 6f).Plat(-2f, 2.5f, 3f).Plat(4f, 2.5f, 3f)   // the way in from the grove is by thread; the dust does not move
+                    .West(V("Grove_4")).Down(V("Library_2"), 10f),
+                new RoomRecipe("Verdance_Library_2").Tall().Tiles("Ground_Flag", "Ground_Flag").VerdancePapers("Mid_Shelves", "Far_Canopy", null)
+                    .Floor(-20f, 20f).Plat(10f, 12f, 4f).Plat(4f, 9f, 3f).Plat(10f, 6f, 3f).Plat(4f, 3f, 3f)
+                    .Vantage("Page", -16f, 0f).Npc("Teodor", -11f, "Library_Teodor_Ansel", teodor).Npc("Ansel", -5f, "Library_Ansel", ansel).Prop("Lectern", -3.2f)
+                    .Up(V("Library_1"), 10f, 12.3f),
+                // ---- Aldermere: the last day ----
+                new RoomRecipe("Verdance_Aldermere_1").Tiles("Ground_Lane", "Ground_Lane").VerdancePapers("Mid_Village")
+                    .Floor(-20f, 20f).Plat(6f, 2.5f, 3f).Desk(-8f).Prop("Bunting", -14f).Prop("Bunting", 0f).Prop("Bunting", 14f)
+                    .West(V("House_3")).East(V("Aldermere_2")),
+                new RoomRecipe("Verdance_Aldermere_2").Tiles("Ground_Lane", "Ground_Lane").VerdancePapers("Mid_Village")
+                    .Floor(-20f, 20f).Plat(-2f, 2.5f, 3f).Plat(4f, 4.5f, 3f).Plat(10f, 2.5f, 3f).Vantage("Square", -14f, 0f)
+                    .Npc("Teodor", -5f, "Aldermere_Teodor", teodor).Npc("Hollin", 8f, "Aldermere_Teodor", hollin).Prop("Bunting", -11f).Prop("Bunting", 13f)
+                    .Arena(typeof(Choir), "choir", 4f, new Vector2(1f, 1f), -8f, 16f, Ability.None, "verdance.aldermere.stopped")   // only if Wren tries to stop the last day
+                    .West(V("Aldermere_1")).East(V("Aldermere_3")),
+                new RoomRecipe("Verdance_Aldermere_3").Tiles("Ground_Lane", "Ground_Root").VerdancePapers("Mid_Ash")
+                    .Floor(-20f, 4f).Plat(10f, 4f, 3f).Floor(16f, 20f).Anchor(7f, 5.5f).Anchor(14f, 8f)   // the canopy road starts over the field by thread
+                    .Cantor(-6f).Smudge(-13f).Prop("Bunting", -16f).Prop("Bunting", -3f)
+                    .West(V("Aldermere_2")).East(V("Gate_1")),
+                // ---- the Overgrown Gate: a gate for flyers ----
+                new RoomRecipe("Verdance_Gate_1").Tiles("Ground_Flag", "Ground_Root").VerdancePapers("Mid_Gate")
+                    .Floor(-20f, 20f).Desk(-12f).Plat(4f, 3f, 3f).Plat(12f, 6f, 3f).Anchor(8f, 6f).Anchor(15f, 9.5f).Skimmer(6f, 5f)   // the gate's roots as anchors up the wall
+                    .West(V("Aldermere_3")).East(V("Gate_2")),
+                new RoomRecipe("Verdance_Gate_2").Tiles("Ground_Flag", "Ground_Flag").VerdancePapers("Mid_Gate")
+                    .Floor(-20f, 20f).Plat(-2f, 3f, 3f).Plat(10f, 3f, 3f).Vantage("Gate", -15f, 0f)
+                    .Root(0f, 5f).Root(6f, 8f).Root(12f, 5f)   // where the Gatekeeper's roots hold
+                    .Remnant("Innkeeper", -11f, "Gate_Inn", remnant)   // the one-night inn, once the gate is surveyed
+                    .Arena(typeof(Gatekeeper), "gatekeeper", 8f, new Vector2(2.4f, 3.2f), -6f, 17f)
+                    .West(V("Gate_1")),   // east to Halden_Mills_1 [Inkthread] waits for the Plateau (ENV-05)
+            };
+        }
+
         static void BuildRecipe(RoomRecipe r)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -1401,7 +1536,8 @@ namespace OWSBG.Setup
             foreach (var p in r.Props) MakeProp(room, room.transform, p.name, p.pos, 0.7f);
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
-            foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint);
+            foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, null, n.ink);
+            for (int i = 0; i < r.Anchors.Count; i++) MakeAnchor(room, i, r.Anchors[i]);
             if (!string.IsNullOrEmpty(r.WalkId))
             {
                 var walk = MakeBoundsWalk(room, r.WalkId, r.WalkFlag, r.WalkValue);
@@ -1422,7 +1558,7 @@ namespace OWSBG.Setup
             if (r.ArenaOf.HasValue)
             {
                 var a = r.ArenaOf.Value;
-                MakeArena(room, a.type, a.bossId, a.pos, a.size, a.doorW, a.doorE, a.reward);
+                MakeArena(room, a.type, a.bossId, a.pos, a.size, a.doorW, a.doorE, a.reward, a.flag, r.Roots);
             }
             MakeFadeGroup(room);
             EditorSceneManager.SaveScene(scene, RoomPath(r.Id));
@@ -1432,11 +1568,35 @@ namespace OWSBG.Setup
         static int Enemies_Index(RoomRecipe r, string name) => r.Enemies.FindIndex(e => e.name == name);
 
         /// <summary>
+        /// A permanent Inkthread anchor-point (ENV-04): the component the thread finds, under the kit's drawing of a
+        /// knot with a bone ring (its feet half a unit below the point, so the ring is the point), or a greybox knot.
+        /// </summary>
+        static void MakeAnchor(Room room, int index, Vector2 pos)
+        {
+            var go = new GameObject("Anchor_" + index);
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var anchor = go.AddComponent<TetherAnchor>();
+            var so = new SerializedObject(anchor);
+            so.FindProperty("_permanent").boolValue = true;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            if (MakeProp(room, go.transform, "Anchor", new Vector2(0f, -0.5f), 0.4f) == null)
+            {
+                var knot = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                knot.name = "Knot";
+                Object.DestroyImmediate(knot.GetComponent<Collider>());
+                knot.transform.SetParent(go.transform, false);
+                knot.transform.localScale = Vector3.one * 0.4f;
+                knot.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Anchor", new Color(0.86f, 0.84f, 0.74f));
+            }
+        }
+
+        /// <summary>
         /// A boss arena from a recipe (ENV-03): the boss on its sheet (name, tier, lines, tuned health), two doors, the
         /// zone between them, a fixed camera on it. The staged intro cutscene is the hand-built rooms'; a recipe arena
         /// opens straight onto the fight.
         /// </summary>
-        static void MakeArena(Room room, System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward)
+        static void MakeArena(Room room, System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward, string requiresFlag = null, List<Vector2> roots = null)
         {
             var doorMat = MakeLitMaterial("M_Greybox_Door", new Color(0.30f, 0.26f, 0.24f));
             var dW = MakeDoor(room, "Door_W", new Vector2(doorW, 3f), new Vector2(1f, 6f), doorMat);
@@ -1444,6 +1604,26 @@ namespace OWSBG.Setup
             Boss boss;
             if (type == typeof(Brann)) { var b = MakeBoss<Brann>(room, "Brann", pos, size); ((Brann)b).arenaMinX = doorW + 0.5f; ((Brann)b).arenaMaxX = doorE - 0.5f; boss = b; }
             else if (type == typeof(Collapse)) { var b = MakeBoss<Collapse>(room, "Collapse", pos, size); ((Collapse)b).arenaMinX = doorW + 0.5f; ((Collapse)b).arenaMaxX = doorE - 0.5f; boss = b; }
+            else if (type == typeof(Choir))
+            {
+                // The Choir is the song: it hangs over the square's centre and its doves are made when the fight starts.
+                // Each finished bell erases one of the square's platforms, so the arena's platforms are the kit's.
+                var b = MakeBoss<Choir>(room, "Choir", pos, size);
+                var c = (Choir)b;
+                c.centreX = pos.x; c.floorY = 0f; c.placeId = room.RoomId;
+                foreach (Transform t in room.transform)
+                    if (t.name.StartsWith("Plat_") && t.position.x > doorW && t.position.x < doorE) c.platforms.Add(t.gameObject);
+                boss = b;
+            }
+            else if (type == typeof(Gatekeeper))
+            {
+                // The roots are Inkthread anchors: the boss spawns them at its root points for the fight.
+                var b = MakeBoss<Gatekeeper>(room, "Gatekeeper", pos, size);
+                var g = (Gatekeeper)b;
+                g.arenaMinX = doorW + 0.5f; g.arenaMaxX = doorE - 0.5f; g.floorY = 0f;
+                if (roots != null) g.rootPoints.AddRange(roots);
+                boss = b;
+            }
             else throw new System.InvalidOperationException("no recipe arena for " + type.Name);
             var bossSo = new SerializedObject(boss);
             int health = Tuning.BossHealth(bossId);
@@ -1477,6 +1657,7 @@ namespace OWSBG.Setup
             doors.GetArrayElementAtIndex(1).objectReferenceValue = dE;
             arSo.FindProperty("_rewardAbility").intValue = (int)reward;
             arSo.FindProperty("_vellumScraps").intValue = 1;
+            arSo.FindProperty("_requiresFlag").stringValue = requiresFlag ?? "";
             arSo.FindProperty("_arenaCamera").objectReferenceValue = MakeShot(room, "CM Arena", new Vector3(cx, 4.2f, -21f));
             arSo.ApplyModifiedPropertiesWithoutUndo();
         }
@@ -1531,6 +1712,7 @@ namespace OWSBG.Setup
             var list = new List<string> { RoomAScenePath, RoomBScenePath, RoomCScenePath, RoomChapelScenePath, RoomEdgeScenePath };
             foreach (var r in SaltmarrowRecipes()) list.Add(RoomPath(r.Id));
             foreach (var r in EmberdownRecipes()) list.Add(RoomPath(r.Id));
+            foreach (var r in VerdanceRecipes()) list.Add(RoomPath(r.Id));
             return list;
         }
 
@@ -2082,7 +2264,9 @@ namespace OWSBG.Setup
             var entry = KitLayer(room, "Prop_" + name);
             var tex = KitTexture(room, "Prop_" + name);
             if (entry == null || tex == null) return null;
-            var mat = MakePropMaterial("M_Prop_" + name, tex, RegionPaper(RegionOf(room.RoomId)), name == "LampGlow");
+            // One material per drawing per region (ENV-04): the coast keeps the plain name, another region's redrawn desk is its own.
+            string region = RegionOf(room.RoomId);
+            var mat = MakePropMaterial("M_Prop_" + name + (region == "Saltmarrow" || region == "Greyfold" ? "" : "_" + region), tex, RegionPaper(region), name == "LampGlow");
             var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = objectName ?? "Prop_" + name;
             Object.DestroyImmediate(quad.GetComponent<Collider>());

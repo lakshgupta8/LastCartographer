@@ -130,7 +130,8 @@ namespace OWSBG.Tests
             }
             Assert.IsTrue(runner.IsWalking, "<<epilogue>> at the scene's end started the walk");
             yield return WalkThrough(() => finished, 90f);   // Teodor's scene finishes first; the walk waits for it
-            CollectionAssert.AreEqual(new[] { "Epilogue_Halden_JourneymansHall", "Epilogue_Verdance_QuietHouse", "Epilogue_Blank_ThessalyHollow" }, runner.Visited);
+            // Teodor's zone is built (ENV-04): the walk goes to his cloister, not a stand-in.
+            CollectionAssert.AreEqual(new[] { "Epilogue_Halden_JourneymansHall", "Greybox_Verdance_House_2", "Epilogue_Blank_ThessalyHollow" }, runner.Visited);
             Assert.IsTrue(w.Is("epilogue.done") && w.Is(EndingsRunner.FinishedFlag));
 
             // A stand-in has the stop's speaker in it, on the stop's node.

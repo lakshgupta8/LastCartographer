@@ -36,6 +36,12 @@ namespace OWSBG.Setup
             ("Emberdown_Chimneys_3", "Chimneys_Foot", 3f, 0f, "Read", false),       // the bare stone at the ninth chimney's foot
             ("Emberdown_Hollow_2", "Hollow_Lamps", 15f, 0f, "Read", false),         // the lamps down the gallery wall
             ("Emberdown_Chimneys_3", "Ninth_Door", 11f, 0f, "Talk", true),          // the ninth chimney's door, which asks (Offerings)
+            // The Verdance (ENV-04): the forest's readables and the inn's asker.
+            ("Verdance_Road_2", "Road_Milestone", -13f, 0f, "Read", false),          // the first milestone, by the way in from the gap
+            ("Verdance_House_2", "Cloister_Tapestry", -16f, 0f, "Read", false),      // the cloister's west wall, past the desk
+            ("Verdance_Library_2", "Library_Lectern", -1f, 0f, "Read", false),       // the lectern's post, beside Ansel
+            ("Verdance_Gate_2", "Gate_Inscription", 18.5f, 0f, "Read", false),       // the gate itself, past the arena's east door
+            ("Verdance_Gate_2", "Inn_Traveller", -8f, 0f, "Talk", true),             // the one-night inn's traveller, who asks (Offerings)
         };
 
         [MenuItem("OWSBG/Place the Coast's Readables")]

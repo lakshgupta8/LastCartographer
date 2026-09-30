@@ -31,6 +31,8 @@ namespace OWSBG.World
         public int Measures { get; private set; }
         public bool IsTelegraphing => State == Move.Telegraph;
         public bool IsMeasuring => State == Move.Measure;
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip
+            : State == Move.Measure ? "measure" : State == Move.Telegraph ? "telegraph" : State == Move.Thrust ? "thrust" : State == Move.Recover ? "recover" : base.Clip;
         public int Dir => Facing;
         /// <summary>Struck by her: this Warden hunts her whatever her papers say.</summary>
         public bool Provoked { get; private set; }
@@ -136,7 +138,7 @@ namespace OWSBG.World
         protected override void Update()
         {
             base.Update();
-            if (Visual == null || IsDying) return;
+            if (Visual == null || IsDying || HasSheets) return;
             // The lance: lean into the telegraph, stretch on the thrust, a small tilt for the measuring (on the sprite; Face owns its sign).
             float lean = State == Move.Telegraph ? 0.85f : State == Move.Thrust ? 1.5f : State == Move.Measure ? 0.94f : 1f;
             var s = Visual.transform.localScale;

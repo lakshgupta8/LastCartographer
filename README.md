@@ -204,6 +204,7 @@ A region's backdrop and ground are drawn by `tools/paperkit/<region>.py` in head
 
 ## Wren's sheets
 `tools/characters/wren.py` builds Wren from parts in headless Blender and renders every clip side-on in the paper kit's ink; `python tools/characters/pack.py wren` packs the frames into one strip per clip under `Assets/_Project/Art/Characters/Wren/` and writes the model sheet to `docs/art/`. The bootstrap build puts `InkSheetPlayer` and `WrenAnimator` on her (`docs/design/wren-animation.md`).
+`tools/characters/saltmarrow_enemies.py` does the same for the coast's six enemies and the Lamp-Keeper (`docs/design/enemy-animation.md`); `pack.py all` packs every rendered character.
 
 ## The feel-test
 **OWSBG → Play the Feel Course** or `LastCartographer.exe -feel -tester <name>` runs the controller's seven-station course and writes the session as JSON on quit. Put the testers' answers in `logs/feel/answers.csv` and run `pwsh tools/feel-gate.ps1` for the M0 gate's verdict (`docs/design/feel-test.md`).

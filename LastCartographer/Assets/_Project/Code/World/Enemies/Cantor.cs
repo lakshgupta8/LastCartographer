@@ -31,6 +31,8 @@ namespace OWSBG.World
         public int Tolls { get; private set; }
         public bool IsRinging => State == Move.Ring;
         public float RingProgress => State == Move.Ring ? Mathf.Clamp01((float)_frames / Mathf.Max(1, _ringFrames)) : 0f;
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : State == Move.Ring ? "ring" : State == Move.Recover ? "recover" : base.Clip;
+        public override float ClipProgress => State == Move.Ring && !IsDying && HurtstunLeft == 0 ? RingProgress : -1f;
         /// <summary>The place the bell erases: set in the scene, else the room the Cantor lives in.</summary>
         public string PlaceId
         {
@@ -141,7 +143,7 @@ namespace OWSBG.World
         protected override void Update()
         {
             base.Update();
-            if (Visual == null || IsDying) return;
+            if (Visual == null || IsDying || HasSheets) return;
             // The bell rises through the ring: the sprite stretches upward, then drops back on the toll.
             float rise = State == Move.Ring ? 1f + 0.4f * RingProgress : State == Move.Recover ? 0.9f : 1f;
             var s = Visual.transform.localScale;

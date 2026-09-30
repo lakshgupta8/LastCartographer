@@ -24,6 +24,8 @@ namespace OWSBG.World
         float _t, _cooldown;
 
         public bool IsTelegraphing => _state == State.Rise;
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip
+            : _state == State.Rise ? "rise" : _state == State.Dive ? "dive" : _state == State.Return ? "move" : "idle";
 
         protected override void Awake()
         {

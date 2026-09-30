@@ -35,6 +35,10 @@ namespace OWSBG.World
         public Move Current { get; private set; } = Move.Perch;
         public Attack CurrentAttack { get; private set; } = Attack.None;
         public bool IsGroundedAndOpen => Current == Move.Grounded;
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Telegraph => "telegraph", Move.Beam => "beam", Move.Dive => "dive", Move.Grounded => "grounded", Move.Return => "return", _ => "idle",
+        };
 
         Vector2 _perch;
         Vector2 _diveTarget;

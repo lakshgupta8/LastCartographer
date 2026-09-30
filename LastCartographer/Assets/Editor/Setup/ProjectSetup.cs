@@ -494,23 +494,7 @@ namespace OWSBG.Setup
 
             // Visual: an InkSprite quad. With her sheets (CHR-03) it is a 2 x 2 unit frame window with her feet at the
             // origin; without them, the 1.2-unit placeholder.
-            var sheets = LoadSheets("Wren");
-            var tex = sheets != null ? sheets.Find(c => c.Name == "idle").Sheet : AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
-            var mat = MakeInkMaterial("M_Wren_Ink", tex);
-            if (mat.GetTexture("_BaseMap") != tex) { mat.SetTexture("_BaseMap", tex); EditorUtility.SetDirty(mat); }
-            // The material itself shows the idle strip's first frame, so she reads in the editor and in edit-mode
-            // captures; in play the sheet player windows the frames through the property block.
-            var idleFrames = sheets != null ? Mathf.Max(1, sheets.Find(c => c.Name == "idle").Frames) : 1;
-            if (mat.GetTextureScale("_BaseMap").x != 1f / idleFrames) { mat.SetTextureScale("_BaseMap", new Vector2(1f / idleFrames, 1f)); mat.SetTextureOffset("_BaseMap", Vector2.zero); EditorUtility.SetDirty(mat); }
-            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.name = "Sprite";
-            Object.DestroyImmediate(quad.GetComponent<Collider>());
-            quad.transform.SetParent(go.transform, false);
-            quad.transform.localScale = sheets != null ? new Vector3(2f, 2f, 1f) : new Vector3(0.8f, 1.2f, 1f);
-            quad.transform.localPosition = sheets != null ? new Vector3(0f, 1f, 0f) : new Vector3(0f, 0.6f, 0f);
-            var qr = quad.GetComponent<MeshRenderer>();
-            qr.sharedMaterial = mat;
-            qr.shadowCastingMode = ShadowCastingMode.TwoSided;
+            var qr = MakeSpriteQuad(go, "M_Wren_Ink", "Wren", new Vector3(0.8f, 1.2f, 1f), new Vector3(0f, 0.6f, 0f), false, out var sheets);
             if (sheets != null)
             {
                 go.AddComponent<InkSheetPlayer>().Configure(qr, sheets);
@@ -519,7 +503,7 @@ namespace OWSBG.Setup
 
             var view = go.AddComponent<WrenView>();
             var vwSo = new SerializedObject(view);
-            vwSo.FindProperty("_visual").objectReferenceValue = quad.transform;
+            vwSo.FindProperty("_visual").objectReferenceValue = qr.transform;
             vwSo.ApplyModifiedPropertiesWithoutUndo();
             return go;
         }
@@ -872,17 +856,12 @@ namespace OWSBG.Setup
             rb.bodyType = RigidbodyType2D.Kinematic;
             rb.freezeRotation = true;
             var boss = go.AddComponent<T>();
-
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
-            var mat = MakeInkMaterial("M_Boss_" + typeof(T).Name, tex);
-            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.name = "Sprite";
-            Object.DestroyImmediate(quad.GetComponent<Collider>());
-            quad.transform.SetParent(go.transform, false);
-            quad.transform.localScale = new Vector3(size.x * 1.6f, size.y * 1.6f, 1f);
-            var r = quad.GetComponent<MeshRenderer>();
-            r.sharedMaterial = mat;
-            r.shadowCastingMode = ShadowCastingMode.TwoSided;
+            var r = MakeSpriteQuad(go, "M_Boss_" + typeof(T).Name, typeof(T).Name, new Vector3(size.x * 1.6f, size.y * 1.6f, 1f), Vector3.zero, true, out var sheets);
+            if (sheets != null)
+            {
+                go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
+                go.AddComponent<EnemyAnimator>();
+            }
             return boss;
         }
 
@@ -1454,17 +1433,12 @@ namespace OWSBG.Setup
             var rb = go.AddComponent<Rigidbody2D>();
             rb.freezeRotation = true;
             go.AddComponent<T>();
-
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
-            var mat = MakeInkMaterial("M_Enemy_" + typeof(T).Name, tex);
-            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.name = "Sprite";
-            Object.DestroyImmediate(quad.GetComponent<Collider>());
-            quad.transform.SetParent(go.transform, false);
-            quad.transform.localScale = new Vector3(size.x * 1.3f, size.y * 1.3f, 1f);
-            var r = quad.GetComponent<MeshRenderer>();
-            r.sharedMaterial = mat;
-            r.shadowCastingMode = ShadowCastingMode.TwoSided;
+            var r = MakeSpriteQuad(go, "M_Enemy_" + typeof(T).Name, typeof(T).Name, new Vector3(size.x * 1.3f, size.y * 1.3f, 1f), Vector3.zero, true, out var sheets);
+            if (sheets != null)
+            {
+                go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
+                go.AddComponent<EnemyAnimator>();
+            }
         }
 
         // A stand-in bird: an ink-tinted quad with a trigger, talkable with up.
@@ -1832,17 +1806,22 @@ namespace OWSBG.Setup
 
         // ---- character sheets (CHR-03, docs/design/wren-animation.md)
 
-        [System.Serializable] class SheetManifest { public string character; public int ppu, cell; public SheetEntry[] clips; }
+        [System.Serializable] class SheetManifest { public string character; public int ppu, cell; public float cellUnits; public SheetEntry[] clips; }
         [System.Serializable] class SheetEntry { public string name, file; public int fps, frames; public bool loop; }
 
         /// <summary>The clips a character's packed sheets describe (Art/Characters/[name]/[name].json), or null before they exist.</summary>
-        static List<SheetClip> LoadSheets(string character)
+        static List<SheetClip> LoadSheets(string character) => LoadSheets(character, out _);
+
+        static List<SheetClip> LoadSheets(string character, out float cellUnits)
         {
+            cellUnits = 2f;
             var folder = Root + "/Art/Characters/" + character + "/";
             var jsonPath = folder + character.ToLowerInvariant() + ".json";
             if (!File.Exists(jsonPath)) return null;
             var manifest = JsonUtility.FromJson<SheetManifest>(File.ReadAllText(jsonPath));
             if (manifest == null || manifest.clips == null || manifest.clips.Length == 0) return null;
+            if (manifest.cellUnits > 0f) cellUnits = manifest.cellUnits;
+            else if (manifest.cell > 0 && manifest.ppu > 0) cellUnits = (float)manifest.cell / manifest.ppu;
             var clips = new List<SheetClip>();
             foreach (var c in manifest.clips)
             {
@@ -1852,6 +1831,39 @@ namespace OWSBG.Setup
             }
             Debug.Log("[OWSBG] " + character + ": " + clips.Count + " sheet clips");
             return clips.Count > 0 ? clips : null;
+        }
+
+        /// <summary>
+        /// The InkSprite quad under a character: on its sheets when they exist (a cell-sized frame window, the
+        /// material resting on the idle strip's first frame so it reads in the editor), else the placeholder at
+        /// the fallback size. Enemies start facing left, so their quad starts mirrored (the drawing faces right).
+        /// </summary>
+        static MeshRenderer MakeSpriteQuad(GameObject go, string matName, string character, Vector3 fallbackScale, Vector3 fallbackPos, bool faceLeft, out List<SheetClip> sheets)
+        {
+            sheets = LoadSheets(character, out float cell);
+            var tex = sheets != null ? sheets.Find(c => c.Name == "idle").Sheet : AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
+            var mat = MakeInkMaterial(matName, tex);
+            if (mat.GetTexture("_BaseMap") != tex) { mat.SetTexture("_BaseMap", tex); EditorUtility.SetDirty(mat); }
+            var idleFrames = sheets != null ? Mathf.Max(1, sheets.Find(c => c.Name == "idle").Frames) : 1;
+            if (mat.GetTextureScale("_BaseMap").x != 1f / idleFrames) { mat.SetTextureScale("_BaseMap", new Vector2(1f / idleFrames, 1f)); mat.SetTextureOffset("_BaseMap", Vector2.zero); EditorUtility.SetDirty(mat); }
+            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quad.name = "Sprite";
+            Object.DestroyImmediate(quad.GetComponent<Collider>());
+            quad.transform.SetParent(go.transform, false);
+            if (sheets != null)
+            {
+                quad.transform.localScale = new Vector3(faceLeft ? -cell : cell, cell, 1f);
+                quad.transform.localPosition = fallbackPos.y > 0f ? new Vector3(0f, cell * 0.5f, 0f) : Vector3.zero;   // feet at the origin, or centred
+            }
+            else
+            {
+                quad.transform.localScale = fallbackScale;
+                quad.transform.localPosition = fallbackPos;
+            }
+            var r = quad.GetComponent<MeshRenderer>();
+            r.sharedMaterial = mat;
+            r.shadowCastingMode = ShadowCastingMode.TwoSided;
+            return r;
         }
 
         static Material MakeInkMaterial(string name, Texture2D tex)

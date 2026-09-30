@@ -141,7 +141,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CHR-03 `[~]` | Wren core animation: idle, run, jump, fall, land, strike ×3, pogo, Bind, survey, hurt, death; v1: eighteen clips posed in script and packed to sheets, `InkSheetPlayer` + `WrenAnimator` on the persistent Wren, the swing's frames following the strike's phases; a hand-drawn pass open | M0–M1 | CMB-2 | CHR-02 |
 | CHR-04 `[ ]` | Wren ability animation: Wingbeat, Talonhold, Inkthread, Windmemory, Flourishes | M1–M2 | CMB-3, 4 | CHR-03 |
 | CHR-05 `[ ]` | Charter silhouettes for Wren (cowl and grip variants) | M2 | CMB-5 | CHR-03 |
-| CHR-06 `[ ]` | Saltmarrow enemies (6) and the Lamp-Keeper | M1 | SB-6.1 | CHR-02 |
+| CHR-06 `[~]` | Saltmarrow enemies (6) and the Lamp-Keeper; v1: marsh crab, reed skimmer, smudge, Cantor, Warden, lost Remnant and the Lamp-Keeper built in Blender (`tools/characters/saltmarrow_enemies.py`), clips named by each family's moves through `Enemy.Clip`, `EnemyAnimator` on every placed enemy and the boss, `docs/design/enemy-animation.md`; a hand-drawn pass open | M1 | SB-6.1 | CHR-02 |
 | CHR-07 `[ ]` | Warden family (Halvard, Brann, Oriel, generic ×3) | M2 | SB-3.1 | CHR-02 |
 | CHR-08 `[ ]` | Cantor family and the Choir | M2 | SB-3.3 | CHR-02 |
 | CHR-09 `[ ]` | Smudge family (5) and the Collapse | M2 | SB-6 | CHR-02 |

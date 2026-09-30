@@ -1,0 +1,429 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+
+namespace OWSBG.Core
+{
+    /// <summary>
+    /// The score (AUD-04, docs/design/music.md): a theme is stems (lead, bed, pulse, voices, and a combat drive),
+    /// each a list of notes in the region's mode at the region's beat, looping on whole bars; an instrument is a
+    /// timbre the synth renders a note through. The region theme bakes its rests into the loop, so the direction's
+    /// silence share is a number the tests can measure; a boss theme has none and adds a stem a phase. Pure C#:
+    /// <c>MusicDriver</c> renders the stems into clips on a worker thread and plays them in step, and the exporter
+    /// writes the same renders as WAV and MIDI for the composer to replace.
+    /// </summary>
+    public static class Score
+    {
+        public const int SampleRate = RollCallSong.SampleRate;
+        public const int BeatsPerBar = 4;
+
+        // ---- modes ----
+
+        /// <summary>A mode as semitones above the tonic for its seven degrees.</summary>
+        public static int[] Mode(Region r) => r switch
+        {
+            Region.Saltmarrow => new[] { 0, 2, 3, 5, 7, 9, 10 },    // D Dorian
+            Region.Emberdown => new[] { 0, 2, 4, 5, 7, 9, 10 },     // G Mixolydian
+            Region.Verdance => new[] { 0, 1, 3, 5, 7, 8, 10 },      // E Phrygian
+            Region.Halden => new[] { 0, 2, 4, 5, 7, 9, 11 },        // C major
+            Region.Windreach => new[] { 0, 2, 4, 7, 9 },            // A pentatonic
+            _ => new[] { 0, 2, 3, 5, 7, 9, 10 },
+        };
+
+        public static bool InMode(Region r, int semitones) => Mode(r).Contains(((semitones % 12) + 12) % 12);
+
+        /// <summary>The degree a pitch falls on in a mode, or the one just under it: how a Dorian fiddle quotes a tune with a major third.</summary>
+        public static int DegreeOf(Region r, int semitones)
+        {
+            var mode = Mode(r);
+            int oct = (int)Math.Floor(semitones / 12.0), pc = ((semitones % 12) + 12) % 12, best = 0;
+            for (int i = 0; i < mode.Length; i++) if (mode[i] <= pc) best = i;
+            return best + oct * mode.Length;
+        }
+
+        /// <summary>The roll-call's answer as a mode's degrees (audio-direction 3: regional themes may quote it).</summary>
+        public static int[] AnswerDegrees(Region r) => AudioDirection.RollCall.Answer.Select(n => DegreeOf(r, n.Pitch)).ToArray();
+
+        /// <summary>A hash that is the same in every process (string.GetHashCode is not), so a render is the same every time.</summary>
+        public static int Stable(string s)
+        {
+            unchecked { uint h = 2166136261; foreach (char c in s) { h ^= c; h *= 16777619; } return (int)h; }
+        }
+
+        // ---- instruments ----
+
+        /// <summary>How an instrument sounds: its harmonic recipe and how a note opens, holds and lets go.</summary>
+        public sealed class Instrument
+        {
+            public string Id;
+            /// <summary>Weight of each harmonic, from the fundamental.</summary>
+            public float[] Harmonics;
+            /// <summary>Seconds to open; how long the held part decays toward <see cref="Sustain"/>; the level it holds at; seconds to let go.</summary>
+            public float Attack = 0.02f, Decay = 0.3f, Sustain = 0.8f, Release = 0.2f;
+            public float VibratoRate = 5f, VibratoDepth = 0f;
+            /// <summary>Bow or breath noise, 0..1, coloured.</summary>
+            public float Noise;
+            /// <summary>A second oscillator this many cents off (the concertina's paired reeds); 0 for none.</summary>
+            public float Detune;
+            /// <summary>Partials this far from harmonic (a struck drum); 0 is harmonic.</summary>
+            public float Inharmonic;
+            /// <summary>A one-pole low-pass on the output, Hz; 0 for none (the drone's darkness).</summary>
+            public float LowPass;
+            /// <summary>Semitones from written: the drone sits two octaves under the fiddle.</summary>
+            public int Transpose;
+        }
+
+        static readonly Dictionary<string, Instrument> _instruments = new Dictionary<string, Instrument>();
+        static Instrument I(Instrument i) { _instruments[i.Id] = i; return i; }
+        public static Instrument InstrumentOf(string id) => _instruments.TryGetValue(id, out var i) ? i : _instruments["fiddle"];
+        public static IEnumerable<Instrument> Instruments => _instruments.Values;
+
+        static Score()
+        {
+            // The coast's band (audio-direction 2): hardanger fiddle, low whistle, tongue drum, concertina, bowed psaltery.
+            I(new Instrument { Id = "fiddle", Harmonics = Saw(18, 1.0f), Attack = 0.09f, Decay = 0.4f, Sustain = 0.85f, Release = 0.25f, VibratoRate = 5.5f, VibratoDepth = 0.18f, Noise = 0.06f, Detune = 4f, Transpose = 0 });
+            I(new Instrument { Id = "whistle", Harmonics = new[] { 1f, 0.35f, 0.12f, 0.08f, 0.03f }, Attack = 0.06f, Decay = 0.5f, Sustain = 0.8f, Release = 0.18f, VibratoRate = 4.5f, VibratoDepth = 0.12f, Noise = 0.1f, Transpose = 0 });
+            I(new Instrument { Id = "drum", Harmonics = new[] { 1f, 0.5f, 0.15f, 0.08f }, Attack = 0.002f, Decay = 0.35f, Sustain = 0f, Release = 0.3f, Inharmonic = 0.03f, LowPass = 1800f, Transpose = -12 });
+            I(new Instrument { Id = "concertina", Harmonics = Square(12), Attack = 0.05f, Decay = 0.2f, Sustain = 0.9f, Release = 0.15f, Detune = 9f, Noise = 0.02f, Transpose = 0 });
+            I(new Instrument { Id = "psaltery", Harmonics = Saw(24, 0.7f), Attack = 0.12f, Decay = 0.8f, Sustain = 0.6f, Release = 0.5f, VibratoRate = 0.3f, VibratoDepth = 0.05f, Noise = 0.03f, Transpose = 0 });
+            I(new Instrument { Id = "drone", Harmonics = new[] { 1f, 0.6f, 0.35f, 0.25f, 0.15f, 0.1f, 0.07f, 0.05f }, Attack = 0.8f, Decay = 1f, Sustain = 1f, Release = 1.2f, Detune = 6f, LowPass = 700f, Transpose = -24 });
+            I(new Instrument { Id = "bell", Harmonics = new[] { 1f, 0.6f, 0f, 0.35f, 0f, 0.2f, 0f, 0.1f }, Attack = 0.003f, Decay = 1.2f, Sustain = 0.1f, Release = 0.8f, Inharmonic = 0.02f, Transpose = 12 });
+            Compose();
+        }
+
+        static float[] Saw(int n, float tilt) { var h = new float[n]; for (int k = 1; k <= n; k++) h[k - 1] = (float)Math.Pow(1.0 / k, tilt); return h; }
+        static float[] Square(int n) { var h = new float[n]; for (int k = 1; k <= n; k++) h[k - 1] = k % 2 == 1 ? 1f / k : 0f; return h; }
+
+        // ---- the notes ----
+
+        /// <summary>A note in a stem: a scale degree (0 is the tonic; 7 the octave; negative below), when it starts in beats, how long in beats, and how loud.</summary>
+        public struct Note
+        {
+            public int Degree;
+            public float Start, Beats;
+            public float Level;
+            public Note(int degree, float start, float beats, float level = 1f) { Degree = degree; Start = start; Beats = beats; Level = level; }
+            public override string ToString() => Degree + "@" + Start + ":" + Beats;
+        }
+
+        /// <summary>Degrees to semitones in a mode: 7 is the octave, and a degree past the scale wraps up.</summary>
+        public static int Semitones(Region r, int degree)
+        {
+            var mode = Mode(r);
+            int n = mode.Length;
+            int oct = (int)Math.Floor(degree / (double)n);
+            int idx = ((degree % n) + n) % n;
+            return mode[idx] + 12 * oct;
+        }
+
+        public sealed class Stem
+        {
+            public string Id;
+            public string Instrument;
+            /// <summary>Its level as designed, 0..1.</summary>
+            public float Level = 1f;
+            public List<Note> Notes = new List<Note>();
+            /// <summary>The boss phase it enters at (1 is from the first telegraph); 0 for a region theme's stem.</summary>
+            public int Phase;
+            /// <summary>Only heard in combat (the region theme's drive).</summary>
+            public bool Combat;
+            public Stem Add(int degree, float start, float beats, float level = 1f) { Notes.Add(new Note(degree, start, beats, level)); return this; }
+        }
+
+        public sealed class Theme
+        {
+            public string Id;
+            public Region Region;
+            /// <summary>The boss it is for, by family; null for a region's theme.</summary>
+            public string Boss;
+            /// <summary>Bars that sound, then bars of rest, per loop.</summary>
+            public int Bars, RestBars;
+            public List<Stem> Stems = new List<Stem>();
+            public float Beat => AudioDirection.BeatOf(Region);
+            public float BarSeconds => Beat * BeatsPerBar;
+            public int LoopBars => Bars + RestBars;
+            public float LoopSeconds => LoopBars * BarSeconds;
+            /// <summary>The share of the loop that is rest by design.</summary>
+            public float Silence => RestBars / (float)LoopBars;
+            public Stem Stem(string id) => Stems.FirstOrDefault(s => s.Id == id);
+            public Stem Add(string id, string instrument, float level = 1f, int phase = 0, bool combat = false)
+            {
+                var s = new Stem { Id = id, Instrument = instrument, Level = level, Phase = phase, Combat = combat };
+                Stems.Add(s);
+                return s;
+            }
+        }
+
+        static readonly List<Theme> _themes = new List<Theme>();
+        public static IReadOnlyList<Theme> Themes => _themes;
+        public static Theme ThemeOf(Region r) => _themes.FirstOrDefault(t => t.Region == r && t.Boss == null);
+        public static Theme ThemeOfBoss(string family) => _themes.FirstOrDefault(t => t.Boss == family);
+        /// <summary>The stems the direction asks for at least (audio-direction 6).</summary>
+        public static readonly string[] RequiredStems = { "lead", "bed", "pulse", "voices" };
+
+        static void Compose()
+        {
+            // ---- Saltmarrow: the tide keeps the time; a drone that swells and draws back, and a fiddle that waits for it. ----
+            // Eight bars, then two of rest: a fifth of the loop is the room alone (silence 20%).
+            var salt = new Theme { Id = "saltmarrow", Region = Region.Saltmarrow, Bars = 8, RestBars = 2 };
+            _themes.Add(salt);
+            var bed = salt.Add("bed", "drone", 0.8f);
+            // The drone in two swells of four bars: the tide in, the tide out (the level is the swell's peak; the render breathes it).
+            bed.Add(0, 0f, 16f, 1f).Add(4, 0f, 16f, 0.7f);
+            bed.Add(0, 16f, 15f, 0.9f).Add(4, 16f, 15f, 0.6f);                     // drawn back a beat early: its release is done as the rest begins
+            var pulse = salt.Add("pulse", "drum", 0.7f);
+            for (int bar = 0; bar < 8; bar++)
+            {
+                float b = bar * 4f;
+                pulse.Add(0, b, 1f, 1f).Add(-3, b + 2f, 1f, 0.7f);                 // the tongue drum on one and three
+                if (bar % 2 == 1) pulse.Add(0, b + 3.5f, 0.5f, 0.4f);              // a ghost before the bar turns
+            }
+            var lead = salt.Add("lead", "fiddle", 0.9f);
+            // She waits two bars for the tide, then a long phrase; the second phrase answers with the roll-call's answer.
+            lead.Add(4, 8f, 3f).Add(5, 11f, 1f).Add(6, 12f, 2f).Add(4, 14f, 2f)
+                .Add(2, 16f, 1.5f).Add(1, 17.5f, 0.5f).Add(0, 18f, 2f).Add(-3, 20f, 1f).Add(0, 21f, 3f)
+                .Add(5, 24f, 0.5f).Add(4, 24.5f, 1.5f);                                        // the call's lift, up to the fifth
+            {
+                var answer = AnswerDegrees(Region.Saltmarrow);                                 // the roll-call's answer, its third bent into the mode
+                lead.Add(answer[0], 26f, 1f).Add(answer[1], 27f, 1f).Add(answer[2], 28f, 1f).Add(answer[3], 29f, 2f);   // ...home, and held
+            }
+            var voices = salt.Add("voices", "whistle", 0.6f);
+            voices.Add(2, 16f, 4f, 0.8f).Add(1, 20f, 2f, 0.7f).Add(0, 22f, 2f, 0.7f)             // the low whistle under the second phrase
+                  .Add(-1, 24f, 4f, 0.8f).Add(-3, 28f, 3f, 0.9f);
+            var drive = salt.Add("drive", "psaltery", 0.6f, combat: true);
+            for (int bar = 0; bar < 8; bar++)
+            {
+                float b = bar * 4f;
+                foreach (var (d, at) in new[] { (0, 0f), (4, 0.5f), (7, 1f), (4, 1.5f), (0, 2f), (4, 2.5f), (7, 3f), (5, 3.5f) })
+                    drive.Add(d, b + at, 0.5f, at % 1f == 0f ? 0.9f : 0.6f);              // the bowed psaltery in eighths: the fight's pulse
+            }
+
+            // ---- The Lamp-Keeper: the lamp turns; the beam sweeps low and slow; she dives through it. No rest. ----
+            var lamp = new Theme { Id = "lampkeeper", Region = Region.Saltmarrow, Boss = "LampKeeper", Bars = 8, RestBars = 0 };
+            _themes.Add(lamp);
+            var lbed = lamp.Add("bed", "drone", 0.9f, phase: 1);
+            lbed.Add(0, 0f, 16f, 1f).Add(3, 0f, 16f, 0.6f).Add(0, 16f, 16f, 1f).Add(4, 16f, 16f, 0.6f);   // the fourth, then the fifth: the lamp turning
+            var lpulse = lamp.Add("pulse", "drum", 0.9f, phase: 1);
+            for (int bar = 0; bar < 8; bar++)
+            {
+                float b = bar * 4f;
+                lpulse.Add(0, b, 0.5f, 1f).Add(0, b + 1f, 0.5f, 0.6f).Add(-3, b + 2f, 0.5f, 1f).Add(0, b + 2.5f, 0.5f, 0.5f).Add(-3, b + 3f, 0.5f, 0.7f);
+            }
+            var llead = lamp.Add("lead", "fiddle", 1f, phase: 1);
+            for (int half = 0; half < 2; half++)
+            {
+                float b = half * 16f;
+                // The beam's sweep: a rising figure over a bar, again a step higher, then the dive falling through it.
+                llead.Add(0, b, 0.5f).Add(2, b + 0.5f, 0.5f).Add(4, b + 1f, 0.5f).Add(7, b + 1.5f, 1.5f).Add(6, b + 3f, 1f)
+                     .Add(1, b + 4f, 0.5f).Add(3, b + 4.5f, 0.5f).Add(5, b + 5f, 0.5f).Add(8, b + 5.5f, 1.5f).Add(7, b + 7f, 1f)
+                     .Add(9, b + 8f, 1f).Add(7, b + 9f, 0.5f).Add(4, b + 9.5f, 0.5f).Add(2, b + 10f, 1f).Add(0, b + 11f, 1f)
+                     .Add(-1, b + 12f, 2f).Add(0, b + 14f, 2f);
+            }
+            var lvoices = lamp.Add("voices", "whistle", 0.7f, phase: 2);
+            for (int bar = 0; bar < 8; bar++)
+            {
+                float b = bar * 4f;
+                lvoices.Add(bar % 2 == 0 ? 4 : 3, b, 2f, 0.8f).Add(bar % 2 == 0 ? 2 : 1, b + 2f, 2f, 0.7f);   // phase 2: the lamp splits, a second line under the first
+            }
+            var lbells = lamp.Add("bells", "bell", 0.6f, phase: 3);
+            for (int bar = 0; bar < 8; bar++)
+            {
+                float b = bar * 4f;
+                lbells.Add(7, b, 0.5f, 0.9f).Add(bar % 4 == 3 ? 6 : 4, b + 2.5f, 0.5f, 0.6f);                  // phase 3: the lamp gutters, a high toll on the bar
+            }
+        }
+
+        // ---- the synth ----
+
+        const int TableSize = 2048;
+
+        static float[] Table(Instrument ins, float hz)
+        {
+            var t = new float[TableSize];
+            for (int i = 0; i < TableSize; i++)
+            {
+                double ph = 2 * Math.PI * i / TableSize, s = 0;
+                for (int h = 1; h <= ins.Harmonics.Length; h++)
+                {
+                    float w = ins.Harmonics[h - 1];
+                    if (w <= 0f || hz * h > SampleRate * 0.45f) continue;
+                    double k = h * (1 + ins.Inharmonic * (h - 1));
+                    s += w * Math.Sin(k * ph);
+                }
+                t[i] = (float)s;
+            }
+            float peak = t.Max(x => Math.Abs(x));
+            if (peak > 0f) for (int i = 0; i < TableSize; i++) t[i] /= peak;
+            return t;
+        }
+
+        /// <summary>
+        /// Render a stem's loop: every note through its instrument, the stem's level, the loop's length exactly (a note's
+        /// release past the loop end wraps to the start, so the loop is seamless). The bed breathes: a slow swell over
+        /// two bars, the tide in and out.
+        /// </summary>
+        public static float[] RenderStem(Theme theme, Stem stem, float tonicHz)
+        {
+            var ins = InstrumentOf(stem.Instrument);
+            int len = (int)Math.Round(theme.LoopSeconds * SampleRate);
+            var outp = new float[len];
+            float beat = theme.Beat;
+            foreach (var n in stem.Notes)
+            {
+                float hz = RollCallSong.Hz(tonicHz, RollCallSong.WrittenOctave + ins.Transpose + Semitones(theme.Region, n.Degree));
+                var table = Table(ins, hz);
+                float detune = ins.Detune > 0f ? (float)Math.Pow(2.0, ins.Detune / 1200.0) : 1f;
+                int start = (int)(n.Start * beat * SampleRate);
+                int hold = (int)(n.Beats * beat * SampleRate);
+                int rel = (int)(ins.Release * SampleRate);
+                var rng = new Random(Stable(stem.Id) ^ start);
+                double ph = 0, ph2 = 0;
+                float noise = 0f, lp = 0f;
+                float lpA = ins.LowPass > 0f ? 1f - (float)Math.Exp(-2 * Math.PI * ins.LowPass / SampleRate) : 1f;
+                for (int i = 0; i < hold + rel; i++)
+                {
+                    float t = i / (float)SampleRate;
+                    float env;
+                    if (i < hold)
+                    {
+                        float a = ins.Attack <= 0f ? 1f : Math.Min(1f, t / ins.Attack);
+                        float d = ins.Sustain + (1f - ins.Sustain) * (float)Math.Exp(-t / Math.Max(0.001f, ins.Decay));
+                        env = a * d;
+                    }
+                    else env = (ins.Sustain + (1f - ins.Sustain) * (float)Math.Exp(-(hold / (float)SampleRate) / Math.Max(0.001f, ins.Decay))) * (1f - (i - hold) / (float)Math.Max(1, rel));
+                    float vib = ins.VibratoDepth > 0f ? (float)Math.Pow(2.0, Math.Sin(2 * Math.PI * ins.VibratoRate * t) * ins.VibratoDepth * Math.Min(1f, t / 0.4f) / 12.0) : 1f;
+                    ph += hz * vib / SampleRate; if (ph >= 1) ph -= 1;
+                    float pos = (float)(ph * TableSize); int i0 = (int)pos; int i1 = (i0 + 1) % TableSize;
+                    float s = table[i0] + (table[i1] - table[i0]) * (pos - i0);
+                    if (ins.Detune > 0f)
+                    {
+                        ph2 += hz * vib * detune / SampleRate; if (ph2 >= 1) ph2 -= 1;
+                        float p2 = (float)(ph2 * TableSize); int j0 = (int)p2; int j1 = (j0 + 1) % TableSize;
+                        s = 0.6f * s + 0.4f * (table[j0] + (table[j1] - table[j0]) * (p2 - j0));
+                    }
+                    if (ins.Noise > 0f) { noise += (((float)rng.NextDouble() * 2f - 1f) - noise) * 0.2f; s += noise * ins.Noise * 2f; }
+                    if (ins.LowPass > 0f) { lp += (s - lp) * lpA; s = lp; }
+                    float breathe = stem.Id == "bed" ? 0.55f + 0.45f * (float)Math.Sin(2 * Math.PI * (start / (float)SampleRate + t) / (2f * theme.BarSeconds) - Math.PI / 2) : 1f;
+                    int at = (start + i) % len;
+                    outp[at] += s * env * n.Level * stem.Level * breathe * 0.4f;
+                }
+            }
+            return outp;
+        }
+
+        /// <summary>Every stem of a theme rendered, by id, each brought to the same headroom (the mix of them peaks under −1 dBTP).</summary>
+        public static Dictionary<string, float[]> Render(Theme theme)
+        {
+            float tonic = RollCallSong.TonicHz(theme.Region);
+            var stems = theme.Stems.ToDictionary(s => s.Id, s => RenderStem(theme, s, tonic));
+            int len = stems.Values.First().Length;
+            float peak = 0f;
+            for (int i = 0; i < len; i++) { float sum = 0f; foreach (var s in stems.Values) sum += s[i]; peak = Math.Max(peak, Math.Abs(sum)); }
+            if (peak > 0f)
+            {
+                float g = (float)Math.Pow(10.0, AudioDirection.SfxPeakDbtp / 20.0) / peak;
+                foreach (var s in stems.Values) for (int i = 0; i < len; i++) s[i] *= g;
+            }
+            return stems;
+        }
+
+        /// <summary>The share of a loop's time that is quiet in a mix of stems, by quarter-second windows (the direction's silence, measured).</summary>
+        public static float MeasuredSilence(IEnumerable<float[]> stems, float quietDb = -40f)
+        {
+            var list = stems.ToList();
+            int len = list[0].Length, win = SampleRate / 4, windows = len / win, quiet = 0;
+            float thresh = (float)Math.Pow(10.0, quietDb / 20.0);
+            for (int w = 0; w < windows; w++)
+            {
+                double e = 0; int from = w * win, to = from + win;
+                for (int i = from; i < to; i++) { float sum = 0f; foreach (var s in list) sum += s[i]; e += sum * sum; }
+                if (Math.Sqrt(e / win) < thresh) quiet++;
+            }
+            return quiet / (float)Math.Max(1, windows);
+        }
+
+        /// <summary>The roll-call's answer as a boss's theme resolves it: fifth, third, second, tonic, on the fiddle in the region's key.</summary>
+        public static float[] Resolution(Region r)
+        {
+            var theme = new Theme { Id = "resolution", Region = r, Bars = 2, RestBars = 0 };
+            var stem = theme.Add("lead", "fiddle");
+            var answer = AudioDirection.RollCall.Answer;
+            var degrees = AnswerDegrees(r);
+            float at = 0f;
+            for (int i = 0; i < answer.Length; i++)
+            {
+                stem.Add(degrees[i], at, answer[i].Beats, 1f);
+                at += answer[i].Beats;
+            }
+            theme.Add("bed", "drone", 0.7f).Add(0, 0f, at, 1f);
+            var stems = Render(theme);
+            int len = stems["lead"].Length;
+            var mix = new float[len];
+            foreach (var s in stems.Values) for (int i = 0; i < len; i++) mix[i] += s[i];
+            return mix;
+        }
+
+        // ---- files ----
+
+        /// <summary>A stem's delivery name: region_music_theme-stem_bpm.wav (audio-direction 6).</summary>
+        public static string FileName(Theme theme, Stem stem) =>
+            RollCallSong.FileName(theme.Region, "music", (theme.Boss != null ? theme.Id + "-" : "") + stem.Id, 60f / theme.Beat);
+
+        /// <summary>A standard MIDI file of the theme: the tempo, one track per stem with its notes at their times (format 1, 480 a beat).</summary>
+        public static byte[] Midi(Theme theme)
+        {
+            const int Ppq = 480;
+            int tonic = RollCallSong.TonicMidi(theme.Region) + RollCallSong.WrittenOctave;
+            using var ms = new MemoryStream();
+            void Chunk(string id, byte[] body)
+            {
+                ms.Write(Encoding.ASCII.GetBytes(id), 0, 4);
+                ms.Write(new[] { (byte)(body.Length >> 24), (byte)(body.Length >> 16), (byte)(body.Length >> 8), (byte)body.Length }, 0, 4);
+                ms.Write(body, 0, body.Length);
+            }
+            static void VarLen(List<byte> b, int v)
+            {
+                var stack = new List<byte> { (byte)(v & 0x7F) };
+                v >>= 7;
+                while (v > 0) { stack.Add((byte)((v & 0x7F) | 0x80)); v >>= 7; }
+                stack.Reverse();
+                b.AddRange(stack);
+            }
+            Chunk("MThd", new byte[] { 0, 1, (byte)((theme.Stems.Count + 1) >> 8), (byte)((theme.Stems.Count + 1) & 0xFF), (byte)(Ppq >> 8), (byte)(Ppq & 0xFF) });
+            var tempo = new List<byte>();
+            int us = (int)Math.Round(theme.Beat * 1_000_000);
+            VarLen(tempo, 0); tempo.AddRange(new byte[] { 0xFF, 0x51, 3, (byte)(us >> 16), (byte)(us >> 8), (byte)us });
+            VarLen(tempo, 0); tempo.AddRange(new byte[] { 0xFF, 0x2F, 0 });
+            Chunk("MTrk", tempo.ToArray());
+            for (int ch = 0; ch < theme.Stems.Count; ch++)
+            {
+                var stem = theme.Stems[ch];
+                var ins = InstrumentOf(stem.Instrument);
+                var events = new List<(int tick, bool on, int note, int vel)>();
+                foreach (var n in stem.Notes)
+                {
+                    int note = tonic + ins.Transpose + Semitones(theme.Region, n.Degree);
+                    events.Add(((int)Math.Round(n.Start * Ppq), true, note, (int)(40 + 87 * n.Level)));
+                    events.Add(((int)Math.Round((n.Start + n.Beats) * Ppq), false, note, 0));
+                }
+                events.Sort((a, b) => a.tick != b.tick ? a.tick.CompareTo(b.tick) : a.on.CompareTo(b.on));   // offs before ons at the same tick
+                var b = new List<byte>();
+                var name = Encoding.ASCII.GetBytes(stem.Id + " (" + ins.Id + ")");
+                VarLen(b, 0); b.AddRange(new byte[] { 0xFF, 0x03 }); VarLen(b, name.Length); b.AddRange(name);
+                int program = ins.Id switch { "fiddle" => 110, "whistle" => 75, "drum" => 116, "concertina" => 21, "psaltery" => 46, "bell" => 14, _ => 48 };
+                VarLen(b, 0); b.AddRange(new[] { (byte)(0xC0 | (ch % 16)), (byte)program });
+                int last = 0;
+                foreach (var e in events)
+                {
+                    VarLen(b, e.tick - last); last = e.tick;
+                    b.AddRange(new[] { (byte)((e.on ? 0x90 : 0x80) | (ch % 16)), (byte)Math.Clamp(e.note, 0, 127), (byte)Math.Clamp(e.vel, 0, 127) });
+                }
+                VarLen(b, 0); b.AddRange(new byte[] { 0xFF, 0x2F, 0 });
+                Chunk("MTrk", b.ToArray());
+            }
+            return ms.ToArray();
+        }
+    }
+}

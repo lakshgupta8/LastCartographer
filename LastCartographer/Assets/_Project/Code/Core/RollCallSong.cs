@@ -284,7 +284,7 @@ namespace OWSBG.Core
         /// </summary>
         public static Line Render(IList<AudioDirection.Note> notes, float tonicHz, float beat, Voice voice, int falterAt = -1, int seed = 0)
         {
-            var rng = new Random(seed * 7919 + voice.Id.GetHashCode());
+            var rng = new Random(seed * 7919 + Score.Stable(voice.Id));
             float total = notes.Sum(n => n.Beats) * beat + voice.Release + 0.05f + (voice.Whale ? 1.2f : 0f);
             int len = (int)(total * SampleRate);
             var outp = new float[len];

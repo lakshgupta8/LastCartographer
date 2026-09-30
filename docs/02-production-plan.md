@@ -142,7 +142,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CHR-04 `[ ]` | Wren ability animation: Wingbeat, Talonhold, Inkthread, Windmemory, Flourishes | M1–M2 | CMB-3, 4 | CHR-03 |
 | CHR-05 `[ ]` | Charter silhouettes for Wren (cowl and grip variants) | M2 | CMB-5 | CHR-03 |
 | CHR-06 `[~]` | Saltmarrow enemies (6) and the Lamp-Keeper; v1: marsh crab, reed skimmer, smudge, Cantor, Warden, lost Remnant and the Lamp-Keeper built in Blender (`tools/characters/saltmarrow_enemies.py`), clips named by each family's moves through `Enemy.Clip`, `EnemyAnimator` on every placed enemy and the boss, `docs/design/enemy-animation.md`; a hand-drawn pass open | M1 | SB-6.1 | CHR-02 |
-| CHR-07 `[ ]` | Warden family (Halvard, Brann, Oriel, generic ×3) | M2 | SB-3.1 | CHR-02 |
+| CHR-07 `[~]` | Warden family (Halvard, Brann, Oriel, generic ×3); v1: all five on the Warden rig (`tools/characters/wardens.py`), clips named by `Halvard.Clip`, `Brann.Clip`, `Oriel.Clip`, Halvard drawn in the lighthouse (NPC) and the chapel (boss) from one set of sheets, the anchored towns' patrols in three looks, `docs/design/enemy-animation.md` §2a; Halvard's later kits, Brann's and Oriel's rooms and a hand pass open | M2 | SB-3.1 | CHR-02 |
 | CHR-08 `[ ]` | Cantor family and the Choir | M2 | SB-3.3 | CHR-02 |
 | CHR-09 `[ ]` | Smudge family (5) and the Collapse | M2 | SB-6 | CHR-02 |
 | CHR-10 `[ ]` | Remaining bosses (Gatekeeper, Hale, Fallen Star, Voss, Bells, Corra's Drawing, Archivist, Complete Survey) | M3 | SB-6 | CHR-02 |

@@ -47,6 +47,18 @@ namespace OWSBG.World
         public bool IsErupting => Current == Move.Count && _frames < eruptFrames;
         public int Dir => Facing;
 
+        /// <summary>The sheet clip for his move (CHR-07): the survey and the count have their own telegraphs.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Approach => "move",
+            Move.Telegraph => CurrentAttack == Attack.Survey ? "survey" : CurrentAttack == Attack.Count ? "call" : "telegraph",
+            Move.Thrust => "thrust",
+            Move.Lunge => "lunge",
+            Move.Count => "count",
+            Move.Recover => "recover",
+            _ => "idle",
+        };
+
         static readonly Attack[] Phase1 = { Attack.Thrust, Attack.Survey, Attack.Lunge, Attack.Count };
         static readonly Attack[] Phase2 = { Attack.Lunge, Attack.Survey, Attack.Thrust, Attack.Survey, Attack.Count };
         static readonly Attack[] Phase3 = { Attack.Count, Attack.Survey, Attack.Lunge, Attack.Count, Attack.Thrust, Attack.Survey, Attack.Count };
@@ -308,7 +320,7 @@ namespace OWSBG.World
         protected override void Update()
         {
             base.Update();
-            if (Visual == null || IsDying) return;
+            if (Visual == null || IsDying || HasSheets) return;   // the lean is the block's; the frames carry it when drawn
             float lean = Current == Move.Telegraph ? 0.85f : Current == Move.Thrust || Current == Move.Lunge ? 1.5f : 1f;
             var s = Visual.transform.localScale;
             Visual.transform.localScale = new Vector3(Facing * Mathf.Abs(_baseScale.x) * lean, s.y, s.z);

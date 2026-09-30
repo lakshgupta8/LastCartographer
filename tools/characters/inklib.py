@@ -237,17 +237,21 @@ def render(path):
     return os.path.getsize(path)
 
 
-def run(character, cell, clips, build, centre_z, only=(), turnaround=True, line=3.2, ink=INK, ppu=PPU):
+def run(character, cell, clips, build, centre_z, only=(), turnaround=True, line=3.2, ink=INK, ppu=PPU, feet=None):
     """Render a character's clips (and its turnaround) to FRAMES_ROOT/<character lower>/.
 
     clips: (name, fps, frames, loop, pose) with pose(rig, i, n). build() returns the Rig, already snapshotted.
-    cell: units per frame cell. centre_z: the world z the cell is centred on (feet at 0 → cell / 2)."""
+    cell: units per frame cell. centre_z: the world z the cell is centred on (feet at 0 → cell / 2).
+    feet: where the feet are, in units from the cell's centre, for a drawing centred elsewhere (a Warden on a
+    collider's centre who must also stand on a floor as an NPC); None leaves it to the cell's bottom edge."""
     frames = os.path.join(FRAMES_ROOT, character.lower())
     os.makedirs(frames, exist_ok=True)
     reset_scene()
     rig = build()
     res = int(cell * ppu * SCALE)
     meta = {"character": character, "ppu": ppu, "scale": SCALE, "cell": cell, "clips": []}
+    if feet is not None:
+        meta["feet"] = feet
     if not only or any(c[0] in only for c in clips):
         setup_render(res, cell, centre_z, line=line, ink=ink)
         for name, fps, n, loop, pose in clips:

@@ -34,6 +34,24 @@ adds its moves. A clip the sheets lack falls back to idle.
 
 Locomotion and holds run at 12 fps; the thrust and the dives at 24, as Wren's strikes do.
 
+## 2a. The Warden family (CHR-07)
+
+`tools/characters/wardens.py` builds the rest of the family on the Warden rig above: the same heron, re-geared and
+re-coloured, so every Warden reads as one silhouette (a tall line with a lance) and each is told apart by what
+they carry. Packed as `Halvard`, `Brann`, `Oriel`, `Warden_B`, `Warden_C`; model sheets in `docs/art/`.
+
+| Warden | Bird, gear | Clips | What names them |
+|---|---|---|---|
+| Warden-Sergeant Halvard | a heron; a sergeant's sash, a plume, the long sighting-lance with count notches | idle, move, walk, talk, measure, telegraph, thrust, lunge, survey, call, count, recover, hurt, death | `Halvard.Clip`: Approach → move; the telegraph is `survey` (the lance planted) for a survey and `call` (raised high) for a count, else `telegraph`; Thrust, Lunge, Count, Recover. `death` is his withdrawal: he straightens, lowers the lance and steps back. In the lighthouse he is an NPC: `NpcAnimator` asks for idle, talk and walk |
+| Cinder Warden Brann | a crane in furnace-blackened brass, a red crown, twin lances (the far one rests behind the shoulder) | idle, move, telegraph, thrust, charge, crosscut, hold, recover, hurt, death | `Brann.Clip`: Charge, CrossCut (both lances sweeping), Hold (walking behind both, looping), the rest as Halvard |
+| Warden-Captain Oriel | an egret, white, a captain's cloak, a short quill-lance with a nib | idle, move, telegraph, strike1–3, flourish, step, bind, recover, hurt, death | `Oriel.Clip`: the mirrored combo's steps in turn (`strike1..3`), Flourish (she turns through a Longstroke), Step, Bind (kneeling, the quill planted, looping until denied) |
+| Warden B, Warden C | the patrols: B in a road-cloak with an iron gorget, C in a helm with a plume | the Warden's | the same `Warden` behaviour; `MakeHeldState` gives the anchored towns' patrols the three looks in turn |
+
+Halvard's manifest carries `feetUnits` (−0.82: where his feet are from the cell's centre) because he is drawn on his
+collider's centre like every enemy but must also stand on the lighthouse floor as an NPC; `MakeSpriteQuad` uses it
+for the feet-at-origin placement, so one set of sheets serves the fight and the hunt. Brann and Oriel have no room
+yet (Emberdown's Furnace Stair and Halden's Bastion are unbuilt): the sheets and the clip names wait for them.
+
 ## 3. What changes when a creature wears sheets
 
 - **Death:** the placeholder shrank to nothing in a quarter second. A drawing dies as its ink leaves: the
@@ -66,6 +84,9 @@ the enemy type's name.
 ## 6. Open
 
 - The Lost Remnant is drawn but the greybox places none yet; the Blank's islands still use tinted NPC blocks.
+- Halvard's marks on the chapel floor are still dark blocks; his second kit (the thrown lance, the Seven Bridges)
+  and third (the Threshold) have no frames yet.
+- Brann's phase-3 glow (his telegraphs are the brass) is a tint the arena will need to drive on the sheet.
 - The skimmer's rise is a second, flared render of the same bird; a tint on the sheet would do the same in
   one render once the shader takes a flare colour.
 - The Lamp-Keeper's beams are still the arena's quads; her lamp glass could light them.

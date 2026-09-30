@@ -44,6 +44,19 @@ namespace OWSBG.World
         public int StepIndex => CurrentAttack == Attack.Combo ? _step : -1;
         public bool IsBinding => Current == Move.Bind;
         public bool BindSpent { get; private set; }
+
+        /// <summary>The sheet clip for her move (CHR-07): the mirrored combo's steps are strike1..3 in turn.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Approach => "move",
+            Move.Telegraph => "telegraph",
+            Move.Strike => "strike" + (_step % 3 + 1),
+            Move.Flourish => "flourish",
+            Move.Step => "step",
+            Move.Bind => "bind",
+            Move.Recover => "recover",
+            _ => "idle",
+        };
         /// <summary>What she will do next before her pattern resumes (the step and the Bind at a third).</summary>
         public IEnumerable<Attack> Queued => _queue;
         public int Combos { get; private set; }

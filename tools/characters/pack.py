@@ -46,6 +46,8 @@ def pack(name):
     os.makedirs(folder, exist_ok=True)
     cell = int(round(meta["cell"] * meta["ppu"]))
     out = {"character": character, "ppu": meta["ppu"], "cell": cell, "cellUnits": meta["cell"], "clips": []}
+    if "feet" in meta:
+        out["feetUnits"] = meta["feet"]   # the feet, in units from the cell centre (default: the bottom edge)
     for clip in meta["clips"]:
         n = clip["frames"]
         sheet = Image.new("RGBA", (cell * n, cell), (0, 0, 0, 0))

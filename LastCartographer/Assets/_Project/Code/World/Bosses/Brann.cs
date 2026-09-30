@@ -40,6 +40,19 @@ namespace OWSBG.World
         public Attack CurrentAttack { get; private set; } = Attack.None;
         public bool IsDark => IsFightActive && Phase >= 3;
         public bool IsHolding => Current == Move.Hold;
+
+        /// <summary>The sheet clip for his move (CHR-07).</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Approach => "move",
+            Move.Telegraph => "telegraph",
+            Move.Thrust => "thrust",
+            Move.Charge => "charge",
+            Move.CrossCut => "crosscut",
+            Move.Hold => "hold",
+            Move.Recover => "recover",
+            _ => "idle",
+        };
         /// <summary>0..1: how bright his brass is. In the dark it is the only telegraph.</summary>
         public float Glow => IsTelegraphing ? 1f : IsHolding ? 0.6f : 0.25f;
         public int Thrusts { get; private set; }

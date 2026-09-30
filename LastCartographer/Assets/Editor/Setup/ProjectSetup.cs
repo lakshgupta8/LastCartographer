@@ -1316,13 +1316,17 @@ namespace OWSBG.Setup
         public static void BuildAddressables() => OWSBG.Build.GameBuild.BuildContent();
 
         // The held state (PRG-13): Wardens placed inactive; anchoring the place switches them on and locks the grade.
+        static readonly string[] WardenLooks = { "Warden", "Warden_B", "Warden_C" };
+
         static void MakeHeldState(Room room, params Vector2[] wardenPositions)
         {
             var held = room.gameObject.AddComponent<HeldState>();
             held.PlaceId = room.RoomId;
             for (int i = 0; i < wardenPositions.Length; i++)
             {
-                MakeEnemy<Warden>(room, "Warden_" + (i + 1), wardenPositions[i], new Vector2(0.7f, 1.6f));
+                // Three looks for the patrols (CHR-07), spread so neighbouring rooms differ.
+                var look = WardenLooks[(room.RoomId[room.RoomId.Length - 1] + i) % WardenLooks.Length];
+                MakeEnemy<Warden>(room, "Warden_" + (i + 1), wardenPositions[i], new Vector2(0.7f, 1.6f), look);
                 var go = room.transform.Find("Warden_" + (i + 1)).gameObject;
                 go.SetActive(false);
                 held.AddWarden(go);
@@ -1449,8 +1453,9 @@ namespace OWSBG.Setup
         }
 
         // A greybox enemy: dynamic 2D body on the Enemy layer with an ink-quad visual (Smudge uses _Ink).
-        static void MakeEnemy<T>(Room room, string name, Vector2 pos, Vector2 size) where T : Enemy
+        static void MakeEnemy<T>(Room room, string name, Vector2 pos, Vector2 size, string character = null) where T : Enemy
         {
+            character ??= typeof(T).Name;
             var go = new GameObject(name) { layer = LayerMask.NameToLayer("Enemy") };
             go.transform.SetParent(room.transform, false);
             go.transform.position = new Vector3(pos.x, pos.y, 0f);
@@ -1459,7 +1464,7 @@ namespace OWSBG.Setup
             var rb = go.AddComponent<Rigidbody2D>();
             rb.freezeRotation = true;
             go.AddComponent<T>();
-            var r = MakeSpriteQuad(go, "M_Enemy_" + typeof(T).Name, typeof(T).Name, new Vector3(size.x * 1.3f, size.y * 1.3f, 1f), Vector3.zero, true, out var sheets);
+            var r = MakeSpriteQuad(go, "M_Enemy_" + character, character, new Vector3(size.x * 1.3f, size.y * 1.3f, 1f), Vector3.zero, true, out var sheets);
             if (sheets != null)
             {
                 go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
@@ -1915,15 +1920,19 @@ namespace OWSBG.Setup
 
         // ---- character sheets (CHR-03, docs/design/wren-animation.md)
 
-        [System.Serializable] class SheetManifest { public string character; public int ppu, cell; public float cellUnits; public SheetEntry[] clips; }
+        [System.Serializable] class SheetManifest { public string character; public int ppu, cell; public float cellUnits, feetUnits; public SheetEntry[] clips; }
         [System.Serializable] class SheetEntry { public string name, file; public int fps, frames; public bool loop; }
 
         /// <summary>The clips a character's packed sheets describe (Art/Characters/[name]/[name].json), or null before they exist.</summary>
-        static List<SheetClip> LoadSheets(string character) => LoadSheets(character, out _);
+        static List<SheetClip> LoadSheets(string character) => LoadSheets(character, out _, out _);
 
-        static List<SheetClip> LoadSheets(string character, out float cellUnits)
+        static List<SheetClip> LoadSheets(string character, out float cellUnits) => LoadSheets(character, out cellUnits, out _);
+
+        /// <summary>feetUnits: where the feet are from the cell's centre (0 when the manifest says nothing: the bottom edge).</summary>
+        static List<SheetClip> LoadSheets(string character, out float cellUnits, out float feetUnits)
         {
             cellUnits = 2f;
+            feetUnits = 0f;
             var folder = Root + "/Art/Characters/" + character + "/";
             var jsonPath = folder + character.ToLowerInvariant() + ".json";
             if (!File.Exists(jsonPath)) return null;
@@ -1931,6 +1940,7 @@ namespace OWSBG.Setup
             if (manifest == null || manifest.clips == null || manifest.clips.Length == 0) return null;
             if (manifest.cellUnits > 0f) cellUnits = manifest.cellUnits;
             else if (manifest.cell > 0 && manifest.ppu > 0) cellUnits = (float)manifest.cell / manifest.ppu;
+            feetUnits = manifest.feetUnits;
             var clips = new List<SheetClip>();
             foreach (var c in manifest.clips)
             {
@@ -1949,7 +1959,7 @@ namespace OWSBG.Setup
         /// </summary>
         static MeshRenderer MakeSpriteQuad(GameObject go, string matName, string character, Vector3 fallbackScale, Vector3 fallbackPos, bool faceLeft, out List<SheetClip> sheets)
         {
-            sheets = LoadSheets(character, out float cell);
+            sheets = LoadSheets(character, out float cell, out float feet);
             var tex = sheets != null ? sheets.Find(c => c.Name == "idle").Sheet : AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
             var mat = MakeInkMaterial(matName, tex);
             if (mat.GetTexture("_BaseMap") != tex) { mat.SetTexture("_BaseMap", tex); EditorUtility.SetDirty(mat); }
@@ -1962,7 +1972,8 @@ namespace OWSBG.Setup
             if (sheets != null)
             {
                 quad.transform.localScale = new Vector3(faceLeft ? -cell : cell, cell, 1f);
-                quad.transform.localPosition = fallbackPos.y > 0f ? new Vector3(0f, cell * 0.5f, 0f) : Vector3.zero;   // feet at the origin, or centred
+                // Feet at the origin (a townsfolk on a floor: the manifest's feet, else the cell's bottom edge), or centred (an enemy on its collider).
+                quad.transform.localPosition = fallbackPos.y > 0f ? new Vector3(0f, feet != 0f ? -feet : cell * 0.5f, 0f) : Vector3.zero;
             }
             else
             {

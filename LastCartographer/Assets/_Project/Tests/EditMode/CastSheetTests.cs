@@ -115,7 +115,8 @@ namespace OWSBG.Tests
             }
             var halvard = AssetDatabase.LoadAssetAtPath<Material>(Materials + "M_Npc_Halvard.mat");
             Assert.IsNotNull(halvard);
-            Assert.AreNotEqual(Color.white, halvard.GetColor("_BaseColor"), "Halvard is a Warden (CHR-07): still the tinted stand-in");
+            Assert.AreEqual("Halvard_idle", halvard.GetTexture("_BaseMap")?.name, "Halvard is drawn from the Warden family's sheets (CHR-07)");
+            Assert.AreEqual(Color.white, halvard.GetColor("_BaseColor"));
 
             var animator = AssetDatabase.AssetPathToGUID("Assets/_Project/Code/Narrative/NpcAnimator.cs");
             var state = AssetDatabase.AssetPathToGUID("Assets/_Project/Code/Narrative/NpcInk.cs");

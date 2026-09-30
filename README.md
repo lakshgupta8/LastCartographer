@@ -205,7 +205,7 @@ A region's backdrop and ground are drawn by `tools/paperkit/<region>.py` in head
 
 ## Wren's sheets
 `tools/characters/wren.py` builds Wren from parts in headless Blender and renders every clip side-on in the paper kit's ink; `python tools/characters/pack.py wren` packs the frames into one strip per clip under `Assets/_Project/Art/Characters/Wren/` and writes the model sheet to `docs/art/`. The bootstrap build puts `InkSheetPlayer` and `WrenAnimator` on her (`docs/design/wren-animation.md`).
-`tools/characters/saltmarrow_enemies.py` does the same for the coast's six enemies and the Lamp-Keeper (`docs/design/enemy-animation.md`); `pack.py all` packs every rendered character.
+`tools/characters/saltmarrow_enemies.py` does the same for the coast's six enemies and the Lamp-Keeper (`docs/design/enemy-animation.md`); `tools/characters/wardens.py` builds the rest of the Warden family on that rig (Halvard, Brann, Oriel, two more patrol looks; enemy-animation.md §2a); `pack.py all` packs every rendered character.
 
 ## The cast
 `tools/characters/cast.py` draws the returning cast (Sable, Dotha, Isolde, Pell, Runa, Kettil, Teodor, Idrenne, Maren, Corvin, Ilse, Corra, Marrow, Aury) from one parametric townsfolk bird: idle, talk, walk and asleep for everyone, plus each one's own (Sable mends and reads, Dotha sings, Corra draws). The bootstrap build dresses any NPC whose name has sheets (`Sable_Greybox` → `Sable`) with `InkSheetPlayer`, `NpcAnimator` (the post's activity, the talk, the walk) and `NpcInk`, whose colour state follows the place: drawn, washing toward paper as the place fades, the ink removed once it is let go or on an island in the Blank (`docs/design/npc-animation.md`).

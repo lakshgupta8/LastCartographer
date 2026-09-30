@@ -52,7 +52,9 @@ Vantages in the slice: 8 (Tideline, Reedmother, Tetherpost, Bole, Crown, FirstLa
 - **Fade.** Every room has a `FadeGroup`; the place is the room. The faded third lighthouse uses the paler
   palette from the start.
 - **The look.** Three paper layers per room (mid reeds, far roosts, farther cliffs) and a foreground reed line
-  in hub rooms; the sea-fade is the Edge's white sheets mirrored to the west.
+  in hub rooms; the sea-fade is the Edge's white sheets mirrored to the west. Since ENV-02 the layers and the
+  ground come off the Saltmarrow paper kit (`docs/design/paper-kit.md`): planks on the coast, paler planks in
+  the faded third, the tide in the Boardwalk's gaps, salt stone under the lighthouse and the chapel.
 
 ## 3. The rest of the coast (after the slice)
 | Zone | Rooms | Notes |

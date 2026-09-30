@@ -531,7 +531,7 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f);
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f);
             MakePaperLayer(room, "Fore_Reeds", -4f, -0.8f, new Color(0.30f, 0.33f, 0.24f), 1.6f);   // peeks over the walkway
-            foreach (var g in new[] { "Floor", "Platform_A", "Platform_B", "Platform_C", "Stilt_1" }) SkinGround(room, g, "Ground_Boardwalk", 4f);
+            SkinGrounds(room, "Ground_Boardwalk", "Floor", "Platform_A", "Platform_B", "Platform_C", "Stilt_1");
 
             MakeDummy(room, new Vector2(4f, 0.6f));
             MakeSeeds(room, new Vector2(7f, 5.9f), 2);   // on the high platform, past the crab
@@ -588,6 +588,7 @@ namespace OWSBG.Setup
             MakeGround(room, "Shaft_L", new Vector2(6f, 6f), new Vector2(1f, 12f), platMat);
             MakeGround(room, "Shaft_R", new Vector2(10f, 6f), new Vector2(1f, 12f), platMat);
             MakeGround(room, "Shaft_Top", new Vector2(8f, 12.3f), new Vector2(3f, 0.6f), platMat);
+            SkinGrounds(room, "Ground_Boardwalk", "Floor", "Step_1", "Step_2", "Shaft_L", "Shaft_R", "Shaft_Top");
 
             MakePaperLayer(room, "Mid_Reeds", 3f, 0f, new Color(0.58f, 0.62f, 0.54f), 6f);
             MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.70f, 0.72f, 0.66f), 10f);
@@ -636,6 +637,7 @@ namespace OWSBG.Setup
             MakeGround(room, "Lamp_Housing", new Vector2(3f, 10.2f), new Vector2(3f, 0.8f), platMat);
             MakeGround(room, "Ledge_L", new Vector2(-4f, 2.4f), new Vector2(2.5f, 0.5f), platMat);
             MakeGround(room, "Ledge_R", new Vector2(10f, 2.4f), new Vector2(2.5f, 0.5f), platMat);
+            SkinGrounds(room, "Ground_Stone", "Floor", "Lamp_Housing", "Ledge_L", "Ledge_R");
 
             MakePaperLayer(room, "Mid_Reeds", 3f, 0f, new Color(0.56f, 0.60f, 0.54f), 6f);
             MakePaperLayer(room, "Far_Tower", 8f, 4f, new Color(0.66f, 0.68f, 0.64f), 14f);
@@ -752,6 +754,7 @@ namespace OWSBG.Setup
             MakeGround(room, "Floor", new Vector2(8.5f, -0.5f), new Vector2(23f, 1f), floorMat);       // -3..20
             MakeGround(room, "Wall_E", new Vector2(19.5f, 5f), new Vector2(1f, 14f), platMat);
             MakeGround(room, "Altar", new Vector2(17f, 0.8f), new Vector2(2.4f, 1.6f), platMat);
+            SkinGrounds(room, "Ground_Stone", "Bank_W", "Floor", "Wall_E", "Altar");
             MakeTide(room, "Tide", new Vector2(-7.5f, -3f), new Vector2(9f, 3f), new Vector2(-12.6f, 0f), new Vector2(-2.4f, 0f));
 
             MakePaperLayer(room, "Mid_Salt", 3f, 0f, new Color(0.62f, 0.62f, 0.58f), 6f);
@@ -1194,7 +1197,10 @@ namespace OWSBG.Setup
             var platMat = r.Faded ? MakeLitMaterial("M_Greybox_Platform_Faded", new Color(0.76f, 0.73f, 0.66f)) : MakeLitMaterial("M_Greybox_Platform", new Color(0.52f, 0.46f, 0.36f));
             var waterMat = MakeLitMaterial("M_Greybox_Shallows", new Color(0.50f, 0.56f, 0.56f));
             foreach (var g in r.Ground)
+            {
                 MakeGround(room, g.name, g.c, g.s, g.name.StartsWith("Shallows") ? waterMat : g.name.StartsWith("Floor") ? floorMat : platMat);
+                SkinGround(room, g.name, g.name.StartsWith("Shallows") ? "Ground_Shallows" : r.Faded ? "Ground_Boardwalk_Faded" : "Ground_Boardwalk", 4f);
+            }
 
             if (r.Faded)
             {
@@ -1798,6 +1804,11 @@ namespace OWSBG.Setup
         // A ground block drawn from the kit's tile: the block's own material becomes the tile, mapped in world
         // space by face (the shader picks the plane from the normal), so planks run on across blocks and the top
         // of a platform reads under the camera's tilt. Skipped when the region has no such tile yet.
+        static void SkinGrounds(Room room, string tile, params string[] groundNames)
+        {
+            foreach (var g in groundNames) SkinGround(room, g, tile, 4f);
+        }
+
         static void SkinGround(Room room, string groundName, string tile, float tileUnits)
         {
             var tex = KitTexture(room, tile);

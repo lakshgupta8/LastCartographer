@@ -13,8 +13,8 @@ using UnityEngine.TestTools;
 namespace OWSBG.Tests
 {
     /// <summary>
-    /// The Quay wears its paper kit in play (ENV-01): every backdrop layer is an inked cut-out, the walkway and its
-    /// platforms are on the planks, and the place's fade still thins the ink on all of it, foreground first, ground never.
+    /// The coast wears its paper kit in play (ENV-01, ENV-02): every backdrop layer is an inked cut-out, the ground is on
+    /// its tile, and the place's fade still thins the ink on all of it, foreground first, ground never.
     /// </summary>
     public class PaperKitPlayTests
     {
@@ -79,6 +79,35 @@ namespace OWSBG.Tests
             Assert.AreEqual(FadeStages.InkFor(2), InkOf(reeds), 0.01f, "the reeds thin with the place");
             Assert.AreEqual(FadeStages.InkFor(2), InkOf(skins[0].Renderer), 0.01f, "the planks wash with the place");
             Assert.IsTrue(paper.All(l => l.Renderer.enabled) && skins.All(l => l.Renderer.enabled), "nothing drops at stage 2");
+        }
+
+        [UnityTest]
+        public IEnumerator TheFadedThirdIsPalerFromTheStart() => RoomWearsTheKit("Greybox_Saltmarrow_Chain_3", "Paper_Mid_Reeds_Faded", "M_Ground_Boardwalk_Faded");
+
+        [UnityTest]
+        public IEnumerator TheChapelStandsOnSaltStone() => RoomWearsTheKit("Greybox_Saltmarrow_Chapel", "Paper_Far_Chapel", "M_Ground_Stone");
+
+        [UnityTest]
+        public IEnumerator TheBoardwalksGapsHoldTheTide() => RoomWearsTheKit("Greybox_Saltmarrow_Boardwalk", "Paper_Mid_Reeds", "M_Ground_Shallows");
+
+        // ENV-02: every layer of the room's fade group is a kit drawing on the ink shader; one named backdrop and
+        // one named ground material are among them.
+        IEnumerator RoomWearsTheKit(string scene, string backdrop, string ground)
+        {
+            var handle = Addressables.LoadSceneAsync(scene, LoadSceneMode.Additive);
+            yield return handle;
+            Assert.AreEqual(AsyncOperationStatus.Succeeded, handle.Status, scene + " loads");
+            var group = Object.FindObjectsByType<FadeGroup>(FindObjectsSortMode.None).First(g => scene.EndsWith(g.PlaceId));
+            var ink = Shader.Find("OWSBG/InkSprite");
+            Assert.GreaterOrEqual(group.Layers.Count, 4, scene + " has its layers");
+            foreach (var l in group.Layers)
+            {
+                var m = l.Renderer.sharedMaterial;
+                Assert.AreEqual(ink, m.shader, l.Renderer.name + " on the ink shader");
+                Assert.IsNotNull(m.GetTexture("_BaseMap"), l.Renderer.name + " has its drawing");
+            }
+            Assert.IsTrue(group.Layers.Any(l => l.Renderer.name == backdrop), scene + " shows " + backdrop);
+            Assert.IsTrue(group.Layers.Any(l => l.Renderer.sharedMaterial.name == ground), scene + " stands on " + ground);
         }
     }
 }

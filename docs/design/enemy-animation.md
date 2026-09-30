@@ -8,7 +8,8 @@ paper kits' Freestyle ink, sheets packed at 96 px/unit. Model sheets are `docs/a
 
 ```
 tools/characters/saltmarrow_enemies.py     (Blender, headless; inklib.py holds what wren.py shares)
-python tools/characters/pack.py marshcrab reedskimmer smudge cantor warden lostremnant lampkeeper
+tools/characters/emberdown_enemies.py      (the highland's two, §2b)
+python tools/characters/pack.py marshcrab reedskimmer smudge cantor warden lostremnant lampkeeper cavebat salamander
 Unity.exe -batchmode -nographics -projectPath LastCartographer -executeMethod OWSBG.Setup.ProjectSetup.BuildBootstrapScene -quit
 ```
 
@@ -52,6 +53,24 @@ collider's centre like every enemy but must also stand on the lighthouse floor a
 for the feet-at-origin placement, so one set of sheets serves the fight and the hunt. Brann and Oriel have no room
 yet (Emberdown's Furnace Stair and Halden's Bastion are unbuilt): the sheets and the clip names wait for them.
 
+## 2b. The highland's creatures (CMB-09, with ENV-03)
+
+`tools/characters/emberdown_enemies.py`, on the same plumbing: the mine country's two (rooms doc §3, "pogo the
+salamanders, strike the bats as they dive"), in the highland's palette (charcoal fur, basalt, ember). Both are
+rounds. Placed by the room recipes (`Bat(x, y)` at its roost, `Salamander(x)` on its ledge) in every room the
+plan lists them for: nine bats and nine salamanders across the stair, the bell stair, the chimneys, the flue
+road and the baths; `EmberdownRoomsTests` holds each room to the plan's count.
+
+| Creature | Silhouette | Cell | Clips | What names them |
+|---|---|---|---|---|
+| Cave-bat | a hung cloak that opens into a scalloped wing; ember eyes | 1.6 | idle, unfurl, swoop, move, hurt, death | `CaveBat.State`: Roost → idle (hanging, head down, wings folded); Unfurl (the telegraph, 0.4 s, sought by its progress; a Strike tell on its first frame); Swoop (24 fps: one arc from the roost through where Wren stood and up the far side, 0.8 s); Return → move (flapping back to the roost at 6 u/s). Health 2, any hit: fodder |
+| Salamander | a low black length, embers down its back, a long tail | 1.6 | idle, move, flare, rush, cool, hurt, death | `Salamander.State`: Crawl (1.6 u/s along its ledge, turning at edges and walls) → idle/move; Flare (the telegraph, 0.35 s: the embers stand up, sought by its progress; a Strike tell); Rush (24 fps: 8 u/s along the ground for 0.45 s, stopping at an edge or a wall); Cool (0.8 s, the embers down, then 2 s before the next). Health 3; its back burns: only a down-strike lands (`AcceptsHit`), the answer is Pogo |
+
+The bat's swoop is a quadratic arc: from the roost, through Wren's centre at its midpoint, to the mirror point
+at the roost's height on her far side, so the pogo off it (the Wingbeat gap at the foot of the stair: "a pogo
+off the bat crosses it") comes as it passes under. The bat in Chimneys_3 roosts over the ninth chimney's door,
+more than eight units from the vantage, so it does not cancel the survey.
+
 ## 3. What changes when a creature wears sheets
 
 - **Death:** the placeholder shrank to nothing in a quarter second. A drawing dies as its ink leaves: the
@@ -67,7 +86,7 @@ yet (Emberdown's Furnace Stair and Halden's Bastion are unbuilt): the sheets and
 ## 4. Reworking by hand
 
 As for Wren: replace a `<Type>_<clip>.png` strip at the same frame count and cell, or change the count in
-the json, and rebuild; edit a creature's class or clip functions in `saltmarrow_enemies.py` for a new pose;
+the json, and rebuild; edit a creature's class or clip functions in `saltmarrow_enemies.py` (or `emberdown_enemies.py`) for a new pose;
 a new creature is a `Rig` subclass, a clip list and a line in `CREATURES`, and the setup finds its sheets by
 the enemy type's name.
 

@@ -1154,6 +1154,10 @@ namespace OWSBG.Setup
             public RoomRecipe Crab(float x, float y) { Enemies.Add((typeof(MarshCrab), "Crab_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.7f))); return this; }
             public RoomRecipe Skimmer(float x, float y) { Enemies.Add((typeof(ReedSkimmer), "Skimmer_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.5f))); return this; }
             public RoomRecipe Smudge(float x) { Enemies.Add((typeof(Smudge), "Smudge_" + Enemies.Count, new Vector2(x, 1.5f), new Vector2(1.1f, 1.1f))); return this; }
+            /// <summary>A cave-bat at its roost (under a platform: its top 0.3 under the platform's underside, or over a gap).</summary>
+            public RoomRecipe Bat(float x, float y) { Enemies.Add((typeof(CaveBat), "Bat_" + Enemies.Count, new Vector2(x, y), new Vector2(0.8f, 0.6f))); return this; }
+            /// <summary>A salamander on its ledge (y is the ledge's top plus 0.35).</summary>
+            public RoomRecipe Salamander(float x, float y = 0.35f) { Enemies.Add((typeof(Salamander), "Salamander_" + Enemies.Count, new Vector2(x, y), new Vector2(1.2f, 0.5f))); return this; }
             public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
             public RoomRecipe Prop(string name, float x, float y = 0f) { Props.Add((name, new Vector2(x, y))); return this; }
             public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
@@ -1268,10 +1272,12 @@ namespace OWSBG.Setup
                 // ---- the Furnace Stair: a climb of iron landings over live furnaces ----
                 new RoomRecipe("Emberdown_Stair_1").Tall().Tiles("Ground_Basalt", "Ground_Iron").EmberdownPapers("Mid_Furnaces")
                     .Floor(-20f, -8f).Floor(-2f, 20f).Plat(4f, 3f, 3f).Plat(9f, 6f, 3f).Plat(14f, 9f, 3f).Plat(10f, 12f, 4f)
+                    .Bat(-5f, 2.6f).Salamander(4f, 3.65f).Salamander(12f)   // the bat over the Wingbeat gap: a pogo off it crosses
                     .West(Scene("Saltmarrow_BoneBridge")).Up(E("Stair_2"), 10f, 12.3f),
                 new RoomRecipe("Emberdown_Stair_2").Tall().Tiles("Ground_Iron", "Ground_Iron").EmberdownPapers("Mid_Furnaces")
                     .Floor(-20f, -12f).Floor(-8f, 20f).Plat(-4f, 3f, 3f).Plat(2f, 6f, 3f).Plat(8f, 9f, 3f).Plat(2f, 12f, 5f).Vantage("Landing", 2f, 12.3f)
                     .Npc("Hask", -4f, "Stair_Rescue", stranger, 3.3f)
+                    .Bat(8f, 8.3f).Bat(-10f, 4f).Salamander(12f)
                     .Down(E("Stair_1"), -10f).Up(E("Stair_3"), 2f, 12.3f),
                 new RoomRecipe("Emberdown_Stair_3").Tiles("Ground_Iron", "Ground_Basalt").EmberdownPapers("Mid_Furnaces")
                     .Floor(-20f, -17f).Floor(-13f, 20f).Desk(-10f)
@@ -1292,6 +1298,7 @@ namespace OWSBG.Setup
                 // ---- the Roll-Call Bell ----
                 new RoomRecipe("Emberdown_Bell_1").Tall().Tiles("Ground_Ash", "Ground_Timber").EmberdownPapers("Mid_Roosts", "Far_Bell")
                     .Floor(-20f, -12f).Floor(-8f, 20f).Plat(-4f, 3f, 3f).Plat(2f, 6f, 3f).Plat(8f, 9f, 3f).Plat(14f, 12f, 4f)
+                    .Bat(2f, 5.3f).Bat(14f, 11.3f)   // bats roost in the stair
                     .Down(E("Rest_2"), -10f).East(E("Bell_2")),
                 new RoomRecipe("Emberdown_Bell_2").Tiles("Ground_Ash", "Ground_Timber").EmberdownPapers("Mid_Roosts", "Far_Bell")
                     .Floor(-20f, 20f).Plat(-8f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Prop("Bell", 6f).Vantage("Bell", 8.5f, 0f)
@@ -1304,28 +1311,29 @@ namespace OWSBG.Setup
                     .West(E("Bell_1")),
                 // ---- the Nine Chimneys: up by the wall ----
                 new RoomRecipe("Emberdown_Chimneys_1").Tall().Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers()
-                    .Floor(-20f, 20f).Wall(6f, 0f, 12f).Wall(10f, 0f, 12f).Plat(8f, 12f, 3f).Npc("Runa", -6f, "Chimneys_Runa_Climb", runa)
+                    .Floor(-20f, 20f).Wall(6f, 0f, 12f).Wall(10f, 0f, 12f).Plat(8f, 12f, 3f).Npc("Runa", -6f, "Chimneys_Runa_Climb", runa).Salamander(2f)
                     .West(E("Rest_3")).Up(E("Chimneys_2"), 8f, 12.3f),
                 new RoomRecipe("Emberdown_Chimneys_2").Tall().Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers()
                     .Floor(-20f, 6f).Floor(10f, 20f).Wall(-14f, 0f, 12f).Wall(-10f, 0f, 12f).Wall(-2f, 0f, 12f).Wall(2f, 0f, 12f).Wall(13f, 0f, 12f).Wall(17f, 0f, 12f)
                     .Plat(-12f, 12f, 3f).Plat(0f, 12f, 3f).Vantage("Shaft", -12f, 12.3f)
+                    .Salamander(-6f).Salamander(4f).Bat(-6f, 8f)   // salamanders on the ledges between the shafts, a bat in one
                     .Down(E("Chimneys_1"), 8f).Up(E("Chimneys_3"), 0f, 12.3f),
                 new RoomRecipe("Emberdown_Chimneys_3").Tall().Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers()
                     .Floor(-20f, -10f).Floor(-6f, 20f).Desk(-2f).Wall(6f, 0f, 10f).Wall(10f, 0f, 10f).Plat(8f, 10.3f, 3f).Vantage("Ninth", 8f, 10.6f)
-                    .Npc("Ostry", 14f, "Chimneys_Ninth_Agent", stranger)
+                    .Npc("Ostry", 14f, "Chimneys_Ninth_Agent", stranger).Bat(16f, 6.5f)   // over the ninth's door, clear of the vantage's eight units
                     .Down(E("Chimneys_2"), -8f).East(E("Chimneys_4")),
                 new RoomRecipe("Emberdown_Chimneys_4").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Gallery", "Far_Dark")
-                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(2f, 4f, 3f).Plat(10f, 2.5f, 3f)
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(2f, 4f, 3f).Plat(10f, 2.5f, 3f).Salamander(-12f).Salamander(6f)
                     .West(E("Chimneys_3")).East(E("Baths_1")),
                 // ---- the Cinder Baths ----
                 new RoomRecipe("Emberdown_Baths_1").Tiles("Ground_Timber", "Ground_Basalt").EmberdownPapers("Mid_Springs")
-                    .Floor(-20f, -8f).Floor(-4f, 4f).Floor(8f, 20f).Shallows(-8f, -4f).Shallows(4f, 8f).Smudge(0f)
+                    .Floor(-20f, -8f).Floor(-4f, 4f).Floor(8f, 20f).Shallows(-8f, -4f).Shallows(4f, 8f).Smudge(0f).Salamander(14f)
                     .West(E("Chimneys_4")).East(E("Baths_2")),
                 new RoomRecipe("Emberdown_Baths_2").Tiles("Ground_Timber", "Ground_Basalt").EmberdownPapers("Mid_Springs")
                     .Floor(-20f, 20f).Vantage("Baths", 0f, 0f).Npc("Kettil", -6f, "Baths_Kettil_Debate", kettil).Npc("Runa", 6f, "Baths_Runa_Debate", runa)
                     .West(E("Baths_1")).East(E("Baths_3")),
                 new RoomRecipe("Emberdown_Baths_3").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Springs")
-                    .Floor(-20f, 20f).Plat(-10f, 3f, 3f).Plat(-4f, 5.5f, 3f).Plat(4f, 8f, 3f)
+                    .Floor(-20f, 20f).Plat(-10f, 3f, 3f).Plat(-4f, 5.5f, 3f).Plat(4f, 8f, 3f).Bat(-4f, 4.8f).Bat(12f, 6f)
                     .West(E("Baths_2")).East(E("Overlook_1")),
                 // ---- the Overlook: the Greyfold from outside ----
                 new RoomRecipe("Emberdown_Overlook_1").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Roosts", "Far_Chimneys", "Farther_White")
@@ -1407,6 +1415,8 @@ namespace OWSBG.Setup
                 else if (e.type == typeof(ReedSkimmer)) MakeEnemy<ReedSkimmer>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Smudge)) MakeEnemy<Smudge>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Cantor)) MakeEnemy<Cantor>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(CaveBat)) MakeEnemy<CaveBat>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Salamander)) MakeEnemy<Salamander>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);
             }
             if (r.ArenaOf.HasValue)

@@ -27,6 +27,9 @@ namespace OWSBG.Tests
             ("Warden", "M_Enemy_Warden", new[] { "idle", "move", "measure", "telegraph", "thrust", "recover", "hurt", "death" }),
             ("LostRemnant", null, new[] { "idle", "move", "hurt", "death" }),
             ("LampKeeper", "M_Boss_LampKeeper", new[] { "idle", "telegraph", "beam", "dive", "grounded", "return", "hurt", "death" }),
+            // Emberdown's (CMB-09, enemy-animation.md 2b)
+            ("CaveBat", "M_Enemy_CaveBat", new[] { "idle", "unfurl", "swoop", "move", "hurt", "death" }),
+            ("Salamander", "M_Enemy_Salamander", new[] { "idle", "move", "flare", "rush", "cool", "hurt", "death" }),
         };
 
         [System.Serializable] class Manifest { public string character; public int ppu, cell; public float cellUnits; public Entry[] clips; }
@@ -77,6 +80,10 @@ namespace OWSBG.Tests
             Assert.GreaterOrEqual(Load("LampKeeper").cellUnits, 3f);
             Assert.LessOrEqual(Load("MarshCrab").cellUnits, 1.6f);
             Assert.LessOrEqual(Load("ReedSkimmer").cellUnits, 1.6f);
+            Assert.LessOrEqual(Load("CaveBat").cellUnits, 1.6f, "the highland's fauna are rounds too");
+            Assert.LessOrEqual(Load("Salamander").cellUnits, 1.6f);
+            Assert.AreEqual(3, Load("CaveBat").clips.First(c => c.name == "unfurl").frames, "the unfurl opens through three frames, sought by the telegraph's progress");
+            Assert.AreEqual(3, Load("Salamander").clips.First(c => c.name == "flare").frames, "the flare stands the embers up through three, likewise");
             var ring = Load("Cantor").clips.First(c => c.name == "ring");
             Assert.AreEqual(6, ring.frames, "the bell rises through six frames, sought by the ring's progress");
         }
@@ -98,6 +105,7 @@ namespace OWSBG.Tests
             Assert.GreaterOrEqual(Uses("Greybox_Saltmarrow_A"), 3, "the quay's crab, skimmer and smudge are drawn");
             Assert.GreaterOrEqual(Uses("Greybox_Saltmarrow_B"), 1, "Merrow's End's Cantor is drawn");
             Assert.GreaterOrEqual(Uses("Greybox_Saltmarrow_Lighthouse"), 1, "the Lamp-Keeper is drawn");
+            Assert.GreaterOrEqual(Uses("Greybox_Emberdown_Stair_1"), 3, "the foot of the stair's bat and two salamanders are drawn");
         }
     }
 }

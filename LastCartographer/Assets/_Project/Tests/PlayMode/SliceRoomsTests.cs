@@ -108,7 +108,8 @@ namespace OWSBG.Tests
                     Assert.IsNotNull(Atlas.FindVantage(v), v + " is on the atlas");
                     Assert.AreEqual(info.RoomId, Atlas.PlaceOf(v), v + " belongs to its room");
                 }
-                if (!kv.Key.StartsWith("Greybox_Emberdown")) Assert.Greater(info.Enemies, 0, kv.Key + " has something to fight");   // the highland's bats and salamanders are not drawn yet
+                var plan = RoomPlans.All.FirstOrDefault(p => "Greybox_" + p.Id == kv.Key);
+                if (plan == null || !string.IsNullOrEmpty(plan.Enemies)) Assert.Greater(info.Enemies, 0, kv.Key + " has something to fight");   // a planned room may be empty on purpose (the town, the bell)
             }
 
             // The whole slice is one connected space from the shore.

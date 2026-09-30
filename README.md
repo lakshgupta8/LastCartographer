@@ -209,7 +209,7 @@ A region's backdrop and ground are drawn by `tools/paperkit/<region>.py` (`saltm
 
 ## Wren's sheets
 `tools/characters/wren.py` builds Wren from parts in headless Blender and renders every clip side-on in the paper kit's ink; `python tools/characters/pack.py wren` packs the frames into one strip per clip under `Assets/_Project/Art/Characters/Wren/` and writes the model sheet to `docs/art/`. The bootstrap build puts `InkSheetPlayer` and `WrenAnimator` on her (`docs/design/wren-animation.md`).
-`tools/characters/saltmarrow_enemies.py` does the same for the coast's six enemies and the Lamp-Keeper (`docs/design/enemy-animation.md`); `tools/characters/wardens.py` builds the rest of the Warden family on that rig (Halvard, Brann, Oriel, two more patrol looks; enemy-animation.md §2a); `pack.py all` packs every rendered character.
+`tools/characters/saltmarrow_enemies.py` does the same for the coast's six enemies and the Lamp-Keeper (`docs/design/enemy-animation.md`), and `emberdown_enemies.py` for the highland's cave-bat and salamander (§2b); `tools/characters/wardens.py` builds the rest of the Warden family on that rig (Halvard, Brann, Oriel, two more patrol looks; enemy-animation.md §2a); `pack.py all` packs every rendered character.
 
 ## The ink
 `tools/characters/fx.py` draws the effects as one-shot clips (a splash, the slash, the three Flourishes' scribbles, the Bind's redraw, the eraser, a crumble, Halvard's marks and their eruption) and `pack.py fx` packs them; the persistent scene's `InkFx` spawns them wherever the game hits, swings, binds, erases or breaks (`docs/design/ink-fx.md`).

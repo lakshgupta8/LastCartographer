@@ -150,6 +150,43 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void TheHighlandsRoomsCarryThePlansCreatures()
+        {
+            // "cave-bat x2, salamander" in the plan is two CaveBat components and one Salamander in the scene, and nothing the plan leaves out.
+            var scripts = new Dictionary<string, string>
+            {
+                ["cave-bat"] = Guid("World/Enemies/CaveBat.cs"), ["salamander"] = Guid("World/Enemies/Salamander.cs"),
+                ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["Warden"] = Guid("World/Enemies/Warden.cs"),
+            };
+            int rooms = 0, creatures = 0;
+            foreach (var p in Plans)
+            {
+                var text = SceneText(p.Id);
+                var wanted = scripts.ToDictionary(kv => kv.Key, _ => 0);
+                foreach (var part in Regex.Replace(p.Enemies ?? "", @"\s*\([^)]*\)", "").Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries))   // "Warden (patrol, the road)" is one Warden
+                {
+                    var m = Regex.Match(part, @"^([A-Za-z-]+)(?: \u00d7(\d+))?");
+                    Assert.IsTrue(m.Success && wanted.ContainsKey(m.Groups[1].Value), p.Id + " plans a creature the greybox knows: " + part);
+                    wanted[m.Groups[1].Value] += m.Groups[2].Success ? int.Parse(m.Groups[2].Value) : 1;
+                }
+                foreach (var kv in wanted)
+                {
+                    Assert.AreEqual(kv.Value, Count(text, scripts[kv.Key]), p.Id + " has the plan's " + kv.Key + "s");
+                    creatures += kv.Value;
+                }
+                rooms++;
+            }
+            Assert.AreEqual(21, rooms);
+            Assert.AreEqual(23, creatures, "nine bats, nine salamanders, four smudges and the Warden on the road");
+            // The bat by the ninth chimney's vantage keeps its distance (an enemy within eight units cancels a survey).
+            var ninth = SceneText("Emberdown_Chimneys_3");
+            var bat = Regex.Match(ninth, @"m_Name: Bat_\d+[\s\S]*?m_LocalPosition: \{x: ([-0-9.]+), y: ([-0-9.]+)");
+            Assert.IsTrue(bat.Success, "the ninth chimney's bat");
+            var at = new Vector2(float.Parse(bat.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture), float.Parse(bat.Groups[2].Value, System.Globalization.CultureInfo.InvariantCulture));
+            Assert.Greater(Vector2.Distance(at, new Vector2(8f, 10.6f)), 8f, "clear of the vantage");
+        }
+
+        [Test]
         public void TheBoneBridgeJoinsTheCoastToTheStair()
         {
             var bridge = SceneText("Saltmarrow_BoneBridge");

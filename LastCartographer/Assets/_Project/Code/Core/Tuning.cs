@@ -149,6 +149,8 @@ namespace OWSBG.Core
             E("Cantor", 4);         // Longstroke reaches it; a hit stops the ring
             E("Warden", 5);         // parry: the 1 s stagger is a combo and change
             E("LostRemnant", 5);    // the Blank's
+            E("CaveBat", 2);        // Emberdown's fodder on the wing: struck as it swoops
+            E("Salamander", 3);     // its back burns: pogo only
         }
     }
 }

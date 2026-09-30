@@ -61,9 +61,11 @@ Runa, Kettil, the Bell prop and the lesson walk (three verses of five bounds at 
 kettils_rest>>`); the chimneys as Talonhold shafts (two walls four units apart) with Ostry at the ninth; the
 baths' boardwalks over pools with the debate's two speakers; the Overlook's Warden and the Greyfold white on its
 horizon, Runa and a desk at the end; Hollowvein's four rooms straight down on timber, the Collapse's arena at the
-bottom. The Bone Bridge (`Saltmarrow_BoneBridge`) joins the chapel to Stair_1 under the whale's bones. Not yet:
-cave-bats and salamanders (no drawings or code), so their rooms stand empty of them; the Hollowvein walk (it
-crosses four rooms, §4); Overlook_2's road to the Plateau (ENV-05); Brann's and Lorne's talks before their scenes.
+bottom. The Bone Bridge (`Saltmarrow_BoneBridge`) joins the chapel to Stair_1 under the whale's bones. The
+cave-bats and salamanders are drawn and placed as the table says (`CaveBat`, `Salamander`; enemy-animation.md
+§2b): bats roost under the landings and in the shafts, salamanders crawl the ledges and the flue road. Not yet:
+the Hollowvein walk (it crosses four rooms, §4); Overlook_2's road to the Plateau (ENV-05); Brann's and Lorne's
+talks before their scenes.
 
 ## 2. The Verdance (19 rooms, 8 vantages)
 

@@ -99,6 +99,38 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator TheSparseLayersComeFromAPointInTheRoom()
+        {
+            yield return PlayTheCoast();
+            var layers = Ambience.Of(Region.Saltmarrow);
+            foreach (var l in layers)
+            {
+                var src = Driver.Source(l.Name)!;
+                if (!l.Point)
+                {
+                    Assert.AreEqual(0f, src.spatialBlend, l.Name + " is everywhere");
+                    Assert.IsNull(Driver.Position(l.Name));
+                    continue;
+                }
+                Assert.AreEqual(1f, src.spatialBlend, l.Name + " comes from a point");
+                Assert.AreEqual(AudioRolloffMode.Linear, src.rolloffMode);
+                Assert.AreEqual(AmbienceDriver.PointNear, src.minDistance, 0.01f);
+                Assert.AreEqual(0f, src.dopplerLevel);
+                var p = Driver.Position(l.Name)!.Value;
+                Assert.That(p.x, Is.InRange(-AmbienceDriver.DefaultSpan / 2f, AmbienceDriver.DefaultSpan / 2f), l.Name + " inside the span");
+                Assert.AreEqual(p.x, src.transform.position.x, 0.001f); Assert.AreEqual(p.y, src.transform.position.y, 0.001f);
+            }
+            Assert.IsFalse(layers[0].Point, "the tide is everywhere"); Assert.IsFalse(layers[2].Point, "so is the rain");
+            Assert.IsTrue(layers[3].Point && layers[4].Point, "the gulls and the bell buoy are somewhere");
+            var gulls = Driver.Position("gulls far off")!.Value; var buoy = Driver.Position("a bell buoy")!.Value;
+            Assert.Greater(gulls.y, buoy.y, "the gulls are high, the buoy low");
+            Assert.AreNotEqual(gulls.x, buoy.x, "not in the same place");
+            var again = Ambience.PointIn(layers[4], Room, -8f, 8f, 0f, 8f);
+            Assert.AreEqual(buoy.x, again.x, 0.001f); Assert.AreEqual(buoy.y, again.y, 0.001f, "the same room, the same spot, every time");
+            Assert.AreNotEqual(again.x, Ambience.PointIn(layers[4], "Greybox_Saltmarrow_B", -8f, 8f, 0f, 8f).x, "another room, another spot");
+        }
+
+        [UnityTest]
         public IEnumerator AnotherRegionBringsItsOwnBed()
         {
             yield return PlayTheCoast();

@@ -35,6 +35,8 @@ namespace OWSBG.Core
             public int Seconds => LoopSeconds[Math.Min(Index, LoopSeconds.Length - 1)];
             public float Level => Levels[Math.Min(Index, Levels.Length - 1)];
             public string Slug => Name.ToLowerInvariant().Replace("'", "").Replace(",", "").Replace(' ', '-');
+            /// <summary>Heard from a point in the room (a bell, a call, a fire, steps) rather than from everywhere (a wash, rain, thunder).</summary>
+            public bool Point => Recipe != Recipe.Wash && Recipe != Recipe.Rumble && Name != "rain on boardwalk";
             /// <summary>The delivery name: region_ambience_layer.wav (no beat: a bed).</summary>
             public string FileName => Region.ToString().ToLowerInvariant() + "_ambience_" + Slug + ".wav";
         }
@@ -94,6 +96,26 @@ namespace OWSBG.Core
         public static IReadOnlyList<Layer> Layers => _layers;
         public static List<Layer> Of(Region r) => _layers.Where(l => l.Region == r).OrderBy(l => l.Index).ToList();
         public static Layer Find(Region r, string name) => _layers.FirstOrDefault(l => l.Region == r && l.Name == name);
+
+        /// <summary>
+        /// Where a point layer sits in a room, from the room's span: the same room and layer always give the same spot.
+        /// Calls come from high up, a toll and steps and a fire from low down, the rest from a hashed height; x is hashed
+        /// across the span, kept two units in from the edges.
+        /// </summary>
+        public static (float x, float y) PointIn(Layer l, string room, float minX, float maxX, float minY, float maxY)
+        {
+            uint h = (uint)Score.Stable((room ?? "") + "|" + l.Region + "|" + l.Name);
+            float fx = (h & 0xFFFF) / 65535f, fy = ((h >> 16) & 0xFFFF) / 65535f;
+            float inX = Math.Min(2f, (maxX - minX) * 0.25f), inY = Math.Min(1f, (maxY - minY) * 0.25f);
+            float x = minX + inX + (maxX - minX - 2f * inX) * fx;
+            float y = l.Recipe switch
+            {
+                Recipe.Calls => maxY - inY,
+                Recipe.Toll or Recipe.Steps or Recipe.Crackle => minY + inY,
+                _ => minY + inY + (maxY - minY - 2f * inY) * fy,
+            };
+            return (x, y);
+        }
 
         /// <summary>Each layer's level at a fade stage: the last goes first, and an erased place has none (audio-direction 5).</summary>
         public static float[] LevelsAt(Region r, int stage)

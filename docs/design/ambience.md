@@ -36,6 +36,13 @@ same stage (`FadeStages.Get` of the room's place) and takes the layers away, las
 A stage-3 Merrow's End has the tide and the reeds under a 1.2 kHz low-pass, as the direction says; an erased place
 has nothing. A room in another region stops the bed and starts that region's. Nothing is loaded from disk.
 
+**Points.** A wash, the rain and the thunder are everywhere (2D). Everything sparse (a bell buoy, gulls, a fire,
+picks, footsteps, the clockwork, a hum, a voice) is a 3D source at a point in the room, chosen once per room and
+layer from a hash so it is always the same spot (`Ambience.PointIn`): calls from high up, a toll and steps and a
+fire from low down, the rest at a hashed height, two units in from the room's camera bounds (or a 16-unit span with
+no room). Linear rolloff, full within 3 units, gone past the room's width; the source sits at the listener's depth
+so distance is in the room's plane, and the camera following Wren pans it.
+
 ## 3. The pipeline
 
 ```
@@ -53,9 +60,10 @@ by region and name in the driver's cache (`_clips`); a loader is the whole chang
   exactly its loop at the bed's level under the peak, the same every time; the recipes sound like their names (the
   tide low and breathing, the reeds a hiss, the clock on Halden's beat with quiet between, thunder low, one bird
   rare, the Bell humming G); the deliverables are rendered.
-- `AmbienceDriverTests` (PlayMode, 3): the coast's five loops of different lengths play at their levels under the
+- `AmbienceDriverTests` (PlayMode, 4): the coast's five loops of different lengths play at their levels under the
   bus, open; two stages take the bell buoy and the gulls and dull the rest to 3.5 kHz, erasure takes everything;
-  the Edge brings the Greyfold's two layers and the coast's are gone.
+  the sparse layers are 3D at points in the span (the gulls high, the buoy low, the same spot per room), the washes
+  and the rain 2D; the Edge brings the Greyfold's two layers and the coast's are gone.
 
 ## 5. Open
 
@@ -64,4 +72,3 @@ by region and name in the driver's cache (`_clips`); a loader is the whole chang
   key; nothing asks for one yet.
 - **Loudness** is RMS, not LUFS.
 - **Crossfades between regions** are a stop and a start, like the music's (AUD-06).
-- **Positional sources** (a bell buoy off to one side) would want the layer on a 3D source at a point in the room.

@@ -18,6 +18,8 @@ namespace OWSBG.Narrative
     {
         public static AmbienceDriver Instance { get; private set; }
         public const float FadeSeconds = 1.5f;
+        /// <summary>A point layer is full within this many units and gone past the room's width (or this span, with no room).</summary>
+        public const float PointNear = 3f, DefaultSpan = 16f;
 
         /// <summary>Tests: the room the ambience believes it is in, instead of the room manager's.</summary>
         public string RoomOverride { get; set; }
@@ -27,8 +29,12 @@ namespace OWSBG.Narrative
         readonly Dictionary<string, AudioSource> _sources = new Dictionary<string, AudioSource>();
         readonly Dictionary<string, AudioLowPassFilter> _filters = new Dictionary<string, AudioLowPassFilter>();
         readonly Dictionary<string, float> _levels = new Dictionary<string, float>();
+        readonly Dictionary<string, Vector2> _points = new Dictionary<string, Vector2>();
+        AudioListener _listener;
 
         public Region? Current { get; private set; }
+        /// <summary>Where a point layer sits in the room (null for a layer heard from everywhere).</summary>
+        public Vector2? Position(string layer) => _points.TryGetValue(layer, out var p) ? p : (Vector2?)null;
         public Region? Wanted { get; private set; }
         public bool IsReady(Region r) => _clips.ContainsKey(r);
         public bool IsRendering(Region r) => _rendering.ContainsKey(r);
@@ -109,6 +115,11 @@ namespace OWSBG.Narrative
             Current = r;
             var clips = _clips[r];
             double at = AudioSettings.dspTime + 0.05;
+            // The room's span, for the point layers: its camera bounds, else a span around the listener.
+            var here = World.Room.Current;   // the room object, not this driver's room name
+            var bounds = here != null && here.CameraBounds != null ? here.CameraBounds.bounds : (Bounds?)null;
+            float minX = bounds?.min.x ?? -DefaultSpan / 2f, maxX = bounds?.max.x ?? DefaultSpan / 2f;
+            float minY = bounds?.min.y ?? 0f, maxY = bounds?.max.y ?? 8f;
             foreach (var layer in Ambience.Of(r))
             {
                 var child = new GameObject("Layer_" + layer.Slug);
@@ -117,6 +128,18 @@ namespace OWSBG.Narrative
                 src.playOnAwake = false; src.spatialBlend = 0f; src.loop = true; src.ignoreListenerPause = true;
                 src.clip = clips[layer.Name];
                 src.volume = 0f;
+                if (layer.Point)
+                {
+                    var (x, y) = Ambience.PointIn(layer, Room, minX, maxX, minY, maxY);
+                    _points[layer.Name] = new Vector2(x, y);
+                    child.transform.position = new Vector3(x, y, ListenerZ);
+                    src.spatialBlend = 1f;
+                    src.rolloffMode = AudioRolloffMode.Linear;
+                    src.minDistance = PointNear;
+                    src.maxDistance = Mathf.Max(12f, (maxX - minX) * 0.9f);
+                    src.dopplerLevel = 0f;
+                    src.spread = 30f;
+                }
                 src.PlayScheduled(at);
                 var f = child.AddComponent<AudioLowPassFilter>();
                 f.cutoffFrequency = Mix.Open;
@@ -127,8 +150,18 @@ namespace OWSBG.Narrative
         void Stop()
         {
             foreach (var src in _sources.Values) if (src != null) Destroy(src.gameObject);
-            _sources.Clear(); _filters.Clear(); _levels.Clear();
+            _sources.Clear(); _filters.Clear(); _levels.Clear(); _points.Clear();
             Current = null;
+        }
+
+        /// <summary>The listener's depth, so a point layer's distance is measured in the room's plane, not to the camera.</summary>
+        float ListenerZ
+        {
+            get
+            {
+                if (_listener == null) _listener = FindFirstObjectByType<AudioListener>();
+                return _listener != null ? _listener.transform.position.z : 0f;
+            }
         }
 
         void Tick()
@@ -139,13 +172,16 @@ namespace OWSBG.Narrative
             var targets = Ambience.LevelsAt(Current.Value, Stage);
             var layers = Ambience.Of(Current.Value);
             float step = Time.unscaledDeltaTime / FadeSeconds;
+            float z = ListenerZ;
             for (int i = 0; i < layers.Count; i++)
             {
                 var l = layers[i];
                 float level = Mathf.MoveTowards(_levels[l.Name], targets[i], step * l.Level);
                 _levels[l.Name] = level;
-                _sources[l.Name].volume = level * gain;
+                var src = _sources[l.Name];
+                src.volume = level * gain;
                 _filters[l.Name].cutoffFrequency = cutoff;
+                if (_points.TryGetValue(l.Name, out var p)) src.transform.position = new Vector3(p.x, p.y, z);
             }
         }
     }

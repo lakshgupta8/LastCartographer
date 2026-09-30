@@ -202,6 +202,9 @@ and Steam's depot scripts (`tools/steam-upload.ps1`), are in `docs/design/build-
 ## The paper kit
 A region's backdrop and ground are drawn by `tools/paperkit/<region>.py` in headless Blender: cut-out geometry in the region's palette with Freestyle ink lines, written as PNG strips and tiles to `Assets/_Project/Art/Environment/<Region>/` with a `kit.json`. The greybox builder puts any layer the kit has on the ink shader (`Paper_*` strips on the parallax quads, `Ground_*` tiles as world-tiled skins on the ground blocks), so the place's fade thins the drawing. Render, then rebuild: `blender -b -P tools/paperkit/saltmarrow.py` and **OWSBG → Build Bootstrap Scene** (`docs/design/paper-kit.md`).
 
+## Wren's sheets
+`tools/characters/wren.py` builds Wren from parts in headless Blender and renders every clip side-on in the paper kit's ink; `python tools/characters/pack.py wren` packs the frames into one strip per clip under `Assets/_Project/Art/Characters/Wren/` and writes the model sheet to `docs/art/`. The bootstrap build puts `InkSheetPlayer` and `WrenAnimator` on her (`docs/design/wren-animation.md`).
+
 ## The feel-test
 **OWSBG → Play the Feel Course** or `LastCartographer.exe -feel -tester <name>` runs the controller's seven-station course and writes the session as JSON on quit. Put the testers' answers in `logs/feel/answers.csv` and run `pwsh tools/feel-gate.ps1` for the M0 gate's verdict (`docs/design/feel-test.md`).
 

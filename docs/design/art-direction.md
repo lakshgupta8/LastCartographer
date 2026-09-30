@@ -20,6 +20,7 @@ Silksong is painted, gothic, high-contrast, saturated pools of colour in darknes
 - **Wren:** small, round, brown-grey with warm cream breast; ink-blue cowl with a brass compass-rose clasp; the needle-quill is nearly her own height. Read at a glance: dot body, long line.
 - **Silhouette families:** Wardens are tall vertical lines (herons, cranes); townsfolk are ovals; Cantors are teardrops with bells; Smudges are scribbles; Remnant are the same shapes with the ink removed (grey outline, no wash, paper showing through).
 - **Animation:** hand-drawn frame animation at 12 fps for characters (24 for Wren's attacks and dashes), authored in Aseprite or Krita at 2x target size, imported as sprite sheets. Bosses may use Unity 2D Animation bone rigs for large limbs with hand-drawn overlays for faces and feathers.
+  Version one draws Wren from a Blender model posed in script and rendered at 2x with the same Freestyle ink as the paper kits (`docs/design/wren-animation.md`, CHR-02/03); the sheets are the hand-off for the hand-drawn pass.
 - **Scale:** Wren is 1.2 units tall; a tile is 1 unit; sprite authored at 96 px per unit.
 
 ## 5. Environments

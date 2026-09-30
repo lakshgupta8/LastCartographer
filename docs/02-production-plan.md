@@ -137,8 +137,8 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | ID | Task | M | Ref | after |
 |---|---|---|---|---|
 | CHR-01 `[x]` | Art direction doc | M0 | ART-all | NAR-01 |
-| CHR-02 `[ ]` | Wren model sheet and turnaround; ink style test | M0 | ART-4 | CHR-01 |
-| CHR-03 `[ ]` | Wren core animation: idle, run, jump, fall, land, strike ×3, pogo, Bind, survey, hurt, death | M0–M1 | CMB-2 | CHR-02 |
+| CHR-02 `[~]` | Wren model sheet and turnaround; ink style test; v1: a Blender-built Wren (`tools/characters/wren.py`) rendered as `docs/art/wren-turnaround.png` in the paper kit's ink, `docs/design/wren-animation.md` | M0 | ART-4 | CHR-01 |
+| CHR-03 `[~]` | Wren core animation: idle, run, jump, fall, land, strike ×3, pogo, Bind, survey, hurt, death; v1: eighteen clips posed in script and packed to sheets, `InkSheetPlayer` + `WrenAnimator` on the persistent Wren, the swing's frames following the strike's phases; a hand-drawn pass open | M0–M1 | CMB-2 | CHR-02 |
 | CHR-04 `[ ]` | Wren ability animation: Wingbeat, Talonhold, Inkthread, Windmemory, Flourishes | M1–M2 | CMB-3, 4 | CHR-03 |
 | CHR-05 `[ ]` | Charter silhouettes for Wren (cowl and grip variants) | M2 | CMB-5 | CHR-03 |
 | CHR-06 `[ ]` | Saltmarrow enemies (6) and the Lamp-Keeper | M1 | SB-6.1 | CHR-02 |

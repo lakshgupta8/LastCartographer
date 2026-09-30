@@ -1,0 +1,106 @@
+# Wren's Model and Animation (CHR-02, CHR-03, v1)
+
+How Wren is built and moved for version one, and how the team replaces her frame by frame later.
+The model sheet is `docs/art/wren-turnaround.png`.
+
+## 1. The pipeline
+
+```
+tools/characters/wren.py         (Blender, headless)
+        │  parts on a hierarchy of empties; every clip is a function of time; Freestyle ink; 2x density
+        ▼
+tools/characters/.frames/wren/   (intermediate, not committed)
+        │  python tools/characters/pack.py wren: premultiplied downsample to 96 px/unit, one strip per clip
+        ▼
+Assets/_Project/Art/Characters/Wren/Wren_<clip>.png + wren.json;  docs/art/wren-turnaround.png
+        │  CharacterTextureImporter: straight alpha, no mipmaps, clamped, uncompressed
+        ▼
+ProjectSetup.BuildWren: InkSheetPlayer (the clips) + WrenAnimator (which clip when) on the persistent Wren
+```
+
+```
+"C:/Program Files/Blender Foundation/Blender 5.2/blender.exe" -b -P tools/characters/wren.py
+python tools/characters/pack.py wren
+Unity.exe -batchmode -nographics -projectPath LastCartographer -executeMethod OWSBG.Setup.ProjectSetup.BuildBootstrapScene -quit
+```
+
+Clip names after `--` render only those; `-- turnaround` re-renders the model sheet.
+
+## 2. The model
+
+Art-direction 4, as parts: a brown-grey body with a cream breast, an ink-blue cowl (a cone over the
+shoulders) with a brass clasp, a round head with a beak, a dark eye with a paper glint and a crest, two
+wings, a tail, two thin legs with feet, and the needle-quill (1.1 units, nearly her height) pivoting at the
+near wing's tip. She stands 1.25 units. Every part hangs from an empty (root, hips, body, head, wing_near,
+wing_far, quill, tail, leg_l, leg_r), so a pose is a few rotations and offsets from rest; there is no
+armature and nothing is baked.
+
+Colours are flat emission washes; the ink line is Freestyle (silhouette, border, creases over 110°) with a
+pen's noise and a calligraphic nib, as in the paper kits, so she and the world are one drawing.
+
+## 3. The frames
+
+Rendered side-on at 192 px/unit (2x), packed at 96 px/unit into 192 × 192 px cells (two units square: room
+for the quill and the jumps), her feet at the cell's bottom centre. The quad on Wren is 2 × 2 units at
+(0, 1); `WrenView` still flips it for facing and squashes it on landing.
+
+| Clip | fps | Frames | Loops | When (`WrenAnimator`, top priority first) |
+|---|---|---|---|---|
+| death | 12 | 8 | no, holds the last | the last mask |
+| hurt | 12 | 3 | no | 0.25 s after a hit |
+| strike1 / strike2 / strike3 | 24 | 6 | no | a forward swing, by combo step; the frame follows `QuillStrike.Progress` |
+| strike_up | 24 | 6 | no | an up-swing |
+| pogo | 24 | 4 | no | the down-strike |
+| (strike2) | | | | a flourish, until they get their own |
+| thread | 24 | 2 | yes | the Inkthread pull |
+| dash | 24 | 3 | no | the Wingbeat (restarted on the event) |
+| bind | 12 | 8 | yes | the bind held: the quill circles her |
+| survey | 12 | 6 | yes | the survey held at a vantage (`VantagePoint.Surveying`) |
+| cling | 12 | 2 | yes | the Talonhold |
+| glide | 12 | 4 | yes | in the air, gliding |
+| jump | 12 | 4 | no | rising (restarted on the jump) |
+| fall | 12 | 4 | yes | falling |
+| land | 12 | 3 | no | 0.25 s after landing |
+| run | 12 | 8 | yes | grounded and moving |
+| idle | 12 | 8 | yes | otherwise |
+
+The strike's frames are not on the clock: startup, active and recovery (3, 4, 8 game frames) map onto the
+six drawn frames through the swing's progress, so the drawing lands when the hitbox does.
+
+## 4. In the engine
+
+`InkSheetPlayer` windows the strip through the renderer's property block (`_BaseMap` and `_BaseMap_ST`),
+so Wren keeps one material and the ink state (`_Ink`, the Remnant Charter's tint) stays where it was. A
+looping clip cycles; a one-shot holds its last frame; `Seek` shows a fraction. `WrenAnimator` reads the
+controller, the strike, the flourishes, the vitals and the vantage; the events for jump, dash, land and hurt
+restart their clips so the first frame always shows.
+
+## 5. Reworking by hand
+
+- **Redraw a clip:** replace `Wren_<clip>.png` with a strip of the same frame count and cell (or change
+  the count in `wren.json`), then rebuild the scenes. The animator does not care where the pixels came from.
+- **Change a pose or timing:** the clip functions in `wren.py` are a dozen lines each; frame counts and
+  rates sit in `CLIPS`.
+- **Swap the model:** any Blender rig that exposes the same empties (or a Rigify rig with the same
+  names on its bones) drops into the same render loop.
+- **A new character:** copy `wren.py`, keep the `CLIPS` shape and the output naming; `pack.py` and
+  `ProjectSetup.LoadSheets` work by name.
+
+## 6. Verification
+
+- `WrenSheetTests` (edit mode): every clip the animator plays is packed at 96 px/unit in 192-px cells,
+  locomotion at 12 fps and the quill's moves at 24, one-shots and loops as listed, the swings six frames,
+  the model sheet in the docs, the importer as specified, her material on the idle sheet and the persistent
+  scene carrying the player, the animator and every sheet.
+- `WrenAnimatorTests` (play mode): on a synthetic Wren with the real controller, strike and vitals: idle,
+  run, jump, fall, land and back; the first swing's frames advance with its phases and the property block
+  windows the frame; the down-strike is the pogo; the hit, then the death holding its last frame.
+
+## 7. Open
+
+- The Charter silhouettes (CHR-05): cowl shape and quill grip per Charter are a second set of sheets or a
+  tint; the player already keeps the material shared for it.
+- Flourishes share the rising slash until CHR-04.
+- Wingbeat, Talonhold, Inkthread and Windmemory get their own frames in CHR-04.
+- Her shadow on the walkway is the quad's; a drawn contact shadow would sit better.
+- The ink line's weight does not yet thicken at the bottom of forms (art-direction 4).

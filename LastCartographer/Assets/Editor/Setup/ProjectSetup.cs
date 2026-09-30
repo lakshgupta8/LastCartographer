@@ -492,18 +492,30 @@ namespace OWSBG.Setup
             go.AddComponent<CharterSet>();   // after the components it drives; profiles default in Awake
             go.AddComponent<ClarityMeter>(); // the controller adds it at runtime too, for scenes built before PRG-18
 
-            // Visual: an InkSprite quad, 1.2 units tall.
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
+            // Visual: an InkSprite quad. With her sheets (CHR-03) it is a 2 x 2 unit frame window with her feet at the
+            // origin; without them, the 1.2-unit placeholder.
+            var sheets = LoadSheets("Wren");
+            var tex = sheets != null ? sheets.Find(c => c.Name == "idle").Sheet : AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
             var mat = MakeInkMaterial("M_Wren_Ink", tex);
+            if (mat.GetTexture("_BaseMap") != tex) { mat.SetTexture("_BaseMap", tex); EditorUtility.SetDirty(mat); }
+            // The material itself shows the idle strip's first frame, so she reads in the editor and in edit-mode
+            // captures; in play the sheet player windows the frames through the property block.
+            var idleFrames = sheets != null ? Mathf.Max(1, sheets.Find(c => c.Name == "idle").Frames) : 1;
+            if (mat.GetTextureScale("_BaseMap").x != 1f / idleFrames) { mat.SetTextureScale("_BaseMap", new Vector2(1f / idleFrames, 1f)); mat.SetTextureOffset("_BaseMap", Vector2.zero); EditorUtility.SetDirty(mat); }
             var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = "Sprite";
             Object.DestroyImmediate(quad.GetComponent<Collider>());
             quad.transform.SetParent(go.transform, false);
-            quad.transform.localScale = new Vector3(0.8f, 1.2f, 1f);
-            quad.transform.localPosition = new Vector3(0f, 0.6f, 0f);
+            quad.transform.localScale = sheets != null ? new Vector3(2f, 2f, 1f) : new Vector3(0.8f, 1.2f, 1f);
+            quad.transform.localPosition = sheets != null ? new Vector3(0f, 1f, 0f) : new Vector3(0f, 0.6f, 0f);
             var qr = quad.GetComponent<MeshRenderer>();
             qr.sharedMaterial = mat;
             qr.shadowCastingMode = ShadowCastingMode.TwoSided;
+            if (sheets != null)
+            {
+                go.AddComponent<InkSheetPlayer>().Configure(qr, sheets);
+                go.AddComponent<WrenAnimator>();
+            }
 
             var view = go.AddComponent<WrenView>();
             var vwSo = new SerializedObject(view);
@@ -1816,6 +1828,30 @@ namespace OWSBG.Setup
             if (tex == null || ground == null) return;
             ground.GetComponent<MeshRenderer>().sharedMaterial =
                 MakePaperMaterial("M_" + tile, tex, RegionPaper(RegionOf(room.RoomId)), true, tileUnits);
+        }
+
+        // ---- character sheets (CHR-03, docs/design/wren-animation.md)
+
+        [System.Serializable] class SheetManifest { public string character; public int ppu, cell; public SheetEntry[] clips; }
+        [System.Serializable] class SheetEntry { public string name, file; public int fps, frames; public bool loop; }
+
+        /// <summary>The clips a character's packed sheets describe (Art/Characters/[name]/[name].json), or null before they exist.</summary>
+        static List<SheetClip> LoadSheets(string character)
+        {
+            var folder = Root + "/Art/Characters/" + character + "/";
+            var jsonPath = folder + character.ToLowerInvariant() + ".json";
+            if (!File.Exists(jsonPath)) return null;
+            var manifest = JsonUtility.FromJson<SheetManifest>(File.ReadAllText(jsonPath));
+            if (manifest == null || manifest.clips == null || manifest.clips.Length == 0) return null;
+            var clips = new List<SheetClip>();
+            foreach (var c in manifest.clips)
+            {
+                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(folder + c.file);
+                if (tex == null) { Debug.LogWarning("[OWSBG] sheet missing: " + folder + c.file); continue; }
+                clips.Add(new SheetClip { Name = c.name, Sheet = tex, Frames = c.frames, Fps = c.fps, Loop = c.loop });
+            }
+            Debug.Log("[OWSBG] " + character + ": " + clips.Count + " sheet clips");
+            return clips.Count > 0 ? clips : null;
         }
 
         static Material MakeInkMaterial(string name, Texture2D tex)

@@ -38,7 +38,10 @@ the game; it is a cutscene on this system, not a challenge.
   marks, a thin bar filling to the beat. Hits flash the name blue, misses ochre; "Held." lingers at the end.
 - Bound markers in the room (posts) tint ochre when called, blue at rest, all ochre when held.
 - Captions: the verse title when it starts, "Again, from the top of the verse." on a restart, "Walked. <place>
-  is held." at the end. Audio (AUD-02, the roll-call song) will carry the beat; until then the bar does.
+  is held." at the end.
+- **Sung** (AUD-02, `docs/design/roll-call.md`): the chorus sings the call as each name is called, the name held
+  to the next call; a miss is the chorus faltering (the name breaks off and slips flat); a verse's end is the
+  answer in the region's own time. Merrow's End is Dotha alone.
 
 ## 4. Story hooks
 ```yarn
@@ -46,7 +49,7 @@ the game; it is a cutscene on this system, not a challenge.
 <<if walked("Saltmarrow_B")>>
 ```
 Code: `BoundsWalk.Begin/Abort`, `BoundsWalk.Find(id)`, events `Started`, `NameCalled`, `BeatLanded`,
-`VerseRestarted`, `Completed`; `BoundsWalks.IsWalked / IsLearned / Complete`.
+`VerseRestarted`, `VerseDone`, `Completed`; `BoundsWalks.IsWalked / IsLearned / Complete`.
 
 ## 5. WorldState
 `walk.<place>.done` (flag), `place.<place>.fate` = held (Places), `holdfast.walk_learned`. Saves need nothing extra.
@@ -57,7 +60,7 @@ Code: `BoundsWalk.Begin/Abort`, `BoundsWalk.Find(id)`, events `Started`, `NameCa
 - Sable's "held" line already answers a walked quay (Greybox_Sable_Again); Dotha has a walked line.
 
 ## 7. Open
-- The music: the beat should be sung, and misses should be the chorus faltering, not a mark.
+- The chorus sings notes, not the bounds' names; the composer's recordings will (roll-call.md §6).
 - Whether a walk may cross rooms (Hollowvein's descent wants to).
 - Strangers: the bible says the Holdfast fails where a bird is not known. A walk in a place where Wren is a
   stranger could need a named NPC to vouch (a bound with a person in it).

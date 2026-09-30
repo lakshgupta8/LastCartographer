@@ -117,8 +117,9 @@ Nothing plays yet; there are no clips.
 
 ## Open
 
-- **Clips.** Everything above shapes silence until AUD-03 to AUD-08 land. The first real test of the numbers is
-  the Saltmarrow theme under the Lamp-Keeper's fight (AUD-04).
+- **Clips.** The roll-call (AUD-02) is the first sound through it: `RollCallSinger` plays its own sources at the
+  Dialogue bus's gain. Everything else shapes silence until AUD-03 to AUD-08 land; the first real test of the
+  numbers is the Saltmarrow theme under the Lamp-Keeper's fight (AUD-04).
 - **A mixer asset.** If the DSP wants more than a low-pass (reverb in the Half-Cathedral, the Blank's reversal),
   an `AudioMixer` asset with these buses can take the gains as decibels from `Mix.ToDb`; the snapshots and ducks
   stay in code.

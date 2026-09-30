@@ -64,6 +64,8 @@ namespace OWSBG.World
         public static event Action<BoundsWalk, Bound> NameCalled;
         public static event Action<BoundsWalk, Bound, bool> BeatLanded;
         public static event Action<BoundsWalk> VerseRestarted;
+        /// <summary>A verse's last beat has landed and the verse stands: the chorus answers (the roll-call's answer, AUD-02).</summary>
+        public static event Action<BoundsWalk, int> VerseDone;
         public static event Action<BoundsWalk> Completed;
 
         static readonly Dictionary<string, BoundsWalk> Registry = new Dictionary<string, BoundsWalk>();
@@ -182,6 +184,7 @@ namespace OWSBG.World
             {
                 BeatIndex = 0;
                 Misses = 0;
+                VerseDone?.Invoke(this, VerseIndex);
                 VerseIndex++;
                 if (VerseIndex >= _verses.Count) { Finish(); return; }
                 Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", VerseTitle(VerseIndex) ?? Loc.T("caption.rollcall.next", "next verse")), 2.5f);

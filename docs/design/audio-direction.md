@@ -170,10 +170,12 @@ want the feel-test's eye.
 
 ## 9. Open
 
-- **No sound exists yet.** This is the brief; AUD-02 to AUD-08 are the work, and the mixer (AUD-09) is waiting.
+- **The roll-call is the first sound** (AUD-02, `docs/design/roll-call.md`): sung by an in-engine synth in every
+  walk, under the Bone Bridge, at the Bell and in the ending's chorus. AUD-03 to AUD-08 are the rest; the mixer
+  (AUD-09) is running.
 - **The music system:** stems, bar-synced layer changes and rests for the silence targets are to build when the
   first stems arrive (AUD-04). The beat table is what it will clock from.
 - **Smudges in the Blank's islands** follow the Blank's slow beat (1.8 s each). Whether that's too easy wants a
   playtest.
 - **Accessibility:** captions for tells ("[a low breath]") would give deaf players the ear's "now" as text. The
-  captions system (DES-14) can take them when the tells exist.
+  captions system (DES-14) can take them when the tells exist; the roll-call's uses already caption themselves.

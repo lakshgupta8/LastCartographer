@@ -174,7 +174,7 @@ anyone to come.
 | 1/2 | Emberdown.CinderBaths | **The debate.** Kettil and the surveyor argue in numbers; Runa sings the surveyor's numbers back as a roll-call and they stop being his | "Six hundred and twelve. He's right. Now sing them." | `emberdown.debate.heard` |
 | 1/2 | Emberdown.Hollowvein | **The long roll-call down.** Decision: walk, or leave buried. If walked, she leads the chorus and the Collapse wakes (6.4) | Before: "Thirty-one names. We'll learn the rest walking." After: she counts thirty-one, and stops the song before the number | `emberdown.hollowvein.walked` / `.buried` |
 | 2 | Emberdown.RollCallBell | **Named.** Once Wren has held any place by a bounds-walk, Runa's roll-call has Wren's name in it, wherever Wren is | "Forty-two, Wren. She's not here. Doesn't matter. That's the point." | `runa.named_wren` |
-| 3 | Halden.Observatory | **The chorus** (true ending, 6.15). She leads the roll-call round the bounds of the Blank | The song with every name the player has met, in the order met; her voice is the one that is not a leitmotif but the leitmotif's source (AUD-02) | `ending.chorus_led` |
+| 3 | Halden.Observatory | **The chorus** (true ending, 6.15). She leads the roll-call round the bounds of the Blank | The song with every name the player has met, in the order met; her voice is the one that is not a leitmotif but the leitmotif's source (AUD-02: sung, `docs/design/roll-call.md`) | `ending.chorus_led` |
 | 4 | Emberdown.KettilsRest | Epilogue | Fixed: the roll-call is the same forty-two every night, `#still`. Open: forty-three, and she is teaching it to someone from Merrow's End. Unwritten: she counts, and the number is lower, and she keeps counting | |
 
 ### The roll-call in other regions

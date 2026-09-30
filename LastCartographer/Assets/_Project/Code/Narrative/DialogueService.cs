@@ -24,6 +24,7 @@ namespace OWSBG.Narrative
     ///   &lt;&lt;cutscene id&gt;&gt;          play a Cutscene and wait for it (PRG-16)
     ///   &lt;&lt;fade place stage&gt;&gt;     advance a place's fade stage 0-4 (PRG-14); anchored places ignore it
     ///   &lt;&lt;anchor place&gt;&gt; / &lt;&lt;hold place&gt;&gt; / &lt;&lt;release place&gt;&gt;   the regional decision, once and final (PRG-13)
+    ///   &lt;&lt;sing use&gt;&gt;            the roll-call in one of its uses: whale, runa, dotha, chorus, blank, archivist (AUD-02)
     /// Functions: flag(key), has_flag(key), surveyed(id), commission_state(id), commission_is(id, state).
     /// </summary>
     public sealed class DialogueService : MonoBehaviour
@@ -139,6 +140,10 @@ namespace OWSBG.Narrative
                 if (walk == null || !walk.Begin()) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: no such walk here, or it is already walked");
             });
             runner.AddCommandHandler("epilogue", () => { EndingsRunner.Instance?.Begin(); });
+            runner.AddCommandHandler<string>("sing", use =>
+            {
+                if (RollCallSinger.Instance == null || !RollCallSinger.Instance.Sing(use)) Debug.LogWarning("[OWSBG] <<sing " + use + ">>: no such use of the roll-call");
+            });
             runner.AddCommandHandler<string, string>("voice", (kind, scope) =>
             {
                 if (Voices.TryParse(kind, out var v)) Voices.Record(GameState.World, v, scope);

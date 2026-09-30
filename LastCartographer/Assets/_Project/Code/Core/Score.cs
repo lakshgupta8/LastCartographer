@@ -113,8 +113,16 @@ namespace OWSBG.Core
             I(new Instrument { Id = "overtone", Harmonics = new[] { 1f, 0.2f, 0.15f, 0.1f, 0.9f, 0.1f, 0.05f, 0.6f, 0.05f, 0.3f }, Attack = 0.3f, Decay = 1f, Sustain = 1f, Release = 0.5f, Noise = 0.04f, Transpose = -12 });
             I(new Instrument { Id = "windharp", Harmonics = new[] { 1f, 0.4f, 0.3f, 0.2f, 0.15f }, Attack = 0.6f, Decay = 2f, Sustain = 0.7f, Release = 1.5f, Detune = 8f, VibratoRate = 0.2f, VibratoDepth = 0.04f, Noise = 0.06f });
             I(new Instrument { Id = "handdrum", Harmonics = new[] { 1f, 0.4f, 0.1f }, Attack = 0.002f, Decay = 0.2f, Sustain = 0f, Release = 0.2f, Inharmonic = 0.04f, LowPass = 1200f, Transpose = -12 });
+            // The Greyfold and the Blank (AUD-07): a held tone that frays, a bowed cymbal, a low choir; a reversed piano, a celesta, the Remnant's voices.
+            I(new Instrument { Id = "heldtone", Harmonics = new[] { 1f, 0.08f }, Attack = 1.5f, Decay = 2f, Sustain = 1f, Release = 2f, Detune = 4f, VibratoRate = 0.15f, VibratoDepth = 0.05f, Transpose = -12 });
+            I(new Instrument { Id = "cymbal", Harmonics = new[] { 1f, 0.7f, 0.8f, 0.5f, 0.6f, 0.4f, 0.3f, 0.3f, 0.2f, 0.2f }, Attack = 0.5f, Decay = 1.5f, Sustain = 0.7f, Release = 1.5f, Inharmonic = 0.3f, Noise = 0.1f, Transpose = 12 });
+            I(new Instrument { Id = "lowchoir", Harmonics = new[] { 1f, 0.9f, 0.7f, 0.8f, 0.35f, 0.2f, 0.12f }, Attack = 0.4f, Decay = 1f, Sustain = 0.95f, Release = 0.8f, VibratoRate = 4.5f, VibratoDepth = 0.08f, Noise = 0.06f, Detune = 12f, LowPass = 900f, Transpose = -12 });
+            I(new Instrument { Id = "reversedpiano", Harmonics = Saw(24, 0.9f), Attack = 1.1f, Decay = 0.1f, Sustain = 1f, Release = 0.02f, Detune = 3f });
+            I(new Instrument { Id = "celesta", Harmonics = new[] { 1f, 0.5f, 0.1f, 0.3f }, Attack = 0.001f, Decay = 0.8f, Sustain = 0.05f, Release = 0.6f, Inharmonic = 0.01f, Transpose = 24 });
+            I(new Instrument { Id = "remnant", Harmonics = new[] { 1f, 0.8f, 0.6f, 0.5f, 0.25f, 0.1f }, Attack = 0.5f, Decay = 1f, Sustain = 0.9f, Release = 1f, VibratoRate = 4f, VibratoDepth = 0.06f, Noise = 0.15f, Detune = 14f, LowPass = 1400f, Transpose = -12 });
             Compose();
             ComposeRegions();
+            ComposeBosses();
         }
 
         /// <summary>The instruments a region's theme may use: audio-direction 2's bands, as ids (the coast's with the drone and bell its theme leans on).</summary>
@@ -164,6 +172,8 @@ namespace OWSBG.Core
             public int Phase;
             /// <summary>Only heard in combat (the region theme's drive).</summary>
             public bool Combat;
+            /// <summary>The boss phase it leaves at (a layer changed rather than added, audio-direction 4); 0 to stay.</summary>
+            public int Until;
             public Stem Add(int degree, float start, float beats, float level = 1f) { Notes.Add(new Note(degree, start, beats, level)); return this; }
         }
 
@@ -183,18 +193,52 @@ namespace OWSBG.Core
             /// <summary>The share of the loop that is rest by design.</summary>
             public float Silence => RestBars / (float)LoopBars;
             public Stem Stem(string id) => Stems.FirstOrDefault(s => s.Id == id);
-            public Stem Add(string id, string instrument, float level = 1f, int phase = 0, bool combat = false)
+            public Stem Add(string id, string instrument, float level = 1f, int phase = 0, bool combat = false, int until = 0)
             {
-                var s = new Stem { Id = id, Instrument = instrument, Level = level, Phase = phase, Combat = combat };
+                var s = new Stem { Id = id, Instrument = instrument, Level = level, Phase = phase, Combat = combat, Until = until };
                 Stems.Add(s);
                 return s;
             }
+            /// <summary>Whether a stem sounds in a boss phase: entered, and not yet left.</summary>
+            public static bool Sounds(Stem s, int phase) => s.Phase <= phase && (s.Until == 0 || phase < s.Until);
         }
 
         static readonly List<Theme> _themes = new List<Theme>();
         public static IReadOnlyList<Theme> Themes => _themes;
         public static Theme ThemeOf(Region r) => _themes.FirstOrDefault(t => t.Region == r && t.Boss == null);
         public static Theme ThemeOfBoss(string family) => _themes.FirstOrDefault(t => t.Boss == family);
+        /// <summary>A boss's theme in the region it is fought in (Halvard's count travels: three keys), else its first, else none.</summary>
+        public static Theme ThemeOfBoss(string family, Region? region) =>
+            (region.HasValue ? _themes.FirstOrDefault(t => t.Boss == family && t.Region == region.Value) : null) ?? ThemeOfBoss(family);
+
+        /// <summary>The bosses the shared motif serves: any whose family has no theme of its own.</summary>
+        public const string SharedBoss = "*";
+        static readonly Dictionary<Region, Theme> _shared = new Dictionary<Region, Theme>();
+        /// <summary>The shared themes built so far (the exporter renders every region's).</summary>
+        public static IEnumerable<Theme> SharedThemes => new[] { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach }.Select(SharedThemeOf).Where(t => t != null);
+        /// <summary>
+        /// The optionals' theme (AUD-07, "shared motifs for optionals"): the region's own theme fought in, its rests
+        /// gone and its stems by phase: the bed, the pulse and the drive from the first telegraph, the lead in the
+        /// second phase, the voices in the third. Every boss without a theme of its own fights to its region's.
+        /// </summary>
+        public static Theme SharedThemeOf(Region r)
+        {
+            if (_shared.TryGetValue(r, out var made)) return made;
+            var region = ThemeOf(r);
+            if (region == null) return null;
+            var t = new Theme { Id = "shared", Region = r, Boss = SharedBoss, Bars = region.Bars, RestBars = 0 };
+            foreach (var s in region.Stems)
+            {
+                int phase = s.Id == "lead" ? 2 : s.Id == "voices" ? 3 : 1;
+                var copy = t.Add(s.Id, s.Instrument, s.Level, phase);
+                copy.Notes.AddRange(s.Notes);
+            }
+            _shared[r] = t;
+            return t;
+        }
+
+        /// <summary>The Guild's motif (AUD-07): paces counted, shared by every Warden's theme on the Guild's brass.</summary>
+        public static readonly (int degree, float beats)[] GuildMotif = { (0, 1f), (0, 1f), (4, 1f), (4, 1f), (5, 1.5f), (4, 0.5f), (2, 1f), (0, 1f) };
         /// <summary>The stems the direction asks for at least (audio-direction 6).</summary>
         public static readonly string[] RequiredStems = { "lead", "bed", "pulse", "voices" };
 
@@ -369,6 +413,99 @@ namespace OWSBG.Core
                 foreach (var (d, at) in new[] { (0, 0f), (3, 0.5f), (5, 1f), (3, 1.5f), (0, 2f), (3, 2.5f), (4, 3f), (3, 3.5f) })
                     wdrive.Add(d, b + at, 0.5f, at % 1f == 0f ? 0.9f : 0.6f);                                             // the cittern picked in eighths
             }
+        }
+
+        /// <summary>The Guild motif written into a stem from a beat, transposed by degrees.</summary>
+        static void Guild(Stem lead, float at, int up = 0, float level = 1f)
+        {
+            foreach (var (d, beats) in GuildMotif) { lead.Add(d + up, at, beats, level); at += beats; }
+        }
+
+        /// <summary>The roll-call's phrase in a form, as a mode's degrees (the Archivist's lead quotes it inverted).</summary>
+        public static int[] PhraseDegrees(Region r, RollCallSong.Form form) => RollCallSong.Notes(form, 1).Select(n => DegreeOf(r, n.Pitch)).ToArray();
+
+        /// <summary>Warden-Sergeant Halvard's theme in a key: the same count in every region he hunts her through.</summary>
+        static Theme HalvardIn(Region r, string id)
+        {
+            // The count: three paces and a rest, every bar; the Guild's motif on its brass; the survey's marks; and then the count itself, tolled.
+            var t = new Theme { Id = id, Region = r, Boss = "Halvard", Bars = 8, RestBars = 0 };
+            _themes.Add(t);
+            t.Add("bed", "drone", 0.8f, phase: 1).Add(0, 0f, 16f, 1f).Add(4, 0f, 16f, 0.5f).Add(0, 16f, 16f, 1f).Add(3, 16f, 16f, 0.5f);
+            var pulse = t.Add("pulse", "drum", 0.8f, phase: 1);
+            for (int bar = 0; bar < 8; bar++) pulse.Add(0, bar * 4f, 0.5f, 1f).Add(0, bar * 4f + 1f, 0.5f, 0.8f).Add(0, bar * 4f + 2f, 0.5f, 0.8f);   // "Three paces. I measured them."
+            var lead = t.Add("lead", "brass", 0.9f, phase: 1);
+            Guild(lead, 0f); Guild(lead, 8f, 2); Guild(lead, 16f); Guild(lead, 24f, 4);
+            var voices = t.Add("voices", "whistle", 0.6f, phase: 2);
+            int[] marks = { 3, 5, 3, 6, 3, 5, 2, 1 };
+            for (int bar = 0; bar < 8; bar++) voices.Add(marks[bar], bar * 4f, 4f, 0.8f);                                       // phase 2: the marks, one a bar
+            var count = t.Add("count", "bell", 0.6f, phase: 3);
+            for (int bar = 0; bar < 8; bar++) for (int k = 0; k < 4; k++) count.Add(7, bar * 4f + k, 0.5f, k == 0 ? 0.9f : 0.6f);   // phase 3: the count, tolled on every beat
+            return t;
+        }
+
+        /// <summary>The bosses' themes (AUD-07): Halvard's in three keys, Brann's, Voss's, the Archivist's. Each adds or changes a layer a phase.</summary>
+        static void ComposeBosses()
+        {
+            HalvardIn(Region.Saltmarrow, "halvard");            // the Salt Chapel
+            HalvardIn(Region.Halden, "halvard-halden");         // the Seven Bridges
+            HalvardIn(Region.Greyfold, "halvard-greyfold");     // the Threshold, beside Voss
+
+            // ---- Cinder Warden Brann: the furnace floor, red-hot in sections that cool; in the dark only his brass glows. ----
+            var brann = new Theme { Id = "brann", Region = Region.Emberdown, Boss = "Brann", Bars = 8, RestBars = 0 };
+            _themes.Add(brann);
+            brann.Add("bed", "hurdygurdy", 0.6f, phase: 1, until: 3).Add(0, 0f, 32f, 1f).Add(4, 0f, 32f, 0.6f);                  // the furnace's roar, gone when it is dark
+            var bpulse = brann.Add("pulse", "framedrum", 0.8f, phase: 1);
+            var bcount = brann.Add("count", "anvil", 0.55f, phase: 1);
+            for (int bar = 0; bar < 8; bar++)
+            {
+                float b = bar * 4f;
+                bpulse.Add(0, b, 0.5f, 1f).Add(0, b + 1f, 0.5f, 0.7f).Add(-3, b + 2f, 0.5f, 0.9f).Add(0, b + 3f, 0.5f, 0.7f);
+                bcount.Add(7, b, 0.5f, 1f).Add(7, b + 2f, 0.5f, 0.8f);                                                          // "I am the schedule": the anvil on one and three
+            }
+            var blead = brann.Add("lead", "brass", 0.9f, phase: 1);
+            Guild(blead, 0f); Guild(blead, 8f, 2); Guild(blead, 16f); Guild(blead, 24f, 4);
+            var bvoices = brann.Add("voices", "tuba", 0.7f, phase: 2);
+            int[] cuts = { -3, -4, -5, -4, -3, -2, -4, -3 };
+            for (int bar = 0; bar < 8; bar++) bvoices.Add(cuts[bar], bar * 4f, 2f, 0.9f).Add(cuts[bar] - 1, bar * 4f + 2f, 2f, 0.7f);   // phase 2: both lances, the cross-cuts under the motif
+            var glow = brann.Add("glow", "bell", 0.5f, phase: 3);
+            for (int bar = 0; bar < 8; bar++) { glow.Add(7, bar * 4f, 1f, 0.9f); if (bar % 2 == 1) glow.Add(9, bar * 4f + 2.5f, 0.5f, 0.6f); }   // phase 3: only his brass glows
+
+            // ---- Guildmaster Voss: one held tone that frays; he anchors and everything holds; the Blank eats the arena and the bells toll. ----
+            var voss = new Theme { Id = "voss", Region = Region.Greyfold, Boss = "Voss", Bars = 6, RestBars = 0 };
+            _themes.Add(voss);
+            voss.Add("bed", "heldtone", 0.7f, phase: 1, until: 3).Add(0, 0f, 24f, 1f);                                            // the held tone, gone when the white comes
+            var vpulse = voss.Add("pulse", "cymbal", 0.5f, phase: 1);
+            for (int bar = 0; bar < 6; bar++) vpulse.Add(0, bar * 4f, 2f, 0.8f);                                                  // a bowed cymbal on every bar
+            var vlead = voss.Add("lead", "brass", 0.85f, phase: 1);
+            Guild(vlead, 0f); Guild(vlead, 8f, 4); Guild(vlead, 16f);                                                             // formal, textbook, slow
+            var vvoices = voss.Add("voices", "lowchoir", 0.6f, phase: 2);
+            for (int bar = 0; bar < 6; bar++) vvoices.Add(0, bar * 4f, 4f, 1f).Add(4, bar * 4f, 4f, 0.7f).Add(7, bar * 4f, 4f, 0.5f);   // phase 2: "Hold. Everything holds": a choir all at once
+            var white = voss.Add("white", "bell", 0.5f, phase: 3);
+            for (int bar = 0; bar < 6; bar++) for (int k = 0; k < 4; k++) white.Add(7, bar * 4f + k, 0.5f, k == 0 ? 0.9f : 0.5f);   // phase 3: the Half-Cathedral's bells
+
+            // ---- The Archivist: the mirror-Observatory; the roll-call pulled the other way; her drawing sings it the right way up; the frame closes. ----
+            var arch = new Theme { Id = "archivist", Region = Region.Blank, Boss = "Archivist", Bars = 4, RestBars = 0 };
+            _themes.Add(arch);
+            var apulse = arch.Add("pulse", "celesta", 0.5f, phase: 1);
+            for (int bar = 0; bar < 4; bar++) for (int k = 0; k < 4; k++) apulse.Add(k % 2 == 0 ? 7 : 9, bar * 4f + k + 0.5f, 0.5f, k == 0 ? 0.8f : 0.5f);   // the clockwork, mirrored: on the off-beats
+            arch.Add("bed", "remnant", 0.6f, phase: 1).Add(0, 0f, 16f, 1f).Add(-3, 0f, 16f, 0.6f);                                // the Remnant's voices under
+            var alead = arch.Add("lead", "reversedpiano", 0.9f, phase: 1);
+            var inverted = PhraseDegrees(Region.Blank, RollCallSong.Form.Inverted);
+            var beats = RollCallSong.Notes(RollCallSong.Form.Inverted, 1).Select(n => n.Beats).ToArray();
+            foreach (float start in new[] { 0f, 8f })
+            {
+                float at = start;
+                for (int i = 0; i < inverted.Length; i++) { alead.Add(inverted[i], at, beats[i], 1f); at += beats[i]; }             // the roll-call inverted about its reciting tone
+            }
+            var avoices = arch.Add("voices", "celesta", 0.6f, phase: 2);
+            var answer = AnswerDegrees(Region.Blank);
+            foreach (float start in new[] { 4f, 12f })
+            {
+                float at = start;
+                for (int i = 0; i < answer.Length; i++) { avoices.Add(answer[i] + 7, at, AudioDirection.RollCall.Answer[i].Beats, 0.9f); at += AudioDirection.RollCall.Answer[i].Beats; }   // phase 2: her drawing answers the right way up
+            }
+            var frame = arch.Add("frame", "reversedpiano", 0.7f, phase: 3);
+            for (int bar = 0; bar < 4; bar++) for (int k = 0; k < 4; k++) frame.Add(bar + 1 + k, bar * 4f + k, 1f, 0.8f);          // phase 3: the frame closes, a wingspan a beat
         }
 
         // ---- the synth ----
@@ -555,6 +692,7 @@ namespace OWSBG.Core
                     "gamba" => 42, "glass" => 92, "organ" => 19, "handbell" => 112,
                     "harpsichord" => 6, "strings" => 48, "musicbox" => 10, "brass" => 61,
                     "flute" => 73, "cittern" => 25, "overtone" => 54, "windharp" => 89, "handdrum" => 118,
+                    "heldtone" => 80, "cymbal" => 119, "lowchoir" => 52, "reversedpiano" => 0, "celesta" => 8, "remnant" => 54,
                     _ => 48,
                 };
                 VarLen(b, 0); b.AddRange(new[] { (byte)(0xC0 | (ch % 16)), (byte)program });

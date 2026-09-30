@@ -15,7 +15,7 @@ key at any beat, and the same renders go out as WAV and MIDI for the composer to
 | Merrow's End, Dotha's Last Season | Dotha | whole, one voice | Saltmarrow's D, 67 bpm | `<<sing dotha>>` when she keeps the songs and sings them to the water |
 | The Open World's chorus | everyone met, in order, Runa first, Isolde last | a verse with a name for every voice | the coast's D where it was first heard, at Runa's 75 bpm | `<<sing chorus>>` in `Observatory_Runa_Chorus` |
 | The Blank's islands | the Remnant, three | reversed | D, at the Blank's beat | `<<sing blank>>` (AUD-08 places it) |
-| The Archivist | Corvin | inverted about the reciting tone | Halden's C, 100 bpm | `<<sing archivist>>` (AUD-07 places it) |
+| The Archivist | Corvin | inverted about the reciting tone | Halden's C, 100 bpm | `<<sing archivist>>` in `Capital_Corvin`, as he says the sky stays held (AUD-07); his theme's lead is the same inversion |
 
 Only the true ending has everyone, and its roster is not a list in the code but the world: `RollCallSong.Chorus`
 adds a voice for each flag Runa's chorus scene checks, in her order (Sable, Dotha, Kettil, Teodor, Pell, Idrenne,

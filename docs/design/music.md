@@ -1,4 +1,4 @@
-# The Score: the regions and the Lamp-Keeper (AUD-04, AUD-06, v1)
+# The Score: the regions and the bosses (AUD-04, AUD-06, AUD-07, v1)
 
 The direction (audio-direction 2, 4, 6) asks for music as stems looping on whole bars at the region's beat, with
 the region's silence share as a target, a boss theme that arrives with the first telegraph, adds or changes a layer
@@ -20,7 +20,8 @@ note's release wrapping to the loop's start so the join is seamless). `MusicDriv
   Music bus's gain and under an `AudioLowPassFilter` at the bus's cutoff (so the snapshots, the Blank's filter and
   the player's Music volume all apply; paused, the theme goes on low and dull, through a wall).
 - **Layers** fade over 0.6 s from their bar line, never cut: a region theme's combat drive comes in while the mix is
-  in combat; a boss theme's stems enter by phase, a phase change waiting for the next bar line.
+  in combat; a boss theme's stems enter by phase, a phase change waiting for the next bar line, and a stem may
+  leave at a phase too (`Stem.Until`: the direction's "adds or changes a layer").
 - **Defeat** stops the stems and plays the resolution: the roll-call's answer on the fiddle over the drone, in the
   boss's region's key; nothing else plays until it has rung. A reset returns the room's theme.
 - **Region to region is a handover** (AUD-06): the next theme's stems are scheduled on the playing theme's next bar
@@ -110,6 +111,25 @@ lit.* A pentatonic, 60 bpm. Five bars and three of rest (37.5%, the direction's 
 
 Each region's resolution (the answer on the fiddle over the drone, in its key) is rendered too, for its bosses.
 
+## 3b. The bosses (AUD-07)
+
+**The Wardens share the Guild's motif** (`Score.GuildMotif`: paces counted, 0 0 4 4 | 5 4 2 0) on the Guild's
+brass, each in the key of the region he is fought in; the drone, drum, whistle and bell under Halvard's are the
+Guild's travelling band. **Every other boss fights to its region's motif** (`Score.SharedThemeOf`): the region's
+own theme with its rests gone, the bed, pulse and drive from the first telegraph, the lead in the second phase, the
+voices in the third. That covers the optionals (the Brood, the Choir, Hale, the Fallen Star) and, for now, the
+Collapse, the Gatekeeper, Oriel, the Bells, Corra's Drawing and the Complete Survey.
+
+| Boss | Key, beat | Loop | Phase 1 | Phase 2 | Phase 3 |
+|---|---|---|---|---|---|
+| Halvard (three fights: `halvard`, `halvard-halden`, `halvard-greyfold`) | the chapel's D Dorian at 67; Halden's C at 100; the Threshold's D at 40 | 8 bars | drone; drum, three paces and a rest a bar; brass, the motif | whistle: the survey's marks, one a bar | bell: the count, tolled on every beat |
+| Cinder Warden Brann | G Mixolydian, 75 | 8 bars | hurdy-gurdy, the furnace's roar; frame drum; anvil on one and three ("I am the schedule"); brass, the motif | tuba: both lances, cross-cuts under | the roar **leaves** (the furnace is dark); bell: only his brass glows |
+| Guildmaster Voss | the Greyfold's held tone on D, 40 | 6 bars | a held tone that frays; a bowed cymbal a bar; brass, the motif, slow and formal | low choir, all at once: "Hold. Everything holds." | the tone **leaves** (the white); the Half-Cathedral's bells on every beat |
+| The Archivist | the Blank's D at 33 | 4 bars | celesta on the off-beats (the clockwork, mirrored); the Remnant's voices; reversed piano: the roll-call inverted about its reciting tone | celesta: her drawing sings the answer the right way up, above | reversed piano chords rising a beat: the frame closes |
+
+The resolution is rendered in every key a boss falls in, the Greyfold's and the Blank's too. `<<sing archivist>>`
+now sounds in Corvin's scene (`Capital_Corvin`), the roll-call pulled the other way, before the choice.
+
 ## 4. The pipeline
 
 ```
@@ -117,9 +137,10 @@ Unity.exe -batchmode -nographics -projectPath LastCartographer -executeMethod OW
 ```
 
 (or **OWSBG → Render the Score**) writes `docs/audio/music/`: every stem as `<region>_music_<stem>_<bpm>.wav` and
-`saltmarrow_music_lampkeeper-<stem>_67.wav` (48 kHz 24-bit mono, the stems together peaking at −1 dBTP), an
-`all-stems` mix of each to listen to, each region's resolution, and each theme as MIDI (the tempo, a track a stem
-with its instrument's program, the notes at their times) for a real arrangement.
+`<region>_music_<boss>-<stem>_<bpm>.wav` and `<region>_music_shared-<stem>_<bpm>.wav` (48 kHz 24-bit mono, the
+stems together peaking at −1 dBTP), an `all-stems` mix of each to listen to, each region's resolution, and each
+theme as MIDI (the tempo, a track a stem with its instrument's program, the notes at their times) for a real
+arrangement.
 
 ## 5. Reworking by hand
 
@@ -131,7 +152,7 @@ with its instrument's program, the notes at their times) for a real arrangement.
 
 ## 6. Verification
 
-- `ScoreTests` (EditMode, 8): both coast themes have the stems the direction asks for, at bars of four at the coast's
+- `ScoreTests` (EditMode, 10): both coast themes have the stems the direction asks for, at bars of four at the coast's
   beat, every note in D Dorian and before the rest, the instruments the coast's band, the silence shares 20% and 0;
   the lead waits two bars, quotes the answer in the mode and comes home; the stems are exactly the loop, the mix at
   the ceiling, the measured silence the designed one, the join quiet, a render the same every time, the fiddle's
@@ -140,12 +161,17 @@ with its instrument's program, the notes at their times) for a real arrangement.
   modes at their beats from their bands with their silence shares (within a bar), each keeps its brief (the anvil
   on two and four, the gamba stopping on the flat second, Halden's seventeen bars and V never going to I, the
   flute's long notes), each renders to its loop at the ceiling with its silence measured, and its files are there.
-- `MusicDriverTests` (PlayMode, 5): the coast's stems play in step within 50 ms at their levels under the bus, the
+  AUD-07: the four boss themes never rest, open with bed, pulse and lead, add a layer a phase and render to their
+  loops; the Wardens open on the Guild's motif on brass; Halvard's theme is picked by the region he is fought in;
+  Brann's roar and Voss's tone leave at phase 3; the Archivist's lead is the inverted roll-call and her drawing
+  answers it upright; every region's shared theme is its own stems, fought in, by phase; the files are there.
+- `MusicDriverTests` (PlayMode, 6): the coast's stems play in step within 50 ms at their levels under the bus, the
   drive waiting; a blow brings the drive in over its fade and the fight's end takes it away; a boss fight's start is
   not the theme's start, its first telegraph is, phase 2 waits for the bar line and enters, phase 3 does not, and
   its death stops the stems and resolves; paused, the theme plays on at the snapshot's gain and cutoff; a walk from
   the coast into the highland schedules the highland's stems on the coast's bar line, the coast still going until
-  then, and crosses over there.
+  then, and crosses over there; Brann's third phase takes the roar away on the bar line and brings the glow, and
+  Hale, with no theme of her own, fights to Windreach's motif with its drive in and its flute waiting.
 
 ## 7. Open
 
@@ -154,7 +180,9 @@ with its instrument's program, the notes at their times) for a real arrangement.
 - **Loudness** is by peak (−1 dBTP across the stems), not the spec's −18 LUFS.
 - **The handover is on the old theme's bar line**, not on a shared one: the beats differ by region, so the new
   theme starts a bar on the old bar's line and keeps its own beat from there.
-- **Phase changes** add a layer; the direction also allows changing one. Nothing changes a layer yet.
-- **The remaining themes**: the bosses (AUD-07), the Blank and the endings (AUD-08) are themes and instruments in
-  the same table. Windreach's "drum when the fire is lit" is its pulse, always soft: the camp's fire is no state
-  yet.
+- **The remaining themes**: the Blank and the endings (AUD-08) are themes and instruments in the same table.
+  Windreach's "drum when the fire is lit" is its pulse, always soft: the camp's fire is no state yet.
+- **The rhythm bosses** (the Collapse, the Complete Survey) fight to their regions' motifs for now; the direction
+  wants them scored to the beat the fight keeps, which the shared theme is only by being at the region's beat.
+  The Gatekeeper, Oriel, the Bells and Corra's Drawing likewise wait for themes of their own.
+- **Halvard's third fight** stops counting halfway; the theme does not know that yet.

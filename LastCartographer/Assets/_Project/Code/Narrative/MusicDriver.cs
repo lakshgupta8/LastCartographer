@@ -157,12 +157,13 @@ namespace OWSBG.Narrative
         public Score.Theme Decide()
         {
             if (IsResolving) return null;
+            var r = Mix.RegionOf(Room);
             if (_boss != null && _boss.IsFightActive)
             {
-                var boss = Score.ThemeOfBoss(_boss.Family);
+                // Its own theme in this region (Halvard's count in three keys), else its own anywhere, else the region's motif fought in (the optionals').
+                var boss = Score.ThemeOfBoss(_boss.Family, r) ?? (r.HasValue ? Score.SharedThemeOf(r.Value) : null);
                 if (boss != null) return boss;
             }
-            var r = Mix.RegionOf(Room);
             return r.HasValue ? Score.ThemeOf(r.Value) : null;
         }
 
@@ -263,7 +264,7 @@ namespace OWSBG.Narrative
         public bool StemOn(Score.Stem stem)
         {
             if (Current == null) return false;
-            if (Current.Boss != null) return stem.Phase <= _phase;
+            if (Current.Boss != null) return Score.Theme.Sounds(stem, _phase);   // entered at its phase, and not yet left (a layer changed)
             if (stem.Combat) return Mix.Live != null && Mix.Live.InCombat;
             return true;
         }

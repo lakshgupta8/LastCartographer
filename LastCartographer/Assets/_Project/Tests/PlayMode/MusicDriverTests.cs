@@ -25,8 +25,31 @@ namespace OWSBG.Tests
             public void Poke() => Tell(AttackKind.Strike);
         }
 
+        sealed class Cinder : Boss
+        {
+            public override string Family => "Brann";
+            protected override void Tick(float dt) { }
+            public void Poke() => Tell(AttackKind.Strike);
+        }
+
+        sealed class Stone : Boss
+        {
+            public override string Family => "Hale";   // an optional: no theme of its own
+            protected override void Tick(float dt) { }
+            public void Poke() => Tell(AttackKind.Strike);
+        }
+
         GameObject? _boss;
         MusicDriver Driver => MusicDriver.Instance!;
+
+        T MakeBoss<T>() where T : Boss
+        {
+            _boss = new GameObject(typeof(T).Name) { layer = Layer("Enemy") };
+            _boss.transform.position = new Vector3(6f, 1f, 0f);
+            _boss.AddComponent<BoxCollider2D>().size = new Vector2(1f, 1f);
+            _boss.AddComponent<Rigidbody2D>();
+            return _boss.AddComponent<T>();
+        }
 
         static int Layer(string n) { int l = LayerMask.NameToLayer(n); Assert.GreaterOrEqual(l, 0, "layer " + n); return l; }
 
@@ -160,7 +183,7 @@ namespace OWSBG.Tests
             Driver.RoomOverride = "Greybox_Emberdown_Rest_1";
             yield return null;
             Assert.AreSame(ember, Driver.Wanted, "the highland's theme is asked for");
-            Assert.AreSame(salt, Driver.Current, "the coast plays on while it renders");
+            if (!Driver.IsReady(ember)) Assert.AreSame(salt, Driver.Current, "the coast plays on while it renders (an earlier test may have rendered it already)");
             yield return Until(() => Driver.Current == ember, 60f);
             Assert.AreSame(ember, Driver.Current, "rendered and scheduled");
             double at = Driver.StartAt;
@@ -179,6 +202,62 @@ namespace OWSBG.Tests
             Assert.AreEqual(0, Driver.OutgoingCount, "the coast is gone");
             Assert.AreEqual(ember.Stem("lead").Level, Driver.Level("lead"), 0.02f, "the highland at its level");
             Assert.AreEqual(ember.LoopSeconds, Driver.Source("lead")!.clip.length, 0.01f, "its loop: nine bars and one of rest");
+        }
+
+        [UnityTest]
+        public IEnumerator ABossThemeChangesALayerOnTheBarLineAndAnOptionalFightsToItsRegionsMotif()
+        {
+            // Brann in the Furnace Stair: his theme at the first telegraph; phase 3 takes the furnace's roar away on the bar line and brings the glow.
+            Driver.RoomOverride = "Greybox_Emberdown_Stair_3";
+            var ember = Score.ThemeOf(Region.Emberdown);
+            yield return Until(() => Driver.Current == ember, 60f);
+            var brann = MakeBoss<Cinder>();
+            yield return null;
+            var theme = Score.ThemeOfBoss("Brann");
+            brann.BeginFight();
+            brann.Poke();
+            yield return null;
+            Assert.AreSame(theme, Driver.Wanted, "the first telegraph: his theme");
+            yield return Until(() => Driver.Current == theme, 60f);
+            Assert.AreSame(theme, Driver.Current);
+            yield return new WaitForSecondsRealtime((float)MusicDriver.LeadIn + MusicDriver.FadeSeconds + 0.2f);
+            Assert.IsTrue(Driver.StemOn(theme.Stem("bed")), "the furnace roars in phase 1");
+            Assert.IsFalse(Driver.StemOn(theme.Stem("glow")));
+            for (int i = 0; i < 80 && brann.Phase < 3; i++) brann.TakeHit(new HitInfo { Damage = 1, Direction = Vector2.right });
+            Assert.AreEqual(3, brann.Phase, "under a third: the furnace is dark");
+            yield return null;
+            Assert.AreEqual(3, Driver.PendingPhase);
+            yield return Until(() => Driver.Phase == 3, theme.BarSeconds + 1f);
+            Assert.AreEqual(3, Driver.Phase, "taken on the bar line");
+            Assert.IsFalse(Driver.StemOn(theme.Stem("bed")), "the roar leaves: a layer changed, not only added");
+            Assert.IsTrue(Driver.StemOn(theme.Stem("glow")), "only his brass glows");
+            Assert.IsTrue(Driver.StemOn(theme.Stem("voices")), "the cross-cuts stay");
+            yield return new WaitForSecondsRealtime(MusicDriver.FadeSeconds + 0.2f);
+            Assert.AreEqual(0f, Driver.Level("bed"), 0.01f, "faded out");
+            Assert.AreEqual(theme.Stem("glow").Level, Driver.Level("glow"), 0.02f, "faded in");
+            brann.TakeHit(new HitInfo { Damage = brann.Health, Direction = Vector2.right });
+            yield return null;
+            Assert.IsTrue(Driver.IsResolving, "resolves in Emberdown's key");
+            Object.Destroy(_boss); _boss = null;
+            yield return Until(() => !Driver.IsResolving, 20f);
+
+            // Surveyor Hale at the Nine Stones: no theme of her own, so Windreach's motif fought in, the flute in the second phase.
+            Driver.RoomOverride = "Greybox_Windreach_Stones_1";
+            var wind = Score.ThemeOf(Region.Windreach);
+            yield return null;
+            Assert.AreSame(wind, Driver.Wanted, "Windreach's theme in a Windreach room (" + Driver.Room + ")");
+            var hale = MakeBoss<Stone>();
+            yield return null;
+            hale.BeginFight();
+            hale.Poke();
+            yield return null;
+            var shared = Score.SharedThemeOf(Region.Windreach);
+            Assert.AreSame(shared, Driver.Wanted, "an optional fights to its region's motif");
+            yield return Until(() => Driver.Current == shared, 60f);
+            Assert.AreSame(shared, Driver.Current);
+            Assert.IsTrue(Driver.StemOn(shared.Stem("drive")), "the drive from the first telegraph");
+            Assert.IsFalse(Driver.StemOn(shared.Stem("lead")), "the flute waits for the second phase");
+            Assert.AreEqual(wind.Bars * wind.BarSeconds, Driver.Source("bed")!.clip.length, 0.01f, "the loop without its rest");
         }
 
         [UnityTest]

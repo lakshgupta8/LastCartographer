@@ -206,6 +206,93 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void TheBossThemesAddOrChangeALayerAPhaseAndShareTheGuildsMotif()
+        {
+            // AUD-07: Halvard (three keys), Brann, Voss, the Archivist: no rest, the fight's opening stems at phase 1, a layer a phase.
+            var halvard = Score.ThemeOfBoss("Halvard"); var brann = Score.ThemeOfBoss("Brann"); var voss = Score.ThemeOfBoss("Voss"); var arch = Score.ThemeOfBoss("Archivist");
+            foreach (var t in new[] { halvard, brann, voss, arch })
+            {
+                Assert.IsNotNull(t);
+                Assert.AreEqual(0, t.RestBars, t.Id + ": a boss theme never rests");
+                CollectionAssert.AreEquivalent(new[] { 1, 2, 3 }, t.Stems.Select(s => s.Phase).Distinct(), t.Id + ": a layer enters at each phase");
+                foreach (var need in new[] { "bed", "pulse", "lead" }) Assert.AreEqual(1, t.Stem(need).Phase, t.Id + " opens with its " + need);
+                Assert.IsNotNull(t.Stem("voices"), t.Id + " has voices (audio-direction 6)");
+                foreach (var s in t.Stems)
+                {
+                    Assert.IsNotEmpty(s.Notes, t.Id + "/" + s.Id);
+                    Assert.IsFalse(s.Combat);
+                    foreach (var n in s.Notes)
+                    {
+                        Assert.IsTrue(Score.InMode(t.Region, Score.Semitones(t.Region, n.Degree)), t.Id + "/" + s.Id + " " + n + " in the mode");
+                        Assert.LessOrEqual(n.Start + n.Beats, t.Bars * Score.BeatsPerBar + 1e-3f, t.Id + "/" + s.Id + " " + n + " within the loop");
+                    }
+                }
+                var stems = Score.Render(t);
+                int len = (int)Math.Round(t.LoopSeconds * Score.SampleRate);
+                foreach (var kv in stems) Assert.AreEqual(len, kv.Value.Length, t.Id + "/" + kv.Key + " is exactly the loop");
+                var mix = new float[len];
+                foreach (var s in stems.Values) for (int i = 0; i < len; i++) mix[i] += s[i];
+                Assert.AreEqual(AudioDirection.SfxPeakDbtp, RollCallSong.PeakDb(mix), 0.05f, t.Id + " at the ceiling");
+            }
+            // The Wardens share the Guild's motif on the Guild's brass: the same paces counted, in each one's key.
+            var motif = Score.GuildMotif.Select(m => m.degree).ToArray();
+            foreach (var t in new[] { halvard, brann, voss })
+            {
+                var lead = t.Stem("lead");
+                Assert.AreEqual("brass", lead.Instrument, t.Id + "'s lead is the Guild's brass");
+                CollectionAssert.AreEqual(motif, lead.Notes.OrderBy(n => n.Start).Take(motif.Length).Select(n => n.Degree), t.Id + " opens on the Guild's motif");
+            }
+            // Halvard's count travels: the chapel's key, Halden's, the Threshold's; the region he is fought in picks it.
+            Assert.AreEqual(Region.Saltmarrow, halvard.Region);
+            Assert.AreEqual(Region.Halden, Score.ThemeOfBoss("Halvard", Region.Halden).Region, "the Seven Bridges in Halden's key");
+            Assert.AreEqual(Region.Greyfold, Score.ThemeOfBoss("Halvard", Region.Greyfold).Region, "the Threshold in the Greyfold's");
+            Assert.AreSame(halvard, Score.ThemeOfBoss("Halvard", Region.Windreach), "anywhere else, the chapel's");
+            Assert.AreEqual(3, Score.Themes.Count(t => t.Boss == "Halvard"));
+            Assert.AreEqual("count", halvard.Stems.Single(s => s.Phase == 3).Id, "the count tolls in phase 3");
+            Assert.AreEqual("bell", halvard.Stem("count").Instrument);
+            // A layer changed, not only added: Brann's furnace goes dark and Voss's held tone gives way to the white.
+            Assert.AreEqual(3, brann.Stem("bed").Until, "the furnace is dark: the roar leaves at phase 3");
+            Assert.IsTrue(Score.Theme.Sounds(brann.Stem("bed"), 2)); Assert.IsFalse(Score.Theme.Sounds(brann.Stem("bed"), 3));
+            Assert.AreEqual(3, brann.Stem("glow").Phase, "only his brass glows");
+            Assert.AreEqual("anvil", brann.Stem("count").Instrument, "he is the schedule");
+            Assert.AreEqual(3, voss.Stem("bed").Until); Assert.AreEqual("heldtone", voss.Stem("bed").Instrument, "one held tone");
+            Assert.AreEqual("lowchoir", voss.Stem("voices").Instrument, "a choir arrives all at once");
+            Assert.AreEqual(2, voss.Stem("voices").Phase, "when he anchors");
+            // The Archivist's lead is the roll-call inverted about its reciting tone; her drawing answers it the right way up.
+            var inverted = Score.PhraseDegrees(Region.Blank, RollCallSong.Form.Inverted);
+            CollectionAssert.AreEqual(inverted, arch.Stem("lead").Notes.OrderBy(n => n.Start).Take(inverted.Length).Select(n => n.Degree), "pulled the other way");
+            var answer = Score.AnswerDegrees(Region.Blank).Select(d => d + 7).ToArray();
+            CollectionAssert.AreEqual(answer, arch.Stem("voices").Notes.OrderBy(n => n.Start).Take(answer.Length).Select(n => n.Degree), "her drawing sings it the right way up, above");
+            Assert.AreEqual(AudioDirection.BeatOf(Region.Blank), arch.Beat, "at the Blank's beat");
+            Assert.AreEqual("frame", arch.Stems.Single(s => s.Phase == 3).Id, "the frame closes in phase 3");
+        }
+
+        [Test]
+        public void TheOptionalsFightToTheirRegionsMotif()
+        {
+            foreach (var r in new[] { Region.Saltmarrow }.Concat(Others))
+            {
+                var shared = Score.SharedThemeOf(r);
+                var region = Score.ThemeOf(r);
+                Assert.IsNotNull(shared, r + "'s shared theme");
+                Assert.AreSame(shared, Score.SharedThemeOf(r), "built once");
+                Assert.AreEqual(Score.SharedBoss, shared.Boss); Assert.AreEqual(0, shared.RestBars, "fought in: no rest"); Assert.AreEqual(region.Bars, shared.Bars);
+                Assert.AreEqual(region.Stems.Count, shared.Stems.Count, "every stem of the region's");
+                foreach (var s in shared.Stems)
+                {
+                    Assert.IsFalse(s.Combat, "the drive is in from the first telegraph");
+                    CollectionAssert.AreEqual(region.Stem(s.Id).Notes, s.Notes, s.Id + " is the region's own");
+                }
+                Assert.AreEqual(1, shared.Stem("bed").Phase); Assert.AreEqual(1, shared.Stem("pulse").Phase); Assert.AreEqual(1, shared.Stem("drive").Phase);
+                Assert.AreEqual(2, shared.Stem("lead").Phase, "the motif itself in the second phase");
+                Assert.AreEqual(3, shared.Stem("voices").Phase);
+            }
+            Assert.IsNull(Score.ThemeOfBoss("Hale"), "an optional has no theme of its own");
+            Assert.IsNull(Score.SharedThemeOf(Region.Greyfold), "and a region without a theme has nothing to share");
+            Assert.AreEqual(5, Score.SharedThemes.Count());
+        }
+
+        [Test]
         public void TheFilesAreTheSpecAndTheDeliverablesAreRendered()
         {
             var salt = Score.ThemeOf(Region.Saltmarrow);
@@ -245,6 +332,15 @@ namespace OWSBG.Tests
                 Assert.IsTrue(File.Exists(Path.Combine(dir, region + "_music_" + t.Id + "_" + bpm[r] + ".mid")), t.Id + " as MIDI");
                 Assert.IsTrue(File.Exists(Path.Combine(dir, region + "_music_resolution_" + bpm[r] + ".wav")), region + "'s resolution");
             }
+            // AUD-07: the bosses' and the shared themes.
+            foreach (var (file, why) in new[]
+            {
+                ("saltmarrow_music_halvard-lead_67.wav", "Halvard in the chapel"), ("halden_music_halvard-halden-lead_100.wav", "on the Seven Bridges"), ("greyfold_music_halvard-greyfold-lead_40.wav", "at the Threshold"),
+                ("emberdown_music_brann-glow_75.wav", "Brann's glow"), ("greyfold_music_voss-white_40.wav", "Voss's white"), ("blank_music_archivist-frame_33.wav", "the Archivist's frame"),
+                ("blank_music_archivist_33.mid", "the Archivist as MIDI"), ("saltmarrow_music_shared-lead_67.wav", "the coast's motif fought in"), ("windreach_music_shared-drive_60.wav", "Windreach's"),
+                ("greyfold_music_resolution_40.wav", "the Threshold's resolution"), ("blank_music_resolution_33.wav", "the Blank's"),
+            })
+                Assert.IsTrue(File.Exists(Path.Combine(dir, file)), why + ": " + file);
         }
     }
 }

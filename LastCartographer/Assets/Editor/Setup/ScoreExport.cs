@@ -4,6 +4,7 @@
 //   -executeMethod OWSBG.Setup.ScoreExport.Render
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using OWSBG.Core;
 using UnityEditor;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace OWSBG.Setup
         {
             Directory.CreateDirectory(Root);
             var written = new List<string>();
-            foreach (var theme in Score.Themes)
+            foreach (var theme in Score.Themes.Concat(Score.SharedThemes))
             {
                 var stems = Score.Render(theme);
                 int len = 0;
@@ -40,7 +41,7 @@ namespace OWSBG.Setup
                 File.WriteAllBytes(Path.Combine(Root, midi), Score.Midi(theme));
                 written.Add(midi);
             }
-            foreach (var region in new[] { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach })
+            foreach (var region in new[] { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach, Region.Greyfold, Region.Blank })
             {
                 var res = Score.Resolution(region);
                 string resFile = RollCallSong.FileName(region, "music", "resolution", 60f / AudioDirection.BeatOf(region));

@@ -216,12 +216,16 @@ namespace OWSBG.World
         }
 
         /// <summary>Subclasses call this from Tick each frame; returns true once the wind-up has finished.</summary>
+        /// <summary>The kind of the attack being telegraphed, for its tell; bosses with slams, windows or shapes say which.</summary>
+        protected virtual AttackKind TelegraphKind => AttackKind.Strike;
+
         protected bool Telegraph(ref bool started, int frames)
         {
             if (!started)
             {
                 started = true;
                 TelegraphLeft = Mathf.Max(frames, MinTelegraphFrames);
+                Tell(TelegraphKind);
                 return false;
             }
             if (TelegraphLeft > 0) { TelegraphLeft--; return TelegraphLeft == 0; }

@@ -40,6 +40,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Sight => AttackKind.Window, _ => AttackKind.Strike };
         public int Claimed { get { int n = 0; foreach (var o in _owner) if (o != Owner.None) n++; return n; } }
         public int HaleStones => Count(Owner.Hale);
         public int WrenStones => Count(Owner.Wren);

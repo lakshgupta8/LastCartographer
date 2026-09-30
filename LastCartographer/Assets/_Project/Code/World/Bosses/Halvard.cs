@@ -38,6 +38,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Survey => AttackKind.Shape, _ => AttackKind.Strike };
         public IReadOnlyList<float> Marks => _marks;
         public int Thrusts { get; private set; }
         public int Lunges { get; private set; }

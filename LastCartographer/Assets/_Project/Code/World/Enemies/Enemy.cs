@@ -49,6 +49,11 @@ namespace OWSBG.World
         public event Action<Enemy> Died;
         /// <summary>Every enemy death in the game (commission counters, later stats).</summary>
         public static event Action<Enemy> AnyDied;
+        /// <summary>A telegraph's first frame, with the attack's kind: the tell is played from it (AUD-03).</summary>
+        public static event Action<Enemy, AttackKind> Telegraphed;
+
+        /// <summary>Announce a telegraph starting; the sound bank plays the kind's tell.</summary>
+        protected void Tell(AttackKind kind) => Telegraphed?.Invoke(this, kind);
         /// <summary>Roster name used by counters ("kill.MarshCrab"); the type name unless overridden.</summary>
         public virtual string Family => GetType().Name;
 

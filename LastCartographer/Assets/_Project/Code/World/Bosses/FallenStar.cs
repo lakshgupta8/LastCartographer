@@ -38,6 +38,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Walk => AttackKind.Shape, Attack.Slam => AttackKind.Slam, Attack.Walls => AttackKind.Shape, _ => AttackKind.Strike };
         public bool IsBurning => IsFightActive && Phase >= 3;
         public BossPart Fist { get; private set; }
         public IReadOnlyList<GameObject> Walls => _walls;

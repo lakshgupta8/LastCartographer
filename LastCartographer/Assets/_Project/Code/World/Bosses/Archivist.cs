@@ -39,6 +39,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Draw => AttackKind.Shape, Attack.Frame => AttackKind.Window, _ => AttackKind.Strike };
         public bool IsDrawing => _drawLeft > 0f;
         public BossPart Hand { get; private set; }
         public IReadOnlyList<GameObject> Drawings => _drawings;

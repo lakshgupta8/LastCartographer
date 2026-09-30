@@ -36,6 +36,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Step => AttackKind.Shape, Attack.Bind => AttackKind.Shape, _ => AttackKind.Strike };
         /// <summary>The Charter she mirrors: Wren's, read as the fight begins.</summary>
         public CharterKind Mirror { get; private set; } = CharterKind.Surveyor;
         public IReadOnlyList<ComboStep> MirrorCombo => _combo;

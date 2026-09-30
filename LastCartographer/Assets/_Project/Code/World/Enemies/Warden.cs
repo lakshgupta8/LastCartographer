@@ -82,7 +82,7 @@ namespace OWSBG.World
                             Face(to.x >= 0f ? 1 : -1);
                             Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
                             _frames = 0;
-                            if (Hostile) State = Move.Telegraph;
+                            if (Hostile) { State = Move.Telegraph; Tell(AttackKind.Strike); }
                             else
                             {
                                 State = Move.Measure;
@@ -97,7 +97,7 @@ namespace OWSBG.World
 
                 case Move.Measure:
                     Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
-                    if (Hostile) { State = Move.Telegraph; _frames = 0; return; }   // struck mid-measure, or the count came in
+                    if (Hostile) { State = Move.Telegraph; _frames = 0; Tell(AttackKind.Strike); return; }   // struck mid-measure, or the count came in
                     if (++_frames >= _measureFrames) { State = Move.Patrol; _cooldown = _measureCooldown; }
                     break;
 

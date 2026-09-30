@@ -40,6 +40,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Wait;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Rubble => AttackKind.Slam, Attack.Reach => AttackKind.Window, _ => AttackKind.Strike };
         /// <summary>Beats since the fight began.</summary>
         public int Beat { get; private set; }
         /// <summary>The lamp lit on this beat, or -1 when the beat is lost (the lamp is out or under rubble).</summary>

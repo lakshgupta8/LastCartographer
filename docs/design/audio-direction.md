@@ -171,8 +171,9 @@ want the feel-test's eye.
 ## 9. Open
 
 - **The roll-call is the first sound** (AUD-02, `docs/design/roll-call.md`): sung by an in-engine synth in every
-  walk, under the Bone Bridge, at the Bell and in the ending's chorus. AUD-03 to AUD-08 are the rest; the mixer
-  (AUD-09) is running.
+  walk, under the Bone Bridge, at the Bell and in the ending's chorus. **Wren's sounds and the four tells** are the
+  second (AUD-03, `docs/design/wren-sounds.md`), made from ink and paper in code. AUD-04 to AUD-08 are the rest;
+  the mixer (AUD-09) is running.
 - **The music system:** stems, bar-synced layer changes and rests for the silence targets are to build when the
   first stems arrive (AUD-04). The beat table is what it will clock from.
 - **Smudges in the Blank's islands** follow the Blank's slow beat (1.8 s each). Whether that's too easy wants a

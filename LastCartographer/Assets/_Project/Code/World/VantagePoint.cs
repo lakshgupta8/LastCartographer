@@ -25,6 +25,8 @@ namespace OWSBG.World
         /// <summary>The vantage Wren is holding the survey at, if any (CHR-03: the survey pose).</summary>
         public static VantagePoint Surveying { get; private set; }
         public event Action<VantagePoint> Surveyed;
+        /// <summary>Any vantage drawn, anywhere (the drawn sound, AUD-03).</summary>
+        public static event Action<VantagePoint> AnySurveyed;
 
         WrenController _wren;
         Inkwell _ink;
@@ -84,6 +86,7 @@ namespace OWSBG.World
                 {
                     Captions.Show(recovering ? Loc.F("caption.drawn_again", "Drawn again: {0}", Atlas.PlaceName(place)) : Loc.F("caption.drawn", "Drawn: {0}", Atlas.VantageName(_vantageId)), 2.5f);
                     Surveyed?.Invoke(this);
+                    AnySurveyed?.Invoke(this);
                 }
                 Controls.Release(Hold.Survey);
             }

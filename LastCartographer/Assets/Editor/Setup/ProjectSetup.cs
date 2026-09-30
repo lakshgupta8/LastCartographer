@@ -490,6 +490,7 @@ namespace OWSBG.Setup
             flourishes.hitMask = LayerMask.GetMask("Hittable", "Enemy");
             var strikeVisual = go.AddComponent<StrikeVisual>();
             go.AddComponent<WrenFx>();   // the Bind's redraw, a hit's splash (ENV-12)
+            go.AddComponent<WrenSounds>();   // her quill's sounds (AUD-03)
             var svSo = new SerializedObject(strikeVisual);
             svSo.FindProperty("_inkMaterial").objectReferenceValue = MakeLitMaterial("M_Ink_Black", new Color(0.06f, 0.06f, 0.08f));
             svSo.ApplyModifiedPropertiesWithoutUndo();

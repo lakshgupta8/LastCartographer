@@ -1441,8 +1441,11 @@ namespace OWSBG.Setup
             }
         }
 
-        // A stand-in bird: an ink-tinted quad with a trigger, talkable with up.
-        static void MakeNpc(Room room, string name, Vector2 pos, string startNode, Color tint)
+        // A townsfolk (CHR-11): drawn from its sheets when Art/Characters/<character>/ has them (the character is the
+        // name without its _Greybox suffix), else an ink-tinted stand-in quad; a trigger, talkable with up. With
+        // sheets it gets the sheet player, the animator and its colour state (rest state as given; the place's fate
+        // and fade stage are read at run time).
+        static void MakeNpc(Room room, string name, Vector2 pos, string startNode, Color tint, string character = null, NpcInkState ink = NpcInkState.Drawn)
         {
             var go = new GameObject(name) { layer = LayerMask.NameToLayer("Trigger") };
             go.transform.SetParent(room.transform, false);
@@ -1457,18 +1460,21 @@ namespace OWSBG.Setup
             so.FindProperty("_prompt").stringValue = "Talk";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(PlaceholderTexPath);
-            var mat = MakeInkMaterial("M_Npc_" + name, tex);
-            if (mat.HasProperty("_BaseColor")) mat.SetColor("_BaseColor", tint);
-            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.name = "Sprite";
-            Object.DestroyImmediate(quad.GetComponent<Collider>());
-            quad.transform.SetParent(go.transform, false);
-            quad.transform.localScale = new Vector3(0.9f, 1.4f, 1f);
-            quad.transform.localPosition = new Vector3(0f, 0.7f, 0f);
-            var r = quad.GetComponent<MeshRenderer>();
-            r.sharedMaterial = mat;
-            r.shadowCastingMode = ShadowCastingMode.TwoSided;
+            character ??= name.Replace("_Greybox", "");
+            var r = MakeSpriteQuad(go, "M_Npc_" + name, character, new Vector3(0.9f, 1.4f, 1f), new Vector3(0f, 0.7f, 0f), false, out var sheets);
+            var mat = r.sharedMaterial;
+            var rest = sheets != null ? Color.white : tint;   // the drawing's own colours, or the stand-in's tint
+            if (mat.HasProperty("_BaseColor") && mat.GetColor("_BaseColor") != rest) { mat.SetColor("_BaseColor", rest); EditorUtility.SetDirty(mat); }
+            if (sheets != null)
+            {
+                go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
+                go.AddComponent<NpcAnimator>();
+                var npcInk = go.AddComponent<NpcInk>();
+                var iso = new SerializedObject(npcInk);
+                iso.FindProperty("_rest").enumValueIndex = (int)ink;
+                iso.FindProperty("_renderer").objectReferenceValue = r;
+                iso.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
 
         // A survey spot: a trigger area plus a thin marker post.

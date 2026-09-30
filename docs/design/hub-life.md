@@ -53,6 +53,9 @@ Code: `DayClock.Advance / SetPhase / Sleep / Lock / TimeIn / PhaseIn`, `NpcSched
 - **Dotha** (room B): dawn and day at her stoop; dusk singing to the water by the tether-post ("Not now. The
   water's listening." `#still`); night asleep ("Ask me in the light." `#still`).
 - The atlas page prints `Day 3 · dusk`, and `(held at this hour)` inside an anchored place.
+- A post's activity string names the clip a drawn NPC shows there by its first word (`npc-animation.md` §3, CHR-11):
+  Sable's "mending nets", "reading the ledger" and "asleep under the stilts" have clips; Dotha's "singing to the
+  water" and "asleep" do; "on her stoop" idles. Rename an activity and its clip is lost silently.
 
 ## 6. Open
 - Routes across rooms (an NPC whose dusk post is next door) and platforms: NavMesh or authored paths (the

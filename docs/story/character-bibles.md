@@ -345,8 +345,9 @@ Marrow: Lost. #echo:corvin
 | **Ilse** | (Wren's mother, grey) | Lets go | Thessaly Hollow (Act 3) | NAR-12 |
 
 ## 9. Open
-- Pell's species (a jackdaw) and pronouns (they) are this bible's decisions; CHR-11 should confirm before the
-  model sheet.
+- Pell's species (a jackdaw) and pronouns (they) are this bible's decisions; CHR-11's v1 model sheet draws the
+  jackdaw (`docs/art/pell-turnaround.png`). It also chose species the bible left open: Isolde a curlew, Dotha an
+  oystercatcher (`docs/design/npc-animation.md` §2); each is one line to change.
 - Marrow's four original words. The bible fixes the last as "a word nobody has said before" (9.2); the first
   three, and the last itself, are NAR-13's.
 - The bible says Marrow gains "one original word per act" but Marrow only speaks in Act 3; §5 reads this as

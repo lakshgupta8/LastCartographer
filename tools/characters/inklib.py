@@ -124,6 +124,7 @@ class Rig:
     def __init__(self):
         self.parts = []
         self.rest = {}
+        self.props = {}
 
     def add(self, name, parent=None, loc=(0, 0, 0), rot=(0, 0, 0)):
         e = empty(name, parent, loc)
@@ -139,6 +140,18 @@ class Rig:
         for p in self.parts:
             l, r, s = self.rest[p.name]
             p.location, p.rotation_euler, p.scale = l, r, s
+        for name in self.props:
+            self.show(name, False)
+
+    def prop(self, name, root):
+        """A part drawn only in the clips that ask for it (a net, a ledger): hidden at rest, with everything under it."""
+        self.props[name] = root
+        self.show(name, False)
+
+    def show(self, name, on=True):
+        root = self.props[name]
+        for ob in [root] + list(root.children_recursive):
+            ob.hide_render = not on
 
     def _part(self, part):
         return getattr(self, part) if isinstance(part, str) else part

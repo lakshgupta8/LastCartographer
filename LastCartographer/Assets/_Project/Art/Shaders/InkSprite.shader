@@ -18,6 +18,8 @@ Shader "OWSBG/InkSprite"
         _WorldUV ("World-space UV (0 off, 1 on)", Float) = 0
         _Shadows ("Receive Shadows (0 off, 1 on)", Float) = 1
         _Lighting ("Light Influence", Range(0, 1)) = 1
+        _Wash ("Wash (fills toward paper, the line kept)", Range(0, 1)) = 0
+        _LineFade ("Line Fade (the line toward grey)", Range(0, 1)) = 0
     }
 
     SubShader
@@ -50,7 +52,20 @@ Shader "OWSBG/InkSprite"
             half _WorldUV;
             half _Shadows;
             half _Lighting;
+            half _Wash;
+            half _LineFade;
         CBUFFER_END
+
+        // Colour states (CHR-11): a person's fills wash toward paper while the line stays; a Remnant's line goes
+        // grey too (art-direction 4: the same shapes with the ink removed). The line is what is darker than a wash.
+        half3 ColourState(half3 rgb)
+        {
+            half lum = dot(rgb, half3(0.299h, 0.587h, 0.114h));
+            half onLine = saturate((0.16h - lum) / 0.10h);   // 1 on the ink line, 0 on a wash
+            half fillK = 0.85h * _Wash;
+            half lineK = min(0.6h, 0.35h * _Wash + 0.55h * _LineFade);
+            return lerp(rgb, _PaperColor.rgb, lerp(fillK, lineK, onLine));
+        }
 
         // Effective cutoff rises as ink leaves, so thin lines vanish first.
         half InkCutoff() { return lerp(0.92h, _Cutoff, _Ink); }
@@ -121,6 +136,7 @@ Shader "OWSBG/InkSprite"
             {
                 half4 tex = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv) * _BaseColor;
                 clip(tex.a - InkCutoff());
+                tex.rgb = ColourState(tex.rgb);
 
                 // A sprite quad lights as if it faced the camera; flip for back faces so Cull Off works.
                 half3 n = normalize(IN.normalWS) * (isFront ? 1.0h : -1.0h);

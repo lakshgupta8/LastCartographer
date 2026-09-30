@@ -146,7 +146,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CHR-08 `[ ]` | Cantor family and the Choir | M2 | SB-3.3 | CHR-02 |
 | CHR-09 `[ ]` | Smudge family (5) and the Collapse | M2 | SB-6 | CHR-02 |
 | CHR-10 `[ ]` | Remaining bosses (Gatekeeper, Hale, Fallen Star, Voss, Bells, Corra's Drawing, Archivist, Complete Survey) | M3 | SB-6 | CHR-02 |
-| CHR-11 `[ ]` | NPC cast: Isolde, Pell, Sable, Runa, Teodor, Kettil, Idrenne, Maren, Corvin, Ilse, Corra, Marrow (+ colour states) | M2–M3 | SB-6 | CHR-02 |
+| CHR-11 `[~]` | NPC cast: Isolde, Pell, Sable, Runa, Teodor, Kettil, Idrenne, Maren, Corvin, Ilse, Corra, Marrow (+ colour states); v1: all twelve plus Dotha and Aury built in Blender from one townsfolk bird (`tools/characters/cast.py`), idle/talk/walk/asleep each and their own activities, `NpcAnimator` on every placed NPC with sheets, colour states drawn/fading/Remnant through `NpcInk` and the shader's `_Wash`/`_LineFade`, `docs/design/npc-animation.md`; rooms for eleven of them and a hand-drawn pass open | M2–M3 | SB-6 | CHR-02 |
 | CHR-12 `[ ]` | Generic townsfolk library (30) and Remnant (grey) variants | M3 | — | CHR-02 |
 | CHR-13 `[ ]` | Portraits for dialogue | M3 | — | CHR-11 |
 | CHR-14 `[ ]` | Fledgling background loops per region (glide distance per ability) | M3 | SB-5.6 | CHR-02 |

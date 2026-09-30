@@ -63,4 +63,5 @@ Code: `DayClock.Advance / SetPhase / Sleep / Lock / TimeIn / PhaseIn`, `NpcSched
 - Shops and **stock that never varies** in anchored towns (DES-05).
 - What sleeping does to commissions (expiry, DES-06 §open). What it does to the Windreach camp is settled: a new
   day walks it on once its fire is had (PRG-21, `moving-camp.md`).
-- Looping props and the locked sky in real art (ENV-09).
+- The locked sky in real art. The hubs' furniture is drawn (ENV-09, `paper-kit.md` §2a); looping props (a net that
+  sways, a lamp that gutters) would be sheets like the cast's.

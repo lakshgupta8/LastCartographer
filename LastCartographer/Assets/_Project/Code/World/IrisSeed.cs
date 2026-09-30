@@ -44,8 +44,8 @@ namespace OWSBG.World
         {
             _base = transform.position;
             _bob = UnityEngine.Random.value * 6f;
-            var r = GetComponent<Renderer>();
-            if (r != null)
+            var r = GetComponentInChildren<Renderer>();
+            if (r != null && r.sharedMaterial != null && !r.sharedMaterial.HasProperty("_Ink"))   // the greybox ball; a drawing keeps its colours
             {
                 var mpb = new MaterialPropertyBlock();
                 r.GetPropertyBlock(mpb);

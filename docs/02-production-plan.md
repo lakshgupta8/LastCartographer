@@ -163,7 +163,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | ENV-06 `[ ]` | Environmental storytelling props (inscriptions, tapestries, corpses) | M3 | NAR-15 | ENV-02..05 |
 | ENV-07 `[ ]` | Windreach kit, grass system, updraft ink-swirls | M3 | SB-4.5 | ENV-01 |
 | ENV-08 `[ ]` | Greyfold and Blank: white-out, lantern-radius, drifting islands | M3 | SB-4.6, 4.7 | PRG-18 |
-| ENV-09 `[ ]` | Hubs dressing: drafting desks, ledgers, shops | M2 | — | ENV-02 |
+| ENV-09 `[~]` | Hubs dressing: drafting desks, ledgers, shops; v1: thirteen Saltmarrow props drawn with the kit's ink (`tools/paperkit/props.py`; desk, ledger, dummy, the Ferrymen's stall, survey stake, lamp and glow, seeds, bound stake, nets, stoop, boat, tether-post), stood by `MakeProp` under the behaviours they replace and in the fade group, `docs/design/paper-kit.md` §2a; other regions' furniture and a hand pass open | M2 | — | ENV-02 |
 | ENV-10 `[ ]` | Lighting and post per region | M4 | ART-5 | ENV-all |
 | ENV-11 `[~]` | UI art: atlas book, masks, Inkwell, ledger, Charter/Instrument screens, fonts (UI Toolkit runtime layer in place: HUD, dialogue page, desk page, boss bar; art and fonts pending) | M1–M2 | ART-6 | CHR-01 |
 | ENV-12 `[ ]` | VFX: ink splashes, Flourish scribbles, Bind redraw, erasure, Blank edge | M2–M3 | ART-7 | PRG-03 |

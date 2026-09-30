@@ -201,6 +201,7 @@ and Steam's depot scripts (`tools/steam-upload.ps1`), are in `docs/design/build-
 
 ## The paper kit
 A region's backdrop and ground are drawn by `tools/paperkit/<region>.py` in headless Blender: cut-out geometry in the region's palette with Freestyle ink lines, written as PNG strips and tiles to `Assets/_Project/Art/Environment/<Region>/` with a `kit.json`. The greybox builder puts any layer the kit has on the ink shader (`Paper_*` strips on the parallax quads, `Ground_*` tiles as world-tiled skins on the ground blocks), so the place's fade thins the drawing. Render, then rebuild: `blender -b -P tools/paperkit/saltmarrow.py` and **OWSBG → Build Bootstrap Scene** (`docs/design/paper-kit.md`).
+`tools/paperkit/props.py` draws the hubs' furniture the same way (the desk, the ledger, the dummy, Sable's stall, the survey stakes, the lamps, seeds, bound stakes, nets, Dotha's stoop, boats and tether-posts); the builder stands each under the behaviour it dresses and keeps the greybox block where a region has no drawing (paper-kit.md §2a).
 
 ## Wren's sheets
 `tools/characters/wren.py` builds Wren from parts in headless Blender and renders every clip side-on in the paper kit's ink; `python tools/characters/pack.py wren` packs the frames into one strip per clip under `Assets/_Project/Art/Characters/Wren/` and writes the model sheet to `docs/art/`. The bootstrap build puts `InkSheetPlayer` and `WrenAnimator` on her (`docs/design/wren-animation.md`).

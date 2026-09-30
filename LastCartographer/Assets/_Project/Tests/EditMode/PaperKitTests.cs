@@ -21,6 +21,12 @@ namespace OWSBG.Tests
             "Mid_Salt", "Far_Chapel", "Far_Tower", "Farther_Sea",
         };
         static readonly string[] Tiles = { "Ground_Boardwalk", "Ground_Boardwalk_Faded", "Ground_Shallows", "Ground_Stone" };
+        // ENV-09's props: cut-outs at the sprite density, feet at the bottom edge (docs/design/paper-kit.md §2a)
+        public static readonly string[] Props =
+        {
+            "Prop_Desk", "Prop_Ledger", "Prop_Dummy", "Prop_Stall", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds",
+            "Prop_Bound", "Prop_Nets", "Prop_Stoop", "Prop_Boat", "Prop_Tether",
+        };
         const string Scenes = "Assets/_Project/Scenes/Greybox/";
 
         [System.Serializable] class Manifest { public string region; public int ppu; public int tilePpu; public Layer[] layers; }
@@ -43,7 +49,7 @@ namespace OWSBG.Tests
         {
             var kit = Load();
             Assert.AreEqual("Saltmarrow", kit.region);
-            CollectionAssert.AreEquivalent(Backdrop.Select(n => "Paper_" + n).Concat(Tiles), kit.layers.Select(l => l.name));
+            CollectionAssert.AreEquivalent(Backdrop.Select(n => "Paper_" + n).Concat(Tiles).Concat(Props), kit.layers.Select(l => l.name));
             foreach (var l in kit.layers)
             {
                 var path = Path.GetFullPath(Kit + l.file);
@@ -65,6 +71,12 @@ namespace OWSBG.Tests
             foreach (var n in new[] { "Far_Chapel", "Far_Tower" }) Assert.AreEqual(14f, by["Paper_" + n].heightUnits, 0.001f, n);
             foreach (var n in new[] { "Farther_Cliffs", "Farther_Cliffs_Faded", "Farther_Sea" }) Assert.AreEqual(16f, by["Paper_" + n].heightUnits, 0.001f, n);
             foreach (var n in Tiles) { Assert.AreEqual(4f, by[n].widthUnits, n); Assert.AreEqual(1f, by[n].heightUnits, n); }
+            foreach (var n in Props)
+            {
+                Assert.AreEqual("prop", by[n].kind, n);
+                Assert.That(by[n].widthUnits, Is.InRange(0.5f, 3f), n + " is furniture, not a backdrop");
+                Assert.That(by[n].heightUnits, Is.InRange(0.5f, 3f), n);
+            }
             Assert.IsTrue(by["Paper_Mid_Reeds_Faded"].faded && !by["Paper_Mid_Reeds"].faded, "the manifest says which layers are the faded third's");
         }
 

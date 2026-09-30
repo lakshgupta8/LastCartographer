@@ -65,7 +65,8 @@ Vantages in the slice: 8 (Tideline, Reedmother, Tetherpost, Bole, Crown, FirstLa
 | The Bone Bridge | 3 | The whale; the second step of the Bone Bridge commission; the climb to Emberdown. |
 
 ## 4. Open
-- Where the Ferrymen sell tethers (Sable, or the Ferry room's landing) once DES-05 prices them.
+- Where the Ferrymen sell tethers (Sable, or the Ferry room's landing) once DES-05 prices them. ENV-09 stands the
+  stall under the Quay's stilts, by Sable's night post; the Ferry has tether-posts and bound stakes, no boats.
 - Roots_4's reward beyond the view (a vellum scrap, a memory, the first Remnant?).
 - Real layouts on paper (ENV-02) will replace the recipes' platform arithmetic; the recipe keeps the exits,
   spawns, vantages and enemy answers, which is what the tests hold on to.

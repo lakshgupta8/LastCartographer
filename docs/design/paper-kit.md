@@ -62,6 +62,31 @@ The tiles, 4 × 1 units at 96 px/unit, mapped in world space:
 A faded layer is the same geometry (the random seed comes from the name without `_Faded`) with the
 depth wash raised by 0.3 and the line at 0.6 of its thickness.
 
+### 2a. Props (ENV-09)
+
+`tools/paperkit/props.py` draws the hubs' furniture with the same helpers: one cut-out each at 96 px/unit, feet at
+the bottom edge, centred, no depth wash (they stand on the play plane), listed in `kit.json` as kind `prop` with
+their size in units. `ProjectSetup.MakeProp` stands one on an InkSprite quad a little behind the play plane
+(z 0.5 to 0.9), sized from the manifest, under whatever object asked for it; a helper whose prop is missing keeps
+its greybox block, so a region without a kit still builds. The material is lit like the ground (shadows on,
+`_Lighting` 0.7); the lamp's glow is flat, unshadowed and grainless. Every `Prop_*` renderer joins the room's fade
+group at dropout 5: it thins with the place and never drops, so a desk stays a desk to the last.
+
+| Prop | Size | Where | What it is |
+|---|---|---|---|
+| `Prop_Desk` | 2 × 1.5 | under every `DraftingDesk` | the drafting desk on trestles: slanted board, a sheet with a coast on it, inkwell and quill, a rolled chart below |
+| `Prop_Ledger` | 1.5 × 2 | under every `CommissionLedger` | the commissions board: a post, a framed board, four pinned slips |
+| `Prop_Dummy` | 1 × 1.625 | under the `TrainingDummy` | a sacking dummy bound with rope on a post, a painted ring; the behaviour rests it white and flashes it bright |
+| `Prop_Stall` | 2.5 × 2 | the Quay, under the stilts | the Ferrymen's stall, where tethers are sold: crates, coils, a sign under an awning |
+| `Prop_Vantage` | 0.75 × 2 | under every `VantagePoint` | a survey stake with a brass plate and a ribbon |
+| `Prop_Lamp`, `Prop_LampGlow` | 1.5 × 2.5, 2 × 2 | under every `TravelPoint` lamp | a lantern on an iron stand; its light on the paper behind it, the renderer the travel point shows once lit |
+| `Prop_Seeds` | 0.75 × 0.75 | under every placed `IrisSeed` | split pods on a stem (runtime drops keep the sphere) |
+| `Prop_Bound` | 0.5 × 1.25 | every bound of a walk; the Ferry | a bound stake with a knotted cord, in the marker blue |
+| `Prop_Nets` | 1.75 × 1.5 | the Quay, behind Sable's post | a drying rack with a net over it |
+| `Prop_Stoop` | 2 × 1.25 | Merrow's End, behind Dotha | two stone steps, a bench, a pot with a dead reed |
+| `Prop_Boat` | 3 × 1 | the Quay's west end, the Shore | a beached rowing boat, an oar across it |
+| `Prop_Tether` | 1 × 3 | Merrow's End by the vantage, the Tetherline ×4, the Ferry ×2 | a tether-post, its rope running up and away into the white |
+
 Depth wash is how far each colour is lerped toward the region's paper: aerial perspective as thinning ink
 (art-direction 3). Ink lines thin the same way.
 
@@ -114,5 +139,7 @@ palette; Blender's view transform is Standard, not AgX.
 - The Shore's sea-fade sheets stay white quads: the Blank's look is ENV-08's.
 - The Greyfold Edge's three strips (`Mid_Edge`, `Far_Cathedral`, `Farther_Edge`) are ENV-08's.
 - Per-region `_Ink` curves (fade-stages.md §7) can now be tuned against real layers.
-- Props (the desk, the ledger, the dummy, the lamps) are ENV-09's; this pass draws only what the fade group owns.
+- The props are one drawing each (§2a); a second state (the desk with Wren at it, the stall shuttered at night, the
+  glow at half) would be a second file and a rule in the helper. Seeds dropped by enemies at run time are still the
+  greybox sphere: `IrisSeed.Spawn` has no kit to read.
 - A wind sway on the reeds (vertex offset in the shader) would sell the parallax; not in v1.

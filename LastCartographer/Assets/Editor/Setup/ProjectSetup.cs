@@ -531,6 +531,11 @@ namespace OWSBG.Setup
 
             MakeDummy(room, new Vector2(4f, 0.6f));
             MakeSeeds(room, new Vector2(7f, 5.9f), 2);   // on the high platform, past the crab
+            // The quay's furniture (ENV-09): the Ferrymen's stall under the stilts where Sable sleeps, her net rack
+            // behind her mending post, a boat drawn up at the shore end.
+            MakeProp(room, room.transform, "Stall", new Vector2(-13.2f, 0f), 0.8f);
+            MakeProp(room, room.transform, "Nets", new Vector2(-10.6f, 0f), 0.9f);
+            MakeProp(room, room.transform, "Boat", new Vector2(-16.5f, 0f), 0.7f);
             MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Quay_Sable", new Color(0.16f, 0.18f, 0.22f));
             var sable = MakeSchedule(room, "Sable_Greybox");
             sable.AddPost(DayPhase.Dawn, new Vector2(-9.5f, 0f), "", "mending nets", 1);
@@ -590,6 +595,8 @@ namespace OWSBG.Setup
             MakePaperLayer(room, "Far_Roosts", 8f, 2f, new Color(0.70f, 0.72f, 0.66f), 10f);
             MakePaperLayer(room, "Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.81f, 0.74f), 16f);
 
+            MakeProp(room, room.transform, "Stoop", new Vector2(-12.6f, 0f), 0.9f);    // Dotha's stoop, behind her (ENV-09)
+            MakeProp(room, room.transform, "Tether", new Vector2(2.7f, 0f), 0.9f);     // the tether-post the vantage is named for
             MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Merrow_Dotha", new Color(0.36f, 0.40f, 0.34f));
             var dotha = MakeSchedule(room, "Dotha_Greybox");
             dotha.AddPost(DayPhase.Dawn, new Vector2(-12f, 0f), "", "on her stoop", 1);
@@ -1100,6 +1107,7 @@ namespace OWSBG.Setup
             public readonly List<(string name, Vector2 pos)> Vantages = new List<(string, Vector2)>();
             public readonly List<(System.Type type, string name, Vector2 pos, Vector2 size)> Enemies = new List<(System.Type, string, Vector2, Vector2)>();
             public readonly List<(Vector2 pos, int n)> Seeds = new List<(Vector2, int)>();
+            public readonly List<(string name, Vector2 pos)> Props = new List<(string, Vector2)>();
 
             public RoomRecipe(string id) { Id = id; }
             public RoomRecipe Tall() { Bounds = new Rect(-20f, -3f, 40f, 19f); return this; }
@@ -1118,6 +1126,7 @@ namespace OWSBG.Setup
             public RoomRecipe Skimmer(float x, float y) { Enemies.Add((typeof(ReedSkimmer), "Skimmer_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.5f))); return this; }
             public RoomRecipe Smudge(float x) { Enemies.Add((typeof(Smudge), "Smudge_" + Enemies.Count, new Vector2(x, 1.5f), new Vector2(1.1f, 1.1f))); return this; }
             public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
+            public RoomRecipe Prop(string name, float x, float y = 0f) { Props.Add((name, new Vector2(x, y))); return this; }
             public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
         }
 
@@ -1131,7 +1140,7 @@ namespace OWSBG.Setup
             {
                 new RoomRecipe("Saltmarrow_Shore") { SeaWest = true }
                     .Floor(-20f, 20f).Plat(-8f, 0.6f, 2.4f).Vantage("Tideline", -8f, 0.9f)
-                    .Crab(6f).Smudge(-3f).Seed(-12f, 0.5f, 2)
+                    .Crab(6f).Smudge(-3f).Seed(-12f, 0.5f, 2).Prop("Boat", 12f)
                     .East(Scene(A)),
                 new RoomRecipe("Saltmarrow_Stilts").Tall()
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(-5f, 5f, 3f).Plat(0f, 7.5f, 3f).Plat(5f, 10f, 3f).Plat(0f, 12f, 4f)
@@ -1144,10 +1153,11 @@ namespace OWSBG.Setup
                 new RoomRecipe("Saltmarrow_Tetherline")
                     .Floor(-20f, 20f).Plat(-8f, 3f, 2.5f).Plat(0f, 4f, 2.5f).Plat(8f, 3f, 2.5f)
                     .Skimmer(-8f, 5f).Skimmer(8f, 5f).Crab(0f)
+                    .Prop("Tether", -14f).Prop("Tether", -4f).Prop("Tether", 4f).Prop("Tether", 14f)
                     .West(Scene(B)).East(Scene("Saltmarrow_Ferry")),
                 new RoomRecipe("Saltmarrow_Ferry")
                     .Floor(-20f, 20f).Plat(4f, 2.5f, 3f).Plat(9f, 4.5f, 3f)
-                    .Smudge(-6f).Smudge(6f)
+                    .Smudge(-6f).Smudge(6f).Prop("Tether", -15f).Prop("Tether", 15f).Prop("Bound", -12f).Prop("Bound", 12f)
                     .West(Scene("Saltmarrow_Tetherline")).East(Scene("Saltmarrow_Chain_1")),
                 new RoomRecipe("Saltmarrow_Chain_1").Tall()
                     .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(-1f, 5f, 3f).Plat(4f, 7.5f, 3f).Plat(0f, 10f, 5f).Vantage("FirstLamp", 0f, 10.3f)
@@ -1211,6 +1221,7 @@ namespace OWSBG.Setup
             foreach (var e in r.Exits) MakeTransition(room, e.name, e.c, e.s, e.target, e.spawn);
             foreach (var v in r.Vantages) MakeVantage(room, v.name, r.Id + "/" + v.name, v.pos);
             foreach (var sd in r.Seeds) MakeSeeds(room, sd.pos, sd.n);
+            foreach (var p in r.Props) MakeProp(room, room.transform, p.name, p.pos, 0.7f);
             foreach (var e in r.Enemies)
             {
                 if (e.type == typeof(MarshCrab)) MakeEnemy<MarshCrab>(room, e.name, e.pos, e.size);
@@ -1226,17 +1237,21 @@ namespace OWSBG.Setup
         // Iris seeds lying about (DES-05): a small sphere and a trigger.
         static void MakeSeeds(Room room, Vector2 pos, int n)
         {
-            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.name = "IrisSeeds_" + n;
-            go.layer = LayerMask.NameToLayer("Trigger");
-            Object.DestroyImmediate(go.GetComponent<Collider>());
+            var go = new GameObject("IrisSeeds_" + n) { layer = LayerMask.NameToLayer("Trigger") };
             go.transform.SetParent(room.transform, false);
             go.transform.position = new Vector3(pos.x, pos.y + 0.4f, 0f);
-            go.transform.localScale = Vector3.one * 0.35f;
             var c = go.AddComponent<CircleCollider2D>();
             c.isTrigger = true;
-            c.radius = 1.6f;
-            go.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Seed", new Color(0.93f, 0.76f, 0.34f));
+            c.radius = 0.55f;
+            if (MakeProp(room, go.transform, "Seeds", new Vector2(0f, -0.4f), 0.3f) == null)
+            {
+                var ball = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                ball.name = "Ball";
+                Object.DestroyImmediate(ball.GetComponent<Collider>());
+                ball.transform.SetParent(go.transform, false);
+                ball.transform.localScale = Vector3.one * 0.35f;
+                ball.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Seed", new Color(0.93f, 0.76f, 0.34f));
+            }
             var seed = go.AddComponent<IrisSeed>();
             seed.Count = n;
         }
@@ -1327,6 +1342,9 @@ namespace OWSBG.Setup
                 else if (child.gameObject.layer == LayerMask.NameToLayer("Ground") && child.GetComponents<MonoBehaviour>().Length == 0)
                     group.AddLayer(r, 5);
             }
+            // The props (ENV-09) thin with the place and never drop: a desk stays a desk to the last.
+            foreach (var r in room.GetComponentsInChildren<MeshRenderer>(true))
+                if (r.gameObject.name.StartsWith("Prop_") && r.gameObject.name != "Prop_LampGlow") group.AddLayer(r, 5);
             Debug.Log("[OWSBG] fade group " + room.RoomId + ": " + group.Layers.Count + " layers");
         }
 
@@ -1408,17 +1426,25 @@ namespace OWSBG.Setup
             r.receiveShadows = false;
         }
 
+        // The training target (ENV-09): the behaviour and its trigger on the root, the kit's drawing under it
+        // (a sacking dummy on a post) or the red block when the region has none.
         static void MakeDummy(Room room, Vector2 pos)
         {
-            var d = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            d.name = "TrainingDummy";
-            d.layer = LayerMask.NameToLayer("Hittable");
-            Object.DestroyImmediate(d.GetComponent<Collider>());
+            var d = new GameObject("TrainingDummy") { layer = LayerMask.NameToLayer("Hittable") };
             d.transform.SetParent(room.transform, false);
             d.transform.position = new Vector3(pos.x, pos.y, 0f);
-            d.transform.localScale = new Vector3(0.9f, 1.2f, 0.9f);
-            d.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Dummy", new Color(0.75f, 0.35f, 0.30f));
-            d.AddComponent<BoxCollider2D>().isTrigger = true;
+            var col = d.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(0.9f, 1.2f);
+            if (MakeProp(room, d.transform, "Dummy", new Vector2(0f, -0.6f)) == null)
+            {
+                var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                block.name = "Block";
+                Object.DestroyImmediate(block.GetComponent<Collider>());
+                block.transform.SetParent(d.transform, false);
+                block.transform.localScale = new Vector3(0.9f, 1.2f, 0.9f);
+                block.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Dummy", new Color(0.75f, 0.35f, 0.30f));
+            }
             d.AddComponent<TrainingDummy>();
         }
 
@@ -1505,6 +1531,8 @@ namespace OWSBG.Setup
                 foreach (var b in v.Beats)
                 {
                     if (made.TryGetValue(b.Position, out var existing)) { b.Marker = existing; continue; }
+                    var drawn = MakeProp(room, walk.transform, "Bound", b.Position, 0.7f, "Bound_" + b.Name.Replace(' ', '_').Replace('\'', '_'));
+                    if (drawn != null) { b.Marker = drawn; made[b.Position] = drawn; continue; }
                     var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     post.name = "Bound_" + b.Name.Replace(' ', '_').Replace('\'', '_');
                     Object.DestroyImmediate(post.GetComponent<Collider>());
@@ -1541,6 +1569,7 @@ namespace OWSBG.Setup
             so.FindProperty("_displayName").stringValue = name;
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            if (MakeProp(room, go.transform, "Vantage", Vector2.zero, 0.6f) != null) return;
             var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
             post.name = "Marker";
             Object.DestroyImmediate(post.GetComponent<Collider>());
@@ -1574,13 +1603,16 @@ namespace OWSBG.Setup
             tso.FindProperty("_spawn").stringValue = "Desk";
             tso.ApplyModifiedPropertiesWithoutUndo();
 
-            var table = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            table.name = "Table";
-            Object.DestroyImmediate(table.GetComponent<Collider>());
-            table.transform.SetParent(go.transform, false);
-            table.transform.localPosition = new Vector3(0f, 0.45f, 0.4f);
-            table.transform.localScale = new Vector3(1.4f, 0.9f, 0.8f);
-            table.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Desk", new Color(0.42f, 0.30f, 0.20f));
+            if (MakeProp(room, go.transform, "Desk", Vector2.zero) == null)
+            {
+                var table = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                table.name = "Table";
+                Object.DestroyImmediate(table.GetComponent<Collider>());
+                table.transform.SetParent(go.transform, false);
+                table.transform.localPosition = new Vector3(0f, 0.45f, 0.4f);
+                table.transform.localScale = new Vector3(1.4f, 0.9f, 0.8f);
+                table.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Desk", new Color(0.42f, 0.30f, 0.20f));
+            }
             MakeSpawn(room, "Desk", pos);
         }
 
@@ -1595,14 +1627,20 @@ namespace OWSBG.Setup
             col.size = new Vector2(3f, 2f);
             col.offset = new Vector2(0f, 1f);
 
-            var glow = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            glow.name = "Glow";
-            Object.DestroyImmediate(glow.GetComponent<Collider>());
-            glow.transform.SetParent(go.transform, false);
-            glow.transform.localPosition = new Vector3(0f, 1.3f, 0.5f);
-            glow.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
-            var glowR = glow.GetComponent<MeshRenderer>();
-            glowR.sharedMaterial = MakeLitMaterial("M_Greybox_Glow", new Color(0.95f, 0.75f, 0.35f));
+            // The lamp itself, and its light on the paper behind it (shown by the travel point once lit).
+            var lampR = MakeProp(room, go.transform, "Lamp", Vector2.zero, 0.5f);
+            var glowR = lampR != null ? MakeProp(room, go.transform, "LampGlow", new Vector2(0f, 0.85f), 0.62f, "Glow") : null;
+            if (glowR == null)
+            {
+                var glow = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                glow.name = "Glow";
+                Object.DestroyImmediate(glow.GetComponent<Collider>());
+                glow.transform.SetParent(go.transform, false);
+                glow.transform.localPosition = new Vector3(0f, 1.3f, 0.5f);
+                glow.transform.localScale = new Vector3(0.6f, 0.6f, 0.6f);
+                glowR = glow.GetComponent<MeshRenderer>();
+                glowR.sharedMaterial = MakeLitMaterial("M_Greybox_Glow", new Color(0.95f, 0.75f, 0.35f));
+            }
 
             var tp = go.AddComponent<TravelPoint>();
             var so = new SerializedObject(tp);
@@ -1632,6 +1670,7 @@ namespace OWSBG.Setup
             so.FindProperty("_prompt").stringValue = "Read";
             so.ApplyModifiedPropertiesWithoutUndo();
 
+            if (MakeProp(room, go.transform, "Ledger", Vector2.zero) != null) return;
             var post = GameObject.CreatePrimitive(PrimitiveType.Cube);
             post.name = "Post";
             Object.DestroyImmediate(post.GetComponent<Collider>());
@@ -1758,6 +1797,70 @@ namespace OWSBG.Setup
 
         static Texture2D KitTexture(Room room, string layer) =>
             AssetDatabase.LoadAssetAtPath<Texture2D>(Root + "/Art/Environment/" + RegionOf(room.RoomId) + "/" + layer + ".png");
+
+        [System.Serializable] class KitManifest { public string region; public KitLayerEntry[] layers; }
+        [System.Serializable] class KitLayerEntry { public string name, kind, file; public float widthUnits, heightUnits; public int ppu; }
+        static readonly Dictionary<string, KitManifest> _kits = new Dictionary<string, KitManifest>();
+
+        /// <summary>A kit layer's manifest entry (its size in units), or null when the region's kit lacks it.</summary>
+        static KitLayerEntry KitLayer(Room room, string name)
+        {
+            var region = RegionOf(room.RoomId);
+            if (!_kits.TryGetValue(region, out var kit))
+            {
+                var path = Root + "/Art/Environment/" + region + "/kit.json";
+                kit = File.Exists(path) ? JsonUtility.FromJson<KitManifest>(File.ReadAllText(path)) : null;
+                _kits[region] = kit;
+            }
+            if (kit?.layers == null) return null;
+            foreach (var l in kit.layers) if (l.name == name) return l;
+            return null;
+        }
+
+        /// <summary>
+        /// A prop from the kit (ENV-09): a quad on the ink shader, sized from the manifest, its feet at the given point
+        /// under the parent, a little behind the play plane. Null when the region has no such drawing, so the caller
+        /// keeps its greybox block. Named Prop_[name] so the fade group finds it.
+        /// </summary>
+        static MeshRenderer MakeProp(Room room, Transform parent, string name, Vector2 feet, float z = 0.5f, string objectName = null)
+        {
+            var entry = KitLayer(room, "Prop_" + name);
+            var tex = KitTexture(room, "Prop_" + name);
+            if (entry == null || tex == null) return null;
+            var mat = MakePropMaterial("M_Prop_" + name, tex, RegionPaper(RegionOf(room.RoomId)), name == "LampGlow");
+            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            quad.name = objectName ?? "Prop_" + name;
+            Object.DestroyImmediate(quad.GetComponent<Collider>());
+            quad.transform.SetParent(parent, false);
+            quad.transform.localPosition = new Vector3(feet.x, feet.y + entry.heightUnits * 0.5f, z);
+            quad.transform.localScale = new Vector3(entry.widthUnits, entry.heightUnits, 1f);
+            var r = quad.GetComponent<MeshRenderer>();
+            r.sharedMaterial = mat;
+            r.shadowCastingMode = name == "LampGlow" ? ShadowCastingMode.Off : ShadowCastingMode.TwoSided;
+            return r;
+        }
+
+        /// <summary>A prop's material: the drawing lit like the ground (it stands on it), a glow flat and unshadowed.</summary>
+        static Material MakePropMaterial(string name, Texture2D tex, Color paper, bool glow)
+        {
+            var path = Root + "/Art/Materials/" + name + ".mat";
+            var shader = Shader.Find("OWSBG/InkSprite");
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+            if (mat == null) { mat = new Material(shader); AssetDatabase.CreateAsset(mat, path); }
+            else if (mat.shader != shader) mat.shader = shader;
+            mat.SetTexture("_BaseMap", tex);
+            mat.SetColor("_BaseColor", Color.white);
+            mat.SetColor("_PaperColor", paper);
+            mat.SetFloat("_ShadowStep", glow ? 0f : 0.2f);
+            mat.SetFloat("_Shadows", glow ? 0f : 1f);
+            mat.SetFloat("_WorldUV", 0f);
+            mat.SetFloat("_Lighting", glow ? 0f : 0.7f);
+            mat.SetFloat("_GrainStrength", glow ? 0f : 0.12f);
+            mat.SetTextureScale("_BaseMap", Vector2.one);
+            mat.SetTextureOffset("_BaseMap", Vector2.zero);
+            EditorUtility.SetDirty(mat);
+            return mat;
+        }
 
         /// <summary>The region's paper colour (art-direction 5): what a drawing washes toward as its ink leaves.</summary>
         public static Color RegionPaper(string region)

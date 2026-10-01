@@ -51,6 +51,18 @@ namespace OWSBG.World
 
         public FlourishKind Current { get; private set; }
         public bool IsBusy => Current != FlourishKind.None;
+        /// <summary>The frame the current flourish is on, from its first.</summary>
+        public int Frame => _frame;
+        /// <summary>How many frames a flourish takes from its press to its recovery's end.</summary>
+        public int TotalFrames(FlourishKind kind) => kind switch
+        {
+            FlourishKind.Crosshatch => crosshatchHits * crosshatchInterval + recoveryFrames,
+            FlourishKind.Longstroke => longstrokeStartup + recoveryFrames,
+            FlourishKind.Blot => blotStartup + recoveryFrames,
+            _ => 0,
+        };
+        /// <summary>How far the current flourish is through its frames (0..1), for a drawing that follows it (CHR-04).</summary>
+        public float Progress => IsBusy ? Mathf.Clamp01(_frame / (float)TotalFrames(Current)) : 0f;
         public event Action<FlourishKind> Performed;
         public event Action<FlourishKind, IHittable> Landed;
         public event Action<FlourishKind> Refused;      // not enough ink

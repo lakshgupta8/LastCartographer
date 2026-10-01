@@ -125,12 +125,32 @@ def fall(w, i, n):
     w.rot(w.quill, y=-10)
 
 
-def glide(w, i, n):
+def glide(w, i, n):   # the Windmemory: wings wide and flat, a slow bob, the quill tucked
     t = i / n
-    w.flap(72 + 8 * math.sin(2 * math.pi * t))
-    w.legs(-30, -30)
-    w.rot(w.body, y=-5)
-    w.rot(w.tail, y=-12)
+    s = math.sin(2 * math.pi * t)
+    w.flap(74 + 7 * s)
+    for wing in (w.wing_near, w.wing_far):
+        w.scale(wing, 1.35, 1, 0.9)
+    w.legs(-32, -30)
+    w.rot(w.body, y=-6 + 2 * s)
+    w.move(w.body, z=0.02 * s)
+    w.rot(w.tail, y=-14)
+    w.rot(w.head, y=-4)
+    w.rot(w.quill, y=-12)
+
+
+def glide_rise(w, i, n):   # carried up an updraft: wings cupped higher, the head up, the tail fanned down
+    t = i / n
+    s = math.sin(2 * math.pi * t)
+    w.flap(84 + 6 * s)
+    for wing in (w.wing_near, w.wing_far):
+        w.scale(wing, 1.3, 1, 1.0)
+    w.legs(-40, -36)
+    w.rot(w.body, y=-14 + 3 * s)
+    w.move(w.body, z=0.03 * s)
+    w.rot(w.tail, y=-26)
+    w.rot(w.head, y=-14)
+    w.rot(w.quill, y=-20)
 
 
 def land(w, i, n):
@@ -141,30 +161,124 @@ def land(w, i, n):
     w.flap(20 * (1 - i / 3))
 
 
-def cling(w, i, n):
-    w.rot(w.body, y=-12)
-    w.flap(40 + 5 * i)
-    w.legs(30, 25)
-    w.rot(w.quill, y=-25)
-    w.rot(w.head, y=-10)
+def cling(w, i, n):   # the Talonhold: gripping the wall, a breath, a glance up on the back half
+    t = i / n
+    s = math.sin(2 * math.pi * t)
+    w.rot(w.body, y=-14)
+    w.move(w.body, x=0.06, z=0.02 * s)
+    w.flap(42 + 4 * s)
+    w.legs(32, 26)
+    w.rot(w.quill, y=-28)
+    w.rot(w.head, y=-14 - (6 if i >= n // 2 else 0))
+    w.rot(w.tail, y=-16)
 
 
-def dash(w, i, n):
-    w.rot(w.body, y=22)
-    w.scale(w.body, 1.25, 1, 0.85)
-    w.legs(-45, -50)
-    w.flap(-8)
-    w.rot(w.quill, y=55)
-    w.rot(w.tail, y=25)
+def slide(w, i, n):   # the slow slide after the hold: dragged down, the talons scraping, the wings scrabbling
+    k = i
+    w.rot(w.body, y=-8)
+    w.move(w.body, x=0.05, z=-0.03 * k)
+    w.flap(30 + 12 * (k % 2))
+    w.legs(38 - 6 * k, 30 - 4 * k)
+    w.rot(w.quill, y=-10)
+    w.rot(w.head, y=12)
+    w.rot(w.tail, y=-6)
 
 
-def thread(w, i, n):
-    w.rot(w.body, y=28)
-    w.scale(w.body, 1.15, 1, 0.9)
-    w.legs(-40, -45)
-    w.flap(35)
-    w.rot(w.quill, y=45)
-    w.move(w.quill, x=0.1, z=0.1)
+def walljump(w, i, n):   # the push off the wall behind her: the crouch into it, the shove, the arc away
+    k = (0.0, 0.6, 1.0)[i]
+    w.rot(w.body, y=-18 + 36 * k)
+    w.legs(40 - 80 * k, 35 - 75 * k)
+    w.flap((30, 55, 40)[i])
+    w.rot(w.quill, y=-20 + 50 * k)
+    w.rot(w.head, y=-10 + 4 * k)
+    w.rot(w.tail, y=-12 + 20 * k)
+    w.scale(w.body, (1.0, 0.92, 1.0)[i], 1, (1.0, 1.1, 1.0)[i])
+
+
+def dash(w, i, n):   # the Wingbeat: the wings snapped back, the streak, then thrown open to brake
+    k = (0.5, 1.0, 1.0, 0.6)[i]
+    w.rot(w.body, y=10 + 14 * k)
+    w.scale(w.body, 1 + 0.3 * k, 1, 1 - 0.18 * k)
+    w.legs(-40 * k - 5, -45 * k - 5)
+    w.flap((-25, -12, -6, 40)[i])
+    w.rot(w.quill, y=(20, 55, 60, 35)[i])
+    w.move(w.quill, x=(0, 0.08, 0.1, 0.02)[i])
+    w.rot(w.tail, y=(10, 28, 30, 5)[i])
+    w.rot(w.head, y=(4, -6, -6, -2)[i])
+
+
+def thread_cast(w, i, n):   # the Inkthread flung: the quill from over the shoulder to pointing at the anchor
+    k = (0.5, 1.0)[i]
+    w.rot(w.body, y=12 * k)
+    w.rot(w.quill, y=-40 + 90 * k)
+    w.move(w.quill, x=0.18 * k, z=0.12 * (1 - k))
+    w.flap(20 - 30 * k)
+    w.legs(10, 5)
+    w.rot(w.head, y=-6)
+
+
+def thread(w, i, n):   # the pull: stretched along the line, the wings swept back, the quill leading
+    t = i / n
+    s = math.sin(2 * math.pi * t)
+    w.rot(w.body, y=30)
+    w.scale(w.body, 1.18, 1, 0.88)
+    w.legs(-42 + 4 * s, -46 - 4 * s)
+    w.flap(-30 + 6 * s)
+    w.rot(w.quill, y=52)
+    w.move(w.quill, x=0.14, z=0.1)
+    w.rot(w.tail, y=24)
+    w.rot(w.head, y=-8)
+
+
+def thread_catch(w, i, n):   # the arrival: the hop up at the anchor, the quill pulled back in
+    k = (0.0, 0.5, 1.0)[i]
+    w.rot(w.body, y=18 - 22 * k)
+    w.scale(w.body, 1.1 - 0.15 * k, 1, 0.95 + 0.1 * k)
+    w.legs(-30 + 15 * k, -35 + 20 * k)
+    w.flap(10 + 40 * k)
+    w.rot(w.quill, y=45 - 60 * k)
+    w.move(w.quill, x=0.1 * (1 - k), z=0.08 * k)
+    w.rot(w.head, y=-10 - 4 * k)
+
+
+def crosshatch(w, i, n):   # the Flourish: the quill scribbling in a cone before her, six strokes, then the recovery
+    if i < 9:
+        up = i % 2 == 0
+        w.rot(w.quill, y=(70 if up else 30) + 4 * i)
+        w.move(w.quill, x=0.1 + 0.02 * (i % 3), z=(0.1 if up else -0.08))
+        w.rot(w.body, y=14 + (2 if up else -2))
+        w.rot(w.head, y=-8)
+        w.flap(-8 if up else 4)
+        w.legs(6, -4)
+        return
+    k = (i - 9) / 3
+    w.rot(w.quill, y=60 - 30 * k)
+    w.move(w.quill, x=0.1 * (1 - k))
+    w.rot(w.body, y=14 * (1 - k))
+    w.rot(w.head, y=-8 * (1 - k))
+    w.flap(10 * (1 - k))
+
+
+def longstroke(w, i, n):   # the Flourish: the wind-up, then the long thrust with the whole body behind it
+    w.rot(w.quill, y=(-30, -10, 85, 92, 80, 50)[i])
+    w.move(w.quill, x=(0, -0.06, 0.26, 0.32, 0.22, 0.08)[i], z=(0.1, 0.12, -0.02, -0.02, 0, 0)[i])
+    w.rot(w.body, y=(-10, -14, 24, 28, 18, 6)[i])
+    w.scale(w.body, (1, 0.95, 1.25, 1.3, 1.15, 1.02)[i], 1, (1, 1.04, 0.86, 0.84, 0.92, 1)[i])
+    w.legs((15, 20, -35, -40, -25, -5)[i], (10, 15, 30, 32, 20, 4)[i])
+    w.flap((15, 25, -20, -22, -10, 0)[i])
+    w.rot(w.head, y=(-6, -8, 8, 10, 6, 0)[i])
+    w.rot(w.tail, y=(-8, -12, 20, 24, 14, 4)[i])
+
+
+def blot(w, i, n):   # the Flourish: the quill stabbed down at her feet, the crouch, the burst, up and away
+    w.rot(w.quill, y=(0, 110, 150, 150, 120, 60)[i])
+    w.move(w.quill, x=(0, 0.05, 0.1, 0.1, 0.06, 0)[i], z=(0.08, -0.05, -0.18, -0.18, -0.08, 0)[i])
+    w.move(w.body, z=(0.02, -0.08, -0.14, -0.1, 0.04, 0)[i])
+    w.scale(w.body, (1, 1.1, 1.2, 1.15, 0.95, 1)[i], 1, (1, 0.9, 0.82, 0.86, 1.06, 1)[i])
+    w.legs((0, 20, 30, 28, -5, 0)[i], (0, 18, 28, 26, -5, 0)[i])
+    w.flap((5, 15, 20, 60, 70, 20)[i])
+    w.rot(w.head, y=(0, 10, 16, 8, -8, 0)[i])
+    w.rot(w.body, y=(0, 8, 12, 6, -4, 0)[i])
 
 
 def strike1(w, i, n):   # the forward thrust
@@ -259,11 +373,19 @@ CLIPS = [
     ("run", 12, 8, True, run_),
     ("jump", 12, 4, False, jump),
     ("fall", 12, 4, True, fall),
-    ("glide", 12, 4, True, glide),
+    ("glide", 12, 6, True, glide),
+    ("glide_rise", 12, 4, True, glide_rise),
     ("land", 12, 3, False, land),
-    ("cling", 12, 2, True, cling),
-    ("dash", 24, 3, False, dash),
-    ("thread", 24, 2, True, thread),
+    ("cling", 12, 4, True, cling),
+    ("slide", 12, 3, True, slide),
+    ("walljump", 24, 3, False, walljump),
+    ("dash", 24, 4, False, dash),
+    ("thread_cast", 24, 2, False, thread_cast),
+    ("thread", 24, 4, True, thread),
+    ("thread_catch", 24, 3, False, thread_catch),
+    ("crosshatch", 24, 12, False, crosshatch),
+    ("longstroke", 24, 6, False, longstroke),
+    ("blot", 24, 6, False, blot),
     ("strike1", 24, 6, False, strike1),
     ("strike2", 24, 6, False, strike2),
     ("strike3", 24, 6, False, strike3),

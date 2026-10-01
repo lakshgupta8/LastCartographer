@@ -51,13 +51,20 @@ for the quill and the jumps), her feet at the cell's bottom centre. The quad on 
 | strike1 / strike2 / strike3 | 24 | 6 | no | a forward swing, by combo step; the frame follows `QuillStrike.Progress` |
 | strike_up | 24 | 6 | no | an up-swing |
 | pogo | 24 | 4 | no | the down-strike |
-| (strike2) | | | | a flourish, until they get their own |
-| thread | 24 | 2 | yes | the Inkthread pull |
-| dash | 24 | 3 | no | the Wingbeat (restarted on the event) |
+| crosshatch | 24 | 12 | no | the Crosshatch: the quill scribbling in a cone, six strokes; the frame follows `Flourishes.Progress` |
+| longstroke | 24 | 6 | no | the Longstroke: the wind-up, the long thrust with the whole body behind it; follows `Progress` |
+| blot | 24 | 6 | no | the Blot: the quill stabbed down at her feet, the crouch, the burst; follows `Progress` |
+| thread_cast | 24 | 2 | no | the Inkthread flung at the anchor: the first 0.09 s of a thread (restarted on `Threaded`) |
+| thread | 24 | 4 | yes | the pull: stretched along the line |
+| thread_catch | 24 | 3 | no | the hop at the anchor, 0.15 s after `ThreadArrived`, unless she lands, dashes or threads again |
+| dash | 24 | 4 | no | the Wingbeat (restarted on the event): wings snapped back, the streak, thrown open to brake |
 | bind | 12 | 8 | yes | the bind held: the quill circles her |
 | survey | 12 | 6 | yes | the survey held at a vantage (`VantagePoint.Surveying`) |
-| cling | 12 | 2 | yes | the Talonhold |
-| glide | 12 | 4 | yes | in the air, gliding |
+| walljump | 24 | 3 | no | the push off a wall, 0.15 s after `WallJumped` (fires after `Jumped` when the jump was a wall's) |
+| cling | 12 | 4 | yes | the Talonhold: gripping, a breath, a glance up |
+| slide | 12 | 3 | yes | the hold spent (`IsSliding`): dragged down, the talons scraping |
+| glide_rise | 12 | 4 | yes | carried up an updraft (`IsLifted`, within three steps of a `Lift`): wings cupped higher, the head up |
+| glide | 12 | 6 | yes | in the air, gliding: wings wide and flat, a slow bob |
 | jump | 12 | 4 | no | rising (restarted on the jump) |
 | fall | 12 | 4 | yes | falling |
 | land | 12 | 3 | no | 0.25 s after landing |
@@ -100,7 +107,9 @@ restart their clips so the first frame always shows.
 
 - The Charter silhouettes (CHR-05): cowl shape and quill grip per Charter are a second set of sheets or a
   tint; the player already keeps the material shared for it.
-- Flourishes share the rising slash until CHR-04.
-- Wingbeat, Talonhold, Inkthread and Windmemory get their own frames in CHR-04.
+- CHR-04 gave the four abilities and the three flourishes their own frames (the table above); the hand-drawn
+  pass may still want the thread's line drawn from the quill's nib rather than the controller's.
+- A sheet without the new clips (a hand pass mid-way) falls back: a flourish to the rising slash, the slide to the
+  cling, the rise to the glide, the cast and the catch to the pull and the air.
 - Her shadow on the walkway is the quad's; a drawn contact shadow would sit better.
 - The ink line's weight does not yet thicken at the bottom of forms (art-direction 4).

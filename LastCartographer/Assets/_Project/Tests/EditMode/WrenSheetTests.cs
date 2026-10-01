@@ -18,8 +18,10 @@ namespace OWSBG.Tests
         {
             "idle", "run", "jump", "fall", "glide", "land", "cling", "dash", "thread",
             "strike1", "strike2", "strike3", "strike_up", "pogo", "bind", "survey", "hurt", "death",
+            // CHR-04: the abilities' own frames and the three flourishes
+            "glide_rise", "slide", "walljump", "thread_cast", "thread_catch", "crosshatch", "longstroke", "blot",
         };
-        static readonly string[] Fast = { "dash", "thread", "strike1", "strike2", "strike3", "strike_up", "pogo" };
+        static readonly string[] Fast = { "dash", "thread", "strike1", "strike2", "strike3", "strike_up", "pogo", "walljump", "thread_cast", "thread_catch", "crosshatch", "longstroke", "blot" };
 
         [System.Serializable] class Manifest { public string character; public int ppu, cell; public Entry[] clips; }
         [System.Serializable] class Entry { public string name, file; public int fps, frames; public bool loop; }
@@ -52,10 +54,31 @@ namespace OWSBG.Tests
                 Assert.AreEqual(Fast.Contains(c.name) ? 24 : 12, c.fps, c.name + "'s rate");
                 Assert.Greater(c.frames, 1, c.name + " moves");
             }
-            foreach (var one in new[] { "jump", "land", "dash", "strike1", "strike2", "strike3", "strike_up", "pogo", "hurt", "death" })
+            foreach (var one in new[] { "jump", "land", "dash", "strike1", "strike2", "strike3", "strike_up", "pogo", "hurt", "death", "walljump", "thread_cast", "thread_catch", "crosshatch", "longstroke", "blot" })
                 Assert.IsFalse(m.clips.First(c => c.name == one).loop, one + " plays once");
-            foreach (var loop in new[] { "idle", "run", "fall", "glide", "bind", "survey" })
+            foreach (var loop in new[] { "idle", "run", "fall", "glide", "glide_rise", "bind", "survey", "cling", "slide", "thread" })
                 Assert.IsTrue(m.clips.First(c => c.name == loop).loop, loop + " loops");
+        }
+
+        [Test]
+        public void TheAbilitiesAndTheFlourishesHaveTheirOwnFrames()
+        {
+            // CHR-04: a flourish's drawn frames stand for its game frames (crosshatch 6 hits at 3 apart plus 6 of
+            // recovery = 24 → 12 drawn; longstroke 4 + 6 → 6; blot 3 + 6 → 6), the dash 8 game frames → 4 at 24 fps.
+            var m = Load();
+            int Frames(string clip) => m.clips.First(c => c.name == clip).frames;
+            Assert.AreEqual(12, Frames("crosshatch"));
+            Assert.AreEqual(6, Frames("longstroke"));
+            Assert.AreEqual(6, Frames("blot"));
+            Assert.AreEqual(4, Frames("dash"), "the Wingbeat");
+            Assert.GreaterOrEqual(Frames("cling"), 4, "the Talonhold breathes");
+            Assert.AreEqual(3, Frames("slide"));
+            Assert.AreEqual(3, Frames("walljump"));
+            Assert.AreEqual(2, Frames("thread_cast"));
+            Assert.AreEqual(4, Frames("thread"), "the pull");
+            Assert.AreEqual(3, Frames("thread_catch"));
+            Assert.AreEqual(6, Frames("glide"), "the Windmemory");
+            Assert.AreEqual(4, Frames("glide_rise"));
         }
 
         [Test]

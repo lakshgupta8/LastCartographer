@@ -140,22 +140,16 @@ namespace OWSBG.Tests
         }
 
         [Test]
-        public void OnlyTheBirdsWhoAskAreStillBlocks()
+        public void NoBlockIsLeftStandingNowTheBirdsWhoAskAreDrawn()
         {
             // A Marker is the pale or ochre block under a Read_ object. The catalog's rooms, the askers' and the extras' are
-            // all built; every one of them has only as many blocks as birds who ask there.
+            // all built; since the townsfolk library (CHR-12) drew the four birds who ask, none of them has a block.
             var rooms = Dressing.All.Select(p => p.Room).Concat(Offerings.All.Select(a => a.Room))
                 .Concat(new[] { "Verdance_Gate_2", "Halden_Orchard_2", "Halden_Observatory_2", "Greyfold_EdgeCamp_2" }).Distinct().Where(Built).ToList();
             Assert.GreaterOrEqual(rooms.Count, 30);
-            int birds = 0;
-            foreach (var room in rooms)
-            {
-                int expected = Offerings.All.Count(a => a.Room == room && a.Prop == null);
-                int markers = Count(SceneText(room), "Marker");
-                Assert.AreEqual(expected, markers, room + ": blocks left standing");
-                birds += expected;
-            }
-            Assert.AreEqual(4, birds, "the gannet, the traveller, Brek and Corvin");
+            foreach (var room in rooms) Assert.AreEqual(0, Count(SceneText(room), "Marker"), room + ": blocks left standing");
+            Assert.AreEqual(4, Offerings.All.Count(a => a.Kind == AskerKind.Bird), "the gannet, the traveller, Brek and Corvin");
+            Assert.AreEqual(3, Offerings.All.Count(a => a.Kind == AskerKind.Bird && a.Look != null), "three from the library; Corvin is his own drawing");
         }
 
         [Test]

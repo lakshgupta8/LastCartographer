@@ -16,6 +16,9 @@ namespace OWSBG.Narrative
         /// <summary>Units per second the transform must move before the walk shows without a schedule saying so.</summary>
         public const float WalkSpeed = 0.3f;
 
+        /// <summary>What it does when no schedule says (a crowd's bird, CHR-12): "watching the leap", "cheering". Its first word names the clip.</summary>
+        [SerializeField] string _activity = "";
+
         InkSheetPlayer _sheet;
         NpcSchedule _schedule;
         NpcTalker _talker;
@@ -23,6 +26,8 @@ namespace OWSBG.Narrative
         bool _hasLast;
 
         public string Clip => _sheet != null ? _sheet.Current : null;
+        /// <summary>The standing activity, used when there is no schedule (or the schedule has no post).</summary>
+        public string Activity { get => _activity; set => _activity = value ?? ""; }
 
         void Awake()
         {
@@ -64,6 +69,7 @@ namespace OWSBG.Narrative
             bool talking = _talker != null && NpcTalker.Talking == _talker;
             bool walking = (_schedule != null && _schedule.IsWalking) || vx > WalkSpeed;
             string activity = _schedule != null && !_schedule.IsWalking ? _schedule.Activity : null;
+            if (string.IsNullOrEmpty(activity)) activity = _activity;   // a crowd's bird: what it stands doing
             _sheet.Play(Choose(talking, walking, activity, _sheet.Has));
         }
     }

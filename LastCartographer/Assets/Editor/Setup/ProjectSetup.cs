@@ -1191,6 +1191,8 @@ namespace OWSBG.Setup
             public string FloorTile = "Ground_Boardwalk", PlatTile = "Ground_Boardwalk";
             public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
             public readonly List<(string name, Vector2 pos, string node, Color tint, NpcInkState ink, string character)> Npcs = new List<(string, Vector2, string, Color, NpcInkState, string)>();
+            // The crowd (CHR-12): generic birds from the townsfolk library, standing doing something, nobody to talk to.
+            public readonly List<(string look, Vector2 pos, string activity, int face, bool remnant)> Folks = new List<(string, Vector2, string, int, bool)>();
             // The forest's (ENV-04): anchor-points the thread catches, and the roots a Gatekeeper holds by.
             public readonly List<Vector2> Anchors = new List<Vector2>();
             public readonly List<Vector2> Roots = new List<Vector2>();
@@ -1309,6 +1311,8 @@ namespace OWSBG.Setup
             public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f, string character = null) { Npcs.Add((name, new Vector2(x, y), node, tint, NpcInkState.Drawn, character)); return this; }
             /// <summary>Someone drawn with the ink removed (a Remnant: the one-night inn's keeper).</summary>
             public RoomRecipe Remnant(string name, float x, string node, Color tint) { Npcs.Add((name, new Vector2(x, 0f), node, tint, NpcInkState.Remnant, null)); return this; }
+            /// <summary>One of the crowd (CHR-12): a look from the townsfolk library, what it stands doing ("watching the leap", "cheering"; its first word names the clip), which way it faces.</summary>
+            public RoomRecipe Folk(string look, float x, string activity = "", int face = 1, float y = 0f, bool remnant = false) { Folks.Add((look, new Vector2(x, y), activity, face, remnant)); return this; }
             /// <summary>The Plateau's usual three: the city, the citadel behind it, the late-afternoon sky; an interior drops the far ones.</summary>
             public RoomRecipe HaldenPapers(string mid, string far = "Far_Citadel", string farther = "Farther_Sky")
             {
@@ -1356,15 +1360,17 @@ namespace OWSBG.Setup
                     .East(Scene(A)),
                 new RoomRecipe("Saltmarrow_Stilts").Tall()
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(-5f, 5f, 3f).Plat(0f, 7.5f, 3f).Plat(5f, 10f, 3f).Plat(0f, 12f, 4f)
-                    .Skimmer(-5f, 7f).Skimmer(6f, 12.5f).Crab(10f).Dress("stilts.ladders", 16f, 0f, 0.9f).Fledglings(1.5f, 12.3f, 0f)   // a roost door with no steps, a ladder lashed on after
+                    .Skimmer(-5f, 7f).Skimmer(6f, 12.5f).Crab(10f).Dress("stilts.ladders", 16f, 0f, 0.9f)   // a roost door with no steps, a ladder lashed on after
+                    .Folk("Eider", -1.4f, "watching the leap", 1, 12f).Fledglings(1.5f, 12.3f, 0f)   // the grandmother with bound wings on the top roost, and the chicks she watches
                     .West(Scene(A)).East(Scene("Saltmarrow_Boardwalk")).Up(Scene("Saltmarrow_Roots_1"), 0f, 12.3f),
                 new RoomRecipe("Saltmarrow_Boardwalk")
                     .Floor(-20f, -6f).Floor(-2f, 8f).Floor(12f, 20f).Shallows(-6f, -2f).Shallows(8f, 12f)
                     .Crab(3f).Crab(15f).Smudge(-12f).Seed(-4f, -2f, 3).Seed(10f, -2f, 2)
+                    .Folk("Turnstone", -17f).Folk("Puffin", 18f, "", -1)   // a child of the coast, and one of the roosts' people
                     .West(Scene("Saltmarrow_Stilts")).East(Scene(B)),
                 new RoomRecipe("Saltmarrow_Tetherline")
                     .Floor(-20f, 20f).Plat(-8f, 3f, 2.5f).Plat(0f, 4f, 2.5f).Plat(8f, 3f, 2.5f)
-                    .Skimmer(-8f, 5f).Skimmer(8f, 5f).Crab(0f)
+                    .Skimmer(-8f, 5f).Skimmer(8f, 5f).Crab(0f).Folk("Gull", 14f, "", -1)   // one of the Ferrymen's crews, at the tether's end
                     .Prop("Tether", -14f).Prop("Tether", -4f).Prop("Tether", 4f).Prop("Tether", 14f)
                     .West(Scene(B)).East(Scene("Saltmarrow_Ferry")),
                 new RoomRecipe("Saltmarrow_Ferry")
@@ -1406,7 +1412,7 @@ namespace OWSBG.Setup
                     .Paper("Mid_Irises", 3f, 0f, new Color(0.70f, 0.70f, 0.58f), 6f)
                     .Paper("Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f)
                     .Paper("Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f)
-                    .Seed(-16f, 0.5f, 3).Seed(4f, 0.5f, 2).Seed(16f, 0.5f, 2).Crab(6f).Skimmer(12f, 4.5f)
+                    .Seed(-16f, 0.5f, 3).Seed(4f, 0.5f, 2).Seed(16f, 0.5f, 2).Crab(6f).Skimmer(12f, 4.5f).Folk("Tern", -4f, "", -1)
                     .West(Scene("Saltmarrow_Roots_4")).East(Scene("Verdance_Road_1")),
                 // The Bone Bridge (bible 8.1, [F 3.4]): the whale's bones over the channel, a Wingbeat gap in the way east,
                 // the climb to Emberdown past it. The whale sings here (roll-call.md).
@@ -1449,15 +1455,17 @@ namespace OWSBG.Setup
                     .Down(E("Stair_2"), -15f).East(E("Rest_1")),
                 // ---- Kettil's Rest: the town, flat, counted ----
                 new RoomRecipe("Emberdown_Rest_1").Tiles("Ground_Ash", "Ground_Ash").EmberdownPapers("Mid_Roosts", "Far_Bell")
-                    .Floor(-20f, 20f).Npc("Kettil", -4f, "Rest_Kettil", kettil).Fledglings(8f, 6f, 0f)   // the roosts over the gate are in the paper; the chicks leap from them
+                    .Floor(-20f, 20f).Npc("Kettil", -4f, "Rest_Kettil", kettil).Folk("Chough", -12f, "", -1)
+                    .Folk("Grouse", 4.5f, "watching the leap").Fledglings(8f, 6f, 0f)   // the roosts over the gate are in the paper; the chicks leap from them, counted by whoever is nearest
                     .West(E("Stair_3")).East(E("Rest_2")),
                 new RoomRecipe("Emberdown_Rest_2").Tiles("Ground_Ash", "Ground_Ash").EmberdownPapers("Mid_Roosts", "Far_Bell")
                     .Paper("Fore_Slag", -4f, -0.8f, new Color(0.22f, 0.21f, 0.22f), 1.6f)
                     .Floor(-20f, 20f).Plat(11f, 3f, 3f).Plat(15f, 6f, 3f).Plat(15f, 9f, 4f).Vantage("Square", 0f, 0f)
                     .Desk(-12f).Ledger("Emberdown", -8f).Prop("Porch", -3f).Prop("Anvil", 5f).Npc("Kettil", -1f, "Rest_Kettil", kettil)
+                    .Folk("Raven", 8f, "", -1).Folk("Dipper", -16f)   // the smith at the anvil; the baths' attendant
                     .West(E("Rest_1")).East(E("Rest_3")).Up(E("Bell_1"), 15f, 9.3f),
                 new RoomRecipe("Emberdown_Rest_3").Tiles("Ground_Ash", "Ground_Basalt").EmberdownPapers("Mid_Roosts")
-                    .Floor(-20f, -2f).Floor(2f, 20f).Prop("Boards", 12f).Npc("Runa", -8f, "Hollowvein_Runa_Walk", runa)
+                    .Floor(-20f, -2f).Floor(2f, 20f).Prop("Boards", 12f).Npc("Runa", -8f, "Hollowvein_Runa_Walk", runa).Folk("Ptarmigan", -15f)
                     .West(E("Rest_2")).East(E("Chimneys_1")).Down(E("Hollow_1"), 0f),
                 // ---- the Roll-Call Bell ----
                 new RoomRecipe("Emberdown_Bell_1").Tall().Tiles("Ground_Ash", "Ground_Timber").EmberdownPapers("Mid_Roosts", "Far_Bell")
@@ -1466,7 +1474,7 @@ namespace OWSBG.Setup
                     .Down(E("Rest_2"), -10f).East(E("Bell_2")),
                 new RoomRecipe("Emberdown_Bell_2").Tiles("Ground_Ash", "Ground_Timber").EmberdownPapers("Mid_Roosts", "Far_Bell")
                     .Floor(-20f, 20f).Plat(-8f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Prop("Bell", 6f).Vantage("Bell", 8.5f, 0f)
-                    .Npc("Runa", 2f, "Bell_Runa_Count", runa).Npc("Kettil", -12f, "Rest_Kettil", kettil)
+                    .Npc("Runa", 2f, "Bell_Runa_Count", runa).Npc("Kettil", -12f, "Rest_Kettil", kettil).Folk("Ouzel", 15.5f, "", -1)   // the bell-ringer
                     // The lesson walk (bounds-walk.md): three verses of five at three Emberdown beats a bound; the town is already held, so it only teaches.
                     .Walk("kettils_rest", "", 0, AudioDirection.BeatOf(Region.Emberdown) * 3f)
                     .Verse("the well and the bell", ("the well-cap", -4f, 0f), ("the bell's foot", 6f, 0f), ("the rope post", 10f, 0f), ("the east rail", 12f, 2.8f), ("the bell's foot", 6f, 0f))
@@ -1564,7 +1572,7 @@ namespace OWSBG.Setup
                     .West(V("Road_3")).East(V("House_2")),
                 new RoomRecipe("Verdance_House_2").Tiles("Ground_Root", "Ground_Root").VerdancePapers("Mid_Roots")
                     .Floor(-20f, -4f).Floor(0f, 20f).Plat(14f, 3f, 3f).Vantage("Cloister", 10f, 0f)
-                    .Desk(-12f).Ledger("Verdance", -8f).Npc("Teodor", 6f, "QuietHouse_Teodor", teodor).Prop("Lantern", -19f).Prop("Lantern", 17f)
+                    .Desk(-12f).Ledger("Verdance", -8f).Npc("Teodor", 6f, "QuietHouse_Teodor", teodor).Prop("Lantern", -19f).Prop("Lantern", 17f).Folk("Nuthatch", 11f, "", -1)   // one of the brothers
                     .West(V("House_1")).East(V("House_3")).Down(V("Chapel_1"), -2f),
                 new RoomRecipe("Verdance_House_3").Tiles("Ground_Root", "Ground_Moss").VerdancePapers("Mid_Roots")
                     .Paper("Fore_Ferns", -4f, -0.8f, ferns, 1.6f)
@@ -1612,10 +1620,12 @@ namespace OWSBG.Setup
                 // ---- Aldermere: the last day ----
                 new RoomRecipe("Verdance_Aldermere_1").Tiles("Ground_Lane", "Ground_Lane").VerdancePapers("Mid_Village")
                     .Floor(-20f, 20f).Plat(6f, 2.5f, 3f).Desk(-8f).Prop("Bunting", -14f).Prop("Bunting", 0f).Prop("Bunting", 14f)
+                    .Folk("Jay", 2f, "", -1).Folk("Finch", -16f)   // the village, on its last day
                     .West(V("House_3")).East(V("Aldermere_2")),
                 new RoomRecipe("Verdance_Aldermere_2").Tiles("Ground_Lane", "Ground_Lane").VerdancePapers("Mid_Village")
                     .Floor(-20f, 20f).Plat(-2f, 2.5f, 3f).Plat(4f, 4.5f, 3f).Plat(10f, 2.5f, 3f).Vantage("Square", -14f, 0f)
                     .Npc("Teodor", -5f, "Aldermere_Teodor", teodor).Npc("Hollin", 8f, "Aldermere_Teodor", hollin).Prop("Bunting", -11f).Prop("Bunting", 13f)
+                    .Folk("Jay", -17f, "watching the last day").Folk("Woodpecker", 16f, "", -1)
                     .Arena(typeof(Choir), "choir", 4f, new Vector2(1f, 1f), -8f, 16f, Ability.None, "verdance.aldermere.stopped")   // only if Wren tries to stop the last day
                     .West(V("Aldermere_1")).East(V("Aldermere_3")),
                 new RoomRecipe("Verdance_Aldermere_3").Tiles("Ground_Lane", "Ground_Root").VerdancePapers("Mid_Ash")
@@ -1673,7 +1683,7 @@ namespace OWSBG.Setup
                     .Fledglings(12f, 3.3f, 0f, -1).West(H("Bridges_1")).East(H("Bridges_3")).Down(H("Lowmarket_1"), -12f),   // the stair down to Lowmarket from the second bridge
                 new RoomRecipe("Halden_Bridges_3").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Bridges", "Far_Drop")
                     .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Desk(-14f).Prop("Scaffold", 4f).Vantage("Seventh", 12f, 0f)
-                    .Npc("Arden", 1f, "Bridges_Family", folk)   // the family paid to stand on it
+                    .Npc("Arden", 1f, "Bridges_Family", folk).Folk("Goose", -1.5f).Folk("Goose", 3f, "", -1)   // the family paid to stand on it
                     .West(H("Bridges_2")).East(H("Bridges_4")),
                 new RoomRecipe("Halden_Bridges_4").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Bridges", "Far_Drop")
                     .Floor(-20f, -18f).Floor(-14f, 20f).Npc("Halvard", -9f, "Bridges_Halvard_Hunt", halvard)
@@ -1689,6 +1699,7 @@ namespace OWSBG.Setup
                     .Up(H("Bridges_4"), -16f, 12.3f).West(H("Mills_1")).East(H("Mills_3")),
                 new RoomRecipe("Halden_Mills_3").Tiles("Ground_Boards", "Ground_Boards").HaldenPapers("Mid_Mills")
                     .Floor(-20f, 20f).Plat(0f, 2.5f, 3f).Prop("Wheel", -14f).Prop("Notice", 8f)   // the picket line's board
+                    .Folk("Starling", -6f).Folk("Starling", 0f, "cheering", -1, 2.5f).Folk("Pigeon", 3f, "", -1).Folk("Rook", 13f, "watching the line", -1)   // the line, one on the crate; a clerk watching
                     .West(H("Mills_2")).East(H("Hall_1")),
                 // ---- Lowmarket: below the walls ----
                 new RoomRecipe("Halden_Lowmarket_1").Tall().Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
@@ -1696,14 +1707,14 @@ namespace OWSBG.Setup
                     .Up(H("Bridges_2"), -12f, 12.3f).East(H("Lowmarket_2")),
                 new RoomRecipe("Halden_Lowmarket_2").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
                     .Floor(-20f, 20f).Plat(8f, 2.5f, 3f).Desk(-14f).Vantage("Market", 14f, 0f)   // the notice board is the readable's (ENV-06, PlacementSetup): it changes once the place is anchored
-                    .Npc("Brisk", -4f, "Lowmarket_Strike", folk).Npc("Anvers", 0f, "Lowmarket_Strike", guild)   // the strike hall
+                    .Npc("Brisk", -4f, "Lowmarket_Strike", folk).Npc("Anvers", 0f, "Lowmarket_Strike", guild).Folk("Pigeon", 11f, "", -1)   // the strike hall
                     .West(H("Lowmarket_1")).East(H("Lowmarket_3")),
                 new RoomRecipe("Halden_Lowmarket_3").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
                     .Floor(-20f, 20f).Plat(6f, 3f, 3f).Warden(10f)
                     .West(H("Lowmarket_2")).East(Scene("Windreach_Stones_1")),   // the south road [act2.started] onto the Steppe (ENV-07)
                 // ---- the Journeyman's Hall: the hub ----
                 new RoomRecipe("Halden_Hall_1").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall")
-                    .Floor(-20f, 20f).Plat(-8f, 2.5f, 3f).Plat(10f, 2.5f, 3f).Warden(-2f).Warden(12f)   // the Guild's steps
+                    .Floor(-20f, 20f).Plat(-8f, 2.5f, 3f).Plat(10f, 2.5f, 3f).Warden(-2f).Warden(12f).Folk("Sparrow", -14f)   // the Guild's steps; a journeyman waiting
                     .West(H("Mills_3")).East(H("Hall_2")),
                 new RoomRecipe("Halden_Hall_2").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall", "Far_Citadel", null)
                     .Floor(-20f, 20f).Plat(12f, 3f, 3f).Desk(-14f).Ledger("Halden", -10f).Npc("Pell", 2f, "Hall_Pell_Minder", pell).Vantage("Hall", 8f, 0f)
@@ -1774,7 +1785,7 @@ namespace OWSBG.Setup
                 new RoomRecipe("Windreach_Stones_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Stones")
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(4f, 3f, 3f)
                     .Prop("Stone", -16f).Prop("Stone", -11f).Prop("Stone", -6f).Prop("Stone", -1f).Prop("Stone", 4f).Prop("Stone", 9f).Prop("Stone", 14f)   // stones two to eight
-                    .Vantage("Fifth", 6.5f, 0f).Smudge(-14f).Smudge(16f)
+                    .Vantage("Fifth", 6.5f, 0f).Smudge(-14f).Smudge(16f).Folk("Kestrel", 1.5f)   // a scout on the walk
                     .Updraft(-8f, 0f, 6f, 3f).Updraft(11.5f, 0f, 6f, 3f)   // ink-swirls, too weak to ride yet
                     .Grass(-19f, 19f, 36)
                     .West(W("Stones_1")).East(W("Stones_3")),
@@ -1787,9 +1798,10 @@ namespace OWSBG.Setup
                 new RoomRecipe("Windreach_Camp_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Camp")
                     .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Desk(-12f).Ledger("Windreach", -8f).Prop("Wagon", 8f).Vantage("Wagons", 15f, 0f)   // the walkers' post: the wagon that stays, the desk, the ledger
                     .Grass(-19f, -14f, 8).Grass(-3f, 4f, 10).Grass(12f, 19f, 10)
+                    .Folk("Hoopoe", 0.5f).Folk("Lark", 2.8f, "cheering").Folk("Plover", 4.8f, "watching the leap")   // the clan at the wagon, practising for the Gate
                     .Fledglings(8f, 3f, 0f).West(W("Stones_3")).East(W("Camp_2")),
                 new RoomRecipe("Windreach_Camp_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Camp")
-                    .Floor(-20f, 20f).Plat(-15f, 2.5f, 3f).Camp(0)   // the fire ring: the first night
+                    .Floor(-20f, 20f).Plat(-15f, 2.5f, 3f).Camp(0).Folk("Bustard", 7f, "", -1)   // the fire ring: the first night; an elder by it
                     .Grass(-19f, -11f, 12).Grass(13f, 19f, 10)
                     .West(W("Camp_1")).East(W("River_1")),
                 // ---- the Dry River: a Wingbeat wide at the camp's edge ----
@@ -1809,7 +1821,7 @@ namespace OWSBG.Setup
                 new RoomRecipe("Windreach_Gate_1").Tiles("Ground_Lip", "Ground_Lip").WindreachPapers("Mid_WindGate", "Far_Rim")
                     .Floor(-20f, -2f).Floor(2f, 16f).Vantage("Gate", -12f, 0f)
                     .Prop("LipStone", 6f).Prop("LipStone", 8.5f).Prop("LipStone", 11f)   // the flat stones on the lip, each carved with a place
-                    .Npc("Idrenne", 14f, "Gate_Idrenne_Leap", idrenne)   // the clan sings, the young jump
+                    .Npc("Idrenne", 14f, "Gate_Idrenne_Leap", idrenne).Folk("Hoopoe", 12.5f, "cheering", -1).Folk("Bustard", 15f, "watching the leap", -1)   // the clan sings, the young jump
                     .Grass(-19f, -13f, 8)
                     .Down(W("River_3"), 0f).East(W("Gate_2")),
                 new RoomRecipe("Windreach_Gate_2").Tiles("Ground_Lip", "Ground_Turf").WindreachPapers("Mid_HighGrass", "Far_Rim")
@@ -1822,12 +1834,12 @@ namespace OWSBG.Setup
                 // ---- Idrenne's Fire: the high grass, the hearth ----
                 new RoomRecipe("Windreach_Fire_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_HighGrass")
                     .Paper("Fore_Grass", -4f, -0.8f, fore, 2.0f)
-                    .Floor(-20f, 20f).Plat(14f, 3f, 3f).Camp(2)   // the third night: the clan walks her in
+                    .Floor(-20f, 20f).Plat(14f, 3f, 3f).Camp(2).Folk("Lark", 8f, "", -1).Folk("Plover", 10.5f)   // the third night: the clan walks her in
                     .Grass(-19f, -8f, 9, true, -0.7f).Grass(12.5f, 19f, 5, true, -0.7f).Grass(-19f, 19f, 30, true, 0.9f)   // grass over her head, before and behind
                     .West(W("Gate_2")).East(W("Fire_2")),
                 new RoomRecipe("Windreach_Fire_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Hearth")
                     .Floor(-20f, 2f).Floor(6f, 20f).Prop("Wagon", -15f).Prop("Hearth", -6f).Vantage("Hearth", 12f, 0f).Prop("Wagon", 17f)
-                    .Npc("Idrenne", -3f, "Fire_Idrenne", idrenne)   // how the clans do it, plainly; the cooking-stone
+                    .Npc("Idrenne", -3f, "Fire_Idrenne", idrenne).Folk("Kestrel", 14f, "", -1)   // how the clans do it, plainly; the cooking-stone
                     .Grass(-19f, -17f, 4).Grass(8f, 10f, 4)
                     .West(W("Fire_1")).Down(W("Star_1"), 4f),   // a glide down to the rim
                 // ---- the Fallen Star: the crater ----
@@ -2024,6 +2036,7 @@ namespace OWSBG.Setup
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
             foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
+            for (int i = 0; i < r.Folks.Count; i++) { var f = r.Folks[i]; MakeFolk(room, i, f.look, f.pos, f.activity, f.face, f.remnant); }
             for (int i = 0; i < r.Anchors.Count; i++) MakeAnchor(room, i, r.Anchors[i]);
             if (r.CampSiteIndex >= 0) MakeCampSite(room, r.CampSiteIndex);
             for (int i = 0; i < r.Grasses.Count; i++) { var g = r.Grasses[i]; MakeGrass(room, i, g.x0, g.x1, g.n, g.tall, g.z, g.y); }
@@ -2757,21 +2770,51 @@ namespace OWSBG.Setup
             so.FindProperty("_prompt").stringValue = "Talk";
             so.ApplyModifiedPropertiesWithoutUndo();
 
-            character ??= name.Replace("_Greybox", "");
-            var r = MakeSpriteQuad(go, "M_Npc_" + name, character, new Vector3(0.9f, 1.4f, 1f), new Vector3(0f, 0.7f, 0f), false, out var sheets);
+            // Their own sheets by name; a minor named bird wears a look from the townsfolk library (CHR-12).
+            string bare = name.Replace("_Greybox", "");
+            character ??= Townsfolk.CharacterOfNamed(bare) ?? bare;
+            DressPerson(go, "M_Npc_" + name, character, tint, ink, false);
+        }
+
+        /// <summary>
+        /// A person's drawing under an object whose feet are at its transform: the InkSprite quad on the character's
+        /// sheets with <see cref="InkSheetPlayer"/>, <see cref="NpcAnimator"/> and <see cref="NpcInk"/> at its rest
+        /// state (CHR-11); or, without sheets, the tinted stand-in block. True when the sheets were found.
+        /// </summary>
+        public static bool DressPerson(GameObject go, string matName, string character, Color tint, NpcInkState ink, bool faceLeft)
+        {
+            var r = MakeSpriteQuad(go, matName, character, new Vector3(0.9f, 1.4f, 1f), new Vector3(0f, 0.7f, 0f), faceLeft, out var sheets);
             var mat = r.sharedMaterial;
             var rest = sheets != null ? Color.white : tint;   // the drawing's own colours, or the stand-in's tint
             if (mat.HasProperty("_BaseColor") && mat.GetColor("_BaseColor") != rest) { mat.SetColor("_BaseColor", rest); EditorUtility.SetDirty(mat); }
-            if (sheets != null)
-            {
-                go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
-                go.AddComponent<NpcAnimator>();
-                var npcInk = go.AddComponent<NpcInk>();
-                var iso = new SerializedObject(npcInk);
-                iso.FindProperty("_rest").enumValueIndex = (int)ink;
-                iso.FindProperty("_renderer").objectReferenceValue = r;
-                iso.ApplyModifiedPropertiesWithoutUndo();
-            }
+            if (sheets == null) return false;
+            go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
+            go.AddComponent<NpcAnimator>();
+            var npcInk = go.AddComponent<NpcInk>();
+            var iso = new SerializedObject(npcInk);
+            iso.FindProperty("_rest").enumValueIndex = (int)ink;
+            iso.FindProperty("_renderer").objectReferenceValue = r;
+            iso.ApplyModifiedPropertiesWithoutUndo();
+            return true;
+        }
+
+        /// <summary>
+        /// One of the crowd (CHR-12, docs/design/townsfolk.md): a look from the library at z 0.5, behind the walk and
+        /// in front of the room's props, standing doing what the recipe says (the animator's activity names the clip),
+        /// facing the way it was told; nobody to talk to, no collider. Without sheets (the library not yet packed) the
+        /// tinted stand-in stays.
+        /// </summary>
+        static void MakeFolk(Room room, int index, string look, Vector2 pos, string activity, int face, bool remnant)
+        {
+            if (Townsfolk.Find(look) == null) throw new System.ArgumentException("no townsfolk look " + look + " for " + room.RoomId);
+            var go = new GameObject("Folk_" + look + "_" + index);
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0.5f);
+            if (!DressPerson(go, "M_Folk_" + look, Townsfolk.Character(look), new Color(0.56f, 0.52f, 0.46f), remnant ? NpcInkState.Remnant : NpcInkState.Drawn, face < 0)) return;
+            if (string.IsNullOrEmpty(activity)) return;
+            var so = new SerializedObject(go.GetComponent<NpcAnimator>());
+            so.FindProperty("_activity").stringValue = activity;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         // A survey spot: a trigger area plus a thin marker post.

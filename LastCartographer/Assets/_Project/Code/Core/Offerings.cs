@@ -25,6 +25,12 @@ namespace OWSBG.Core
         public string Brief;
         /// <summary>A door's kit drawing (ENV-06): "Prop_&lt;Prop&gt;" shut, "Prop_&lt;Prop&gt;_Open" once <see cref="Opens"/> is set. Null for a bird: a person is a character's.</summary>
         public string Prop;
+        /// <summary>A bird's look in the townsfolk library (CHR-12, <see cref="Townsfolk"/>): what it is drawn as. Null for a door, and for a bird whose own drawing already stands beside the trigger (Corvin).</summary>
+        public string Look;
+        /// <summary>A bird drawn with the ink removed (the gannet on the faded rail, the inn's traveller).</summary>
+        public bool Remnant;
+        /// <summary>A bird drawn facing west (the way Wren comes in).</summary>
+        public bool FacesWest;
         public bool Accepts(string memory) => Wants.Length == 0 || Wants.Contains(memory);
     }
 
@@ -106,7 +112,7 @@ namespace OWSBG.Core
             _all.Add(new Asker
             {
                 Id = "chain_gannet", Kind = AskerKind.Bird, Room = "Saltmarrow_Chain_3", Node = "Chain_Gannet",
-                Wants = new[] { "sable.boats_back" }, Seeds = 6,
+                Wants = new[] { "sable.boats_back" }, Seeds = 6, Look = "Gannet", Remnant = true, FacesWest = true,
                 Brief = "A grey gannet on the faded third light's rail, the Remnant who watched the boats go out. She asks " +
                         "who comes back. Only Sable counted. She pays in iris seed from her crop.",
             });
@@ -121,7 +127,7 @@ namespace OWSBG.Core
             _all.Add(new Asker
             {
                 Id = "inn_traveller", Kind = AskerKind.Bird, Room = "Verdance_Gate_2", Node = "Inn_Traveller",
-                Wants = new[] { "teodor.eleven_names" }, Seeds = 8,
+                Wants = new[] { "teodor.eleven_names" }, Seeds = 8, Look = "Thrush", Remnant = true,
                 Brief = "A grey traveller at the one-night inn beyond the Overgrown Gate, from a village the Unwriters let go. " +
                         "She asks which villages still stand; Teodor's eleven, in order, is the answer, and hers not among them " +
                         "is what she wanted to hear. She pays from a seed purse forty years out of date.",
@@ -129,7 +135,7 @@ namespace OWSBG.Core
             _all.Add(new Asker
             {
                 Id = "gate_brek", Kind = AskerKind.Bird, Room = "Windreach_Gate_1", Node = "Gate_Brek",
-                Wants = new[] { "idrenne.standing_place" }, Opens = "windreach.brek.on_the_stone",
+                Wants = new[] { "idrenne.standing_place" }, Opens = "windreach.brek.on_the_stone", Look = "Crane",
                 Brief = "Brek, a clan fledgling beside the Gate's carved stones after Wren's leap, not on them. The young stand " +
                         "on a place, not a dare, and he has none: given where Idrenne stood when she learned it, he stands on " +
                         "her fire's stone for the first time. He jumps next spring, he says. The clan sings anyway.",

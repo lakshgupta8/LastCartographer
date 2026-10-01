@@ -18,7 +18,9 @@ Unity.exe -batchmode -nographics -projectPath LastCartographer -executeMethod OW
 character being the object's name without its `_Greybox` suffix (Sable_Greybox → Sable): the quad becomes a
 cell-sized frame window with the feet at the transform, the stand-in tint stands down to white, and the object
 gets `InkSheetPlayer`, `NpcAnimator` and `NpcInk`. Without sheets the tinted block stays (Halvard, a Warden:
-CHR-07). Every drawing faces right; `NpcSchedule` and `NpcTalker` flip the root to face left.
+CHR-07). A minor named bird without sheets of its own (Brisk, Ansel, the Innkeeper) wears a look from the townsfolk
+library instead (CHR-12, `townsfolk.md`, `Townsfolk.Named`), and the same dressing (`ProjectSetup.DressPerson`)
+stands the crowds and the birds who ask. Every drawing faces right; `NpcSchedule` and `NpcTalker` flip the root to face left.
 
 ## 2. The bird
 

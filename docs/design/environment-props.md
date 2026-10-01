@@ -74,8 +74,8 @@ of 1/24 unit (a multiple of four pixels at 96 px/unit), so the textures compress
   talker and under it `Dressing_<prop>` with the drawing on a quad at z 0.4, from `Dressing.ByNode`, a door asker's
   `Prop` (`Offerings`), or `Extra`. Where the room's recipe already stands `Prop_<prop>` within 3.5 units of the trigger
   (the milestone, the standing stones, the exam desks, the beam, the mileposts, the office door) only the trigger is
-  placed. Where nothing is drawn (the four birds who ask: the gannet, the traveller, Brek, Corvin), the ochre block
-  stays: a person is a character's, not a prop's.
+  placed. A bird who asks is a person, not a prop: the gannet, the traveller and Brek are drawn from the townsfolk
+  library on the trigger itself (CHR-12, `townsfolk.md` §3), and Corvin's asker stands bodiless beside his own drawing.
 - **A seen piece** is the recipe's: `RoomRecipe.Dress("<piece id>", x, y, z)` stands the catalog's drawing(s) there.
 - **Both** join the room's `FadeGroup` at dropout 5 (they thin with the place and never drop), and the placement prunes
   the group's missing layers before it re-places.
@@ -103,7 +103,7 @@ The capture takes a world: `OWSBG_SHOT_WORLD="emberdown.hollowvein.walked=1"` or
 | the change reads the world as the Yarn does: the walk, held/anchored/released, Aldermere released, Lowmarket anchored; empty never; and each changing scene branches on the same key | `TheChangeReadsTheWorldAsTheYarnDoes` |
 | every piece stands in its built room (`Prop_*`, and `Read_*` where read), the six under a `Dressing_*` with a `DressingProp` | `EveryPieceStandsInItsBuiltRoom` |
 | the doors are in their rooms shut and open on their flags | `TheDoorsAreDrawnShutAndOpen` |
-| only the four birds' blocks remain in any room with a readable | `OnlyTheBirdsWhoAskAreStillBlocks` |
+| no block remains in any room with a readable (the four birds drawn, CHR-12) | `NoBlockIsLeftStandingNowTheBirdsWhoAskAreDrawn` |
 | the recipes' drawings are not drawn again under the trigger; Lowmarket's board is the readable's pair | `TheRecipesDrawingsAreNotDrawnTwice` |
 | a pair swaps on its flag and its place's fate, and back for a new game | `DressingPropPlayTests.APieceChangesWithTheWorldAndBackForANewGame` |
 | in the real chapel the door opens on the offering's flag, both drawings in the fade group, the tapestry static | `TheChapelDoorOpensOnItsFlagInItsRoom` |
@@ -123,8 +123,6 @@ eight changed states (`logs/env06-shot-*.png`, reviewed by eye), and the thirty-
 
 ## 6. Open
 
-- **The four birds who ask are still blocks** (the gannet, the traveller, Brek, Corvin): they are characters, for the
-  NPC drawing rows, not this one.
 - **The doors open as drawings, not as doors**: the chapel's and the ninth's open state does not move a collider. The
   reliquary and the satchel are the drawing's.
 - **Marks, not letters** (§5).

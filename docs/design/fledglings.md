@@ -76,7 +76,8 @@ assertions were made frame-proof: a batch frame can be longer than a leap). Capt
 
 ## 5. Open
 
-- **The watchers**: the grandmother with bound wings on the coast, the counting voice in Emberdown, the clan
-  cheering on the Steppe (environment.md §5) are not drawn or heard; CHR-12's townsfolk and AUD's.
+- **The watchers** are drawn (CHR-12, `townsfolk.md`): the grandmother with bound wings on the top roost, a grouse
+  under the Rest's roosts, the clan at the wagon cheering and watching. The counting voice and the clan's song are
+  AUD's.
 - **The outlines at the edge of the eye**: the Greyfold's are drawn pale, not hidden when looked at.
 - **Brek's leap** at the Wind Gate (offerings.md) is a separate asker, not this loop.

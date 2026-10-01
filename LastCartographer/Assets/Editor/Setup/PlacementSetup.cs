@@ -99,7 +99,7 @@ namespace OWSBG.Setup
         {
             var readable = MakeMaterial("M_Greybox_Readable", new Color(0.86f, 0.80f, 0.62f));
             var asker = MakeMaterial("M_Greybox_Asker", new Color(0.78f, 0.52f, 0.22f));
-            int placed = 0, drawn = 0, blocks = 0;
+            int placed = 0, drawn = 0, blocks = 0, people = 0;
             foreach (var group in Places.GroupBy(p => p.room))
             {
                 string path = ScenesDir + group.Key + ".unity";
@@ -117,16 +117,16 @@ namespace OWSBG.Setup
                 {
                     var made = Make(room, p.node, new Vector2(p.x, p.y), p.prompt, p.asks ? asker : readable, fade);
                     placed++;
-                    if (made == Made.Drawing) drawn++; else if (made == Made.Block) blocks++;
+                    if (made == Made.Drawing) drawn++; else if (made == Made.Person) people++; else if (made == Made.Block) blocks++;
                 }
                 EditorSceneManager.MarkSceneDirty(scene);
                 EditorSceneManager.SaveScene(scene);
             }
             AssetDatabase.SaveAssets();
-            Debug.Log("[OWSBG] place: " + placed + " readables in " + Places.Select(p => p.room).Distinct().Count() + " rooms; " + drawn + " drawn here, " + blocks + " blocks, the rest the recipes' drawings");
+            Debug.Log("[OWSBG] place: " + placed + " readables in " + Places.Select(p => p.room).Distinct().Count() + " rooms; " + drawn + " drawn here, " + people + " birds from the library, " + blocks + " blocks, the rest the recipes' drawings");
         }
 
-        enum Made { Recipe, Drawing, Block }
+        enum Made { Recipe, Drawing, Person, Nobody, Block }
 
         static Made Make(Room room, string node, Vector2 at, string prompt, Material mat, FadeGroup fade)
         {
@@ -148,7 +148,20 @@ namespace OWSBG.Setup
             var (prop, after, change) = DrawingFor(node);
             if (prop != null && Stands(room, prop, at)) return Made.Recipe;   // the recipe's own drawing is the piece
             var drawn = prop != null ? ProjectSetup.MakeDressing(room, go.transform, node, prop, after, change, Vector2.zero, 0.4f) : null;
-            if (drawn == null) { Marker(go, mat); return Made.Block; }
+            if (drawn == null)
+            {
+                // A bird who asks is a person (CHR-12): drawn from the townsfolk library in its look, greyed when it is a
+                // Remnant; a bird whose own drawing already stands beside the trigger (Corvin) gets no body at all.
+                var asker = Offerings.All.FirstOrDefault(a => a.Node == node);
+                if (asker != null && asker.Kind == AskerKind.Bird)
+                {
+                    if (asker.Look == null) return Made.Nobody;
+                    if (ProjectSetup.DressPerson(go, "M_Folk_" + asker.Look, Townsfolk.Character(asker.Look), new Color(0.78f, 0.52f, 0.22f),
+                                                 asker.Remnant ? NpcInkState.Remnant : NpcInkState.Drawn, asker.FacesWest))
+                        return Made.Person;
+                }
+                Marker(go, mat); return Made.Block;
+            }
             if (fade != null)
                 foreach (var r in drawn.GetComponentsInChildren<MeshRenderer>(true)) fade.AddLayer(r, 5);
             return Made.Drawing;

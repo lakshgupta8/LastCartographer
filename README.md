@@ -237,6 +237,12 @@ Wren's quill is ink and paper: `InkSounds` (Core) makes every cue from a few lin
 ## The cast
 `tools/characters/cast.py` draws the returning cast (Sable, Dotha, Isolde, Pell, Runa, Kettil, Teodor, Idrenne, Maren, Corvin, Ilse, Corra, Marrow, Aury) from one parametric townsfolk bird: idle, talk, walk and asleep for everyone, plus each one's own (Sable mends and reads, Dotha sings, Corra draws). The bootstrap build dresses any NPC whose name has sheets (`Sable_Greybox` → `Sable`) with `InkSheetPlayer`, `NpcAnimator` (the post's activity, the talk, the walk) and `NpcInk`, whose colour state follows the place: drawn, washing toward paper as the place fades, the ink removed once it is let go or on an island in the Blank (`docs/design/npc-animation.md`).
 
+## The townsfolk
+`tools/characters/townsfolk.py` draws a library of thirty generic birds, six for each living region, on the same bird
+as the cast, with the hub's four clips and the crowd's two (`watching`, `cheering`): a crowd, a watcher, a picket line,
+a minor named bird or a bird who asks wears one of them instead of standing as a block, and the Remnant grey is
+`NpcInk`'s state, not a drawing. The recipes' `.Folk(look, x, activity, face)` stands them (`docs/design/townsfolk.md`).
+
 ## The fledglings
 In one room of every region young birds leap from a perch in the background (`docs/design/fledglings.md`): six in turn,
 and for each ability Wren has one more of them glides, a little further each. Anchored places never glide, a fade thins

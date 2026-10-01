@@ -147,7 +147,7 @@ namespace OWSBG.Tests
             Assert.GreaterOrEqual(Count(orchard, Guid("World/Instruments/TetherAnchor.cs")), 1, "and a thread point");
             Assert.GreaterOrEqual(Count(orchard, "m_Name: Prop_Gravestone"), 1, "the gravestone with a crest");
             Assert.GreaterOrEqual(Count(orchard, "m_Name: Isolde_Greybox"), 1, "her cache");
-            Assert.AreEqual(0, Count(orchard, Guid("Narrative/NpcInk.cs")), "drawn as her pages (a stand-in), not as her");
+            Assert.AreEqual(1, Count(orchard, Guid("Narrative/NpcInk.cs")), "the keeper's (CHR-12); her cache is drawn as her pages (a stand-in), not as her");
             var tower = SceneText("Halden_Bastion_1");
             Assert.GreaterOrEqual(Regex.Matches(tower, @"m_Name: Wall_\d+").Count, 2, "Talonhold up the walls");
             Assert.AreEqual(2, Count(tower, Guid("World/Instruments/TetherAnchor.cs")), "Inkthread across the gaps");

@@ -86,6 +86,18 @@ namespace OWSBG.World
         protected override bool ContactHurts => false;
         protected override bool AcceptsHit(in HitInfo hit) => IsDrawn;
 
+        public override IEnumerable<string> PartSkinNames { get { yield return "ChorusLamp"; yield return "Rubble"; yield return "Surge"; } }
+        /// <summary>The sheet clip for its move (CHR-09): the dust rising, the drop, the surge and the reach.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Telegraph => CurrentAttack == Attack.Reach ? "reach" : CurrentAttack == Attack.Surge ? "surge" : "rumble",
+            Move.Fall => "shake",
+            Move.Surge => "surge",
+            _ => "idle",
+        };
+        /// <summary>The reach is sought by its window: the arm is at the lamp as it closes.</summary>
+        public override float ClipProgress => ReachingFor >= 0 && _telegraphStarted && !IsDying && HurtstunLeft == 0 ? TelegraphProgress(reachFrames) : -1f;
+
         protected override void Start()
         {
             base.Start();
@@ -97,7 +109,11 @@ namespace OWSBG.World
             if (_out.Length != lampCount) _out = new bool[lampCount];
             if (_lamps.Count == lampCount) return;
             for (int i = 0; i < lampCount; i++)
-                _lamps.Add(BossPart.Prop("Lamp_" + i, transform.parent, new Vector2(SectionCentre(i), floorY + lampHeight), new Vector2(0.5f, 0.7f), LampMaterial(false), 0.5f));
+            {
+                var lamp = BossPart.Prop("Lamp_" + i, transform.parent, new Vector2(SectionCentre(i), floorY + lampHeight), new Vector2(0.5f, 0.7f), LampMaterial(false), 0.5f);
+                SkinProp(lamp, "ChorusLamp", "dark");
+                _lamps.Add(lamp);
+            }
         }
 
         public float SectionCentre(int i) => arenaMinX + (i + 0.5f) * SectionWidth;
@@ -174,7 +190,10 @@ namespace OWSBG.World
         void RefreshLamps()
         {
             for (int i = 0; i < _lamps.Count; i++)
-                if (_lamps[i] != null) _lamps[i].GetComponent<MeshRenderer>().sharedMaterial = LampMaterial(i == LitLamp && !IsLampOut(i));
+            {
+                bool lit = i == LitLamp && !IsLampOut(i);
+                BossPart.Show(_lamps[i], lit ? "lit" : "dark", LampMaterial(lit));
+            }
         }
 
         static Material LampMaterial(bool lit) => lit ? InkMaterials.Lit("Collapse_Lamp_Lit", new Color(0.98f, 0.80f, 0.42f)) : InkMaterials.Lit("Collapse_Lamp_Dark", new Color(0.22f, 0.20f, 0.18f));
@@ -293,6 +312,7 @@ namespace OWSBG.World
                 RubbleBroken++;
                 return true;
             };
+            Skin(block, "Rubble");
             _rubble.Add(block);
         }
 
@@ -311,6 +331,12 @@ namespace OWSBG.World
                 ClearSurge();
                 return true;
             };
+            if (Skin(s, "Surge", "move") && _surgeDir < 0)
+            {
+                var sc = s.Visual.localScale;   // drawn going east; flip it westward
+                sc.x = -sc.x;
+                s.Visual.localScale = sc;
+            }
             Surge = s;
         }
 

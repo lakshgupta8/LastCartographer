@@ -86,6 +86,19 @@ namespace OWSBG.World
         /// <summary>Stone on top, open underneath: once it flies, only the belly.</summary>
         protected override bool AcceptsHit(in HitInfo hit) => Phase < 3 || IsUpStrike(hit);
 
+        public override IEnumerable<string> PartSkinNames { get { yield return "Feather"; } }
+        /// <summary>The sheet clip for its move (CHR-10): on the plinth, hanging from the roots, or flying, badly.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Rise => "rise",
+            Move.Telegraph => CurrentAttack == Attack.Feathers ? "shake" : CurrentAttack == Attack.Sweep ? "telegraph" : "fly",
+            Move.Sweep => "sweep",
+            Move.Pass => "pass",
+            Move.Land => "land",
+            Move.Recover => RootsTorn ? "fly" : "recover",
+            _ => RootsTorn ? "fly" : IsAloft ? "perch" : "idle",
+        };
+
         protected override void Start()
         {
             base.Start();
@@ -316,6 +329,7 @@ namespace OWSBG.World
                     Destroy(f.gameObject);
                     return true;
                 };
+                Skin(f, "Feather");
                 _feathers.Add(f);
             }
             ClearShadows();

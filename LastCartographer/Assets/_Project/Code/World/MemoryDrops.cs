@@ -14,8 +14,17 @@ namespace OWSBG.World
     public sealed class MemoryDrops : MonoBehaviour
     {
         [SerializeField] int _smudgeHealth = 3;
+        [SerializeField] float _smudgeCell = 2f;
+        [SerializeField] System.Collections.Generic.List<SheetClip> _smudgeSheets = new System.Collections.Generic.List<SheetClip>();
 
         public static MemoryDrops Instance { get; private set; }
+        /// <summary>Editor setup (CHR-09): the memory smudge's sheets, so it is drawn like any smudge, with what it forgot inside.</summary>
+        public void ConfigureSheets(float cellUnits, System.Collections.Generic.IEnumerable<SheetClip> clips)
+        {
+            _smudgeCell = cellUnits;
+            _smudgeSheets = new System.Collections.Generic.List<SheetClip>(clips);
+        }
+        public bool HasSheets => _smudgeSheets != null && _smudgeSheets.Count > 0;
         /// <summary>The live smudge, if its room is loaded.</summary>
         public static MemorySmudge Current { get; private set; }
         public static event Action<MemorySmudge> Spawned;
@@ -90,15 +99,30 @@ namespace OWSBG.World
         {
             var w = GameState.World;
             if (Current != null) Destroy(Current.gameObject);
-            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.name = "MemorySmudge";
-            go.layer = LayerMask.NameToLayer("Enemy");
-            DestroyImmediate(go.GetComponent<Collider>());   // a 2D collider cannot join a 3D one pending destroy
-            go.transform.position = new Vector3(w.DropX, w.DropY + 0.6f, 0f);
-            go.transform.localScale = Vector3.one * 0.9f;
-            go.AddComponent<BoxCollider2D>().size = Vector2.one;
-            go.AddComponent<Rigidbody2D>();
+            GameObject go;
+            InkSheetPlayer player = null;
+            if (HasSheets)
+            {
+                // Drawn (CHR-09): a cell-sized quad on its sheets, like a placed smudge.
+                go = new GameObject("MemorySmudge") { layer = LayerMask.NameToLayer("Enemy") };
+                go.transform.position = new Vector3(w.DropX, w.DropY + 0.6f, 0f);
+                go.AddComponent<BoxCollider2D>().size = new Vector2(0.9f, 0.9f);
+                go.AddComponent<Rigidbody2D>();
+                if (BossPart.DressRenderer(go.transform, null, _smudgeSheets, _smudgeCell, out player) != null) player.Play("idle");
+            }
+            else
+            {
+                go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                go.name = "MemorySmudge";
+                go.layer = LayerMask.NameToLayer("Enemy");
+                DestroyImmediate(go.GetComponent<Collider>());   // a 2D collider cannot join a 3D one pending destroy
+                go.transform.position = new Vector3(w.DropX, w.DropY + 0.6f, 0f);
+                go.transform.localScale = Vector3.one * 0.9f;
+                go.AddComponent<BoxCollider2D>().size = Vector2.one;
+                go.AddComponent<Rigidbody2D>();
+            }
             var smudge = go.AddComponent<MemorySmudge>();
+            if (player != null) go.AddComponent<EnemyAnimator>();
             smudge.SetMaxHealth(_smudgeHealth);
             smudge.Recovered += OnRecovered;
             var scene = Room.Current != null ? Room.Current.gameObject.scene : (Scene?)null;

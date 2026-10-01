@@ -75,6 +75,17 @@ namespace OWSBG.World
 
         /// <summary>Iron everywhere but the seam on top: only a strike from above lands.</summary>
         protected override bool AcceptsHit(in HitInfo hit) => IsDownStrike(hit);
+
+        public override IEnumerable<string> PartSkinNames { get { yield return "StarFist"; } }
+        /// <summary>The sheet clip for its move (CHR-10): the fist raised and brought down, the iron drawn up, and burning.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Walk => "walk",
+            Move.Telegraph => CurrentAttack == Attack.Walls ? "raise" : CurrentAttack == Attack.Slam ? "telegraph" : "walk",
+            Move.Slam => "slam",
+            Move.Recover => "recover",
+            _ => IsBurning ? "burn" : "idle",
+        };
         protected override void OnHitBlocked(in HitInfo hit) { base.OnHitBlocked(hit); StrikesDrifted++; }
 
         /// <summary>Tests and tooling: begin a specific attack now.</summary>
@@ -225,6 +236,7 @@ namespace OWSBG.World
         {
             ClearFist();
             Fist = BossPart.Make("Fist", transform.parent, centre, fistSize, InkMaterials.Lit("Star_Iron", new Color(0.26f, 0.24f, 0.26f)));
+            Skin(Fist, "StarFist");
             Fist.OnHit = hit => IsDownStrike(hit);   // pogo the slam
             _fistLeft = fistFrames;
         }

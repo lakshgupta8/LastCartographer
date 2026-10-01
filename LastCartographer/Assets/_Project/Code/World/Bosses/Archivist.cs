@@ -91,7 +91,21 @@ namespace OWSBG.World
             if (Hand != null) return;
             Hand = BossPart.Make("QuillHand", transform.parent, HandPos(), handSize, InkMaterials.Lit("Archivist_Hand", new Color(0.30f, 0.26f, 0.22f)));
             Hand.OnHit = hit => StrikeHand();
+            Skin(Hand, "QuillHand");
         }
+
+        /// <summary>His quill hand and her drawing (CHR-10); her drawing wears Wren's own sheets, greyed.</summary>
+        public override IEnumerable<string> PartSkinNames { get { yield return "QuillHand"; yield return "WrenDrawing"; } }
+        /// <summary>The sheet clip for his move (CHR-10): the quill lifted, on the page, the swoop, and the hold.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Telegraph => "telegraph",
+            Move.Drawing => "draw",
+            Move.Swoop => "swoop",
+            Move.Recover => "recover",
+            Move.Holding => "hold",
+            _ => "idle",
+        };
 
         Vector2 HandPos() => (Vector2)transform.position + new Vector2(handOffset.x * Facing, handOffset.y);
 
@@ -185,7 +199,7 @@ namespace OWSBG.World
                 if (FrameDrawn) Close(dt);
             }
             base.FixedUpdate();
-            if (Hand != null) Hand.MoveTo(HandPos());
+            if (Hand != null) { Hand.MoveTo(HandPos()); Hand.Play(IsDrawing ? "draw" : "idle"); }
         }
 
         protected override void Tick(float dt)
@@ -276,6 +290,7 @@ namespace OWSBG.World
             float x = Mathf.Clamp(transform.position.x - Facing * 1f, arenaMinX, arenaMaxX);
             WrenDrawing = BossPart.Make("WrenDrawing", transform.parent, new Vector2(x, floorY + 0.55f), new Vector2(0.6f, 1.1f), InkMaterials.Lit("Archivist_Wren", new Color(0.40f, 0.36f, 0.46f)));
             WrenDrawing.OnHit = hit => false;
+            Skin(WrenDrawing, "WrenDrawing", "idle", bottomAtFloor: true, floorY: floorY, wash: 0.5f, lineFade: 0.6f);
             _drawLeft = drawSeconds * 2f;
             _jabT = wrenDrawingJabSeconds;
             _jabbing = false;
@@ -287,6 +302,13 @@ namespace OWSBG.World
             var p = WrenDrawing.Position;
             float dx = Wren.Position.x - p.x;
             int dir = dx >= 0f ? 1 : -1;
+            if (WrenDrawing.IsDressed)
+            {
+                var sc = WrenDrawing.Visual.localScale;
+                sc.x = Mathf.Abs(sc.x) * dir;
+                WrenDrawing.Visual.localScale = sc;
+                WrenDrawing.Play(_jabbing ? "strike1" : Mathf.Abs(dx) > wrenDrawingReach * 0.8f ? "run" : "idle");
+            }
             if (_jabbing)
             {
                 if (_jabFrames-- > 0) return;   // her own wind-up, read before it lands

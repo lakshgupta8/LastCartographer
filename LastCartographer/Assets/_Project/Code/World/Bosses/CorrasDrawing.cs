@@ -69,12 +69,30 @@ namespace OWSBG.World
 
         int _frames, _patternIndex;
         float _pause, _redrawLeft, _smallBackIn, _stompX;
-        bool _telegraphStarted, _hitThisAttack;
+        bool _telegraphStarted, _hitThisAttack, _walking;
         Transform _stompMark;
         static readonly int OutlineId = Shader.PropertyToID(OutlineGlobal);
 
         /// <summary>Drawn frames only; drained grey (the Remnant Charter), it has no colour to redraw with.</summary>
         protected override bool AcceptsHit(in HitInfo hit) => IsDrawn || IsGrey;
+
+        public override IEnumerable<string> PartSkinNames { get { yield return "CrayonSmall"; } }
+        /// <summary>The sheet clip for its move (CHR-10): in crayon, and in outline once the crayon runs out.</summary>
+        public override string Clip
+        {
+            get
+            {
+                string clip = IsDying ? "death" : HurtstunLeft > 0 ? "hurt" : Current switch
+                {
+                    Move.Telegraph => CurrentAttack == Attack.Stomp ? "lift" : "telegraph",
+                    Move.Swipe => "swipe",
+                    Move.Stomp => "stomp",
+                    Move.Recover => "recover",
+                    _ => _walking ? "move" : "idle",
+                };
+                return IsOutline ? clip + "_outline" : clip;
+            }
+        }
 
         /// <summary>Tests and tooling: begin a specific attack now.</summary>
         public void ForceAttack(Attack a)
@@ -136,6 +154,7 @@ namespace OWSBG.World
             {
                 Small = BossPart.Make("SmallVoss", transform.parent, SmallHome(), smallSize, InkMaterials.Lit("Crayon_Small", new Color(0.46f, 0.52f, 0.72f)));
                 Small.OnHit = hit => StrikeSmall();
+                Skin(Small, "CrayonSmall");
             }
             Small.gameObject.SetActive(true);
             Small.MoveTo(SmallHome());
@@ -179,6 +198,7 @@ namespace OWSBG.World
             CurrentAttack = a;
             _telegraphStarted = false;
             _hitThisAttack = false;
+            _walking = false;
             _frames = 0;
             FaceWren();
             if (a == Attack.Stomp)
@@ -217,8 +237,8 @@ namespace OWSBG.World
                 case Move.Stand:
                     _pause -= dt;
                     FaceWren();
-                    if (Wren != null && Mathf.Abs(Wren.Position.x - transform.position.x) > swipeReach)
-                        MoveX(Facing * walkSpeed * (IsOutline ? 1f / outlinePace : 1f) * dt);
+                    _walking = Wren != null && Mathf.Abs(Wren.Position.x - transform.position.x) > swipeReach;
+                    if (_walking) MoveX(Facing * walkSpeed * (IsOutline ? 1f / outlinePace : 1f) * dt);
                     if (_pause <= 0f) BeginAttack(NextAttack());
                     break;
 

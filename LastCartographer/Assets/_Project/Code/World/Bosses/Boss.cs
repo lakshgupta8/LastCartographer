@@ -113,6 +113,7 @@ namespace OWSBG.World
             Body.gravityScale = 0f;
             CaptureStart();
             ApplyTunedHealth();
+            if (Bodiless && Visual != null) Visual.enabled = false;
         }
 
         /// <summary>Health from the tuning table (CMB-19) when the boss stands on a sheet the table knows.</summary>
@@ -141,6 +142,58 @@ namespace OWSBG.World
             _phaseLines = sheet.Lines;
             ApplyTunedHealth();
         }
+
+        // ---- the drawings of a fight's pieces (CHR-10, docs/design/boss-animation.md) ------------------------------------
+
+        /// <summary>Sheets for one kind of piece the fight makes at run time (a dove, a rope, the fist), by the name the kit asks for.</summary>
+        [Serializable]
+        public sealed class PartSkin
+        {
+            public string Name;
+            public float CellUnits = 2f;
+            public List<SheetClip> Clips = new List<SheetClip>();
+        }
+
+        [SerializeField] List<PartSkin> _partSkins = new List<PartSkin>();
+
+        /// <summary>The part sheets this kit can wear (Art/Characters/[name]/); the setup loads the ones that exist.</summary>
+        public virtual IEnumerable<string> PartSkinNames { get { yield break; } }
+        /// <summary>The body is not the drawing (the Choir is its doves): its sprite stays hidden.</summary>
+        protected virtual bool Bodiless => false;
+        public IReadOnlyList<PartSkin> PartSkins => _partSkins;
+
+        /// <summary>Editor setup and tests: carry a skin for the parts named <paramref name="name"/>.</summary>
+        public void AddPartSkin(string name, float cellUnits, IEnumerable<SheetClip> clips)
+        {
+            _partSkins.RemoveAll(s => s.Name == name);
+            _partSkins.Add(new PartSkin { Name = name, CellUnits = cellUnits, Clips = new List<SheetClip>(clips) });
+        }
+
+        public PartSkin FindSkin(string name)
+        {
+            foreach (var s in _partSkins) if (s.Name == name && s.Clips != null && s.Clips.Count > 0) return s;
+            return null;
+        }
+
+        /// <summary>Dress a part in a skin by name when the kit carries it; without it the part keeps its block.</summary>
+        protected bool Skin(BossPart part, string skin, string clip = "idle", bool bottomAtFloor = false, float floorY = 0f, float wash = 0f, float lineFade = 0f)
+        {
+            var s = FindSkin(skin);
+            if (s == null || part == null) return false;
+            part.Dress(s.Clips, s.CellUnits, clip, bottomAtFloor, floorY, wash, lineFade);
+            return part.IsDressed;
+        }
+
+        /// <summary>Dress a plain prop (a lamp, a stone) the same way; its state is then a clip through <see cref="BossPart.Show"/>.</summary>
+        protected bool SkinProp(Transform prop, string skin, string clip = "idle")
+        {
+            var s = FindSkin(skin);
+            if (s == null || prop == null) return false;
+            return BossPart.DressProp(prop, s.Clips, s.CellUnits, clip) != null;
+        }
+
+        /// <summary>How far through a telegraph being played, 0..1, for a clip sought by it.</summary>
+        protected float TelegraphProgress(int frames) => TelegraphLeft <= 0 ? 1f : 1f - Mathf.Clamp01((float)TelegraphLeft / Mathf.Max(1, Read(frames)));
 
         public enum Contact { None, Landed, Parried }
         readonly Collider2D[] _wrenOverlaps = new Collider2D[4];

@@ -11,6 +11,8 @@ declares its attacks (`Boss.Kit()`) and the tuning audit holds them to the rules
 
 Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar`, `Voss`, `HalfCathedralBells`,
 `CorrasDrawing`, `Archivist`, `CompleteSurvey` (World, `Code/World/Bosses/`), all on the `Boss` framework (CMB-10).
+Every kit is drawn now: the bodies and the pieces the fights make (`docs/design/boss-animation.md`, CHR-08 to
+CHR-10); Brann and Oriel are the Warden family's (`enemy-animation.md` §2a).
 `BossKits.Build(id, parent, origin)` builds any of the twelve arenas: an 18-unit floor between two doors, the arena
 zone, the props, and the boss with the name, tier, lines, reward and scraps from its sheet. The test rigs and the
 game's rooms use the same recipe.

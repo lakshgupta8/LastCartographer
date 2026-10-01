@@ -71,6 +71,14 @@ at the roost's height on her far side, so the pogo off it (the Wingbeat gap at t
 off the bat crosses it") comes as it passes under. The bat in Chimneys_3 roosts over the ninth chimney's door,
 more than eight units from the vantage, so it does not cancel the survey.
 
+## 2c. The families and the late bosses (CHR-08, CHR-09, CHR-10)
+
+`tools/characters/families.py` builds the rest of the Smudge and Cantor families on the two rigs above: four more
+Smudges (the mine's with a lamp, the forest's with a swing, the plateau's in chalk, the smudge of Wren's own death
+with her cowl inside it) and two more Cantors (a crow with a cracked bell, and the Choir's dove in wool). The
+setup picks a look by region (`SmudgeLook`, `CantorLook`). `bosses.py` and `boss_parts.py` draw the nine late
+bosses and the pieces their fights make. All of it is in `docs/design/boss-animation.md`.
+
 ## 3. What changes when a creature wears sheets
 
 - **Death:** the placeholder shrank to nothing in a quarter second. A drawing dies as its ink leaves: the
@@ -102,7 +110,7 @@ the enemy type's name.
 
 ## 6. Open
 
-- The Lost Remnant is drawn but the greybox places none yet; the Blank's islands still use tinted NPC blocks.
+- The Lost Remnant is placed by the Greyfold's and the Blank's rooms now (ENV-08); the Blank's islands still use tinted NPC blocks.
 - Halvard's marks on the chapel floor are still dark blocks; his second kit (the thrown lance, the Seven Bridges)
   and third (the Threshold) have no frames yet.
 - Brann's phase-3 glow (his telegraphs are the brass) is a tint the arena will need to drive on the sheet.

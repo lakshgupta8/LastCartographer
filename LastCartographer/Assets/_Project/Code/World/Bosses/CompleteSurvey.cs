@@ -66,6 +66,7 @@ namespace OWSBG.World
 
         protected override bool ContactHurts => false;
         protected override bool AcceptsHit(in HitInfo hit) => _routing;
+        public override IEnumerable<string> PartSkinNames { get { yield return "InkPool"; } }
 
         protected override void Start()
         {
@@ -169,6 +170,7 @@ namespace OWSBG.World
             }
             var pool = BossPart.Make("InkPool", transform.parent, new Vector2(SectionCentre(section), floorY + poolSize.y * 0.5f), poolSize, InkMaterials.Dark);
             pool.OnHit = hit => StrikePool(pool);
+            Skin(pool, "InkPool");
             _pools.Add(pool);
         }
 

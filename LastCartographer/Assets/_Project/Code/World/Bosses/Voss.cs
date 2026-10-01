@@ -92,6 +92,19 @@ namespace OWSBG.World
 
         float MinX => Mathf.Max(arenaMinX, EdgeX + 0.5f);
 
+        public override IEnumerable<string> PartSkinNames { get { yield return "VossSeal"; } }
+        /// <summary>The sheet clip for his move (CHR-10): the guard behind the rose, and the lance planted to anchor.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Approach => "move",
+            Move.Telegraph => CurrentAttack == Attack.Anchor ? "anchor" : "telegraph",
+            Move.Thrust => "thrust",
+            Move.Lunge => "lunge",
+            Move.Guard => "guard",
+            Move.Recover => "recover",
+            _ => "idle",
+        };
+
         /// <summary>Tests and tooling: begin a specific attack from wherever he stands.</summary>
         public void ForceAttack(Attack a)
         {
@@ -170,6 +183,7 @@ namespace OWSBG.World
             }
             var at = new Vector2(SectionCentre(section), floorY + sealHeight * 0.5f);
             var seal = BossPart.Make("Seal", transform.parent, at, new Vector2(SectionWidth, sealHeight), InkMaterials.Lit("Voss_Seal", new Color(0.72f, 0.66f, 0.46f)));
+            Skin(seal, "VossSeal");
             seal.Visual.localScale = new Vector3(SectionWidth, sealHeight, 0.05f);
             int k2 = section;
             seal.OnHit = hit => StrikeSeal(k2);

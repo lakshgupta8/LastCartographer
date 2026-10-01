@@ -68,6 +68,15 @@ namespace OWSBG.World
         /// <summary>Only the ropes move the fight on.</summary>
         protected override void OnHealthChanged() { }
 
+        public override IEnumerable<string> PartSkinNames { get { yield return "BellRope"; } }
+        /// <summary>How far a bell is through its ring, 0..1; the bell swings through the ring clip.</summary>
+        public float RingProgress(int bell) => IsRinging(bell) ? Mathf.Clamp01((float)_ring[bell] / Mathf.Max(1, RingFramesOrFloor)) : 0f;
+
+        void QuietRopes()
+        {
+            for (int i = 0; i < RopeCount; i++) { _ring[i] = -1; if (i < _ropes.Count && _ropes[i] != null) _ropes[i].Play("idle"); }
+        }
+
         public void Reveal(float seconds) { _revealLeft = Mathf.Max(_revealLeft, seconds); }
 
         protected override void Start()
@@ -86,6 +95,7 @@ namespace OWSBG.World
                 var r = BossPart.Make(i == 3 ? "GreatRope" : "Rope_" + (i + 1), transform.parent, new Vector2(ropeXs[i], floorY + ropeHeight * 0.5f), new Vector2(0.3f, ropeHeight),
                     InkMaterials.Lit("Bell_Rope", new Color(0.70f, 0.66f, 0.58f)));
                 r.OnHit = hit => CutRope(k);
+                Skin(r, "BellRope");
                 _ropes.Add(r);
             }
         }
@@ -147,7 +157,7 @@ namespace OWSBG.World
 
         protected override void OnPhaseStarted(int phase)
         {
-            for (int i = 0; i < RopeCount; i++) _ring[i] = -1;
+            QuietRopes();
             _gap = gapSeconds;
             _turn = 0;
             _canonDue = false;
@@ -156,11 +166,16 @@ namespace OWSBG.World
         protected override void OnDefeated()
         {
             SetRadius(fullRadius);
-            for (int i = 0; i < RopeCount; i++) _ring[i] = -1;
+            QuietRopes();
         }
 
         /// <summary>Tests and tooling: ring this bell now.</summary>
-        public void ForceRing(int bell) { if (bell >= 0 && bell < RopeCount && !IsCut(bell)) _ring[bell] = 0; }
+        public void ForceRing(int bell)
+        {
+            if (bell < 0 || bell >= RopeCount || IsCut(bell)) return;
+            _ring[bell] = 0;
+            if (bell < _ropes.Count && _ropes[bell] != null) _ropes[bell].Play("ring", true);
+        }
 
         protected override void FixedUpdate()
         {
@@ -189,6 +204,7 @@ namespace OWSBG.World
                 if (_ring[i] < 0) continue;
                 if (IsCut(i)) { _ring[i] = -1; continue; }
                 if (++_ring[i] >= RingFramesOrFloor) Toll(i);
+                else if (i < _ropes.Count && _ropes[i] != null) _ropes[i].Seek(RingProgress(i));   // the bell swings through the ring
             }
 
             // Phase 2's canon: the second bell comes in halfway through the first.
@@ -222,6 +238,7 @@ namespace OWSBG.World
         void Toll(int bell)
         {
             _ring[bell] = -1;
+            if (bell < _ropes.Count && _ropes[bell] != null) _ropes[bell].Play("idle");
             Rings++;
             if (Radius <= minRadius + 0.001f)
             {

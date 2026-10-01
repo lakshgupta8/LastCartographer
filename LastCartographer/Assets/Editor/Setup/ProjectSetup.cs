@@ -417,7 +417,9 @@ namespace OWSBG.Setup
             sysGo.AddComponent<CommissionTracker>();
             sysGo.AddComponent<DayCycle>();
             sysGo.AddComponent<IrisSeedDrops>();
-            sysGo.AddComponent<MemoryDrops>();
+            var drops = sysGo.AddComponent<MemoryDrops>();
+            var memorySheets = LoadSheets("MemorySmudge", out float memoryCell);   // the smudge of her own death, drawn (CHR-09)
+            if (memorySheets != null) drops.ConfigureSheets(memoryCell, memorySheets);
             sysGo.AddComponent<EndingsRunner>();
 
             // Room manager.
@@ -891,7 +893,30 @@ namespace OWSBG.Setup
                 go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
                 go.AddComponent<EnemyAnimator>();
             }
+            // The pieces the fight makes at run time wear their own sheets (CHR-10); her drawing wears Wren's.
+            foreach (var skin in boss.PartSkinNames)
+            {
+                var clips = LoadSheets(skin == "WrenDrawing" ? "Wren" : skin, out float cell);
+                if (clips != null) boss.AddPartSkin(skin, cell, clips);
+            }
             return boss;
+        }
+
+        /// <summary>The Smudge family (CHR-09): each region's smudge carries what it forgot; the coast's look when a region's has no sheets.</summary>
+        static string SmudgeLook(string roomId)
+        {
+            string look = roomId.StartsWith("Emberdown_") ? "Smudge_Ember"
+                : roomId.StartsWith("Verdance_") ? "Smudge_Leaf"
+                : roomId.StartsWith("Halden_") || roomId.StartsWith("Windreach_") || roomId.StartsWith("Greyfold_") || roomId.StartsWith("Blank_") ? "Smudge_Chalk"
+                : "Smudge";
+            return LoadSheets(look) != null ? look : "Smudge";
+        }
+
+        /// <summary>The Cantor family (CHR-08): doves on the coast and in the forest, crows with cracked bells beyond.</summary>
+        static string CantorLook(string roomId)
+        {
+            bool crow = roomId.StartsWith("Emberdown_") || roomId.StartsWith("Halden_") || roomId.StartsWith("Windreach_") || roomId.StartsWith("Greyfold_") || roomId.StartsWith("Blank_");
+            return crow && LoadSheets("Cantor_Crow") != null ? "Cantor_Crow" : "Cantor";
         }
 
         // The Greyfold's edge (bible 4.6, 7.0): a faded plain that runs into the white. The prologue.
@@ -1972,8 +1997,8 @@ namespace OWSBG.Setup
             {
                 if (e.type == typeof(MarshCrab)) MakeEnemy<MarshCrab>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(ReedSkimmer)) MakeEnemy<ReedSkimmer>(room, e.name, e.pos, e.size);
-                else if (e.type == typeof(Smudge)) MakeEnemy<Smudge>(room, e.name, e.pos, e.size);
-                else if (e.type == typeof(Cantor)) MakeEnemy<Cantor>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Smudge)) MakeEnemy<Smudge>(room, e.name, e.pos, e.size, SmudgeLook(r.Id));
+                else if (e.type == typeof(Cantor)) MakeEnemy<Cantor>(room, e.name, e.pos, e.size, CantorLook(r.Id));
                 else if (e.type == typeof(CaveBat)) MakeEnemy<CaveBat>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Salamander)) MakeEnemy<Salamander>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);

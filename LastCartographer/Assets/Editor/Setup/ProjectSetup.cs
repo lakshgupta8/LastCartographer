@@ -1210,6 +1210,10 @@ namespace OWSBG.Setup
             public readonly List<(string name, Vector2 pos, Color tint, string character)> Figures = new List<(string, Vector2, Color, string)>();
             public (float x, float top)? CrossingAt;
             public int DriftCount;
+            // The region's fledglings (CHR-14): their perch, the ground they come down on, and which way they leap.
+            public (Vector2 perch, float landingY, int dir)? FledglingsAt;
+            /// <summary>The region's fledgling loop (Dressing.Loops) leaps from this perch toward <paramref name="direction"/> and comes down at <paramref name="landingY"/>.</summary>
+            public RoomRecipe Fledglings(float perchX, float perchY, float landingY, int direction = 1) { FledglingsAt = (new Vector2(perchX, perchY), landingY, direction); return this; }
             /// <summary>The Steppe's usual three: the walk's own layer, grass to the horizon, the storm sky; the crater and the cliff take the rim instead.</summary>
             public RoomRecipe WindreachPapers(string mid, string far = "Far_Steppe", string farther = "Farther_Storm")
             {
@@ -1352,7 +1356,7 @@ namespace OWSBG.Setup
                     .East(Scene(A)),
                 new RoomRecipe("Saltmarrow_Stilts").Tall()
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(-5f, 5f, 3f).Plat(0f, 7.5f, 3f).Plat(5f, 10f, 3f).Plat(0f, 12f, 4f)
-                    .Skimmer(-5f, 7f).Skimmer(6f, 12.5f).Crab(10f).Dress("stilts.ladders", 16f, 0f, 0.9f)   // a roost door with no steps, a ladder lashed on after
+                    .Skimmer(-5f, 7f).Skimmer(6f, 12.5f).Crab(10f).Dress("stilts.ladders", 16f, 0f, 0.9f).Fledglings(1.5f, 12.3f, 0f)   // a roost door with no steps, a ladder lashed on after
                     .West(Scene(A)).East(Scene("Saltmarrow_Boardwalk")).Up(Scene("Saltmarrow_Roots_1"), 0f, 12.3f),
                 new RoomRecipe("Saltmarrow_Boardwalk")
                     .Floor(-20f, -6f).Floor(-2f, 8f).Floor(12f, 20f).Shallows(-6f, -2f).Shallows(8f, 12f)
@@ -1445,7 +1449,7 @@ namespace OWSBG.Setup
                     .Down(E("Stair_2"), -15f).East(E("Rest_1")),
                 // ---- Kettil's Rest: the town, flat, counted ----
                 new RoomRecipe("Emberdown_Rest_1").Tiles("Ground_Ash", "Ground_Ash").EmberdownPapers("Mid_Roosts", "Far_Bell")
-                    .Floor(-20f, 20f).Npc("Kettil", -4f, "Rest_Kettil", kettil)
+                    .Floor(-20f, 20f).Npc("Kettil", -4f, "Rest_Kettil", kettil).Fledglings(8f, 6f, 0f)   // the roosts over the gate are in the paper; the chicks leap from them
                     .West(E("Stair_3")).East(E("Rest_2")),
                 new RoomRecipe("Emberdown_Rest_2").Tiles("Ground_Ash", "Ground_Ash").EmberdownPapers("Mid_Roosts", "Far_Bell")
                     .Paper("Fore_Slag", -4f, -0.8f, new Color(0.22f, 0.21f, 0.22f), 1.6f)
@@ -1591,7 +1595,7 @@ namespace OWSBG.Setup
                 new RoomRecipe("Verdance_Grove_3").Tall().Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
                     .Floor(-20f, -16f).Floor(-12f, 20f).Plat(-6f, 3f, 3f).Plat(4f, 6f, 3f).Plat(12f, 9f, 3f).Anchor(-1f, 7f).Anchor(8f, 10.5f).Vantage("Canopy", 12f, 9.3f)
                     .Cantor(2f).Skimmer(-6f, 5f)
-                    .Down(V("Grove_2"), -14f).East(V("Grove_4")),
+                    .Fledglings(4f, 6.3f, 0f).Down(V("Grove_2"), -14f).East(V("Grove_4")),
                 new RoomRecipe("Verdance_Grove_4").Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
                     .Floor(-20f, -6f).Plat(-1f, 3f, 3f).Plat(5f, 6f, 3f).Plat(11f, 8f, 3f).Floor(14f, 20f).Anchor(9f, 9f).Anchor(15f, 10f)   // a thread line east drops to the library's roof
                     .Smudge(-12f).Prop("Lantern", -1f, 3.3f).Prop("Lantern", 11f, 8.3f)
@@ -1666,7 +1670,7 @@ namespace OWSBG.Setup
                     .Paper("Fore_Balustrade", -4f, -0.8f, fore, 1.6f)
                     .Floor(-20f, -14f).Floor(-10f, 2f).Floor(6f, 20f).Plat(12f, 3f, 3f).Vantage("Tollhouse", 14f, 0f)
                     .Warden(-6f).Cantor(-4f)
-                    .West(H("Bridges_1")).East(H("Bridges_3")).Down(H("Lowmarket_1"), -12f),   // the stair down to Lowmarket from the second bridge
+                    .Fledglings(12f, 3.3f, 0f, -1).West(H("Bridges_1")).East(H("Bridges_3")).Down(H("Lowmarket_1"), -12f),   // the stair down to Lowmarket from the second bridge
                 new RoomRecipe("Halden_Bridges_3").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Bridges", "Far_Drop")
                     .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Desk(-14f).Prop("Scaffold", 4f).Vantage("Seventh", 12f, 0f)
                     .Npc("Arden", 1f, "Bridges_Family", folk)   // the family paid to stand on it
@@ -1783,7 +1787,7 @@ namespace OWSBG.Setup
                 new RoomRecipe("Windreach_Camp_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Camp")
                     .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Desk(-12f).Ledger("Windreach", -8f).Prop("Wagon", 8f).Vantage("Wagons", 15f, 0f)   // the walkers' post: the wagon that stays, the desk, the ledger
                     .Grass(-19f, -14f, 8).Grass(-3f, 4f, 10).Grass(12f, 19f, 10)
-                    .West(W("Stones_3")).East(W("Camp_2")),
+                    .Fledglings(8f, 3f, 0f).West(W("Stones_3")).East(W("Camp_2")),
                 new RoomRecipe("Windreach_Camp_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Camp")
                     .Floor(-20f, 20f).Plat(-15f, 2.5f, 3f).Camp(0)   // the fire ring: the first night
                     .Grass(-19f, -11f, 12).Grass(13f, 19f, 10)
@@ -1868,7 +1872,7 @@ namespace OWSBG.Setup
                 // ---- the half-cathedral: the nave east of the prologue's room ----
                 new RoomRecipe("Greyfold_Cathedral_2").Tall().Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_Nave", "Far_White", "Farther_Blank", 12f)
                     .Floor(-20f, 20f).Plat(-14f, 3f, 3f).Plat(15f, 3f, 3f).Lost(-15f).Lost(16f)   // the lost, who hold to her colour
-                    .Figure("Marrow", 6f, marrow)   // thirty steps in, a grey chick, silent
+                    .Figure("Marrow", 6f, marrow).Fledglings(-8f, 9f, 0f)   // thirty steps in, a grey chick, silent; outlines off the broken tower
                     .Arena(typeof(HalfCathedralBells), "bells", 1.5f, new Vector2(0.4f, 0.4f), -8f, 11f, Ability.None, AbilitySet.FlagKey(Ability.Clarity))   // with Clarity, the bells ring
                     .West(G("Edge")).East(G("Road_1")),
                 // ---- the Road That Stops: cobbles her lantern draws ----
@@ -1941,7 +1945,7 @@ namespace OWSBG.Setup
                 new RoomRecipe("Blank_Hollow_2").Tiles("Ground_Grey", "Ground_Grey").BlankPapers("Mid_Hollow")
                     .Floor(-20f, 20f).Plat(14f, 2.5f, 3f).Desk(-14f).Prop("House", -10f).Prop("Well", 0f).Prop("House", 6f)   // Wren's birth village, grey; the hub: a desk in Ilse's house
                     .Remnant("Ilse", -6f, "Hollow_Ilse", ilse).Npc("Isolde", 10f, "Hollow_Isolde", isolde).Remnant("Marrow", 2f, "Blank_Marrow_Follow", marrow)
-                    .West(B("Hollow_1")).East(B("Hollow_3")),
+                    .Fledglings(6f, 2.5f, 0f).West(B("Hollow_1")).East(B("Hollow_3")),
                 new RoomRecipe("Blank_Hollow_3").Tall().Tiles("Ground_Grey", "Ground_Grey").BlankPapers("Mid_Drift")
                     .Floor(-20f, -2f).Floor(2f, 20f).Plat(-10f, 4f, 3f).Plat(-4f, 8f, 3f).Plat(4f, 12f, 4f).Crossing(4f, 12f)   // the far edge: up to where the islands pass, and onto the first
                     .Drift(6).Lost(-12f).Lost(12f)
@@ -2026,6 +2030,7 @@ namespace OWSBG.Setup
             for (int i = 0; i < r.Updrafts.Count; i++) { var u = r.Updrafts[i]; MakeUpdraft(room, i, u.x, u.bottom, u.height, u.speed); }
             foreach (var f in r.Figures) MakeFigure(room, f.name + "_Greybox", f.pos, f.tint, f.character);
             if (r.CrossingAt.HasValue) MakeCrossing(room, r.CrossingAt.Value.x, r.CrossingAt.Value.top);
+            if (r.FledglingsAt.HasValue) { var f = r.FledglingsAt.Value; MakeFledglings(room, f.perch, f.landingY, f.dir); }
             if (r.DriftCount > 0) MakeDrift(room, r.DriftCount);
             if (!string.IsNullOrEmpty(r.WalkId))
             {
@@ -2106,6 +2111,35 @@ namespace OWSBG.Setup
                 iso.FindProperty("_renderer").objectReferenceValue = r;
                 iso.ApplyModifiedPropertiesWithoutUndo();
             }
+        }
+
+        /// <summary>
+        /// The region's fledglings (CHR-14, docs/design/fledglings.md): six of the region's chicks on one perch, drawn from
+        /// the look the catalog names, behind the walk, under a FledglingLoop that leaps them in turn as the world allows.
+        /// Saved along their flights (Preview) so the scene reads at rest; the loop takes over in play.
+        /// </summary>
+        static void MakeFledglings(Room room, Vector2 perch, float landingY, int direction)
+        {
+            var region = Dressing.RegionOfRoom(room.RoomId);
+            var loop = Dressing.LoopOf(region) ?? throw new System.InvalidOperationException("no fledgling loop for " + region);
+            if (loop.Room != room.RoomId) throw new System.InvalidOperationException(region + "'s fledglings leap in " + loop.Room + ", not " + room.RoomId);
+            var go = new GameObject("Fledglings");
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(0f, 0f, 2f);
+            var fl = go.AddComponent<FledglingLoop>();
+            var birds = new List<Transform>();
+            string look = "Fledgling_" + loop.Look;
+            for (int i = 0; i < Dressing.Leapers; i++)
+            {
+                var b = new GameObject("Fledgling_" + i);
+                b.transform.SetParent(go.transform, false);
+                b.transform.localPosition = new Vector3(perch.x, perch.y, 0f);
+                var r = MakeSpriteQuad(b, "M_" + look, look, new Vector3(0.6f, 0.5f, 1f), new Vector3(0f, 0.25f, 0f), direction < 0, out var sheets);
+                if (sheets != null) b.AddComponent<InkSheetPlayer>().Configure(r, sheets);
+                birds.Add(b.transform);
+            }
+            fl.Configure(region, room.RoomId, perch, landingY, direction, birds);
+            fl.Preview();
         }
 
         /// <summary>The step off the Hollow's far edge onto the first island going past (ENV-08, PRG-20): a trigger over the top platform.</summary>
@@ -3122,6 +3156,7 @@ namespace OWSBG.Setup
                 }
                 foreach (var dp in Object.FindObjectsByType<DressingProp>(FindObjectsInactive.Include, FindObjectsSortMode.None)) dp.Apply();
                 foreach (var tr in Object.FindObjectsByType<RoomTransition>(FindObjectsInactive.Include, FindObjectsSortMode.None)) tr.Apply();
+                foreach (var fl in Object.FindObjectsByType<FledglingLoop>(FindObjectsInactive.Include, FindObjectsSortMode.None)) { fl.Refresh(); fl.Preview(); }
             }
             var brain = cam.GetComponent<CinemachineBrain>();
             if (brain != null) brain.enabled = false;

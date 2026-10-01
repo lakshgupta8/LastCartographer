@@ -149,7 +149,7 @@ Status: `[ ]` todo, `[~]` in progress, `[x]` done. `after:` lists dependencies.
 | CHR-11 `[~]` | NPC cast: Isolde, Pell, Sable, Runa, Teodor, Kettil, Idrenne, Maren, Corvin, Ilse, Corra, Marrow (+ colour states); v1: all twelve plus Dotha and Aury built in Blender from one townsfolk bird (`tools/characters/cast.py`), idle/talk/walk/asleep each and their own activities, `NpcAnimator` on every placed NPC with sheets, colour states drawn/fading/Remnant through `NpcInk` and the shader's `_Wash`/`_LineFade`, `docs/design/npc-animation.md`; rooms for eleven of them and a hand-drawn pass open | M2–M3 | SB-6 | CHR-02 |
 | CHR-12 `[ ]` | Generic townsfolk library (30) and Remnant (grey) variants | M3 | — | CHR-02 |
 | CHR-13 `[ ]` | Portraits for dialogue | M3 | — | CHR-11 |
-| CHR-14 `[ ]` | Fledgling background loops per region (glide distance per ability) | M3 | SB-5.6 | CHR-02 |
+| CHR-14 `[~]` | Fledgling background loops per region (glide distance per ability); v1: seven chicks on the townsfolk bird (`tools/characters/fledglings.py`: gull, grouse, dove, pigeon, crane, the Greyfold's outline, the Remnant's grey), five clips each, and `FledglingLoop` in every catalog room leaping six in turn along flights it computes from `Dressing.At` (one more glides per ability and further, anchored never, a fade thins, the Open World flies one), `docs/design/fledglings.md`; the watchers and the splash are open | M3 | SB-5.6 | CHR-02 |
 
 ### 3.6 Environment art (ENV)
 

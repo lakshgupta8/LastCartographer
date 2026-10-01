@@ -286,6 +286,8 @@ namespace OWSBG.Core
             public bool AnchoredFromTheStart;
             /// <summary>Faded birds (the Greyfold's outlines, the Remnant's chicks): a fade doesn't thin them, it made them.</summary>
             public bool Faded;
+            /// <summary>The drawing (CHR-14): the species' sheets are Art/Characters/Fledgling_&lt;Look&gt;.</summary>
+            public string Look;
         }
 
         /// <summary>What a loop shows now.</summary>
@@ -308,20 +310,20 @@ namespace OWSBG.Core
 
         public static readonly FledglingLoop[] Loops =
         {
-            new FledglingLoop { Region = Region.Saltmarrow, Room = "Saltmarrow_Stilts", Perch = "the top stilt-roost's ledge, into the shallows",
+            new FledglingLoop { Region = Region.Saltmarrow, Look = "Gull", Room = "Saltmarrow_Stilts", Perch = "the top stilt-roost's ledge, into the shallows",
                 Brief = "Six young gulls and terns off the highest roost, splashing down in the shallows; a grandmother with bound wings watches from the ladder." },
-            new FledglingLoop { Region = Region.Emberdown, Room = "Emberdown_Rest_1", Perch = "the cliff roosts over the gate, into the ash",
+            new FledglingLoop { Region = Region.Emberdown, Look = "Grouse", Room = "Emberdown_Rest_1", Perch = "the cliff roosts over the gate, into the ash",
                 Brief = "Young grouse off the roost doors into drifts of ash, counted aloud by whoever is nearest." },
-            new FledglingLoop { Region = Region.Verdance, Room = "Verdance_Grove_3", Perch = "a canopy branch, into the moss far below",
+            new FledglingLoop { Region = Region.Verdance, Look = "Dove", Room = "Verdance_Grove_3", Perch = "a canopy branch, into the moss far below",
                 Brief = "Young doves between the high branches, falling into moss so deep they bounce; nobody sings, nobody stops them." },
-            new FledglingLoop { Region = Region.Halden, Room = "Halden_Bridges_2", Perch = "a bridge parapet, onto a net strung under it",
+            new FledglingLoop { Region = Region.Halden, Look = "Pigeon", Room = "Halden_Bridges_2", Perch = "a bridge parapet, onto a net strung under it",
                 Brief = "Young pigeons off the toll bridge's parapet into a Crown net: the same leap from the same stone, every afternoon.",
                 AnchoredFromTheStart = true },
-            new FledglingLoop { Region = Region.Windreach, Room = "Windreach_Camp_1", Perch = "the wagon roofs, into the long grass",
+            new FledglingLoop { Region = Region.Windreach, Look = "Crane", Room = "Windreach_Camp_1", Perch = "the wagon roofs, into the long grass",
                 Brief = "Young cranes off the walking-wagons' roofs into the grass, practising for the Gate, and the clan cheering every landing." },
-            new FledglingLoop { Region = Region.Greyfold, Room = "Greyfold_Cathedral_2", Perch = "the Half-Cathedral's broken tower, into the white",
+            new FledglingLoop { Region = Region.Greyfold, Look = "Outline", Room = "Greyfold_Cathedral_2", Perch = "the Half-Cathedral's broken tower, into the white",
                 Brief = "Grey outlines of young birds leaping from the tower, seen only at the edge of the eye; gone when looked at.", Faded = true },
-            new FledglingLoop { Region = Region.Blank, Room = "Blank_Hollow_2", Perch = "Thessaly Hollow's roofs, onto the drift",
+            new FledglingLoop { Region = Region.Blank, Look = "Grey", Room = "Blank_Hollow_2", Perch = "Thessaly Hollow's roofs, onto the drift",
                 Brief = "The Remnant's grey chicks off the village roofs; they glide as the living ones do. The Blank remembers.", Faded = true },
         };
 

@@ -130,4 +130,4 @@ eight changed states (`logs/env06-shot-*.png`, reviewed by eye), and the thirty-
 - **Marks, not letters** (§5).
 - **One state per flag.** Merrow's lintels have three Yarn readings (held, anchored, paper) and two drawings; held and
   anchored share the chalk. The fade's "doors to paper" is the fade group's wash.
-- **The fledgling loops** are CHR-14's: `Dressing.Loops` is still data.
+- **The fledgling loops** leap now (CHR-14, `fledglings.md`).

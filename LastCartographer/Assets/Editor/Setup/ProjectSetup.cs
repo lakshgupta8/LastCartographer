@@ -285,6 +285,7 @@ namespace OWSBG.Setup
             foreach (var recipe in SaltmarrowRecipes()) BuildRecipe(recipe);
             foreach (var recipe in EmberdownRecipes()) BuildRecipe(recipe);   // the highland (ENV-03)
             foreach (var recipe in VerdanceRecipes()) BuildRecipe(recipe);    // the forest (ENV-04)
+            foreach (var recipe in HaldenRecipes()) BuildRecipe(recipe);      // the Plateau (ENV-05)
             PlacementSetup.Place();   // the coast's readables and askers stand in the rebuilt rooms
             SetupRenderFeatures();
             BuildPersistent();
@@ -1132,7 +1133,7 @@ namespace OWSBG.Setup
             // The region's dressing (ENV-03): the kit tiles the ground wears, the paper layers behind, and who stands here.
             public string FloorTile = "Ground_Boardwalk", PlatTile = "Ground_Boardwalk";
             public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
-            public readonly List<(string name, Vector2 pos, string node, Color tint, NpcInkState ink)> Npcs = new List<(string, Vector2, string, Color, NpcInkState)>();
+            public readonly List<(string name, Vector2 pos, string node, Color tint, NpcInkState ink, string character)> Npcs = new List<(string, Vector2, string, Color, NpcInkState, string)>();
             // The forest's (ENV-04): anchor-points the thread catches, and the roots a Gatekeeper holds by.
             public readonly List<Vector2> Anchors = new List<Vector2>();
             public readonly List<Vector2> Roots = new List<Vector2>();
@@ -1177,9 +1178,18 @@ namespace OWSBG.Setup
                 return this;
             }
             public RoomRecipe Wall(float x, float y, float h) { Ground.Add(("Wall_" + Ground.Count, new Vector2(x, y + h * 0.5f), new Vector2(1f, h))); return this; }
-            public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f) { Npcs.Add((name, new Vector2(x, y), node, tint, NpcInkState.Drawn)); return this; }
+            /// <summary>Someone to talk to; drawn from the sheets of <paramref name="character"/> (the name, by default), else the tinted stand-in.</summary>
+            public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f, string character = null) { Npcs.Add((name, new Vector2(x, y), node, tint, NpcInkState.Drawn, character)); return this; }
             /// <summary>Someone drawn with the ink removed (a Remnant: the one-night inn's keeper).</summary>
-            public RoomRecipe Remnant(string name, float x, string node, Color tint) { Npcs.Add((name, new Vector2(x, 0f), node, tint, NpcInkState.Remnant)); return this; }
+            public RoomRecipe Remnant(string name, float x, string node, Color tint) { Npcs.Add((name, new Vector2(x, 0f), node, tint, NpcInkState.Remnant, null)); return this; }
+            /// <summary>The Plateau's usual three: the city, the citadel behind it, the late-afternoon sky; an interior drops the far ones.</summary>
+            public RoomRecipe HaldenPapers(string mid, string far = "Far_Citadel", string farther = "Farther_Sky")
+            {
+                Paper(mid, 3f, 0f, new Color(0.56f, 0.58f, 0.60f), 6f);
+                if (far != null) Paper(far, 8f, 2f, new Color(0.66f, 0.68f, 0.68f), 10f);
+                if (farther != null) Paper(farther, 16f, 6f, new Color(0.80f, 0.80f, 0.76f), 16f);
+                return this;
+            }
             /// <summary>A permanent Inkthread anchor-point (ENV-04): the thread catches it from nine units.</summary>
             public RoomRecipe Anchor(float x, float y) { Anchors.Add(new Vector2(x, y)); return this; }
             /// <summary>Where a Gatekeeper's roots hold: its anchors, spawned by the boss for the fight.</summary>
@@ -1368,7 +1378,7 @@ namespace OWSBG.Setup
                     .West(E("Baths_3")).East(E("Overlook_2")),
                 new RoomRecipe("Emberdown_Overlook_2").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Roosts", "Far_Chimneys", "Farther_White")
                     .Floor(-20f, 20f).Plat(8f, 3f, 3f).Plat(13f, 6f, 4f).Vantage("Overlook", 13f, 6.3f).Desk(-10f).Npc("Runa", 4f, "Overlook_Runa", runa)
-                    .West(E("Overlook_1")),
+                    .West(E("Overlook_1")).East(Scene("Halden_Bridges_1")),   // the road down to the Plateau's bridges (ENV-05)
                 // ---- Hollowvein: four rooms straight down ----
                 new RoomRecipe("Emberdown_Hollow_1").Tall().Tiles("Ground_Timber", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
                     .Floor(-20f, -12f).Floor(-8f, 20f).Plat(0f, 12f, 4f).Plat(-5f, 9f, 3f).Plat(1f, 6f, 3f).Plat(7f, 3f, 3f)
@@ -1493,7 +1503,124 @@ namespace OWSBG.Setup
                     .Root(0f, 5f).Root(6f, 8f).Root(12f, 5f)   // where the Gatekeeper's roots hold
                     .Remnant("Innkeeper", -11f, "Gate_Inn", remnant)   // the one-night inn, once the gate is surveyed
                     .Arena(typeof(Gatekeeper), "gatekeeper", 8f, new Vector2(2.4f, 3.2f), -6f, 17f)
-                    .West(V("Gate_1")),   // east to Halden_Mills_1 [Inkthread] waits for the Plateau (ENV-05)
+                    .West(V("Gate_1")).East(Scene("Halden_Mills_1")),   // the canopy road down to the Paper Mills (ENV-05)
+            };
+        }
+
+        /// <summary>
+        /// Halden's twenty-one rooms (DES-10, ENV-05), on the Plateau's kit: two ways in (the bridges from the Overlook,
+        /// the mills from the Overgrown Gate) meet at the mills, and the city runs east along one street: mills, Hall,
+        /// orchard. Lowmarket hangs below the bridges. Everything the Guild keeps from her is up: the flyer-tower from the
+        /// orchard wall (Talonhold up its walls, Inkthread across its gaps), the Guildmaster's window at its top, the Vault
+        /// below it, and the dome. Halden is anchored, so its Wardens are placed awake and patrolling. Halvard's second
+        /// hunt waits for Act 2, Oriel's yard for Pell's report sent, the Complete Survey for Runa's chorus; the south
+        /// gate to Windreach and the orchard's road to the Edge wait for those regions (ENV-07, ENV-08).
+        /// </summary>
+        static List<RoomRecipe> HaldenRecipes()
+        {
+            var pell = new Color(0.46f, 0.50f, 0.56f);
+            var maren = new Color(0.60f, 0.56f, 0.46f);
+            var halvard = new Color(0.55f, 0.50f, 0.36f);
+            var oriel = new Color(0.80f, 0.80f, 0.78f);
+            var voss = new Color(0.30f, 0.32f, 0.40f);
+            var runa = new Color(0.44f, 0.36f, 0.30f);
+            var teodor = new Color(0.30f, 0.34f, 0.30f);
+            var pages = new Color(0.86f, 0.84f, 0.74f);
+            var keeper = new Color(0.50f, 0.46f, 0.36f);
+            var folk = new Color(0.56f, 0.52f, 0.46f);
+            var guild = new Color(0.44f, 0.48f, 0.54f);
+            var fore = new Color(0.30f, 0.32f, 0.36f);
+            string H(string id) => Scene("Halden_" + id);
+            return new List<RoomRecipe>
+            {
+                // ---- the Seven Bridges: over the drop, from the Overlook ----
+                new RoomRecipe("Halden_Bridges_1").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Bridges", "Far_Drop")
+                    .Paper("Fore_Balustrade", -4f, -0.8f, fore, 1.6f)
+                    .Floor(-20f, -6f).Floor(-2f, 10f).Floor(14f, 20f).Warden(-12f).Warden(4f)   // the spans, a jump apart; the toll-keeper's Wardens
+                    .West(Scene("Emberdown_Overlook_2")).East(H("Bridges_2")),
+                new RoomRecipe("Halden_Bridges_2").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Bridges", "Far_Drop")
+                    .Paper("Fore_Balustrade", -4f, -0.8f, fore, 1.6f)
+                    .Floor(-20f, -14f).Floor(-10f, 2f).Floor(6f, 20f).Plat(12f, 3f, 3f).Vantage("Tollhouse", 14f, 0f)
+                    .Warden(-6f).Cantor(-4f)
+                    .West(H("Bridges_1")).East(H("Bridges_3")).Down(H("Lowmarket_1"), -12f),   // the stair down to Lowmarket from the second bridge
+                new RoomRecipe("Halden_Bridges_3").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Bridges", "Far_Drop")
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Desk(-14f).Prop("Scaffold", 4f).Vantage("Seventh", 12f, 0f)
+                    .Npc("Arden", 1f, "Bridges_Family", folk)   // the family paid to stand on it
+                    .West(H("Bridges_2")).East(H("Bridges_4")),
+                new RoomRecipe("Halden_Bridges_4").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Bridges", "Far_Drop")
+                    .Floor(-20f, -18f).Floor(-14f, 20f).Npc("Halvard", -9f, "Bridges_Halvard_Hunt", halvard)
+                    .Arena(typeof(Halvard), "halvard_2", 8f, new Vector2(0.8f, 1.8f), -4f, 18f, Ability.None, "act2.started")   // the second hunt is Act 2's
+                    .West(H("Bridges_3")).Down(H("Mills_2"), -16f),
+                // ---- the Paper Mills: from the Overgrown Gate ----
+                new RoomRecipe("Halden_Mills_1").Tiles("Ground_Boards", "Ground_Boards").HaldenPapers("Mid_Mills")
+                    .Floor(-20f, 20f).Plat(-4f, 3f, 3f).Plat(8f, 3f, 3f).Prop("Wheel", -13f).Warden(2f).Smudge(14f)
+                    .West(Scene("Verdance_Gate_2")).East(H("Mills_2")),
+                new RoomRecipe("Halden_Mills_2").Tall().Tiles("Ground_Boards", "Ground_Boards").HaldenPapers("Mid_Mills")
+                    .Floor(-20f, 20f).Plat(-6f, 3f, 3f).Plat(-10f, 6f, 3f).Plat(-14f, 9f, 3f).Plat(-16f, 12f, 4f).Vantage("Lofts", 10f, 0f)
+                    .Smudge(-2f).Smudge(-14f).Prop("Wheel", 16f)
+                    .Up(H("Bridges_4"), -16f, 12.3f).West(H("Mills_1")).East(H("Mills_3")),
+                new RoomRecipe("Halden_Mills_3").Tiles("Ground_Boards", "Ground_Boards").HaldenPapers("Mid_Mills")
+                    .Floor(-20f, 20f).Plat(0f, 2.5f, 3f).Prop("Wheel", -14f).Prop("Notice", 8f)   // the picket line's board
+                    .West(H("Mills_2")).East(H("Hall_1")),
+                // ---- Lowmarket: below the walls ----
+                new RoomRecipe("Halden_Lowmarket_1").Tall().Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
+                    .Floor(-20f, 20f).Plat(-12f, 12f, 4f).Plat(-6f, 9f, 3f).Plat(-12f, 6f, 3f).Plat(-6f, 3f, 3f).Smudge(8f)
+                    .Up(H("Bridges_2"), -12f, 12.3f).East(H("Lowmarket_2")),
+                new RoomRecipe("Halden_Lowmarket_2").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
+                    .Floor(-20f, 20f).Plat(8f, 2.5f, 3f).Desk(-14f).Prop("Notice", -9f).Vantage("Market", 14f, 0f)
+                    .Npc("Brisk", -4f, "Lowmarket_Strike", folk).Npc("Anvers", 0f, "Lowmarket_Strike", guild)   // the strike hall
+                    .West(H("Lowmarket_1")).East(H("Lowmarket_3")),
+                new RoomRecipe("Halden_Lowmarket_3").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
+                    .Floor(-20f, 20f).Plat(6f, 3f, 3f).Warden(10f)
+                    .West(H("Lowmarket_2")),   // east to Windreach_Stones_1 [act2.started] waits for the steppe (ENV-07)
+                // ---- the Journeyman's Hall: the hub ----
+                new RoomRecipe("Halden_Hall_1").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall")
+                    .Floor(-20f, 20f).Plat(-8f, 2.5f, 3f).Plat(10f, 2.5f, 3f).Warden(-2f).Warden(12f)   // the Guild's steps
+                    .West(H("Mills_3")).East(H("Hall_2")),
+                new RoomRecipe("Halden_Hall_2").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall", "Far_Citadel", null)
+                    .Floor(-20f, 20f).Plat(12f, 3f, 3f).Desk(-14f).Ledger("Halden", -10f).Npc("Pell", 2f, "Hall_Pell_Minder", pell).Vantage("Hall", 8f, 0f)
+                    .West(H("Hall_1")).East(H("Hall_3")),
+                new RoomRecipe("Halden_Hall_3").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall", "Far_Citadel", null)
+                    .Floor(-20f, 20f).Plat(14f, 2.5f, 3f).Prop("ExamDesk", -13f).Prop("ExamDesk", -7f).Prop("ExamDesk", -1f).Prop("ExamDesk", 5f)
+                    .Npc("Tam", 10f, "Hall_Tam", folk)   // eleven identical years of notes
+                    .West(H("Hall_2")).East(H("Orchard_1")),
+                // ---- the Old Orchard: the only fallen leaves in Halden ----
+                new RoomRecipe("Halden_Orchard_1").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Orchard")
+                    .Floor(-20f, 20f).Plat(-4f, 2.5f, 3f).Plat(6f, 2.5f, 3f)
+                    .West(H("Hall_3")).East(H("Orchard_2")),
+                new RoomRecipe("Halden_Orchard_2").Tall().Tiles("Ground_Cobble", "Ground_Granite").HaldenPapers("Mid_Orchard")
+                    .Floor(-20f, 20f).Vantage("Leaves", -4f, 0f).Prop("Gravestone", 8f)
+                    .Npc("Isolde", -12f, "Orchard_Isolde_Cache", pages, 0f, "Cache")   // her cache in the roots: her pages speak, not her
+                    .Npc("Keeper", 2f, "Orchard_Keeper", keeper)
+                    .Wall(14f, 0f, 12f).Wall(18f, 0f, 12f).Anchor(16f, 7f).Plat(16f, 12f, 3f)   // the flyer-tower from the orchard wall: Talonhold, and a thread
+                    .West(H("Orchard_1")).Up(H("Bastion_1"), 16f, 12.3f),   // east to Greyfold_EdgeCamp_1 [isolde.cache] waits for the Edge (ENV-08)
+                // ---- the Bastion: a tower for birds who flew ----
+                new RoomRecipe("Halden_Bastion_1").Tall().Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Tower", "Far_Citadel", null)
+                    .Floor(-20f, 14f).Floor(18f, 20f).Wall(-16f, 0f, 12f).Wall(-12f, 0f, 12f).Plat(-14f, 12f, 3f)   // no stairs: Talonhold up the walls
+                    .Anchor(-8f, 13f).Plat(-3f, 11f, 3f).Anchor(3f, 13f).Plat(8f, 12f, 4f).Desk(7f, 12.3f)   // Inkthread across the gaps; a desk on the top landing
+                    .Npc("Maren", -4f, "Bastion_Maren_Audience", maren).Warden(4f)
+                    .Down(H("Orchard_2"), 16f).Up(H("Bastion_2"), 8f, 12.3f),
+                new RoomRecipe("Halden_Bastion_2").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Tower", "Far_Citadel", null)
+                    .Floor(-20f, -16f).Floor(-12f, 20f).Vantage("Yard", -18f, 0f).Npc("Oriel", -4f, "Bastion_Oriel", oriel)
+                    .Arena(typeof(Oriel), "oriel", 6f, new Vector2(0.7f, 1.6f), -8f, 16f, Ability.None, "pell.report_sent")   // the drill-yard, if the report went
+                    .Down(H("Bastion_1"), -14f).East(H("Bastion_3")),
+                new RoomRecipe("Halden_Bastion_3").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall", "Far_Citadel", null)
+                    .Floor(-20f, -2f).Floor(2f, 20f).Npc("Pell", 8f, "Office_Pell_Drawing", pell)
+                    .West(H("Bastion_2")).East(H("Observatory_1")).Down(H("Vault_1"), 0f),   // the window into Voss's office; the Vault below it
+                // ---- the Observatory: the brass dome ----
+                new RoomRecipe("Halden_Observatory_1").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Dome", "Far_Citadel", null)
+                    .Floor(-20f, 20f).Plat(-8f, 3f, 3f).Plat(-2f, 6f, 3f).Plat(4f, 9f, 3f).Desk(-14f).Warden(-4f).Warden(10f)
+                    .West(H("Bastion_3")).East(H("Observatory_2")),
+                new RoomRecipe("Halden_Observatory_2").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Dome", "Far_Citadel", null)
+                    .Floor(-20f, 20f).Prop("Frame", 2f).Vantage("Frame", -8f, 0f)
+                    .Npc("Pell", -16f, "Observatory_Pell_Return", pell).Npc("Voss", -13f, "Observatory_Voss", voss)
+                    .Npc("Runa", 16f, "Observatory_Runa_Chorus", runa).Npc("Teodor", 18f, "Observatory_Teodor_Unwritten", teodor)
+                    .Arena(typeof(CompleteSurvey), "complete_survey", 2f, new Vector2(1f, 1f), -10f, 14f, Ability.None, "ending.chorus_led")   // the Open World's fight, after Runa's chorus
+                    .West(H("Observatory_1")),
+                // ---- the Vault: seven slots ----
+                new RoomRecipe("Halden_Vault_1").Tall().Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Tower", null, null)
+                    .Floor(-20f, 20f).Plat(0f, 12f, 4f).Plat(-5f, 9f, 3f).Plat(0f, 6f, 3f).Plat(-5f, 3f, 3f).Prop("Slots", 12f).Npc("Pell", 7f, "Vault_Pell_Slot", pell)
+                    .Up(H("Bastion_3"), 0f, 12.3f),
             };
         }
 
@@ -1536,7 +1663,7 @@ namespace OWSBG.Setup
             foreach (var p in r.Props) MakeProp(room, room.transform, p.name, p.pos, 0.7f);
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
-            foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, null, n.ink);
+            foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
             for (int i = 0; i < r.Anchors.Count; i++) MakeAnchor(room, i, r.Anchors[i]);
             if (!string.IsNullOrEmpty(r.WalkId))
             {
@@ -1624,6 +1751,9 @@ namespace OWSBG.Setup
                 if (roots != null) g.rootPoints.AddRange(roots);
                 boss = b;
             }
+            else if (type == typeof(Halvard)) { var b = MakeBoss<Halvard>(room, "Halvard", pos, size); ((Halvard)b).floorY = 0f; ((Halvard)b).arenaMinX = doorW + 0.5f; ((Halvard)b).arenaMaxX = doorE - 0.5f; boss = b; }
+            else if (type == typeof(Oriel)) { var b = MakeBoss<Oriel>(room, "Oriel", pos, size); ((Oriel)b).floorY = 0f; ((Oriel)b).arenaMinX = doorW + 0.5f; ((Oriel)b).arenaMaxX = doorE - 0.5f; boss = b; }
+            else if (type == typeof(CompleteSurvey)) { var b = MakeBoss<CompleteSurvey>(room, "CompleteSurvey", pos, size); ((CompleteSurvey)b).floorY = 0f; ((CompleteSurvey)b).arenaMinX = doorW + 0.5f; ((CompleteSurvey)b).arenaMaxX = doorE - 0.5f; boss = b; }
             else throw new System.InvalidOperationException("no recipe arena for " + type.Name);
             var bossSo = new SerializedObject(boss);
             int health = Tuning.BossHealth(bossId);
@@ -1713,6 +1843,7 @@ namespace OWSBG.Setup
             foreach (var r in SaltmarrowRecipes()) list.Add(RoomPath(r.Id));
             foreach (var r in EmberdownRecipes()) list.Add(RoomPath(r.Id));
             foreach (var r in VerdanceRecipes()) list.Add(RoomPath(r.Id));
+            foreach (var r in HaldenRecipes()) list.Add(RoomPath(r.Id));
             return list;
         }
 

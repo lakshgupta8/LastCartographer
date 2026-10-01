@@ -63,6 +63,23 @@ window at its top, the Vault below that window, and the dome, shut until Act 3.
 | **Vault_1** The Vault | Vault | Seven slots, reached from the Guildmaster's window; one empty (Pell counts them, plant 5.2). | — | — | Pell | up → Bastion_3 [`halden.vault_opened`] |
 <!-- /table -->
 
+**Built (ENV-05).** All twenty-one rooms are scenes from recipes (`ProjectSetup.HaldenRecipes`), on the Plateau's kit
+(paper-kit.md §2d): the bridges on `Ground_Granite` under the balustrade, spans a jump apart over `Paper_Far_Drop`, the
+toll-keeper's Wardens awake (Halden is anchored, so no `HeldState`: every Warden patrols), the seventh's scaffold and
+the Arden family, Halvard before the last span and his second hunt's arena behind two doors (the same `Halvard` kit as
+the chapel's; the bridge-cutting is CMB's), waiting for `act2.started`; the mills on `Ground_Boards` with wheels and
+sheets, the lofts' climb up to the span; Lowmarket on `Ground_Cobble` with its board, Brisk and Anvers at the strike;
+the Hall on `Ground_Parquet` with the desk, the Guild's ledger, Pell, the roll, the exam desks and Tam; the orchard with
+Isolde's cache (her pages, a stand-in: she is not drawn), the Keeper and the gravestone, and the flyer-tower rising from
+its east wall as two Talonhold walls and a thread point; the Bastion: the tower's inside (walls, two anchor-points, a
+desk on the top landing, Maren at its foot), Oriel at the yard's edge and her arena waiting for `pell.report_sent`, the
+window into Voss's office with Pell; the dome stair and the frame with Pell, Voss, Runa and Teodor around it, the
+Complete Survey's arena waiting for `ending.chorus_led`; the Vault with its seven slots and Pell counting. Both climbs
+come down onto it: Overlook_2 → Bridges_1, Gate_2 → Mills_1. The epilogue walk now goes to Pell's Hall. Not yet: the
+south gate's road to Windreach (ENV-07) and the orchard's to the Edge Camp (ENV-08); Lowmarket's faded variant; the
+Crown hall as a room; the chalk lines of an empty yard; the flag gates on the map's doors (greybox transitions do not
+read flags).
+
 ## 3. Rules these plans follow
 - The map's gates, exactly, between zones (tested). Only the zone's own ability gates rooms inside it; Halden
   grants none, so every gate in the city is between zones.

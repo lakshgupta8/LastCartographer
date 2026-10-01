@@ -232,10 +232,10 @@ namespace OWSBG.Core
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_BoneBridge/Whale", Name = "the whale" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_IrisFields", Name = "The Pale Iris Fields", Region = "The Saltmarrow" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_IrisFields/Irises", Name = "the irises" });
-            // Emberdown's (ENV-03) and the Verdance's (ENV-04) pages are the plan's: every room a place, every planned vantage, a desk waypoint where the plan puts a desk.
+            // Emberdown's (ENV-03), the Verdance's (ENV-04) and Halden's (ENV-05) pages are the plan's: every room a place, every planned vantage, a desk waypoint where the plan puts a desk.
             foreach (var plan in RoomPlans.All)
             {
-                string region = plan.Id.StartsWith("Emberdown_") ? "Emberdown" : plan.Id.StartsWith("Verdance_") ? "The Verdance" : null;
+                string region = plan.Id.StartsWith("Emberdown_") ? "Emberdown" : plan.Id.StartsWith("Verdance_") ? "The Verdance" : plan.Id.StartsWith("Halden_") ? "Halden" : null;
                 if (region == null) continue;
                 _places.Add(new AtlasPlace { Id = plan.Id, Name = plan.Name, Region = region });
                 if (plan.Vantage != null) _vantages.Add(new AtlasVantage { Id = plan.VantageId, Name = "the " + plan.Vantage.ToLowerInvariant() });

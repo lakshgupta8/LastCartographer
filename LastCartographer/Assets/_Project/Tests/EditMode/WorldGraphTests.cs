@@ -108,7 +108,8 @@ namespace OWSBG.Tests
             Assert.IsTrue(WorldGraph.Find("Saltmarrow.Quay").IsHub);
             Assert.IsNull(WorldGraph.ZoneOfPlace("Nowhere"));
             Assert.AreEqual("Greybox_Saltmarrow_A", WorldGraph.BuiltRoomScene("Saltmarrow.Quay"), "the quay's first built room");
-            Assert.IsNull(WorldGraph.BuiltRoomScene("Halden.JourneymansHall"), "the Hall is not built");
+            Assert.AreEqual("Greybox_Halden_Hall_2", WorldGraph.BuiltRoomScene("Halden.JourneymansHall"), "the Hall is built (ENV-05): the room Pell stands in");
+            Assert.IsNull(WorldGraph.BuiltRoomScene("Windreach.LongGrassCamp"), "the camp is not built");
             CollectionAssert.AreEqual(new[] { "Saltmarrow_A", "Saltmarrow_Boardwalk", "Saltmarrow_Stilts" }, WorldGraph.PlacesOf("Saltmarrow.Quay"));
         }
     }

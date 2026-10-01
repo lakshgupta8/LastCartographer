@@ -126,6 +126,35 @@ placed `TetherAnchor`). Since ENV-04 a prop's material is per region (`M_Prop_De
 The coast's kit gained `Paper_Mid_Irises` for the Pale Iris Fields: irises to the horizon, pale, and the Reedmother's
 reed-nest in the middle of them.
 
+### 2d. The Halden kit (ENV-05)
+
+`tools/paperkit/halden.py`, on the same plumbing. Cool cream paper (0.92, 0.92, 0.87), slate, verdigris, brass,
+blue-black ink (art-direction 5). The strips sit at the coast's depths and the recipes pick up to three a room
+(`HaldenPapers(mid, far, farther)`); an interior (the Hall, the tower, the dome, the Vault) drops the far ones.
+
+| Layer | z | Rooms | What it is |
+|---|---|---|---|
+| `Paper_Fore_Balustrade` | −4 | the bridges | a stone balustrade in front of the walk, brass finials |
+| `Paper_Mid_Bridges` | 3 | the Seven Bridges | spans over the drop, piers going down, the seventh's scaffolding, the far parapet |
+| `Paper_Mid_Mills` | 3 | the Paper Mills | mill houses on the race, wheels, vellum hung to dry, the same thumbprint on every sheet |
+| `Paper_Mid_Lowmarket` | 3 | Lowmarket | stalls and low houses under the wall, the paint thinner (a mid layer washed like a far one), the notice board |
+| `Paper_Mid_Hall` | 3 | the Hall, Voss's office | panelled walls, pilasters, framed charts, the roll of names, brass lamps |
+| `Paper_Mid_Orchard` | 3 | the Old Orchard | the orchard wall, old trees with sparse leaves, the raked pile, the flyer-tower's foot |
+| `Paper_Mid_Tower` | 3 | the flyer-tower, the drill-yard, the Vault | stone courses with talon grooves, the old landing doors high up and no stairs, a door cut at the foot |
+| `Paper_Mid_Dome` | 3 | the Observatory | the dome's ribs, the brass frame with its seven sockets (one full), instruments, a stair |
+| `Paper_Far_Citadel` | 8 | most rooms | roofs of copper gone green, the walls, towers, the dome |
+| `Paper_Far_Drop` | 8 | the bridges | the drop: cliff faces, the mills' roofs far below, mist |
+| `Paper_Farther_Sky` | 16 | outdoors | always late afternoon: a long light low across the plateau, far towers nearly paper |
+
+Tiles: `Ground_Granite` (long slabs, a copper strip gone green), `Ground_Boards` (the mills' pale boards, wet along the
+top), `Ground_Parquet` (the Hall's herringbone, a brass inlay), `Ground_Cobble` (Lowmarket's and the orchard's, a leaf).
+Props (`props.py`, region `Halden`): the shared furniture and the anchor-point in the Citadel's colours, plus
+`Prop_Gravestone` (the orchard's, a crest cut in it, 1.5 × 2), `Prop_Wheel` (a mill wheel, 2.5 × 2.5), `Prop_Scaffold`
+(the seventh bridge's repair, 3 × 3), `Prop_Frame` (the frame of the Great Atlas: seven sockets, one stone, 3.5 × 4),
+`Prop_Slots` (the Vault's wall: seven niches, one empty, 5 × 2.5), `Prop_ExamDesk` (a desk with the same paper on it,
+2.5 × 1.25) and `Prop_Notice` (survey scheduled, pasted over itself, 1.5 × 2). A piece that turns (a branch, a rib, a
+spoke) is built at the origin and placed after (`rbox`): a box turned in place turns about the world origin.
+
 ### 2a. Props (ENV-09)
 
 `tools/paperkit/props.py` draws the hubs' furniture with the same helpers: one cut-out each at 96 px/unit, feet at

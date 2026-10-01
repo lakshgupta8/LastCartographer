@@ -14,9 +14,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy
 from saltmarrow import (OUT, PAPER, SILVER, OLIVE, RUST, INK, PPU, TILE_PPU, lerp, reset_scene, box, polygon,
                         setup_render, render)
-from kitlib import Palette as _Palette, ridge
+from kitlib import Palette as _Palette, ridge, blob
 import emberdown as _ember
 import verdance as _verd
+import halden as _hald
 
 KITS = os.path.dirname(OUT)   # Art/Environment: one folder and kit.json per region
 
@@ -37,6 +38,10 @@ REGIONS = {
     "Verdance": dict(paper=_verd.PAPER, ink=_verd.INK, colours=dict(
         PAPER=_verd.PAPER, SILVER=lerp(_verd.BONE, _verd.MOSS, 0.3), OLIVE=_verd.MOSS, RUST=_verd.BARK, INK=_verd.INK,
         BRASS=(0.72, 0.60, 0.34), ROPE=lerp(_verd.BARK, _verd.PAPER, 0.4), GLOW=(0.96, 0.86, 0.52), WET=lerp(_verd.MOSS, _verd.PAPER, 0.5), STEEL=lerp(_verd.INK, _verd.MOSS, 0.4))),
+    # Halden (ENV-05): cool cream paper, slate, verdigris, brass, blue-black ink; the furniture is stone, dark wood and brass.
+    "Halden": dict(paper=_hald.PAPER, ink=_hald.INK, colours=dict(
+        PAPER=_hald.PAPER, SILVER=_hald.STONE, OLIVE=_hald.VERDIGRIS, RUST=lerp(_hald.SLATE, _hald.BRASS, 0.35), INK=_hald.INK,
+        BRASS=_hald.BRASS, ROPE=lerp(_hald.SLATE, _hald.PAPER, 0.4), GLOW=(0.97, 0.88, 0.58), WET=lerp(_hald.VERDIGRIS, _hald.PAPER, 0.5), STEEL=_hald.SLATE)),
 }
 
 
@@ -412,6 +417,130 @@ def prop_anchor(rng, p):
     return 1.0, 1.0, 2.0
 
 
+def prop_gravestone(rng, p):
+    """Prop_Gravestone: the orchard's stone: a slab with a rounded top, a crest cut in it (an owl's eye), leaves at its foot."""
+    stone, dark, leaf = p("stone", SILVER), p("dark", lerp(INK, SILVER, 0.3)), p("leaf", lerp(BRASS, PAPER, 0.2))
+    w = 1.0
+    pts = [(-w / 2, 0.0), (w / 2, 0.0), (w / 2, 1.3)]
+    for i in range(1, 8):
+        a = math.pi * i / 8
+        pts.append((w / 2 * math.cos(a), 1.3 + w / 2 * math.sin(a)))
+    pts.append((-w / 2, 1.3))
+    polygon("slab", pts, stone, y=0.05)
+    disc("crest", 0.0, 1.35, 0.22, dark, y=-0.05, n=16)
+    disc("eye", 0.0, 1.35, 0.1, stone, y=-0.08, n=12)
+    for i in range(3):
+        line("cut_%d" % i, -0.3, 0.95 - i * 0.2, -0.3 + rng.uniform(0.35, 0.6), 0.95 - i * 0.2, 0.03, dark, y=-0.06)
+    for i in range(4):
+        ob = polygon("leaf_%d" % i, [(-0.08, 0), (0.08, 0), (0.1, 0.12), (0, 0.2), (-0.1, 0.12)], leaf, y=-0.1)
+        ob.location = (rng.uniform(-0.7, 0.7), ob.location[1], rng.uniform(0.0, 0.15))
+        ob.rotation_euler = (0, rng.uniform(0, 6.28), 0)
+    return 1.5, 2.0, 2.0
+
+
+def prop_wheel(rng, p):
+    """Prop_Wheel: a mill wheel on its axle housing, paddles round the rim, water at its foot."""
+    wood, dark, water = p("wood", lerp(RUST, SILVER, 0.2)), p("dark", lerp(RUST, INK, 0.5)), p("water", WET)
+    r = 1.1
+    disc("rim", 0.0, 1.25, r, wood, y=0.0)
+    disc("inner", 0.0, 1.25, r * 0.78, p("inner", lerp(SILVER, PAPER, 0.3)), y=-0.03)
+    for i in range(8):
+        a = 2 * math.pi * i / 8
+        ob = box("spoke_%d" % i, 0.0, 0.0, 0.07, r * 1.9, dark, y=-0.06)
+        ob.rotation_euler = (0, a, 0)
+        ob.location = (0.0, ob.location[1], 1.25)
+        pb = box("pad_%d" % i, 0.0, 0.0, 0.12, 0.45, dark, y=-0.07)
+        pb.rotation_euler = (0, a + math.pi / 8, 0)
+        pb.location = (r * math.cos(a + math.pi / 8), pb.location[1], 1.25 + r * math.sin(a + math.pi / 8))
+    disc("hub", 0.0, 1.25, 0.14, dark, y=-0.09, n=10)
+    box("housing", 0.0, 1.25, 0.3, 0.6, wood, y=0.1)
+    for i in range(3):
+        blob("water_%d" % i, rng, rng.uniform(-1.0, 1.0), 0.1, rng.uniform(0.3, 0.6), 0.1, water, y=-0.1, wobble=0.3)
+    return 2.5, 2.5, 2.0
+
+
+def prop_scaffold(rng, p):
+    """Prop_Scaffold: the seventh bridge's repair: poles lashed, two planks, a bucket; the same for forty years."""
+    pole, plank, rope, bucket = p("pole", lerp(RUST, INK, 0.3)), p("plank", lerp(RUST, SILVER, 0.3)), p("rope", ROPE), p("bucket", STEEL)
+    for x in (-1.2, 0.0, 1.2):
+        box("pole_%s" % x, x, 1.5, 0.08, 3.0, pole, y=0.05)
+    for z in (1.1, 2.3):
+        box("plank_%d" % int(z * 10), 0.0, z, 2.8, 0.12, plank, y=0.0)
+        for x in (-1.2, 0.0, 1.2):
+            disc("lash_%d_%s" % (int(z * 10), x), x, z, 0.09, rope, y=-0.04, n=8)
+    line("brace", -1.2, 0.2, 1.2, 2.2, 0.06, pole, y=0.08)
+    box("bucket", 0.7, 1.4, 0.3, 0.3, bucket, y=-0.06)
+    return 3.0, 3.0, 2.0
+
+
+def prop_frame(rng, p):
+    """Prop_Frame: the frame of the Great Atlas: a brass ring on a stand, seven sockets with a compass rose each,
+    one stone in it (the Observatory's own, forty-one years)."""
+    brass, dark, stone, keystone = p("brass", BRASS), p("dark", lerp(INK, SILVER, 0.2)), p("stone", SILVER), p("keystone", lerp(BRASS, PAPER, 0.35))
+    polygon("foot", [(-0.9, 0.0), (0.9, 0.0), (0.5, 0.25), (-0.5, 0.25)], stone, y=0.1)
+    box("stem", 0.0, 0.6, 0.3, 0.8, brass, y=0.08)
+    disc("ring", 0.0, 2.3, 1.55, brass, y=0.0, n=32)
+    disc("ring_in", 0.0, 2.3, 1.3, p("page", PAPER), y=-0.03, n=32)
+    for i in range(7):
+        a = math.pi / 2 + 2 * math.pi * i / 7
+        cx, cz = 1.05 * math.cos(a), 2.3 + 1.05 * math.sin(a)
+        disc("socket_%d" % i, cx, cz, 0.2, dark, y=-0.06, n=12)
+        for k in range(4):
+            ob = box("rose_%d_%d" % (i, k), 0.0, 0.0, 0.02, 0.26, brass, y=-0.08)
+            ob.rotation_euler = (0, k * math.pi / 4, 0)
+            ob.location = (cx, ob.location[1], cz)
+        if i == 0:
+            disc("stone", cx, cz, 0.15, keystone, y=-0.1, n=10)
+    return 3.5, 4.0, 2.0
+
+
+def prop_slots(rng, p):
+    """Prop_Slots: the Vault's wall: seven niches in a row under a brass rail, six with a stone in them, one empty
+    and its dust younger."""
+    stone, dark, brass, keystone, dust = p("stone", SILVER), p("dark", lerp(INK, SILVER, 0.25)), p("brass", BRASS), p("keystone", lerp(BRASS, PAPER, 0.35)), p("dust", lerp(SILVER, PAPER, 0.5))
+    box("wall", 0.0, 1.25, 5.0, 2.5, stone, y=0.1)
+    box("rail", 0.0, 2.3, 4.8, 0.06, brass, y=0.0)
+    for i in range(7):
+        x = -2.1 + i * 0.7
+        polygon("niche_%d" % i, [(x - 0.22, 0.6), (x + 0.22, 0.6), (x + 0.22, 1.5), (x, 1.75), (x - 0.22, 1.5)], dark, y=0.0)
+        if i != 4:
+            disc("stone_%d" % i, x, 1.05, 0.16, keystone, y=-0.05, n=10)
+        else:
+            disc("dust", x, 0.68, 0.14, dust, y=-0.05, n=8, squash=0.4)
+        line("label_%d" % i, x - 0.15, 0.45, x + 0.15, 0.45, 0.025, dark, y=-0.05)
+    return 5.0, 2.5, 2.0
+
+
+def prop_examdesk(rng, p):
+    """Prop_ExamDesk: an exam desk with its paper on it, the same paper on every desk, and a stool."""
+    wood, dark, paper, ink = p("wood", lerp(RUST, SILVER, 0.2)), p("dark", lerp(RUST, INK, 0.5)), p("paper", PAPER), p("ink", INK)
+    box("top", 0.0, 0.95, 1.3, 0.08, wood, y=0.0)
+    for x in (-0.55, 0.55):
+        box("leg_%s" % x, x, 0.46, 0.07, 0.9, dark, y=0.05)
+    box("modesty", 0.0, 0.55, 1.1, 0.4, wood, y=0.08)
+    polygon("paper", [(-0.4, 0.99), (0.3, 0.99), (0.32, 1.06), (-0.38, 1.1)], paper, y=-0.05)
+    for i in range(3):
+        line("line_%d" % i, -0.3, 1.02 + i * 0.022, -0.3 + rng.uniform(0.3, 0.5), 1.02 + i * 0.022, 0.012, ink, y=-0.08)
+    box("stool", -0.9, 0.5, 0.4, 0.06, wood, y=0.02)
+    for x in (-1.05, -0.75):
+        box("stool_leg_%s" % x, x, 0.24, 0.05, 0.48, dark, y=0.04)
+    return 2.5, 1.25, 2.0
+
+
+def prop_notice(rng, p):
+    """Prop_Notice: Lowmarket's notice board: a post, a board, the notice pasted over older copies of itself."""
+    wood, dark, paper = p("wood", lerp(RUST, INK, 0.3)), p("dark", lerp(RUST, INK, 0.5)), p("paper", PAPER)
+    box("post", 0.0, 1.0, 0.12, 2.0, wood, y=0.1)
+    box("board", 0.0, 1.55, 1.4, 1.0, dark, y=0.0)
+    for i in range(4):
+        box("old_%d" % i, rng.uniform(-0.25, 0.25), 1.45 + rng.uniform(-0.15, 0.15), 0.8, 0.55, p("old_%d" % i, lerp(PAPER, RUST, 0.12 * (4 - i))), y=-0.03 - 0.01 * i)
+    box("notice", 0.0, 1.55, 0.8, 0.55, paper, y=-0.09)
+    line("head", -0.3, 1.72, 0.3, 1.72, 0.04, p("ink", INK), y=-0.12)
+    for i in range(3):
+        line("text_%d" % i, -0.3, 1.6 - i * 0.08, -0.3 + rng.uniform(0.3, 0.55), 1.6 - i * 0.08, 0.015, p("ink", INK), y=-0.12)
+    return 1.5, 2.0, 2.0
+
+
 PROPS = [
     ("Prop_Desk", prop_desk), ("Prop_Ledger", prop_ledger), ("Prop_Dummy", prop_dummy), ("Prop_Stall", prop_stall),
     ("Prop_Vantage", prop_vantage), ("Prop_Lamp", prop_lamp), ("Prop_LampGlow", prop_lampglow), ("Prop_Seeds", prop_seeds),
@@ -430,6 +559,13 @@ PROPS = [
     ("Prop_Bound", prop_bound, "Verdance"),
     ("Prop_Milestone", prop_milestone, "Verdance"), ("Prop_Lantern", prop_lantern, "Verdance"), ("Prop_Lectern", prop_lectern, "Verdance"),
     ("Prop_Bunting", prop_bunting, "Verdance"), ("Prop_Anchor", prop_anchor, "Verdance"),
+    # Halden (ENV-05): the shared furniture in the Citadel's palette, and the Plateau's own.
+    ("Prop_Desk", prop_desk, "Halden"), ("Prop_Ledger", prop_ledger, "Halden"), ("Prop_Vantage", prop_vantage, "Halden"),
+    ("Prop_Lamp", prop_lamp, "Halden"), ("Prop_LampGlow", prop_lampglow, "Halden"), ("Prop_Seeds", prop_seeds, "Halden"),
+    ("Prop_Bound", prop_bound, "Halden"), ("Prop_Anchor", prop_anchor, "Halden"),
+    ("Prop_Gravestone", prop_gravestone, "Halden"), ("Prop_Wheel", prop_wheel, "Halden"), ("Prop_Scaffold", prop_scaffold, "Halden"),
+    ("Prop_Frame", prop_frame, "Halden"), ("Prop_Slots", prop_slots, "Halden"), ("Prop_ExamDesk", prop_examdesk, "Halden"),
+    ("Prop_Notice", prop_notice, "Halden"),
 ]
 
 

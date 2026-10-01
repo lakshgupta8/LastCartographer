@@ -42,6 +42,17 @@ namespace OWSBG.Setup
             ("Verdance_Library_2", "Library_Lectern", -1f, 0f, "Read", false),       // the lectern's post, beside Ansel
             ("Verdance_Gate_2", "Gate_Inscription", 18.5f, 0f, "Read", false),       // the gate itself, past the arena's east door
             ("Verdance_Gate_2", "Inn_Traveller", -8f, 0f, "Talk", true),             // the one-night inn's traveller, who asks (Offerings)
+            // Halden (ENV-05): the Plateau's readables.
+            ("Halden_Bridges_1", "Bridges_TollBoard", -16f, 0f, "Read", false),       // the toll board at the first bridge
+            ("Halden_Mills_2", "Mills_Sheets", 4f, 0f, "Read", false),               // the drying lofts' sheets
+            ("Halden_Hall_1", "Hall_Order", 16f, 0f, "Read", false),                 // the standing order inside the Hall's doors
+            ("Halden_Hall_2", "Hall_Roll", -5f, 0f, "Read", false),                  // the roll of Guildmasters, past the ledger
+            ("Halden_Hall_3", "Hall_ExamPapers", 2f, 0f, "Read", false),             // between the exam desks
+            ("Halden_Lowmarket_2", "Lowmarket_Notice", -8.5f, 0f, "Read", false),    // the notice board, by its post
+            ("Halden_Orchard_2", "Orchard_Gravestone", 9.5f, 0f, "Read", false),     // the gravestone with a crest
+            ("Halden_Bastion_1", "Bastion_Plaque", 12f, 0f, "Read", false),          // the plaque by the door cut in the tower's foot
+            ("Halden_Bastion_3", "Office_Drawing", 12f, 0f, "Read", false),          // the chick's drawing on Voss's wall
+            ("Halden_Observatory_2", "Observatory_Frame", 2f, 0f, "Read", false),    // the frame of the Great Atlas, and the choice
         };
 
         [MenuItem("OWSBG/Place the Coast's Readables")]

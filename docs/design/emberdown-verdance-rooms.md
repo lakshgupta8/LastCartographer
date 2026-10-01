@@ -64,7 +64,7 @@ horizon, Runa and a desk at the end; Hollowvein's four rooms straight down on ti
 bottom. The Bone Bridge (`Saltmarrow_BoneBridge`) joins the chapel to Stair_1 under the whale's bones. The
 cave-bats and salamanders are drawn and placed as the table says (`CaveBat`, `Salamander`; enemy-animation.md
 §2b): bats roost under the landings and in the shafts, salamanders crawl the ledges and the flue road. Not yet:
-the Hollowvein walk (it crosses four rooms, §4); Overlook_2's road to the Plateau (ENV-05); Brann's and Lorne's
+the Hollowvein walk (it crosses four rooms, §4); Overlook_2's road to the Plateau is built (ENV-05); Brann's and Lorne's
 talks before their scenes.
 
 ## 2. The Verdance (19 rooms, 8 vantages)
@@ -118,7 +118,7 @@ square's three platforms; the ash field already paper (`Paper_Mid_Ash`); the gat
 its anchors, the inn's keeper (a Remnant) and the traveller who asks. Anchor-points are permanent `TetherAnchor`s (the
 thread's component) under the kit's knot; the Wingbeat gap to the fields is in Road_1 with a skimmer over it. The coast
 gained the Pale Iris Fields (`Saltmarrow_IrisFields`, `Paper_Mid_Irises`, the Irises vantage, seeds) between Reedmother's
-crown and the road. Not yet: Gate_2's east road to the Paper Mills (ENV-05); the Reedmother's Brood (6.2); the brothers
+crown and the road. Gate_2's east road to the Paper Mills is built (ENV-05). Not yet: the Reedmother's Brood (6.2); the brothers
 who bow and do not speak; Aldermere's after-state (§4).
 
 ## 3. Rules these plans follow

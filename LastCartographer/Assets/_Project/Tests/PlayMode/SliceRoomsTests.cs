@@ -36,6 +36,11 @@ namespace OWSBG.Tests
             "Greybox_Verdance_Chapel_1", "Greybox_Verdance_Chapel_2", "Greybox_Verdance_Grove_1", "Greybox_Verdance_Grove_2", "Greybox_Verdance_Grove_3", "Greybox_Verdance_Grove_4",
             "Greybox_Verdance_Library_1", "Greybox_Verdance_Library_2", "Greybox_Verdance_Aldermere_1", "Greybox_Verdance_Aldermere_2", "Greybox_Verdance_Aldermere_3",
             "Greybox_Verdance_Gate_1", "Greybox_Verdance_Gate_2",
+            // The Plateau (ENV-05): twenty-one rooms, reached from both climbs.
+            "Greybox_Halden_Bridges_1", "Greybox_Halden_Bridges_2", "Greybox_Halden_Bridges_3", "Greybox_Halden_Bridges_4", "Greybox_Halden_Mills_1", "Greybox_Halden_Mills_2", "Greybox_Halden_Mills_3",
+            "Greybox_Halden_Lowmarket_1", "Greybox_Halden_Lowmarket_2", "Greybox_Halden_Lowmarket_3", "Greybox_Halden_Hall_1", "Greybox_Halden_Hall_2", "Greybox_Halden_Hall_3",
+            "Greybox_Halden_Orchard_1", "Greybox_Halden_Orchard_2", "Greybox_Halden_Bastion_1", "Greybox_Halden_Bastion_2", "Greybox_Halden_Bastion_3",
+            "Greybox_Halden_Observatory_1", "Greybox_Halden_Observatory_2", "Greybox_Halden_Vault_1",
         };
 
         sealed class Info
@@ -123,10 +128,12 @@ namespace OWSBG.Tests
             while (open.Count > 0)
                 foreach (var e in infos[open.Pop()].Exits)
                     if (seen.Add(e.target)) open.Push(e.target);
-            CollectionAssert.AreEquivalent(Rooms.Where(r => r != "Greybox_Greyfold_Edge"), seen, "every coast, highland and forest room is reachable on foot from the shore");
+            CollectionAssert.AreEquivalent(Rooms.Where(r => r != "Greybox_Greyfold_Edge"), seen, "every coast, highland, forest and Plateau room is reachable on foot from the shore");
 
             int vantages = infos.Values.Sum(i => i.Vantages.Count);
-            Assert.AreEqual(27, vantages, "eight coast vantages to stand at, the whale's, the irises', the Edge's (the fourth lamp is the boss's beacon), Emberdown's eight and the Verdance's eight");
+            Assert.AreEqual(35, vantages, "eight coast vantages to stand at, the whale's, the irises', the Edge's (the fourth lamp is the boss's beacon), and eight each for Emberdown, the Verdance and Halden");
+            var plateau = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Halden")).ToList();
+            CollectionAssert.AreEquivalent(RoomPlans.All.Where(p => p.Id.StartsWith("Halden_") && p.Vantage != null).Select(p => p.VantageId), plateau, "the Plateau's vantages are the plan's");
             var forest = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Verdance")).ToList();
             CollectionAssert.AreEquivalent(RoomPlans.All.Where(p => p.Id.StartsWith("Verdance_") && p.Vantage != null).Select(p => p.VantageId), forest, "the forest's vantages are the plan's");
             var highland = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Emberdown")).ToList();

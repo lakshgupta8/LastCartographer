@@ -95,7 +95,7 @@ namespace OWSBG.Tests
 
             Assert.IsTrue(w.Is(EndingsRunner.VossCodaFlag), "Voss's coda first, at the frame's door");
             CollectionAssert.AreEqual(new[] { "Epilogue_Pell", "Epilogue_Sable", "Epilogue_Marrow" }, stops);
-            CollectionAssert.AreEqual(new[] { "Epilogue_Halden_JourneymansHall", "Greybox_Saltmarrow_A", "Epilogue_Blank_ThessalyHollow" }, runner.Visited,
+            CollectionAssert.AreEqual(new[] { "Greybox_Halden_Hall_2", "Greybox_Saltmarrow_A", "Epilogue_Blank_ThessalyHollow" }, runner.Visited,
                 "Halden and the Hollow as stand-ins; the quay is built");
             CollectionAssert.AreEqual(runner.Visited, _rooms, "each stop was a real room change");
             Assert.IsTrue(w.Is("epilogue.done"), "Marrow's verdict played");
@@ -131,7 +131,7 @@ namespace OWSBG.Tests
             Assert.IsTrue(runner.IsWalking, "<<epilogue>> at the scene's end started the walk");
             yield return WalkThrough(() => finished, 90f);   // Teodor's scene finishes first; the walk waits for it
             // Teodor's zone is built (ENV-04): the walk goes to his cloister, not a stand-in.
-            CollectionAssert.AreEqual(new[] { "Epilogue_Halden_JourneymansHall", "Greybox_Verdance_House_2", "Epilogue_Blank_ThessalyHollow" }, runner.Visited);
+            CollectionAssert.AreEqual(new[] { "Greybox_Halden_Hall_2", "Greybox_Verdance_House_2", "Epilogue_Blank_ThessalyHollow" }, runner.Visited);
             Assert.IsTrue(w.Is("epilogue.done") && w.Is(EndingsRunner.FinishedFlag));
 
             // A stand-in has the stop's speaker in it, on the stop's node.

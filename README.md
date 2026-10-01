@@ -95,6 +95,11 @@ scrap, and turns her lamp into a beacon. Dying puts you back at the desk with th
 Opening `Assets/_Project/Scenes/Persistent/Persistent.unity` by hand also auto-opens the first room,
 and pressing Play inside any room scene bootstraps the persistent scene for you.
 
+**Doors read the map.** Every transition carries its way's gate (`docs/design/gates.md`): a story flag or an ability
+the way needs. A shut way has a pale bar in it that says why (`Not without Talonhold.`, `The way is shut. Not yet.`)
+and goes the moment the flag is set or the ability learned; a Wingbeat gap never bars, since skill may cross it.
+A fall past a room's bottom costs a mask and puts you back on the last ground, not at the desk.
+
 | Action | Keyboard | Gamepad |
 |---|---|---|
 | Move | WASD / arrows | left stick / d-pad |

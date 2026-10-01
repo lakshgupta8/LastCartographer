@@ -36,6 +36,9 @@ Ability gates in order: **Wingbeat → (Talonhold or Inkthread) → the Plateau 
 Policy: only Wingbeat gaps are soft. Nothing that changes the story's order (the Plateau, the Edge, Windreach,
 the Threshold) can be skipped by movement. Every way is two-way; a gate applies in both directions.
 
+The built rooms read these (`docs/design/gates.md`): every transition carries its way's gate from the plans and this
+map (`Gates.Between`), a shut way has a bar in it, a soft gap never does.
+
 ## 3. The regions
 
 Rooms are targets for DES-08 through DES-11; vantages are the atlas's marks (48 in scope).

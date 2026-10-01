@@ -146,11 +146,11 @@ to wall, with the kit's six islands on a `DriftField` that shows as many as drif
 Corra's crayon room with her drawing's arena; the mirror streets and their desk; the mirror-Observatory with Corvin, the
 chair and the Archivist waiting on `corvin.stance`; Aury's causeway from the faded third lighthouse (its west exit) with
 a patch of white, and his lamp room with the beacon, Aury and Sable, and the climb to the Hollow. The lost Remnant stand
-where the plan counts them (`Lost`). Not yet: the Threshold's Wardens are not stood down after Halvard's fight; the
-Edge's doors are open during the prologue too; Aury's two scenes (Act 2 by tether, Act 3 on his island) share one talker
+where the plan counts them (`Lost`). The Threshold's Wardens stand down on Halvard's word and the Edge's doors are shut
+while the prologue plays (`gates.md`). Not yet: Aury's two scenes (Act 2 by tether, Act 3 on his island) share one talker
 on the first; the tether from the faded third is a west exit on his causeway, not a crossing from the coast's room; the
-islands' own rooms keep the greybox look (paper-kit.md §7); the fights are in their rooms but their doors, like every
-door, read no flag or ability.
+islands' own rooms keep the greybox look (paper-kit.md §7); the fights are in their rooms, and every door reads its
+flag and ability (`gates.md`).
 
 ## 3. Rules these plans follow
 - The map's gates, exactly, between zones (tested). Inside a zone only its own ability gates a room: the Wind
@@ -182,5 +182,4 @@ door, read no flag or ability.
 - What the Edge Camp's ledger posts: the Greyfold's commissions are not in the bible.
 - The Blank's generated islands: one scene per released place, from the saved `PlaceFate` (PRG-20; NAR-14 writes
   them). Built as runtime rooms; the drift room they hang off is built (ENV-08).
-- The Threshold's Wardens: standing down the line after Halvard's "Go", and whether Hale, if he finished, stands
-  among them.
+- Whether Hale, if he finished, stands among the Threshold's Wardens (they stand down on Halvard's word now, `gates.md` §3).

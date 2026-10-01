@@ -1281,7 +1281,15 @@ namespace OWSBG.Setup
             public RoomRecipe Prop(string name, float x, float y = 0f, float z = 0.7f) { Props.Add((name, new Vector2(x, y), z)); return this; }
             public RoomRecipe Dress(string piece, float x, float y = 0f, float z = 0.7f) { Dressings.Add((piece, new Vector2(x, y), z)); return this; }
             public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
-            public RoomRecipe Warden(float x) { Enemies.Add((typeof(Warden), "Warden_" + Enemies.Count, new Vector2(x, 0.8f), new Vector2(0.7f, 1.6f))); return this; }
+            /// <summary>A Warden on patrol; <paramref name="standDown"/> is a flag that stands him down where he is (the Threshold's line on Halvard's word).</summary>
+            public RoomRecipe Warden(float x, string standDown = null)
+            {
+                string name = "Warden_" + Enemies.Count;
+                Enemies.Add((typeof(Warden), name, new Vector2(x, 0.8f), new Vector2(0.7f, 1.6f)));
+                if (standDown != null) WardenFlags.Add((name, standDown));
+                return this;
+            }
+            public readonly List<(string name, string flag)> WardenFlags = new List<(string, string)>();
             public RoomRecipe Tiles(string floor, string plat) { FloorTile = floor; PlatTile = plat; return this; }
             public RoomRecipe Paper(string name, float z, float y, Color color, float height) { Papers.Add((name, z, y, color, height)); return this; }
             /// <summary>The highland's usual three: the cliff and its roosts, the chimneys, the ridge.</summary>
@@ -1889,7 +1897,8 @@ namespace OWSBG.Setup
                 new RoomRecipe("Greyfold_Threshold_1").Tiles("Ground_Line", "Ground_Line").GreyfoldPapers("Mid_Line")
                     .Floor(-20f, 20f).Desk(-16f).Npc("Halvard", -12f, "Threshold_Halvard", halvard)   // the Guild's field desk behind the line; Halvard's third, once he has spoken
                     .Arena(typeof(Halvard), "halvard_3", 6f, new Vector2(0.9f, 2f), -8f, 11f, Ability.None, "threshold.halvard.spoken")
-                    .Warden(13f).Warden(15.5f).Warden(18f).Prop("Stake", 12f).Prop("Stake", 14.5f).Prop("Stake", 17f).Prop("Stake", 19f)   // Wardens in a line, tethers staked across the white
+                    .Warden(13f, "act2.halvard_third").Warden(15.5f, "act2.halvard_third").Warden(18f, "act2.halvard_third")   // Wardens in a line, stood down on Halvard's word (threshold.md)
+                    .Prop("Stake", 12f).Prop("Stake", 14.5f).Prop("Stake", 17f).Prop("Stake", 19f)   // tethers staked across the white
                     .Dress("threshold.old_tether", 10.5f, 0f, 0.9f)   // and one old Ferrymen's tether among them
                     .West(G("Pool_2")).East(G("Threshold_2")),
                 new RoomRecipe("Greyfold_Threshold_2").Tiles("Ground_Line", "Ground_Line").GreyfoldPapers("Mid_Line")
@@ -2036,6 +2045,7 @@ namespace OWSBG.Setup
                 else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);
                 else if (e.type == typeof(LostRemnant)) MakeEnemy<LostRemnant>(room, e.name, e.pos, e.size);
             }
+            foreach (var wf in r.WardenFlags) room.transform.Find(wf.name).GetComponent<Warden>().StandDownFlag = wf.flag;
             if (r.ArenaOf.HasValue)
             {
                 var a = r.ArenaOf.Value;
@@ -2580,6 +2590,14 @@ namespace OWSBG.Setup
                 new Vector2(cameraBounds.xMax, cameraBounds.yMax), new Vector2(cameraBounds.xMin, cameraBounds.yMax),
             });
             room.CameraBounds = poly;
+            // The gates pass: a gap with nothing under it is a fall, not a death (death-and-retry.md §1a). Below everything the room stands.
+            var fall = new GameObject("FallCatch") { layer = LayerMask.NameToLayer("Trigger") };
+            fall.transform.SetParent(go.transform, false);
+            fall.transform.position = new Vector3(cameraBounds.center.x, cameraBounds.yMin - 4f, 0f);
+            var fc = fall.AddComponent<BoxCollider2D>();
+            fc.size = new Vector2(cameraBounds.width + 8f, 2f);
+            fc.isTrigger = true;
+            fall.AddComponent<FallCatch>();
             return room;
         }
 
@@ -2979,6 +2997,32 @@ namespace OWSBG.Setup
             var tr = t.AddComponent<RoomTransition>();
             tr.TargetScene = targetScene;
             tr.TargetSpawn = targetSpawn;
+            // The gates pass (docs/design/gates.md): the way's gate from the plans and the map, and a bar in it while shut.
+            var gate = Gates.Between(room.RoomId, Gates.PlaceOfScene(targetScene));
+            tr.Needs = gate.Needs;
+            tr.Flag = gate.Flag ?? "";
+            tr.Soft = gate.Soft;
+            if (gate.Bars) tr.Bar = MakeGateBar(tr, name, size);
+        }
+
+        /// <summary>
+        /// What stands in a shut way: solid ground the size of the trigger (a wall at a side door, a slab over a climb), or
+        /// for a drop the floor the gap is missing, pale as unwritten paper. Saved shut; the transition opens it at run time.
+        /// </summary>
+        static GameObject MakeGateBar(RoomTransition tr, string name, Vector2 size)
+        {
+            var bar = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bar.name = "Bar";
+            bar.layer = LayerMask.NameToLayer("Ground");
+            Object.DestroyImmediate(bar.GetComponent<Collider>());
+            bar.transform.SetParent(tr.transform, false);
+            bool drop = name == "To_Down";
+            bar.transform.localPosition = drop ? new Vector3(0f, -0.5f - tr.transform.position.y, 0f) : Vector3.zero;
+            bar.transform.localScale = drop ? new Vector3(size.x, 1f, 2f) : new Vector3(size.x, size.y, 2f);
+            bar.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Gate", new Color(0.80f, 0.76f, 0.66f));
+            bar.AddComponent<BoxCollider2D>();
+            bar.AddComponent<GateBar>().Gate = tr;
+            return bar;
         }
 
         /// <summary>A region's post as an asset (PP_[Region]), written from the table every build (ENV-10).</summary>
@@ -3077,6 +3121,7 @@ namespace OWSBG.Setup
                     else GameState.World.Set(kv[0], int.Parse(kv[1]));
                 }
                 foreach (var dp in Object.FindObjectsByType<DressingProp>(FindObjectsInactive.Include, FindObjectsSortMode.None)) dp.Apply();
+                foreach (var tr in Object.FindObjectsByType<RoomTransition>(FindObjectsInactive.Include, FindObjectsSortMode.None)) tr.Apply();
             }
             var brain = cam.GetComponent<CinemachineBrain>();
             if (brain != null) brain.enabled = false;

@@ -78,8 +78,7 @@ Complete Survey's arena waiting for `ending.chorus_led`; the Vault with its seve
 come down onto it: Overlook_2 → Bridges_1, Gate_2 → Mills_1. The epilogue walk now goes to Pell's Hall. The south
 gate's road onto the Steppe is built (ENV-07): Lowmarket_3 → Windreach_Stones_1. Not yet: the orchard's road to the Edge
 Camp (ENV-08); Lowmarket's faded variant; the
-Crown hall as a room; the chalk lines of an empty yard; the flag gates on the map's doors (greybox transitions do not
-read flags).
+Crown hall as a room; the chalk lines of an empty yard. The map's doors read their flags now (`gates.md`).
 
 ## 3. Rules these plans follow
 - The map's gates, exactly, between zones (tested). Only the zone's own ability gates rooms inside it; Halden

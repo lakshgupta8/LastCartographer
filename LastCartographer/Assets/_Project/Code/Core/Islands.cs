@@ -31,8 +31,8 @@ namespace OWSBG.Core
         public const string HalfNode = "Island_Half";
         /// <summary>Island rooms are scenes made at runtime (PRG-20), named for what they were.</summary>
         public const string ScenePrefix = "Island_";
-        /// <summary>The Hollow's far edge (Blank_Hollow_3), where the chain of islands begins and the first island's west exit leads.</summary>
-        public const string DriftEntryScene = "Blank_Hollow_3";
+        /// <summary>The Hollow's far edge, built (ENV-08: the greybox of Blank_Hollow_3), where the chain of islands begins and the first island's west exit leads.</summary>
+        public const string DriftEntryScene = "Greybox_Blank_Hollow_3";
 
         /// <summary>One island drifting in the Blank now: its room's scene name, its name, and the node its people speak from.</summary>
         public sealed class Drift

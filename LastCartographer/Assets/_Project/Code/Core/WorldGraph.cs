@@ -78,7 +78,9 @@ namespace OWSBG.Core
         {
             var p = PlacesOf(zone);
             if (p.Count == 0) return null;
-            // A planned zone's room with someone standing in it first (the epilogue walks to the speaker's room), else the first.
+            // A planned zone's hub with someone standing in it first (the epilogue walks to the speaker's room: Ilse's house, not
+            // the Lantern), then any room with someone in it, else the first.
+            foreach (var id in p) { var plan = RoomPlans.Find(id); if (plan != null && plan.Npcs.Length > 0 && plan.Desk) return GreyboxPrefix + id; }
             foreach (var id in p) { var plan = RoomPlans.Find(id); if (plan != null && plan.Npcs.Length > 0) return GreyboxPrefix + id; }
             return GreyboxPrefix + p[0];
         }
@@ -263,7 +265,7 @@ namespace OWSBG.Core
             _placeZones["Saltmarrow_IrisFields"] = "Saltmarrow.IrisFields";
             // The highland's (ENV-03), the forest's (ENV-04), the Plateau's (ENV-05) and the Steppe's (ENV-07) rooms are the plan's, zone by zone.
             foreach (var plan in RoomPlans.All)
-                if ((plan.Id.StartsWith("Emberdown_") || plan.Id.StartsWith("Verdance_") || plan.Id.StartsWith("Halden_") || plan.Id.StartsWith("Windreach_")) && !_placeZones.ContainsKey(plan.Id)) _placeZones[plan.Id] = plan.Zone;
+                if ((plan.Id.StartsWith("Emberdown_") || plan.Id.StartsWith("Verdance_") || plan.Id.StartsWith("Halden_") || plan.Id.StartsWith("Windreach_") || plan.Id.StartsWith("Greyfold_") || plan.Id.StartsWith("Blank_")) && !_placeZones.ContainsKey(plan.Id)) _placeZones[plan.Id] = plan.Zone;
         }
     }
 }

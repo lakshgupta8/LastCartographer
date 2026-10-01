@@ -58,6 +58,13 @@ namespace OWSBG.Setup
             ("Windreach_Camp_1", "Camp_WagonCloth", 6f, 0f, "Read", false),           // the route woven on the wagon that stays
             ("Windreach_Gate_1", "Gate_Lip", 8.5f, 0f, "Read", false),                // the carved stones on the lip
             ("Windreach_Gate_1", "Gate_Brek", 4f, 0f, "Talk", true),                  // Brek beside the stones, who asks (Offerings)
+            // The Greyfold and the Blank (ENV-08): the threshold's readables, and the notice that calls the climax.
+            ("Greyfold_EdgeCamp_2", "EdgeCamp_Notice", -7f, 0f, "Read", false),        // Voss's notice over the dead ledger
+            ("Greyfold_EdgeCamp_2", "EdgeCamp_Beam", -4f, 0f, "Read", false),          // her initials in the beam
+            ("Greyfold_Road_2", "Road_Mileposts", 0f, 0f, "Read", false),              // the milepost that reads 1
+            ("Blank_Capital_1", "Capital_Nameplate", -8.5f, 0f, "Read", false),        // the Guild office door's plate
+            ("Blank_Hollow_2", "Hollow_Doorframe", -8f, 0f, "Read", false),            // the height marks in Ilse's doorframe
+            ("Blank_Capital_4", "Capital_Corvin_Argue", -9.5f, 0f, "Talk", true),      // Corvin's argument, which asks (Offerings): beside him, before the door
         };
 
         [MenuItem("OWSBG/Place the Coast's Readables")]

@@ -19,6 +19,8 @@ import emberdown as _ember
 import verdance as _verd
 import halden as _hald
 import windreach as _wind
+import greyfold as _grey
+import blank as _blank
 
 KITS = os.path.dirname(OUT)   # Art/Environment: one folder and kit.json per region
 
@@ -31,7 +33,14 @@ STEEL = (0.30, 0.32, 0.36)
 # The same drawings in another region's palette (ENV-03): the colour names above rebound before each render.
 REGIONS = {
     "Saltmarrow": dict(paper=PAPER, ink=INK, colours=dict(PAPER=PAPER, SILVER=SILVER, OLIVE=OLIVE, RUST=RUST, INK=INK, BRASS=BRASS, ROPE=ROPE, GLOW=GLOW, WET=WET, STEEL=STEEL)),
-    "Greyfold": dict(paper=PAPER, ink=INK, colours=dict(PAPER=PAPER, SILVER=SILVER, OLIVE=OLIVE, RUST=RUST, INK=INK, BRASS=BRASS, ROPE=ROPE, GLOW=GLOW, WET=WET, STEEL=STEEL)),
+    # The Greyfold (ENV-08): white paper, the greys the ink thinned, Wren's blue and lantern gold, ghost-grey ink; the furniture is grey wood and rope.
+    "Greyfold": dict(paper=_grey.PAPER, ink=_grey.INK, colours=dict(
+        PAPER=_grey.PAPER, SILVER=_grey.GREY, OLIVE=_grey.PALE, RUST=_grey.WOOD, INK=_grey.INK,
+        BRASS=lerp(_grey.GOLD, _grey.PAPER, 0.3), ROPE=_grey.ROPE, GLOW=lerp(_grey.GOLD, _grey.PAPER, 0.5), WET=lerp(_grey.GREY, _grey.PAPER, 0.5), STEEL=_grey.DARK)),
+    # The Blank (ENV-08): the same white, a shade darker in its greys (the grey is the people); the furniture is stone and grey wood.
+    "Blank": dict(paper=_blank.PAPER, ink=_blank.INK, colours=dict(
+        PAPER=_blank.PAPER, SILVER=_blank.GREY, OLIVE=_blank.PALE, RUST=_blank.STONE, INK=_blank.INK,
+        BRASS=lerp(_blank.GOLD, _blank.PAPER, 0.3), ROPE=lerp(_blank.GREY, _blank.PAPER, 0.3), GLOW=lerp(_blank.GOLD, _blank.PAPER, 0.5), WET=lerp(_blank.BLUE, _blank.PAPER, 0.85), STEEL=_blank.DARK)),
     "Emberdown": dict(paper=_ember.PAPER, ink=_ember.INK, colours=dict(
         PAPER=_ember.PAPER, SILVER=_ember.CHARCOAL, OLIVE=_ember.SULPHUR, RUST=(0.36, 0.26, 0.20), INK=_ember.INK,
         BRASS=(0.58, 0.46, 0.22), ROPE=(0.46, 0.40, 0.32), GLOW=_ember.EMBER, WET=(0.55, 0.53, 0.52), STEEL=(0.20, 0.20, 0.22))),
@@ -740,6 +749,195 @@ def prop_grass_tall(rng, p):
     return 1.5, 2.5, 1.6
 
 
+# ---------------------------------------------------------------- the Greyfold (ENV-08): the threshold's own
+
+def prop_fence(rng, p):
+    """Prop_Fence: the Guild fence with no gate at the orchard road's end: posts, two rails, a notice nailed on."""
+    wood, dark, sheet, ink = p("wood", RUST), p("dark", lerp(RUST, INK, 0.5)), p("sheet", PAPER), p("ink", INK)
+    for x in (-1.7, -0.6, 0.6, 1.7):
+        box("post_%s" % x, x, 1.1, 0.18, 2.2, wood, y=0.05)
+    box("rail_a", 0.0, 0.9, 3.8, 0.12, wood, y=0.0)
+    box("rail_b", 0.0, 1.6, 3.8, 0.12, wood, y=0.0)
+    box("notice", 0.0, 1.55, 0.8, 0.6, sheet, y=-0.05)
+    for k in range(3):
+        line("line_%d" % k, -0.3, 1.72 - k * 0.14, -0.3 + rng.uniform(0.35, 0.6), 1.72 - k * 0.14, 0.02, ink, y=-0.1)
+    return 4.0, 2.5, 1.6
+
+
+def prop_milepost(rng, p):
+    """Prop_Milepost: a milepost for a road nobody finished: a squared stone with a rounded top, the count cut in it."""
+    stone, dark = p("stone", SILVER), p("dark", lerp(INK, SILVER, 0.3))
+    polygon("post", [(-0.3, 0.0), (0.3, 0.0), (0.3, 1.6), (0.0, 2.0), (-0.3, 1.6)], stone, y=0.0)
+    for k in range(rng.randint(0, 3)):
+        box("mark_%d" % k, 0.0, 0.9 - k * 0.2, 0.26, 0.035, dark, y=-0.04)
+    return 0.75, 2.0, 1.6
+
+
+def prop_tent(rng, p):
+    """Prop_Tent: a Guild tent: a ridge-pole, the cloth down either side, one side pegged open."""
+    cloth, dark, paper = p("cloth", lerp(SILVER, PAPER, 0.5)), p("dark", lerp(INK, SILVER, 0.3)), p("paper", PAPER)
+    polygon("tent", [(-1.5, 0.0), (1.5, 0.0), (0.0, 2.4)], cloth, y=0.0)
+    line("pole", 0.0, 0.0, 0.0, 2.4, 0.04, dark, y=-0.02)
+    polygon("door", [(0.15, 0.0), (1.25, 0.0), (0.3, 1.3)], paper, y=-0.03)
+    for x in (-1.5, 0.0, 1.5):
+        line("peg_%s" % x, x, 0.0, x + 0.1, 0.1, 0.03, dark, y=-0.02)
+    return 3.0, 2.5, 1.6
+
+
+def prop_stake(rng, p):
+    """Prop_Stake: a Guild survey stake driven into the white, a tether tied off on it and run up and away."""
+    wood, rope = p("wood", RUST), p("rope", ROPE)
+    polygon("stake", [(-0.08, 0.0), (0.08, 0.0), (0.05, 1.5), (-0.05, 1.5)], wood, y=0.0)
+    line("rope", 0.0, 1.3, 0.25, 2.0, 0.025, rope, y=-0.02)
+    return 0.5, 2.0, 1.6
+
+
+def prop_cobble(rng, p):
+    """Prop_Cobble: one stride of the Road That Stops: cobbles in a row, the kind her lantern draws."""
+    stone, dark, pale = p("stone", SILVER), p("dark", lerp(INK, SILVER, 0.3)), p("pale", lerp(SILVER, PAPER, 0.6))
+    box("bed", 0.0, 0.2, 2.4, 0.4, pale, y=0.05)
+    x = -1.2
+    i = 0
+    while x < 1.2:
+        w = rng.uniform(0.4, 0.6)
+        blob("c_%d" % i, rng, min(x + w / 2, 1.2 - w / 2), 0.26, w / 2, 0.18, stone if i % 3 else pale, y=0.0, n=10, wobble=0.12)
+        x += w + 0.03
+        i += 1
+    return 2.5, 0.5, 1.6
+
+
+def prop_atlas(rng, p):
+    """Prop_Atlas: Isolde's complete atlas open on a stone, every page drawn."""
+    stone, paper, ink = p("stone", SILVER), p("paper", PAPER), p("ink", INK)
+    box("stone", 0.0, 0.3, 1.4, 0.6, stone, y=0.05)
+    polygon("page_l", [(-0.7, 0.58), (0.0, 0.58), (0.0, 0.72), (-0.7, 0.82)], paper, y=-0.02)
+    polygon("page_r", [(0.0, 0.58), (0.7, 0.58), (0.7, 0.82), (0.0, 0.72)], paper, y=-0.02)
+    for k in range(4):
+        line("l_%d" % k, -0.6, 0.66 + 0.03 * k, -0.1, 0.65 + 0.03 * k, 0.012, ink, y=-0.06)
+        line("r_%d" % k, 0.1, 0.65 + 0.03 * k, 0.6, 0.66 + 0.03 * k, 0.012, ink, y=-0.06)
+    return 1.5, 1.0, 1.6
+
+
+def prop_footprints(rng, p):
+    """Prop_Footprints: a line of footprints in the road's last dust, stopping mid-stride where the road does."""
+    dark = p("dark", lerp(INK, SILVER, 0.4))
+    for i in range(6):
+        x = -1.3 + i * 0.5
+        z = 0.1 + (0.15 if i % 2 else 0.0)
+        for k in range(3):
+            line("f_%d_%d" % (i, k), x, z, x + 0.18, z + (k - 1) * 0.1, 0.03, dark, y=0.0)
+    return 3.0, 0.5, 1.6
+
+
+def prop_beam(rng, p):
+    """Prop_Beam: a tent-post of the Edge Camp with "I. M." cut in it and a wren in four strokes under."""
+    wood, dark = p("wood", RUST), p("dark", lerp(INK, RUST, 0.4))
+    box("post", 0.0, 1.5, 0.3, 3.0, wood, y=0.0)
+    line("i", -0.06, 2.2, -0.06, 2.5, 0.03, dark, y=-0.04)
+    line("m1", 0.02, 2.2, 0.02, 2.5, 0.03, dark, y=-0.04)
+    line("m2", 0.02, 2.5, 0.1, 2.3, 0.025, dark, y=-0.04)
+    line("w1", -0.1, 1.9, 0.0, 1.8, 0.025, dark, y=-0.04)
+    line("w2", 0.0, 1.8, 0.1, 1.9, 0.025, dark, y=-0.04)
+    line("w3", -0.02, 1.8, 0.04, 2.0, 0.02, dark, y=-0.04)
+    line("w4", 0.04, 1.92, 0.12, 1.93, 0.02, dark, y=-0.04)
+    return 0.5, 3.0, 1.6
+
+
+# ---------------------------------------------------------------- the Blank (ENV-08): the fixed islands' own
+
+def prop_house(rng, p):
+    """Prop_House: a Hollow house: low walls under a deep roof, a door, a window, a chimney, grey."""
+    wall, roof, dark = p("wall", RUST), p("roof", SILVER), p("dark", lerp(INK, SILVER, 0.2))
+    box("wall", 0.0, 0.75, 2.6, 1.5, wall, y=0.0)
+    polygon("roof", [(-1.5, 1.45), (1.5, 1.45), (0.4, 2.5), (-0.4, 2.5)], roof, y=-0.02)
+    box("door", -0.6, 0.5, 0.44, 1.0, dark, y=-0.03)
+    box("win", 0.6, 0.85, 0.44, 0.4, dark, y=-0.03)
+    box("winx", 0.6, 0.85, 0.36, 0.03, wall, y=-0.04)
+    box("chim", 0.95, 2.15, 0.22, 0.7, dark, y=-0.01)
+    return 3.0, 2.5, 1.6
+
+
+def prop_island(rng, p):
+    """Prop_Island: an island going past the drift: a slab of grey ground, a ragged underside, a roof or two on it."""
+    top, under, dark, wall = p("top", RUST), p("under", lerp(SILVER, PAPER, 0.5)), p("dark", lerp(INK, SILVER, 0.2)), p("wall", SILVER)
+    pts = [(-2.5, 1.2), (2.5, 1.2)]
+    for i in range(9, -1, -1):
+        t = i / 9
+        pts.append((-2.5 + 5.0 * t, 1.2 - 1.1 * (0.3 + 0.7 * math.sin(t * math.pi)) * rng.uniform(0.7, 1.0)))
+    polygon("under", pts, under, y=0.02)
+    box("top", 0.0, 1.3, 5.0, 0.2, top, y=0.0)
+    for k in range(2):
+        hx = -1.2 + k * 2.0
+        box("h_%d" % k, hx, 1.6, 0.9, 0.4, wall, y=-0.02)
+        polygon("r_%d" % k, [(hx - 0.55, 1.78), (hx + 0.55, 1.78), (hx, 2.0)], dark, y=-0.03)
+    for k in range(6):
+        bx = -2.3 + k * 0.9
+        line("g_%d" % k, bx, 1.4, bx + 0.03, 1.6, 0.03, dark, y=-0.02)
+    return 5.0, 2.0, 1.6
+
+
+def prop_chair(rng, p):
+    """Prop_Chair: the chair Corvin drew for her, a little too tall."""
+    wood, dark = p("wood", RUST), p("dark", lerp(INK, SILVER, 0.3))
+    box("seat", 0.0, 0.7, 0.8, 0.08, wood, y=0.0)
+    box("back", -0.34, 1.1, 0.08, 0.9, wood, y=0.0)
+    box("rail", -0.34, 1.45, 0.08, 0.08, dark, y=-0.02)
+    for x in (-0.34, 0.34):
+        line("leg_%s" % x, x, 0.0, x, 0.7, 0.06, wood, y=0.0)
+    return 1.0, 1.5, 1.6
+
+
+def prop_crayon(rng, p):
+    """Prop_Crayon: Corra's drawing on the wall: her father, tall, a compass in his wing, no face."""
+    crayon = p("crayon", (0.72, 0.56, 0.30))
+    t = 0.08
+    line("leg1", -0.2, 0.0, -0.1, 1.0, t, crayon, y=0.0)
+    line("leg2", 0.25, 0.0, 0.1, 1.0, t, crayon, y=0.0)
+    for k in range(5):
+        line("body_%d" % k, -0.5 + rng.uniform(-0.08, 0.08), 1.0 + 0.16 * k, 0.5 + rng.uniform(-0.08, 0.08), 1.1 + 0.16 * k, t, crayon, y=-0.001 * k)
+    line("neck", 0.3, 1.8, 0.5, 2.15, t, crayon, y=0.0)
+    disc("head", 0.55, 2.2, 0.18, crayon, y=-0.01, n=12)
+    line("bill", 0.68, 2.18, 0.95, 2.12, t * 0.7, crayon, y=0.0)
+    disc("comp", -0.15, 1.5, 0.16, crayon, y=-0.02, n=10)
+    disc("compin", -0.15, 1.5, 0.1, p("paper", PAPER), y=-0.03, n=10)
+    return 2.0, 2.5, 1.6
+
+
+def prop_beacon(rng, p):
+    """Prop_Beacon: Aury's lamp: the lens on its stand, lit, the glow round it."""
+    iron, gold, glow = p("iron", STEEL), p("gold", BRASS), p("glow", GLOW)
+    box("stand", 0.0, 0.6, 0.5, 1.2, iron, y=0.0)
+    box("foot", 0.0, 0.06, 0.9, 0.12, iron, y=-0.01)
+    disc("glow", 0.0, 1.8, 0.7, glow, y=0.3, n=20)
+    disc("lens", 0.0, 1.8, 0.45, gold, y=-0.02, n=16)
+    box("cap", 0.0, 2.3, 0.6, 0.1, iron, y=-0.03)
+    return 1.5, 2.5, 1.6
+
+
+def prop_well(rng, p):
+    """Prop_Well: the Hollow's well: a stone ring, a post, a bucket on its rope."""
+    stone, dark, rope = p("stone", RUST), p("dark", lerp(INK, SILVER, 0.2)), p("rope", ROPE)
+    box("ring", 0.0, 0.35, 1.3, 0.7, stone, y=0.0)
+    box("mouth", 0.0, 0.62, 1.0, 0.12, dark, y=-0.02)
+    line("post", 0.5, 0.7, 0.5, 1.5, 0.06, dark, y=-0.01)
+    line("arm", 0.5, 1.45, -0.3, 1.45, 0.06, dark, y=-0.01)
+    line("rope", -0.3, 1.45, -0.3, 0.95, 0.02, rope, y=-0.02)
+    box("bucket", -0.3, 0.85, 0.24, 0.22, dark, y=-0.03)
+    return 1.5, 1.5, 1.6
+
+
+def prop_door(rng, p):
+    """Prop_Door: a Guild office door in the grey capital, its nameplate polished bright at a chick's height."""
+    frame, door, brass, dark = p("frame", RUST), p("door", SILVER), p("brass", BRASS), p("dark", lerp(INK, SILVER, 0.2))
+    box("frame", 0.0, 1.25, 1.4, 2.5, frame, y=0.05)
+    box("door", 0.0, 1.2, 1.1, 2.4, door, y=0.0)
+    box("panel_a", 0.0, 1.8, 0.7, 0.7, dark, y=-0.02)
+    box("panel_b", 0.0, 0.7, 0.7, 0.9, dark, y=-0.02)
+    box("plate", 0.0, 1.3, 0.5, 0.14, brass, y=-0.04)
+    disc("knob", 0.4, 1.2, 0.05, dark, y=-0.04, n=8)
+    return 1.5, 2.5, 1.6
+
+
 PROPS = [
     ("Prop_Desk", prop_desk), ("Prop_Ledger", prop_ledger), ("Prop_Dummy", prop_dummy), ("Prop_Stall", prop_stall),
     ("Prop_Vantage", prop_vantage), ("Prop_Lamp", prop_lamp), ("Prop_LampGlow", prop_lampglow), ("Prop_Seeds", prop_seeds),
@@ -774,6 +972,19 @@ PROPS = [
     ("Prop_Reeds", prop_reeds, "Windreach"), ("Prop_LipStone", prop_lipstone, "Windreach"), ("Prop_Swirl", prop_swirl, "Windreach"),
     ("Prop_Hearth", prop_hearth, "Windreach"), ("Prop_Grass_A", prop_grass_a, "Windreach"), ("Prop_Grass_B", prop_grass_b, "Windreach"),
     ("Prop_Grass_C", prop_grass_c, "Windreach"), ("Prop_Grass_Tall", prop_grass_tall, "Windreach"),
+    # The Greyfold (ENV-08): the shared furniture in grey and rope, and the threshold's own.
+    ("Prop_Desk", prop_desk, "Greyfold"), ("Prop_Ledger", prop_ledger, "Greyfold"), ("Prop_Vantage", prop_vantage, "Greyfold"),
+    ("Prop_Lamp", prop_lamp, "Greyfold"), ("Prop_LampGlow", prop_lampglow, "Greyfold"), ("Prop_Seeds", prop_seeds, "Greyfold"),
+    ("Prop_Bound", prop_bound, "Greyfold"), ("Prop_Tether", prop_tether, "Greyfold"),
+    ("Prop_Fence", prop_fence, "Greyfold"), ("Prop_Milepost", prop_milepost, "Greyfold"), ("Prop_Tent", prop_tent, "Greyfold"),
+    ("Prop_Stake", prop_stake, "Greyfold"), ("Prop_Cobble", prop_cobble, "Greyfold"), ("Prop_Atlas", prop_atlas, "Greyfold"),
+    ("Prop_Footprints", prop_footprints, "Greyfold"), ("Prop_Beam", prop_beam, "Greyfold"),
+    # The Blank (ENV-08): the desk and the lamp in the Blank's greys, and the fixed islands' own.
+    ("Prop_Desk", prop_desk, "Blank"), ("Prop_Lamp", prop_lamp, "Blank"), ("Prop_LampGlow", prop_lampglow, "Blank"),
+    ("Prop_Seeds", prop_seeds, "Blank"), ("Prop_Bound", prop_bound, "Blank"),
+    ("Prop_House", prop_house, "Blank"), ("Prop_Island", prop_island, "Blank"), ("Prop_Chair", prop_chair, "Blank"),
+    ("Prop_Crayon", prop_crayon, "Blank"), ("Prop_Beacon", prop_beacon, "Blank"), ("Prop_Well", prop_well, "Blank"),
+    ("Prop_Door", prop_door, "Blank"),
 ]
 
 

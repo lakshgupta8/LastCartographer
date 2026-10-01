@@ -45,6 +45,8 @@ namespace OWSBG.Narrative
             yield return null;
             Bind();
             var w = W;
+            // Back on foot after the prologue (ENV-08): the doors either side are open, the wall is down, and the white does not take her again.
+            if (w.Is(Crossed)) { if (_blankWall != null) _blankWall.SetActive(false); yield break; }
             if (w.Is(IsoldeEntered)) { OpenTheBlank(); yield break; }
             if (w.Is(Sealed) && !w.Is(FirstSmudges)) { ReleaseSmudges(); yield break; }
             if (!w.Is(Started))

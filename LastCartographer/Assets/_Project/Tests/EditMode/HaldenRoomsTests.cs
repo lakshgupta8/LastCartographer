@@ -45,7 +45,7 @@ namespace OWSBG.Tests
         }
 
         static IEnumerable<RoomPlan> Plans => RoomPlans.All.Where(p => p.Id.StartsWith("Halden_"));
-        static bool Unbuilt(string to) => to.StartsWith("Greyfold_");
+        static bool Unbuilt(string to) => false;   // the Greyfold is built (ENV-08): every road off the Plateau leads somewhere
 
         [Test]
         public void ThePlateausKitIsRenderedInItsPalette()

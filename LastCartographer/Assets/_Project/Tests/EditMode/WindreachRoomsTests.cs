@@ -46,7 +46,7 @@ namespace OWSBG.Tests
         }
 
         static IEnumerable<RoomPlan> Plans => RoomPlans.All.Where(p => p.Id.StartsWith("Windreach_"));
-        static bool Unbuilt(string to) => to.StartsWith("Greyfold_");
+        static bool Unbuilt(string to) => false;   // the Greyfold is built (ENV-08): the glide down lands on its white shore
 
         [Test]
         public void TheSteppesKitIsRenderedInItsPalette()
@@ -112,7 +112,7 @@ namespace OWSBG.Tests
                 Assert.GreaterOrEqual(Count(text, "RoomId: " + p.Id), 1, p.Id + " names itself");
                 foreach (var e in p.Exits)
                 {
-                    if (Unbuilt(e.To)) continue;   // the glide down into the Greyfold's white waits for ENV-08
+                    if (Unbuilt(e.To)) continue;
                     Assert.GreaterOrEqual(Count(text, "TargetScene: Greybox_" + e.To), 1, p.Id + " exits to " + e.To + " as planned");
                 }
                 Assert.GreaterOrEqual(Count(text, transition), p.Exits.Count(e => !Unbuilt(e.To)), p.Id + "'s transitions");

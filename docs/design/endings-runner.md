@@ -32,8 +32,8 @@ step, warm paper layers, and the stop's speaker standing on the stop's node. As 
 stand-ins retire one by one, with no change to the runner.
 
 ## 4. Tests
-`EndingsRunnerTests`: the Fixed World's walk from `Begin()` visits the Hall stand-in, the built quay and the Hollow
-stand-in in order, each a real room change, plays the coda first and Marrow's verdict last, and ends white on the
+`EndingsRunnerTests`: the Fixed World's walk from `Begin()` visits the built Hall, the built quay and the built Hollow
+(Ilse's house, since ENV-08; the stand-ins remain for a zone with no room) in order, each a real room change, plays the coda first and Marrow's verdict last, and ends white on the
 title; the Unwritten's own last scene starts the walk through `<<epilogue>>` and the runner waits for it to finish;
 with walking off, the command does nothing (the route replays and the endings' arc tests walk by hand, and turn it
 off). Every stop's zone is on the map (`EndingsTests`).

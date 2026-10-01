@@ -118,10 +118,39 @@ of long grass as the hazard, three swirls, a ledge three up with the goal over i
 scene); the high grass with `Paper_Fore_Grass` and tall tufts before and behind her; the hearth with Idrenne, the
 cooking-stone and the drop down to the rim; the crater rim with the smiths' wagon, its desk and a swirl to ride back
 up; the anvil-crater with the Fallen Star waiting for `windreach.star.woken`. The epilogue walk goes to the fire ring.
-Not yet: the Gate's glide down into the Greyfold's white (ENV-08); the leap as a set piece (a jump that must fall before
-Windmemory catches); Hale's escort as its own family; the river's gap takes no mask (no hazard under it: she lands on
-nothing and the room's bounds hold her); the flag and ability gates on the map's doors (greybox transitions read
-neither).
+Not yet: the leap as a set piece (a jump that must fall before Windmemory catches); Hale's escort as its own family; the
+river's gap takes no mask (no hazard under it: she lands on nothing and the room's bounds hold her); the flag and
+ability gates on the map's doors (greybox transitions read neither). The Gate's glide down is built with the Greyfold
+(ENV-08): past the last swirl the drop is the way down to the white shore.
+
+**The Greyfold and the Blank built (ENV-08).** Every planned room of both regions is a scene from a recipe
+(`ProjectSetup.GreyfoldRecipes`, `BlankRecipes`), on their kits (paper-kit.md §2f, §2g), and the prologue's Edge wears
+the Greyfold kit's three strips and has doors now (the camp to the west, the nave to the east; the director opens them
+once the prologue has crossed). The orchard road comes down to the Guild's fence; the Edge Camp with the desk, the dead
+ledger and Voss's notice over it, the beam with her initials, the tents and the tether-posts; the nave twelve units tall
+with Marrow glimpsed and silent (`MakeFigure`: drawn from the sheets, nothing to talk to) and the bells' arena waiting on
+`ability.clarity`; the Road That Stops as the region's gauntlet in its first room, its four strides `LanternPlatform`s
+on the kit's cobbles (`Cobble`: not solid ground, since a cobble is not there when she falls) and three more steps up
+among the mileposts; where the road stops, the first white patch (`White`: paper-white ground with an `UntetheredZone`
+over it, so the meter runs and, without Clarity, gives her back at once: the gate, in the ground), with Pell watching;
+the white shore the Gate's glide lands on from above (`Up` to the Gate's `Down`), with a patch in the middle and the
+pool's room beyond, Marrow in the reflection; the Guild's line with the field desk, Halvard waiting on
+`threshold.halvard.spoken`, three Wardens and the stakes; the line itself with Voss waiting on `threshold.voss.spoken`,
+Pell if the report was kept, the Return's Marrow on the white past it; Isolde's Last Camp with her tent, her lamp lit,
+her atlas and its desk. In the Blank: the Lantern with its patch of white before the first island, Marrow following;
+Thessaly Hollow with Ilse grey (`Remnant`), Isolde, Marrow, the houses and the well, the doorframe to read, and the hub's
+desk (the epilogue walks here now: `WorldGraph.BuiltRoomScene` prefers a hub with its speaker); the drift, untethered wall
+to wall, with the kit's six islands on a `DriftField` that shows as many as drift in this world and moves them past, and a
+`DriftCrossing` over the top platform that steps her onto the first of them (the island's west exit leads back:
+`Islands.DriftEntryScene` is the built room); the capital's edge with the office door, its nameplate and the desk;
+Corra's crayon room with her drawing's arena; the mirror streets and their desk; the mirror-Observatory with Corvin, the
+chair and the Archivist waiting on `corvin.stance`; Aury's causeway from the faded third lighthouse (its west exit) with
+a patch of white, and his lamp room with the beacon, Aury and Sable, and the climb to the Hollow. The lost Remnant stand
+where the plan counts them (`Lost`). Not yet: the Threshold's Wardens are not stood down after Halvard's fight; the
+Edge's doors are open during the prologue too; Aury's two scenes (Act 2 by tether, Act 3 on his island) share one talker
+on the first; the tether from the faded third is a west exit on his causeway, not a crossing from the coast's room; the
+islands' own rooms keep the greybox look (paper-kit.md §7); the fights are in their rooms but their doors, like every
+door, read no flag or ability.
 
 ## 3. Rules these plans follow
 - The map's gates, exactly, between zones (tested). Inside a zone only its own ability gates a room: the Wind
@@ -152,4 +181,6 @@ neither).
 - The fledgling-leap as a set piece: a jump that has to fail before Windmemory arrives (the Lamp-Keeper's pattern).
 - What the Edge Camp's ledger posts: the Greyfold's commissions are not in the bible.
 - The Blank's generated islands: one scene per released place, from the saved `PlaceFate` (PRG-20; NAR-14 writes
-  them).
+  them). Built as runtime rooms; the drift room they hang off is built (ENV-08).
+- The Threshold's Wardens: standing down the line after Halvard's "Go", and whether Hale, if he finished, stands
+  among them.

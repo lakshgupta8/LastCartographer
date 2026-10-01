@@ -287,6 +287,8 @@ namespace OWSBG.Setup
             foreach (var recipe in VerdanceRecipes()) BuildRecipe(recipe);    // the forest (ENV-04)
             foreach (var recipe in HaldenRecipes()) BuildRecipe(recipe);      // the Plateau (ENV-05)
             foreach (var recipe in WindreachRecipes()) BuildRecipe(recipe);   // the Steppe (ENV-07)
+            foreach (var recipe in GreyfoldRecipes()) BuildRecipe(recipe);    // the threshold (ENV-08)
+            foreach (var recipe in BlankRecipes()) BuildRecipe(recipe);       // the Blank's fixed islands (ENV-08)
             PlacementSetup.Place();   // the coast's readables and askers stand in the rebuilt rooms
             SetupRenderFeatures();
             BuildPersistent();
@@ -929,6 +931,11 @@ namespace OWSBG.Setup
             edge.StartX = 13f; edge.EndX = 22f;
 
             MakeSpawn(room, "Start", new Vector2(5.5f, 0f));
+            // Act 1's end comes back here on foot (ENV-08): the Edge Camp to the west (the door is on the wall, a reach wide), the nave to the east.
+            MakeSpawn(room, "West", new Vector2(-13f, 0f));
+            MakeSpawn(room, "East", new Vector2(23.5f, 0f));
+            MakeTransition(room, "To_W", new Vector2(-15.2f, 4f), new Vector2(1.6f, 10f), Scene("Greyfold_EdgeCamp_2"), "East");
+            MakeTransition(room, "To_E", new Vector2(25.6f, 4f), new Vector2(0.8f, 10f), Scene("Greyfold_Cathedral_2"), "West");
 
             // A fixed shot on the white for Isolde's walk.
             var shot = MakeShot(room, "CM Departure", new Vector3(14f, 3.7f, -18f));
@@ -1148,6 +1155,12 @@ namespace OWSBG.Setup
             public readonly List<(float x0, float x1, int n, bool tall, float z, float y)> Grasses = new List<(float, float, int, bool, float, float)>();
             public readonly List<(float x, float bottom, float height, float speed)> Updrafts = new List<(float, float, float, float)>();
             public (string id, float hx0, float hx1, float gx0, float gx1, float gtop, float startX)? GauntletOf;
+            // The Greyfold's and the Blank's (ENV-08): white patches the meter runs in, cobbles only her lantern draws, someone silent, the drift.
+            public readonly List<(float x0, float x1)> Whites = new List<(float, float)>();
+            public readonly List<(float x0, float x1, float top)> Cobbles = new List<(float, float, float)>();
+            public readonly List<(string name, Vector2 pos, Color tint, string character)> Figures = new List<(string, Vector2, Color, string)>();
+            public (float x, float top)? CrossingAt;
+            public int DriftCount;
             /// <summary>The Steppe's usual three: the walk's own layer, grass to the horizon, the storm sky; the crater and the cliff take the rim instead.</summary>
             public RoomRecipe WindreachPapers(string mid, string far = "Far_Steppe", string farther = "Farther_Storm")
             {
@@ -1164,6 +1177,34 @@ namespace OWSBG.Setup
             public RoomRecipe Updraft(float x, float bottom, float height, float speed = 9f) { Updrafts.Add((x, bottom, height, speed)); return this; }
             /// <summary>The region's gauntlet on this room's ground: the hazard between two x's under the gap, the goal over the far ground, where she starts.</summary>
             public RoomRecipe Gauntlet(string id, float hx0, float hx1, float gx0, float gx1, float gtop, float startX) { GauntletOf = (id, hx0, hx1, gx0, gx1, gtop, startX); return this; }
+            /// <summary>The Greyfold's usual three: the room's own layer, the far white with the capital at the edge of the eye, nothing.</summary>
+            public RoomRecipe GreyfoldPapers(string mid, string far = "Far_White", string farther = "Farther_Blank", float midHeight = 6f)
+            {
+                Paper(mid, 3f, 0f, new Color(0.84f, 0.84f, 0.82f), midHeight);
+                if (far != null) Paper(far, 8f, 2f, new Color(0.90f, 0.90f, 0.88f), far == "Far_Cathedral" ? 11f : 10f);
+                if (farther != null) Paper(farther, 16f, 6f, new Color(0.95f, 0.95f, 0.94f), 16f);
+                return this;
+            }
+            /// <summary>The Blank's usual three: the island's own layer, islands drifting far off, the grey of no horizon.</summary>
+            public RoomRecipe BlankPapers(string mid, string far = "Far_Islands", string farther = "Farther_Grey", float midHeight = 6f)
+            {
+                Paper(mid, 3f, 0f, new Color(0.82f, 0.82f, 0.80f), midHeight);
+                if (far != null) Paper(far, 8f, 2f, new Color(0.90f, 0.90f, 0.88f), 10f);
+                if (farther != null) Paper(farther, 16f, 6f, new Color(0.95f, 0.95f, 0.94f), 16f);
+                return this;
+            }
+            /// <summary>A white patch between two x's: ground she can stand on where the Clarity meter runs (and gives her back without it).</summary>
+            public RoomRecipe White(float x0, float x1) { Whites.Add((x0, x1)); return this; }
+            /// <summary>A cobble of the Road That Stops: a platform only her lantern draws, its top at <paramref name="top"/>.</summary>
+            public RoomRecipe Cobble(float x0, float x1, float top = 0f) { Cobbles.Add((x0, x1, top)); return this; }
+            /// <summary>A lost Remnant: one of the grey who holds to her colour; it floats, so y is where it hangs.</summary>
+            public RoomRecipe Lost(float x, float y = 1.5f) { Enemies.Add((typeof(LostRemnant), "Lost_" + Enemies.Count, new Vector2(x, y), new Vector2(0.8f, 1.2f))); return this; }
+            /// <summary>Someone there who says nothing: drawn from their sheets with the ink removed, no trigger.</summary>
+            public RoomRecipe Figure(string name, float x, Color tint, string character = null) { Figures.Add((name, new Vector2(x, 0f), tint, character)); return this; }
+            /// <summary>The step onto the first island going past, over the platform whose top is at <paramref name="top"/>.</summary>
+            public RoomRecipe Crossing(float x, float top) { CrossingAt = (x, top); return this; }
+            /// <summary>Islands drifting behind the room: as many drawn as there are, as many shown as drift in this world.</summary>
+            public RoomRecipe Drift(int n) { DriftCount = n; return this; }
 
             public RoomRecipe(string id) { Id = id; }
             public RoomRecipe Tall() { Bounds = new Rect(-20f, -3f, 40f, 19f); return this; }
@@ -1177,7 +1218,7 @@ namespace OWSBG.Setup
             /// <summary>An exit above the top platform (its centre x, its top y); arrives at the target's Bottom.</summary>
             public RoomRecipe Up(string target, float x, float topY) { Spawns.Add(("Top", new Vector2(x, topY + 0.05f))); Exits.Add(("To_Up", new Vector2(x, topY + 2.2f), new Vector2(4f, 0.8f), target, "Bottom")); return this; }
             /// <summary>A drop through the floor gap centred on x; arrives at the target's Top. The floor must leave the gap.</summary>
-            public RoomRecipe Down(string target, float x) { Spawns.Add(("Bottom", new Vector2(x + 3.5f, 0f))); Exits.Add(("To_Down", new Vector2(x, -2.4f), new Vector2(4f, 0.8f), target, "Top")); return this; }
+            public RoomRecipe Down(string target, float x, float bottomX = float.NaN, float bottomY = 0f) { Spawns.Add(("Bottom", new Vector2(float.IsNaN(bottomX) ? x + 3.5f : bottomX, bottomY))); Exits.Add(("To_Down", new Vector2(x, -2.4f), new Vector2(4f, 0.8f), target, "Top")); return this; }
             public RoomRecipe Vantage(string name, float x, float y) { Vantages.Add((name, new Vector2(x, y))); return this; }
             public RoomRecipe Crab(float x) { Enemies.Add((typeof(MarshCrab), "Crab_" + Enemies.Count, new Vector2(x, 0.6f), new Vector2(0.9f, 0.7f))); return this; }
             public RoomRecipe Crab(float x, float y) { Enemies.Add((typeof(MarshCrab), "Crab_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.7f))); return this; }
@@ -1616,8 +1657,8 @@ namespace OWSBG.Setup
                     .Floor(-20f, 20f).Vantage("Leaves", -4f, 0f).Prop("Gravestone", 8f)
                     .Npc("Isolde", -12f, "Orchard_Isolde_Cache", pages, 0f, "Cache")   // her cache in the roots: her pages speak, not her
                     .Npc("Keeper", 2f, "Orchard_Keeper", keeper)
-                    .Wall(14f, 0f, 12f).Wall(18f, 0f, 12f).Anchor(16f, 7f).Plat(16f, 12f, 3f)   // the flyer-tower from the orchard wall: Talonhold, and a thread
-                    .West(H("Orchard_1")).Up(H("Bastion_1"), 16f, 12.3f),   // east to Greyfold_EdgeCamp_1 [isolde.cache] waits for the Edge (ENV-08)
+                    .Wall(14f, 2.2f, 9.8f).Wall(18f, 2.2f, 9.8f).Anchor(16f, 7f).Plat(16f, 12f, 3f)   // the flyer-tower from the orchard wall: Talonhold, and a thread; a door cut at its foot for the road
+                    .West(H("Orchard_1")).Up(H("Bastion_1"), 16f, 12.3f).East(Scene("Greyfold_EdgeCamp_1")),   // the orchard road to the Edge [isolde.cache] (ENV-08)
                 // ---- the Bastion: a tower for birds who flew ----
                 new RoomRecipe("Halden_Bastion_1").Tall().Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Tower", "Far_Citadel", null)
                     .Floor(-20f, 14f).Floor(18f, 20f).Wall(-16f, 0f, 12f).Wall(-12f, 0f, 12f).Plat(-14f, 12f, 3f)   // no stairs: Talonhold up the walls
@@ -1711,10 +1752,10 @@ namespace OWSBG.Setup
                 new RoomRecipe("Windreach_Gate_2").Tiles("Ground_Lip", "Ground_Turf").WindreachPapers("Mid_HighGrass", "Far_Rim")
                     .Floor(-20f, -11f).Ledge(11f, 20f, 3f)   // the lip, twenty-two units of long grass, a far ledge three up
                     .Updraft(-7f, -2f, 10f).Updraft(0f, -2f, 10f).Updraft(7f, -2f, 10f)   // the three ink-swirls to ride
-                    .Gauntlet("updrafts", -11f, 11f, 11f, 20f, 3f, -15f)
+                    .Gauntlet("updrafts", -11f, 7f, 11f, 20f, 3f, -15f)   // the long grass returns her; past the last swirl the drop is the glide down
                     .Grass(-10.5f, 10.5f, 40, false, 0.6f, -2.5f)   // the long grass she falls into
                     .Grass(-19f, -12f, 10)
-                    .West(W("Gate_1")).East(W("Fire_1"), 3f),   // down to Greyfold_Pool_1 [Windmemory] waits for the white (ENV-08)
+                    .West(W("Gate_1")).East(W("Fire_1"), 3f).Down(Scene("Greyfold_Pool_1"), 9f, 13.5f, 3f),   // the long glide down into the Greyfold's white [Windmemory] (ENV-08)
                 // ---- Idrenne's Fire: the high grass, the hearth ----
                 new RoomRecipe("Windreach_Fire_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_HighGrass")
                     .Paper("Fore_Grass", -4f, -0.8f, fore, 2.0f)
@@ -1739,6 +1780,137 @@ namespace OWSBG.Setup
             };
         }
 
+
+        /// <summary>
+        /// The Greyfold (ENV-08, docs/design/windreach-greyfold-blank-rooms.md): one road that runs out. The orchard road's
+        /// end at the Guild's fence, the Edge Camp, the prologue's Edge, the half-cathedral's nave, the Road That Stops (its
+        /// cobbles drawn only in her lantern-radius), the white shore the glide lands on, the Mirror Pool, the Guild's line
+        /// and the line itself, and Isolde's Last Camp across it. Every room past the Edge Camp is drawn round her lantern
+        /// (Clarity.IsLanternLit); the white patches (`White`) are where the Clarity meter runs.
+        /// </summary>
+        static List<RoomRecipe> GreyfoldRecipes()
+        {
+            var pell = new Color(0.46f, 0.50f, 0.56f);
+            var halvard = new Color(0.55f, 0.50f, 0.36f);
+            var voss = new Color(0.30f, 0.32f, 0.40f);
+            var isolde = new Color(0.22f, 0.24f, 0.34f);
+            var marrow = new Color(0.66f, 0.66f, 0.64f);
+            string G(string id) => Scene("Greyfold_" + id);
+            return new List<RoomRecipe>
+            {
+                // ---- the Edge Camp: the orchard road's end, the last place colour reaches by itself ----
+                new RoomRecipe("Greyfold_EdgeCamp_1").Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_Fence")
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Prop("Milepost", -14f).Prop("Fence", 12f)   // the Guild's fence with no gate; beyond it the paper is white
+                    .West(Scene("Halden_Orchard_2")).East(G("EdgeCamp_2")),   // [isolde.cache] on the map
+                new RoomRecipe("Greyfold_EdgeCamp_2").Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_Outpost")
+                    .Floor(-20f, 20f).Plat(8f, 2.5f, 3f).Desk(-12f).Prop("Ledger", -8f).Prop("Beam", -4f)   // the hub: a ledger nobody posts to, Isolde's initials in a beam
+                    .Prop("Tent", -17f).Prop("Tether", 2f).Prop("Tether", 5f).Vantage("Outpost", 14f, 0f)
+                    .West(G("EdgeCamp_1")).East(G("Edge")),
+                // ---- the half-cathedral: the nave east of the prologue's room ----
+                new RoomRecipe("Greyfold_Cathedral_2").Tall().Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_Nave", "Far_White", "Farther_Blank", 12f)
+                    .Floor(-20f, 20f).Plat(-14f, 3f, 3f).Plat(15f, 3f, 3f).Lost(-15f).Lost(16f)   // the lost, who hold to her colour
+                    .Figure("Marrow", 6f, marrow)   // thirty steps in, a grey chick, silent
+                    .Arena(typeof(HalfCathedralBells), "bells", 1.5f, new Vector2(0.4f, 0.4f), -8f, 11f, Ability.None, AbilitySet.FlagKey(Ability.Clarity))   // with Clarity, the bells ring
+                    .West(G("Edge")).East(G("Road_1")),
+                // ---- the Road That Stops: cobbles her lantern draws ----
+                new RoomRecipe("Greyfold_Road_1").Tiles("Ground_Cobbles", "Ground_Cobbles").GreyfoldPapers("Mid_Road")
+                    .Floor(-20f, -12f).Cobble(-9f, -6.5f).Cobble(-3.5f, -1f).Cobble(2f, 4.5f).Cobble(7.5f, 10f).Floor(13f, 20f)   // the gauntlet's course, in its room
+                    .Gauntlet("road_that_stops", -12f, 13f, 13f, 20f, 0f, -15f).Smudge(15f).Smudge(18f)
+                    .West(G("Cathedral_2")).East(G("Road_2")),
+                new RoomRecipe("Greyfold_Road_2").Tiles("Ground_Cobbles", "Ground_Cobbles").GreyfoldPapers("Mid_Road")
+                    .Floor(-20f, 20f).Cobble(-10f, -7.5f, 2.5f).Cobble(-4f, -1.5f, 4.5f).Cobble(4f, 6.5f, 2.5f)   // mileposts for a road nobody finished
+                    .Prop("Milepost", -14f).Prop("Milepost", 0f).Prop("Milepost", 12f).Vantage("Milepost", 15f, 0f).Smudge(-6f).Lost(3f)
+                    .West(G("Road_1")).East(G("Road_3")),
+                new RoomRecipe("Greyfold_Road_3").Tiles("Ground_Cobbles", "Ground_Cobbles").GreyfoldPapers("Mid_Road")
+                    .Floor(-20f, 0f).White(0f, 20f).Prop("Footprints", -2.5f)   // the road ends mid-stride; past it, the white: Clarity, or it gives her back
+                    .Npc("Pell", -6f, "Edge_Pell_Watch", pell)   // sent to watch; the act break
+                    .West(G("Road_2")).East(G("Pool_1")),   // [Clarity]
+                // ---- the Mirror Pool: the glide from the Wind Gate lands here ----
+                new RoomRecipe("Greyfold_Pool_1").Tall().Tiles("Ground_WhiteSand", "Ground_WhiteSand").GreyfoldPapers("Mid_Shore")
+                    .Floor(-20f, -4f).White(-4f, 4f).Floor(4f, 20f).Plat(-16f, 4f, 3f).Plat(-12f, 8f, 3f).Plat(-14f, 12f, 3f)   // the white shore; the glide lands on the high ledge
+                    .Smudge(-8f).Lost(10f)
+                    .Up(Scene("Windreach_Gate_2"), -14f, 12.3f).West(G("Road_3")).East(G("Pool_2")),
+                new RoomRecipe("Greyfold_Pool_2").Tiles("Ground_WhiteSand", "Ground_WhiteSand").GreyfoldPapers("Mid_Pool")
+                    .Floor(-20f, 20f).Plat(10f, 2.5f, 3f).Vantage("Pool", -12f, 0f)
+                    .Remnant("Marrow", 5f, "MirrorPool_Marrow", marrow)   // in the reflection, not on the bank
+                    .West(G("Pool_1")).East(G("Threshold_1")),   // [Clarity, act2.threshold]
+                // ---- the Threshold: the Guild's line, and the line itself ----
+                new RoomRecipe("Greyfold_Threshold_1").Tiles("Ground_Line", "Ground_Line").GreyfoldPapers("Mid_Line")
+                    .Floor(-20f, 20f).Desk(-16f).Npc("Halvard", -12f, "Threshold_Halvard", halvard)   // the Guild's field desk behind the line; Halvard's third, once he has spoken
+                    .Arena(typeof(Halvard), "halvard_3", 6f, new Vector2(0.9f, 2f), -8f, 11f, Ability.None, "threshold.halvard.spoken")
+                    .Warden(13f).Warden(15.5f).Warden(18f).Prop("Stake", 12f).Prop("Stake", 14.5f).Prop("Stake", 17f).Prop("Stake", 19f)   // Wardens in a line, tethers staked across the white
+                    .West(G("Pool_2")).East(G("Threshold_2")),
+                new RoomRecipe("Greyfold_Threshold_2").Tiles("Ground_Line", "Ground_Line").GreyfoldPapers("Mid_Line")
+                    .Floor(-20f, 8f).White(8f, 20f)   // the line itself: past it, nothing holds her but Clarity
+                    .Npc("Pell", -16f, "Threshold_Pell_Cross", pell).Npc("Voss", -12f, "Threshold_Voss", voss)   // Pell, if the report was kept; Voss, the one speech
+                    .Arena(typeof(Voss), "voss", 2f, new Vector2(0.9f, 2.2f), -9f, 10f, Ability.None, "threshold.voss.spoken")
+                    .Remnant("Marrow", 15f, "Threshold_Marrow", marrow)   // the Return: echoes him
+                    .West(G("Threshold_1")).East(G("LastCamp_1")),   // [greyfold.crossed]
+                // ---- Isolde's Last Camp: just across the line ----
+                new RoomRecipe("Greyfold_LastCamp_1").Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_LastCamp")
+                    .Floor(-20f, 20f).Desk(-14f).Prop("Tent", -4f).Prop("Lamp", 1f).Prop("LampGlow", 1f).Prop("Atlas", 8f).Vantage("Atlas", 12f, 0f)   // her tent, her lamp still lit, her complete atlas
+                    .Npc("Isolde", 5f, "LastCamp_Isolde", isolde)
+                    .West(G("Threshold_2")).East(Scene("Blank_Hollow_1")),   // [act3.started]
+            };
+        }
+
+        /// <summary>
+        /// The Blank's fixed islands (ENV-08): the Lantern, Thessaly Hollow and its drift (where the islands of every place
+        /// she left unanchored go past: DriftField, and the crossing onto the first of them), the old capital half-drawn
+        /// and then drawn backwards, and Aury's lighthouse by tether. No vantages: the Blank cannot be surveyed. Every room
+        /// is drawn round her lantern; the drift is untethered wall to wall (Clarity.DriftRoom).
+        /// </summary>
+        static List<RoomRecipe> BlankRecipes()
+        {
+            var marrow = new Color(0.66f, 0.66f, 0.64f);
+            var ilse = new Color(0.70f, 0.70f, 0.68f);
+            var isolde = new Color(0.40f, 0.42f, 0.50f);
+            var corra = new Color(0.74f, 0.70f, 0.64f);
+            var corvin = new Color(0.60f, 0.58f, 0.54f);
+            var aury = new Color(0.46f, 0.48f, 0.50f);
+            var sable = new Color(0.20f, 0.22f, 0.26f);
+            string B(string id) => Scene("Blank_" + id);
+            return new List<RoomRecipe>
+            {
+                // ---- Thessaly Hollow: inside, and the drift ----
+                new RoomRecipe("Blank_Hollow_1").Tiles("Ground_Grey", "Ground_Grey").BlankPapers("Mid_Lantern")
+                    .Floor(-20f, -12f).White(-12f, -4f).Floor(-4f, 20f).Plat(8f, 2.5f, 3f).Lost(12f)   // the first island drifts up under her feet
+                    .Remnant("Marrow", 2f, "Blank_Marrow_Follow", marrow)   // a grey chick starts following
+                    .West(Scene("Greyfold_LastCamp_1")).East(B("Hollow_2")),
+                new RoomRecipe("Blank_Hollow_2").Tiles("Ground_Grey", "Ground_Grey").BlankPapers("Mid_Hollow")
+                    .Floor(-20f, 20f).Plat(14f, 2.5f, 3f).Desk(-14f).Prop("House", -10f).Prop("Well", 0f).Prop("House", 6f)   // Wren's birth village, grey; the hub: a desk in Ilse's house
+                    .Remnant("Ilse", -6f, "Hollow_Ilse", ilse).Npc("Isolde", 10f, "Hollow_Isolde", isolde).Remnant("Marrow", 2f, "Blank_Marrow_Follow", marrow)
+                    .West(B("Hollow_1")).East(B("Hollow_3")),
+                new RoomRecipe("Blank_Hollow_3").Tall().Tiles("Ground_Grey", "Ground_Grey").BlankPapers("Mid_Drift")
+                    .Floor(-20f, -2f).Floor(2f, 20f).Plat(-10f, 4f, 3f).Plat(-4f, 8f, 3f).Plat(4f, 12f, 4f).Crossing(4f, 12f)   // the far edge: up to where the islands pass, and onto the first
+                    .Drift(6).Lost(-12f).Lost(12f)
+                    .West(B("Hollow_2")).East(B("Capital_1")).Down(B("Aury_2"), 0f),   // Aury's light below [Clarity, act3.started]
+                // ---- the Old Capital: half-drawn, then drawn backwards ----
+                new RoomRecipe("Blank_Capital_1").Tiles("Ground_Street", "Ground_Street").BlankPapers("Mid_Capital", "Far_Islands", "Farther_Grey", 8f)
+                    .Floor(-20f, 20f).Plat(8f, 3f, 3f).Desk(-12f).Prop("Door", -9f).Prop("Lamp", 4f).Lost(12f)   // a desk in the doorway of what was a Guild office
+                    .West(B("Hollow_3")).East(B("Capital_2")),
+                new RoomRecipe("Blank_Capital_2").Tiles("Ground_Crayon", "Ground_Crayon").BlankPapers("Mid_Crayon")
+                    .Floor(-20f, 20f).Prop("Crayon", -16f).Npc("Corra", -12f, "Capital_Corra", corra)   // her room: the drawing that keeps everyone out
+                    .Arena(typeof(CorrasDrawing), "corras_drawing", 6f, new Vector2(2.2f, 3.6f), -8f, 11f)
+                    .West(B("Capital_1")).East(B("Capital_3")),
+                new RoomRecipe("Blank_Capital_3").Tiles("Ground_Street", "Ground_Street").BlankPapers("Mid_Mirror", "Far_Islands", "Farther_Grey", 8f)
+                    .Floor(-20f, 20f).Plat(-8f, 3f, 3f).Plat(0f, 5.5f, 3f).Desk(12f).Lost(-12f).Lost(4f)   // the streets reversed; a desk on the Observatory's steps
+                    .West(B("Capital_2")).East(B("Capital_4")),
+                new RoomRecipe("Blank_Capital_4").Tiles("Ground_Street", "Ground_Street").BlankPapers("Mid_Mirror", "Far_Islands", "Farther_Grey", 8f)
+                    .Floor(-20f, 20f).Npc("Corvin", -12f, "Capital_Corvin", corvin).Remnant("Marrow", -16f, "Capital_Marrow_Word", marrow).Prop("Chair", 14f)   // he has drawn her a chair
+                    .Arena(typeof(Archivist), "archivist", 1.5f, new Vector2(2.2f, 2.4f), -8f, 11f, Ability.None, "corvin.stance")   // the choice laid out first
+                    .West(B("Capital_3")),
+                // ---- Aury's Lighthouse: the faded third, from inside the white ----
+                new RoomRecipe("Blank_Aury_1").Tiles("Ground_Causeway", "Ground_Causeway").BlankPapers("Mid_Causeway")
+                    .Floor(-20f, -6f).White(-6f, 2f).Floor(2f, 20f).Plat(10f, 2.5f, 3f)   // a causeway into the white, the light still turning
+                    .West(Scene("Saltmarrow_Chain_3")).East(B("Aury_2")),   // the tether from the faded third [saltmarrow.tether]
+                new RoomRecipe("Blank_Aury_2").Tall().Tiles("Ground_Causeway", "Ground_Causeway").BlankPapers("Mid_LampRoom")
+                    .Floor(-20f, 20f).Plat(-16f, 4f, 3f).Plat(-11f, 8f, 3f).Plat(-15f, 12f, 3f).Prop("Beacon", 4f)   // the lamp room; in Act 3 his island drifts to the Hollow
+                    .Npc("Aury", 0f, "Aury_Lighthouse", aury).Npc("Sable", 7f, "Aury_Sable", sable)
+                    .Up(B("Hollow_3"), -15f, 12.3f).West(B("Aury_1")),
+            };
+        }
+
         static void BuildRecipe(RoomRecipe r)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -1753,6 +1925,8 @@ namespace OWSBG.Setup
                 string tile = g.name.StartsWith("Shallows") ? "Ground_Shallows" : r.Faded ? "Ground_Boardwalk_Faded" : isFloor ? r.FloorTile : r.PlatTile;
                 SkinGround(room, g.name, tile, 4f);
             }
+            for (int i = 0; i < r.Whites.Count; i++) MakeWhite(room, i, r.Whites[i].x0, r.Whites[i].x1);
+            for (int i = 0; i < r.Cobbles.Count; i++) MakeCobble(room, i, r.Cobbles[i].x0, r.Cobbles[i].x1, r.Cobbles[i].top);
 
             if (r.Papers.Count > 0)
             {
@@ -1784,6 +1958,9 @@ namespace OWSBG.Setup
             if (r.CampSiteIndex >= 0) MakeCampSite(room, r.CampSiteIndex);
             for (int i = 0; i < r.Grasses.Count; i++) { var g = r.Grasses[i]; MakeGrass(room, i, g.x0, g.x1, g.n, g.tall, g.z, g.y); }
             for (int i = 0; i < r.Updrafts.Count; i++) { var u = r.Updrafts[i]; MakeUpdraft(room, i, u.x, u.bottom, u.height, u.speed); }
+            foreach (var f in r.Figures) MakeFigure(room, f.name + "_Greybox", f.pos, f.tint, f.character);
+            if (r.CrossingAt.HasValue) MakeCrossing(room, r.CrossingAt.Value.x, r.CrossingAt.Value.top);
+            if (r.DriftCount > 0) MakeDrift(room, r.DriftCount);
             if (!string.IsNullOrEmpty(r.WalkId))
             {
                 var walk = MakeBoundsWalk(room, r.WalkId, r.WalkFlag, r.WalkValue);
@@ -1800,6 +1977,7 @@ namespace OWSBG.Setup
                 else if (e.type == typeof(CaveBat)) MakeEnemy<CaveBat>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Salamander)) MakeEnemy<Salamander>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);
+                else if (e.type == typeof(LostRemnant)) MakeEnemy<LostRemnant>(room, e.name, e.pos, e.size);
             }
             if (r.ArenaOf.HasValue)
             {
@@ -1813,6 +1991,101 @@ namespace OWSBG.Setup
         }
 
         static int Enemies_Index(RoomRecipe r, string name) => r.Enemies.FindIndex(e => e.name == name);
+
+        /// <summary>
+        /// A white patch (ENV-08, PRG-18): paper-white ground she can stand on, and over it the zone where she is untethered
+        /// and the Clarity meter runs. Without Clarity the white gives her back at once: the gate.
+        /// </summary>
+        static void MakeWhite(Room room, int index, float x0, float x1)
+        {
+            var mat = MakeLitMaterial("M_Blank_White", new Color(0.97f, 0.96f, 0.93f));
+            MakeGround(room, "White_" + index, new Vector2((x0 + x1) * 0.5f, -0.5f), new Vector2(x1 - x0, 1f), mat);
+            UntetheredZone.Make("Untethered_" + index, room.transform, new Vector2((x0 + x1) * 0.5f, 4f), new Vector2(x1 - x0, 9f));
+        }
+
+        /// <summary>
+        /// A stride of the Road That Stops (ENV-08, PRG-18): a cobble that exists only inside her lantern-radius, on the
+        /// kit's cobbles when the region has them. Not solid ground for a gauntlet: it is not there when she falls.
+        /// </summary>
+        static void MakeCobble(Room room, int index, float x0, float x1, float top)
+        {
+            var mat = MakeLitMaterial("M_Greybox_Cobble", new Color(0.52f, 0.50f, 0.46f));
+            string name = "Cobble_" + index;
+            MakeGround(room, name, new Vector2((x0 + x1) * 0.5f, top - 0.25f), new Vector2(x1 - x0, 0.5f), mat);
+            SkinGround(room, name, "Ground_Cobbles", 4f);
+            room.transform.Find(name).gameObject.AddComponent<LanternPlatform>();
+        }
+
+        /// <summary>
+        /// Someone who is there and says nothing (ENV-08: Marrow in the nave, glimpsed at the thirtieth step): drawn from
+        /// their sheets with the ink removed, no trigger, nothing to talk to.
+        /// </summary>
+        static void MakeFigure(Room room, string name, Vector2 pos, Color tint, string character = null)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            character ??= name.Replace("_Greybox", "");
+            var r = MakeSpriteQuad(go, "M_Npc_" + name, character, new Vector3(0.9f, 1.4f, 1f), new Vector3(0f, 0.7f, 0f), false, out var sheets);
+            var mat = r.sharedMaterial;
+            var rest = sheets != null ? Color.white : tint;
+            if (mat.HasProperty("_BaseColor") && mat.GetColor("_BaseColor") != rest) { mat.SetColor("_BaseColor", rest); EditorUtility.SetDirty(mat); }
+            if (sheets != null)
+            {
+                go.AddComponent<InkSheetPlayer>().Configure(r, sheets);
+                var npcInk = go.AddComponent<NpcInk>();
+                var iso = new SerializedObject(npcInk);
+                iso.FindProperty("_rest").enumValueIndex = (int)NpcInkState.Remnant;
+                iso.FindProperty("_renderer").objectReferenceValue = r;
+                iso.ApplyModifiedPropertiesWithoutUndo();
+            }
+        }
+
+        /// <summary>The step off the Hollow's far edge onto the first island going past (ENV-08, PRG-20): a trigger over the top platform.</summary>
+        static void MakeCrossing(Room room, float x, float top)
+        {
+            var go = new GameObject("DriftCrossing") { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(x, top + 0.9f, 0f);
+            go.AddComponent<BoxCollider2D>().size = new Vector2(3.5f, 1.6f);
+            go.AddComponent<DriftCrossing>();
+        }
+
+        /// <summary>
+        /// The drift (ENV-08): the kit's islands (or grey slabs) behind the play plane on a DriftField, which shows as many
+        /// as drift in this world and moves them past.
+        /// </summary>
+        static void MakeDrift(Room room, int n)
+        {
+            var go = new GameObject("Drift");
+            go.transform.SetParent(room.transform, false);
+            var field = go.AddComponent<DriftField>();
+            int seed = 4231;
+            foreach (char c in room.RoomId) seed = seed * 31 + c;
+            var rng = new System.Random(seed);
+            for (int i = 0; i < n; i++)
+            {
+                float x = -40f + 80f * (i + 0.5f) / n + (float)(rng.NextDouble() - 0.5) * 6f;
+                float y = 5f + (float)rng.NextDouble() * 7f;
+                float z = 5.5f + i * 0.3f;
+                var r = MakeProp(room, go.transform, "Island", new Vector2(x, y), z, "Island_" + i);
+                if (r == null)
+                {
+                    var q = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                    q.name = "Island_" + i;
+                    Object.DestroyImmediate(q.GetComponent<Collider>());
+                    q.transform.SetParent(go.transform, false);
+                    q.transform.localPosition = new Vector3(x, y + 1f, z);
+                    q.transform.localScale = new Vector3(5f, 2f, 1f);
+                    r = q.GetComponent<MeshRenderer>();
+                    r.sharedMaterial = MakeLitMaterial("M_Greybox_Island", new Color(0.80f, 0.80f, 0.78f));
+                }
+                r.shadowCastingMode = ShadowCastingMode.Off;
+                field.Slabs.Add(r.transform);
+                field.BaseYs.Add(r.transform.localPosition.y);
+                field.Phases.Add((float)rng.NextDouble() * 6.28f);
+            }
+        }
 
         /// <summary>
         /// One of the Long Grass Camp's sites in its built room (ENV-07, PRG-21): the camp (wagons in a ring, the fire,
@@ -2051,6 +2324,25 @@ namespace OWSBG.Setup
                 boss = b;
             }
             else if (type == typeof(FallenStar)) { var b = MakeBoss<FallenStar>(room, "FallenStar", pos, size); ((FallenStar)b).floorY = 0f; ((FallenStar)b).arenaMinX = doorW + 1.7f; ((FallenStar)b).arenaMaxX = doorE - 1.7f; boss = b; }
+            else if (type == typeof(HalfCathedralBells))
+            {
+                // The bells hang over the nave's middle; their ropes are where the kit hangs them, and the vantage's steadying is by the west door.
+                var b = MakeBoss<HalfCathedralBells>(room, "Bells", new Vector2(pos.x, 9f), size);
+                var bl = (HalfCathedralBells)b;
+                bl.floorY = 0f; bl.arenaMinX = doorW + 0.5f; bl.arenaMaxX = doorE - 0.5f;
+                bl.ropeXs.AddRange(new[] { (doorW + doorE) * 0.5f, doorW + 5.5f, doorW + 13.5f, doorW + 17f });
+                bl.vantageX = doorW + 2f;
+                MakeKitOrBlock(room, room.transform, "Vantage", new Vector2(bl.vantageX, 0f), 0.6f, new Vector3(0.15f, 1.8f, 0.2f), "M_Greybox_ArenaMarker", new Color(0.20f, 0.27f, 0.45f));
+                boss = b;
+            }
+            else if (type == typeof(Voss)) { var b = MakeBoss<Voss>(room, "Voss", pos, size); ((Voss)b).floorY = 0f; ((Voss)b).arenaMinX = doorW + 0.5f; ((Voss)b).arenaMaxX = doorE - 0.5f; boss = b; }
+            else if (type == typeof(CorrasDrawing)) { var b = MakeBoss<CorrasDrawing>(room, "CorrasDrawing", pos, size); ((CorrasDrawing)b).floorY = 0f; ((CorrasDrawing)b).arenaMinX = doorW + 1.6f; ((CorrasDrawing)b).arenaMaxX = doorE - 1.6f; boss = b; }
+            else if (type == typeof(Archivist))
+            {
+                var b = MakeBoss<Archivist>(room, "Archivist", new Vector2(pos.x, 3f), size);
+                ((Archivist)b).floorY = 0f; ((Archivist)b).arenaMinX = doorW + 0.5f; ((Archivist)b).arenaMaxX = doorE - 0.5f; ((Archivist)b).perchY = 3f;
+                boss = b;
+            }
             else throw new System.InvalidOperationException("no recipe arena for " + type.Name);
             var bossSo = new SerializedObject(boss);
             int health = Tuning.BossHealth(bossId);
@@ -2142,6 +2434,8 @@ namespace OWSBG.Setup
             foreach (var r in VerdanceRecipes()) list.Add(RoomPath(r.Id));
             foreach (var r in HaldenRecipes()) list.Add(RoomPath(r.Id));
             foreach (var r in WindreachRecipes()) list.Add(RoomPath(r.Id));
+            foreach (var r in GreyfoldRecipes()) list.Add(RoomPath(r.Id));
+            foreach (var r in BlankRecipes()) list.Add(RoomPath(r.Id));
             return list;
         }
 
@@ -2695,7 +2989,7 @@ namespace OWSBG.Setup
             if (entry == null || tex == null) return null;
             // One material per drawing per region (ENV-04): the coast keeps the plain name, another region's redrawn desk is its own.
             string region = RegionOf(room.RoomId);
-            var mat = MakePropMaterial("M_Prop_" + name + (region == "Saltmarrow" || region == "Greyfold" ? "" : "_" + region), tex, RegionPaper(region), name == "LampGlow");
+            var mat = MakePropMaterial("M_Prop_" + name + (region == "Saltmarrow" || name == "WetEdge" ? "" : "_" + region), tex, RegionPaper(region), name == "LampGlow");
             var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
             quad.name = objectName ?? "Prop_" + name;
             Object.DestroyImmediate(quad.GetComponent<Collider>());

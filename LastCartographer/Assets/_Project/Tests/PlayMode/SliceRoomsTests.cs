@@ -45,6 +45,12 @@ namespace OWSBG.Tests
             "Greybox_Windreach_Stones_1", "Greybox_Windreach_Stones_2", "Greybox_Windreach_Stones_3", "Greybox_Windreach_Camp_1", "Greybox_Windreach_Camp_2",
             "Greybox_Windreach_River_1", "Greybox_Windreach_River_2", "Greybox_Windreach_River_3", "Greybox_Windreach_Gate_1", "Greybox_Windreach_Gate_2",
             "Greybox_Windreach_Fire_1", "Greybox_Windreach_Fire_2", "Greybox_Windreach_Star_1", "Greybox_Windreach_Star_2",
+            // The Greyfold (ENV-08): eleven rooms either side of the Edge, from the orchard road to Isolde's Last Camp.
+            "Greybox_Greyfold_EdgeCamp_1", "Greybox_Greyfold_EdgeCamp_2", "Greybox_Greyfold_Cathedral_2", "Greybox_Greyfold_Road_1", "Greybox_Greyfold_Road_2", "Greybox_Greyfold_Road_3",
+            "Greybox_Greyfold_Pool_1", "Greybox_Greyfold_Pool_2", "Greybox_Greyfold_Threshold_1", "Greybox_Greyfold_Threshold_2", "Greybox_Greyfold_LastCamp_1",
+            // The Blank (ENV-08): the nine fixed islands.
+            "Greybox_Blank_Hollow_1", "Greybox_Blank_Hollow_2", "Greybox_Blank_Hollow_3", "Greybox_Blank_Capital_1", "Greybox_Blank_Capital_2", "Greybox_Blank_Capital_3", "Greybox_Blank_Capital_4",
+            "Greybox_Blank_Aury_1", "Greybox_Blank_Aury_2",
         };
 
         sealed class Info
@@ -106,7 +112,7 @@ namespace OWSBG.Tests
             foreach (var kv in infos)
             {
                 var info = kv.Value;
-                if (kv.Key != "Greybox_Greyfold_Edge") Assert.IsNotEmpty(info.Exits, kv.Key + " has an exit");   // the Edge leaves through the white (BlankEdge)
+                Assert.IsNotEmpty(info.Exits, kv.Key + " has an exit");   // the Edge too, since ENV-08: the camp one way, the nave the other
                 foreach (var e in info.Exits)
                 {
                     Assert.IsTrue(infos.ContainsKey(e.target), kv.Key + " exit " + e.name + " leads to a scene in the slice: " + e.target);
@@ -132,10 +138,13 @@ namespace OWSBG.Tests
             while (open.Count > 0)
                 foreach (var e in infos[open.Pop()].Exits)
                     if (seen.Add(e.target)) open.Push(e.target);
-            CollectionAssert.AreEquivalent(Rooms.Where(r => r != "Greybox_Greyfold_Edge"), seen, "every coast, highland, forest, Plateau and Steppe room is reachable on foot from the shore");
+            CollectionAssert.AreEquivalent(Rooms, seen, "every coast, highland, forest, Plateau, Steppe, Greyfold and Blank room is reachable on foot from the shore");
 
             int vantages = infos.Values.Sum(i => i.Vantages.Count);
-            Assert.AreEqual(42, vantages, "eight coast vantages to stand at, the whale's, the irises', the Edge's (the fourth lamp is the boss's beacon), eight each for Emberdown, the Verdance and Halden, and seven for Windreach");
+            Assert.AreEqual(46, vantages, "eight coast vantages to stand at, the whale's, the irises', the Edge's (the fourth lamp is the boss's beacon), eight each for Emberdown, the Verdance and Halden, seven for Windreach, four more for the Greyfold, and none in the Blank");
+            var greyfold = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Greyfold")).ToList();
+            CollectionAssert.AreEquivalent(RoomPlans.All.Where(p => p.Id.StartsWith("Greyfold_") && p.Vantage != null).Select(p => p.VantageId), greyfold, "the Greyfold's vantages are the plan's, the Edge's among them");
+            Assert.IsEmpty(infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Blank")), "the Blank cannot be surveyed");
             var steppe = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Windreach")).ToList();
             CollectionAssert.AreEquivalent(RoomPlans.All.Where(p => p.Id.StartsWith("Windreach_") && p.Vantage != null).Select(p => p.VantageId), steppe, "the Steppe's vantages are the plan's");
             var plateau = infos.Values.SelectMany(i => i.Vantages).Where(v => v.StartsWith("Halden")).ToList();

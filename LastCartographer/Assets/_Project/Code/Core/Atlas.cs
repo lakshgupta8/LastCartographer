@@ -232,11 +232,14 @@ namespace OWSBG.Core
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_BoneBridge/Whale", Name = "the whale" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_IrisFields", Name = "The Pale Iris Fields", Region = "The Saltmarrow" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_IrisFields/Irises", Name = "the irises" });
-            // Emberdown's (ENV-03), the Verdance's (ENV-04), Halden's (ENV-05) and Windreach's (ENV-07) pages are the plan's: every room a place, every planned vantage, a desk waypoint where the plan puts a desk.
+            // Emberdown's (ENV-03), the Verdance's (ENV-04), Halden's (ENV-05), Windreach's (ENV-07), the Greyfold's and the Blank's (ENV-08) pages
+            // are the plan's: every room a place, every planned vantage, a desk waypoint where the plan puts a desk. The Edge is its own entry above
+            // (the prologue's room keeps its hand-built page, and its desk is Isolde's, not a waypoint).
             foreach (var plan in RoomPlans.All)
             {
-                string region = plan.Id.StartsWith("Emberdown_") ? "Emberdown" : plan.Id.StartsWith("Verdance_") ? "The Verdance" : plan.Id.StartsWith("Halden_") ? "Halden" : plan.Id.StartsWith("Windreach_") ? "Windreach" : null;
-                if (region == null) continue;
+                string region = plan.Id.StartsWith("Emberdown_") ? "Emberdown" : plan.Id.StartsWith("Verdance_") ? "The Verdance" : plan.Id.StartsWith("Halden_") ? "Halden" : plan.Id.StartsWith("Windreach_") ? "Windreach"
+                              : plan.Id.StartsWith("Greyfold_") ? "The Greyfold" : plan.Id.StartsWith("Blank_") ? "The Blank" : null;
+                if (region == null || plan.Id == "Greyfold_Edge") continue;
                 _places.Add(new AtlasPlace { Id = plan.Id, Name = plan.Name, Region = region });
                 if (plan.Vantage != null) _vantages.Add(new AtlasVantage { Id = plan.VantageId, Name = "the " + plan.Vantage.ToLowerInvariant() });
                 if (plan.Desk) _waypoints.Add(new Waypoint { Id = "desk." + plan.Id, Kind = WaypointKind.Desk, Place = plan.Id, Room = "Greybox_" + plan.Id, Spawn = "Desk", Name = Possessive(plan.Name.ToLowerInvariant()) + " desk" });

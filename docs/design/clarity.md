@@ -109,9 +109,10 @@ and running down in the white.
 
 ## Open
 
-- **The drift room and the white patches are not built.** The drift is planned (PRG-20). No region yet has a white
-  patch; each patch is a zone plus a secret behind it (DES, ENV-08). The islands' white strips are the meter's only
-  in-game use so far.
+- **The drift room and the Greyfold's white patches are built (ENV-08).** `Blank_Hollow_3` is a scene, untethered
+  wall to wall; a recipe's `White(x0, x1)` is paper-white ground with an `UntetheredZone` over it, and five rooms have
+  one (where the road stops, the white shore, past the line, the Lantern, Aury's causeway). The bible's "white patches
+  hidden across every region", each with a secret behind it, are still DES's to place outside the Greyfold.
 - **The lost Remnant is greybox.** It drifts and clings. Its family's kit (a telegraph, a grey that the Remnant
   Charter reads differently) is CMB's, and the rooms that list "lost Remnant" place it when they're built.
 - **Screen-space radius.** The pass measures the radius on screen at Wren's depth. Parallax layers far behind her go

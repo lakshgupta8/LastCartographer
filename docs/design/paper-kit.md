@@ -195,6 +195,69 @@ tufts cast no shadows. **The updrafts** (`InkSwirl`): `Updraft(x, bottom, height
 wide with the ribbon stacked up it, rising and wrapping from the top back to the foot, swaying a little; the Nine
 Stones' are too weak to ride (three a second), the Gate's and the crater's carry her (nine).
 
+### 2f. The Greyfold kit (ENV-08)
+
+`tools/paperkit/greyfold.py`, on the same plumbing. White paper (0.98, 0.98, 0.97), no wash (the greys are the ink
+thinned), Wren's blue and lantern gold the only colours, ghost-grey ink (art-direction 5). Every strip is drawn nearly in
+paper, so the line carries it, and most are eaten from the east by one sheet of paper with a wandering edge (`white_eat`:
+one shape, since every edge Freestyle finds becomes a line). The recipes pick up to three a room
+(`GreyfoldPapers(mid, far, farther, midHeight)`). The region is drawn round her lantern at run time (clarity.md): the
+kit is what the lantern lights.
+
+| Layer | z | Rooms | What it is |
+|---|---|---|---|
+| `Paper_Mid_Edge` | 3 | the Edge (the prologue's room) | the chalk flat, the Guild's last tether-posts with their ropes run east into nothing, grass gone to outline |
+| `Paper_Far_Cathedral` | 8 | the Edge | half a cathedral far off: the nave's roof, the broken tower, the rose window; the east half already white |
+| `Paper_Farther_Edge` | 16 | the Edge | the white with buildings at the edge of the eye |
+| `Paper_Mid_Fence` | 3 | the orchard road's end | the Guild fence with no gate, a notice on it, the road's last stones |
+| `Paper_Mid_Outpost` | 3 | the Edge Camp | tents gone grey, tether-posts with their ropes coiled and never used, the ledger board, the beam with initials |
+| `Paper_Mid_Nave` | 3 | the nave (12 tall) | columns and pointed arches, the bells hung high with their ropes, the road's cobbles down the middle, a chick |
+| `Paper_Mid_Road` | 3 | the Road That Stops | cobbles that fade a stride at a time, mileposts counting down (the last blank), hedges in outline |
+| `Paper_Mid_Shore` | 3 | the white shore | a beach of paper, the pool's near edge, reeds in outline, a boat never finished |
+| `Paper_Mid_Pool` | 3 | the Mirror Pool | water with ripple lines; in the reflection a grey chick, upside down, and nothing on the bank |
+| `Paper_Mid_Line` | 3 | the Threshold | stakes across the white with every tether run taut into it (one old Ferrymen's), the field desk, the Guild's flag |
+| `Paper_Mid_LastCamp` | 3 | Isolde's Last Camp | her tent, her lamp lit (the one gold), her atlas open on a stone, a kettle |
+| `Paper_Far_White` | 8 | most rooms | the capital's roof-lines at the edge of the eye, a tower, mileposts going away |
+| `Paper_Farther_Blank` | 16 | most rooms | nearly nothing: a horizon line that gives up |
+
+Tiles: `Ground_Chalk` (chalk-pale earth, pebbles, grass in outline), `Ground_Cobbles` (the road's cobbles in two courses,
+every third fainter), `Ground_WhiteSand` (paper sand, a tide-line, a shell), `Ground_Line` (trodden white, a chalk line,
+stake-holes). Props (`props.py`, region `Greyfold`; the wet edge was its first): the shared furniture and the tether-post in
+grey and rope, plus `Prop_Fence` (4 × 2.5), `Prop_Milepost` (0.75 × 2), `Prop_Tent` (3 × 2.5), `Prop_Stake` (a Guild stake
+with its tether, 0.5 × 2), `Prop_Cobble` (one stride of the road, 2.5 × 0.5), `Prop_Atlas` (open on a stone, 1.5 × 1),
+`Prop_Footprints` (3 × 0.5) and `Prop_Beam` (the initials and the wren, 0.5 × 3). The Greyfold's props are their own
+materials (`M_Prop_Desk_Greyfold`); the wet edge keeps `M_Prop_WetEdge`, the name the Edge was built with.
+
+### 2g. The Blank kit (ENV-08)
+
+`tools/paperkit/blank.py`, on the same plumbing, borrowing the Greyfold's shapes. The same white, the greys a shade
+darker (here the grey is the people), Wren's blue, lantern gold, and a child's ochre crayon in Corra's room. Where the
+Greyfold's strips are eaten, the Blank's are half-drawn: one sheet whose edge jumps in and out (`half_drawn`), so a thing
+stops where the drawing stopped. The recipes pick up to three a room (`BlankPapers(mid, far, farther, midHeight)`).
+
+| Layer | z | Rooms | What it is |
+|---|---|---|---|
+| `Paper_Mid_Lantern` | 3 | the Lantern | the first island's edge; colour blooming in the middle (blue and gold strokes) and the white closing in either side |
+| `Paper_Mid_Hollow` | 3 | Thessaly Hollow | low houses under deep roofs, grey; the well; height marks in a doorframe; the Remnant's chicks on the roofs |
+| `Paper_Mid_Drift` | 3 | the drift | the village's ground breaking off, its underside ragged, islands going past |
+| `Paper_Mid_Capital` | 3 | the district's edge (8 tall) | street fronts with rows of windows, a Guild office door with a nameplate, lamps unlit, the drawing stopping |
+| `Paper_Mid_Crayon` | 3 | Corra's room | a white room with a wainscot, the same tall heron in crayon over and over, a compass in its wing, no face |
+| `Paper_Mid_Mirror` | 3 | the mirror streets, the mirror-Observatory (8 tall) | the fronts drawn right to left with their doors on the wrong side, the half dome at their end with its one socket |
+| `Paper_Mid_Causeway` | 3 | the tether's end | a stone causeway into the white, the sea gone to paper, the third lighthouse's foot, Sable's rope on a post |
+| `Paper_Mid_LampRoom` | 3 | Aury's lamp room | the lamp turning (the one gold), the glass in its iron frame, a kettle, two chairs |
+| `Paper_Far_Islands` | 8 | most rooms | islands drifting far off with houses on them, each paler |
+| `Paper_Farther_Grey` | 16 | most rooms | nothing: the grey of a horizon that is not one |
+
+Tiles: `Ground_Grey` (an island's slab, a crack), `Ground_Street` (long flags, half never finished), `Ground_Crayon`
+(white boards scribbled over), `Ground_Causeway` (wet stone, weed in a joint). Props (`props.py`, region `Blank`): the
+desk, the lamp, seeds and the bound stake in the Blank's greys, plus `Prop_House` (3 × 2.5), `Prop_Island` (a slab going
+past, 5 × 2; six of them on the drift's `DriftField`), `Prop_Chair` (the one Corvin drew, 1 × 1.5), `Prop_Crayon` (her
+father on the wall, 2 × 2.5), `Prop_Beacon` (Aury's lamp, 1.5 × 2.5), `Prop_Well` (1.5 × 1.5) and `Prop_Door` (the
+office door with its nameplate, 1.5 × 2.5).
+
+A flat shape inside a box's depth is hidden by the box's front face (a box is 0.4 deep about its y): a tile's pebbles,
+cobbles and blades sit in front of the bed at a negative y.
+
 ### 2a. Props (ENV-09)
 
 `tools/paperkit/props.py` draws the hubs' furniture with the same helpers: one cut-out each at 96 px/unit, feet at
@@ -268,10 +331,11 @@ palette; Blender's view transform is Standard, not AgX.
 
 ## 7. Open
 
-- The weak floors' and hidden platforms' tiles are drawn (ENV-12); the Shore's sea-fade sheets and the rest of
-  the Blank's look are ENV-08's.
-- The Shore's sea-fade sheets stay white quads: the Blank's look is ENV-08's.
-- The Greyfold Edge's three strips (`Mid_Edge`, `Far_Cathedral`, `Farther_Edge`) are ENV-08's.
+- The Shore's sea-fade sheets stay white quads (the Edge's `MakeBlankWhite` mirrored); a drawn wet edge for the sea
+  would be the Greyfold's `Prop_WetEdge` turned round.
+- The Blank's generated islands (`IslandBuilder`) are runtime rooms with flat colours: the kit's `Ground_Grey`,
+  `Paper_Far_Islands` and `Prop_House` are editor assets. Loading them at run time (Addressables, or a prefab the
+  builder copies) would give the islands the drift room's look.
 - Per-region `_Ink` curves (fade-stages.md §7) can now be tuned against real layers.
 - The props are one drawing each (§2a); a second state (the desk with Wren at it, the stall shuttered at night, the
   glow at half) would be a second file and a rule in the helper. Seeds dropped by enemies at run time are still the

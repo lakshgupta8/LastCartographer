@@ -44,7 +44,9 @@ No `FadeGroup`: an island is grey by material, not by stage. No vantages: the Bl
 ## 5. Open
 - The lantern-radius look is built (PRG-18, `clarity.md`): every island is drawn round her lantern, and the white
   between the drift's edge and the island is untethered, so the Clarity meter runs there.
-- The Hollow's drift room is planned, not built; until it is, the drift is entered by `RoomManager.Transition`.
+- The Hollow's drift room is built (ENV-08, `Greybox_Blank_Hollow_3`, which `DriftEntryScene` names): a `DriftField`
+  shows as many of the kit's islands going past as `Islands.Drifting` lists, and a `DriftCrossing` over its top platform
+  steps her onto the first of them (a caption when nothing drifts). The islands' own rooms keep this greybox look.
 - A generic island speaks one script. To say what it was ("This was the baths"), the builder should pass
   `Drift.Name` to Yarn: a `$island` variable, or a `<<island>>` command that sets a caption.
 - Islands are rebuilt on every visit and never remember: an NPC talked to stays talked to (flags), but a dropped

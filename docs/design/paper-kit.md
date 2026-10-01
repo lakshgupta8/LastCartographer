@@ -284,6 +284,11 @@ group at dropout 5: it thins with the place and never drops, so a desk stays a d
 | `Prop_Tether` | 1 × 3 | Merrow's End by the vantage, the Tetherline ×4, the Ferry ×2 | a tether-post, its rope running up and away into the white |
 | `Prop_WetEdge` (the Greyfold kit's first layer: `Art/Environment/Greyfold/`) | 4 × 12, stretched to 30 tall | the Edge, over the first white sheet's start | where the paper is wet before it is white: a fibrous damp band, no ink line, outside the fade group (ENV-12, `ink-fx.md` §3) |
 
+The dressing (ENV-06, `docs/design/environment-props.md`) adds thirty-one drawings and eight changed states under
+"the dressing" in `props.py`, one per piece of `docs/story/environment.md` not already drawn by a room's recipe, in
+each region's palette; `ProjectSetup.MakeDressing` stands a piece's one or two drawings under a `Dressing_*` object
+and `PlacementSetup` stands the read ones under their triggers.
+
 Depth wash is how far each colour is lerped toward the region's paper: aerial perspective as thinning ink
 (art-direction 3). Ink lines thin the same way.
 

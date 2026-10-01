@@ -26,6 +26,9 @@ namespace OWSBG.Tests
         {
             "Prop_Desk", "Prop_Ledger", "Prop_Dummy", "Prop_Stall", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds",
             "Prop_Bound", "Prop_Nets", "Prop_Stoop", "Prop_Boat", "Prop_Tether",
+            // The dressing (ENV-06, docs/design/environment-props.md): the coast's pieces and the chapel's door, shut and open.
+            "Prop_TetherPosts", "Prop_PriceBoard", "Prop_Lintels", "Prop_Lintels_Chalk", "Prop_Log", "Prop_Tapestry",
+            "Prop_ChapelDoor", "Prop_ChapelDoor_Open", "Prop_Ladders", "Prop_Moorings", "Prop_Keeper",
         };
         const string Scenes = "Assets/_Project/Scenes/Greybox/";
 
@@ -74,8 +77,8 @@ namespace OWSBG.Tests
             foreach (var n in Props)
             {
                 Assert.AreEqual("prop", by[n].kind, n);
-                Assert.That(by[n].widthUnits, Is.InRange(0.5f, 3f), n + " is furniture, not a backdrop");
-                Assert.That(by[n].heightUnits, Is.InRange(0.5f, 3f), n);
+                Assert.That(by[n].widthUnits, Is.InRange(0.5f, 4f), n + " is furniture, not a backdrop");
+                Assert.That(by[n].heightUnits, Is.InRange(0.5f, 4f), n + " (the stilt-roost's ladder is four tall)");
             }
             Assert.IsTrue(by["Paper_Mid_Reeds_Faded"].faded && !by["Paper_Mid_Reeds"].faded, "the manifest says which layers are the faded third's");
         }

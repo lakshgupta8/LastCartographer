@@ -27,7 +27,8 @@ namespace OWSBG.Tests
 
         public static readonly string[] Strips = { "Paper_Fore_Ferns", "Paper_Mid_Trunks", "Paper_Mid_Roots", "Paper_Mid_Branches", "Paper_Mid_Shelves", "Paper_Mid_Village", "Paper_Mid_Ash", "Paper_Mid_Gate", "Paper_Far_Canopy", "Paper_Far_Lanterns", "Paper_Farther_Forest" };
         public static readonly string[] Tiles = { "Ground_Root", "Ground_Moss", "Ground_Flag", "Ground_Lane" };
-        public static readonly string[] Props = { "Prop_Desk", "Prop_Ledger", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_Milestone", "Prop_Lantern", "Prop_Lectern", "Prop_Bunting", "Prop_Anchor" };
+        public static readonly string[] Props = { "Prop_Desk", "Prop_Ledger", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_Milestone", "Prop_Lantern", "Prop_Lectern", "Prop_Bunting", "Prop_Anchor",
+            "Prop_WoolMap", "Prop_WoolMap_Open", "Prop_Dust", "Prop_Ledge", "Prop_Inscription" };   // the dressing (ENV-06)
 
         static Manifest LoadKit() => JsonUtility.FromJson<Manifest>(File.ReadAllText(Path.GetFullPath(Kit + "kit.json")));
         static string SceneText(string id) => File.ReadAllText(Path.GetFullPath(Scenes + "Greybox_" + id + ".unity"));
@@ -51,7 +52,7 @@ namespace OWSBG.Tests
             var kit = LoadKit();
             Assert.AreEqual("Verdance", kit.region);
             Assert.AreEqual(40, kit.ppu); Assert.AreEqual(96, kit.tilePpu);
-            CollectionAssert.AreEquivalent(Strips.Concat(Tiles).Concat(Props), kit.layers.Select(l => l.name), "eleven strips, four tiles, twelve props");
+            CollectionAssert.AreEquivalent(Strips.Concat(Tiles).Concat(Props), kit.layers.Select(l => l.name), "eleven strips, four tiles, seventeen props");
             foreach (var l in kit.layers)
             {
                 var (w, h) = PngSize(Path.GetFullPath(Kit + l.file));

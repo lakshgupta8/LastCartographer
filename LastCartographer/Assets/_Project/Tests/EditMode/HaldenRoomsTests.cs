@@ -27,7 +27,8 @@ namespace OWSBG.Tests
 
         public static readonly string[] Strips = { "Paper_Fore_Balustrade", "Paper_Mid_Bridges", "Paper_Mid_Mills", "Paper_Mid_Lowmarket", "Paper_Mid_Hall", "Paper_Mid_Orchard", "Paper_Mid_Tower", "Paper_Mid_Dome", "Paper_Far_Citadel", "Paper_Far_Drop", "Paper_Farther_Sky" };
         public static readonly string[] Tiles = { "Ground_Granite", "Ground_Boards", "Ground_Parquet", "Ground_Cobble" };
-        public static readonly string[] Props = { "Prop_Desk", "Prop_Ledger", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_Anchor", "Prop_Gravestone", "Prop_Wheel", "Prop_Scaffold", "Prop_Frame", "Prop_Slots", "Prop_ExamDesk", "Prop_Notice" };
+        public static readonly string[] Props = { "Prop_Desk", "Prop_Ledger", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_Anchor", "Prop_Gravestone", "Prop_Wheel", "Prop_Scaffold", "Prop_Frame", "Prop_Slots", "Prop_ExamDesk", "Prop_Notice",
+            "Prop_TollBoard", "Prop_Sheets", "Prop_Order", "Prop_Roll", "Prop_Plaque", "Prop_Drawing", "Prop_Leaves", "Prop_Notice_Complete" };   // the dressing (ENV-06)
 
         static Manifest LoadKit() => JsonUtility.FromJson<Manifest>(File.ReadAllText(Path.GetFullPath(Kit + "kit.json")));
         static string SceneText(string id) => File.ReadAllText(Path.GetFullPath(Scenes + "Greybox_" + id + ".unity"));
@@ -53,7 +54,7 @@ namespace OWSBG.Tests
             var kit = LoadKit();
             Assert.AreEqual("Halden", kit.region);
             Assert.AreEqual(40, kit.ppu); Assert.AreEqual(96, kit.tilePpu);
-            CollectionAssert.AreEquivalent(Strips.Concat(Tiles).Concat(Props), kit.layers.Select(l => l.name), "eleven strips, four tiles, fifteen props");
+            CollectionAssert.AreEquivalent(Strips.Concat(Tiles).Concat(Props), kit.layers.Select(l => l.name), "eleven strips, four tiles, twenty-three props");
             foreach (var l in kit.layers)
             {
                 var (w, h) = PngSize(Path.GetFullPath(Kit + l.file));

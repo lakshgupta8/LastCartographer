@@ -23,6 +23,8 @@ namespace OWSBG.Core
         public int Scraps, Seeds;
         /// <summary>For the designer: what it is, and why it wants that.</summary>
         public string Brief;
+        /// <summary>A door's kit drawing (ENV-06): "Prop_&lt;Prop&gt;" shut, "Prop_&lt;Prop&gt;_Open" once <see cref="Opens"/> is set. Null for a bird: a person is a character's.</summary>
+        public string Prop;
         public bool Accepts(string memory) => Wants.Length == 0 || Wants.Contains(memory);
     }
 
@@ -97,7 +99,7 @@ namespace OWSBG.Core
             _all.Add(new Asker
             {
                 Id = "chapel_door", Kind = AskerKind.Door, Room = "Saltmarrow_Chapel", Node = "Chapel_Door",
-                Wants = new[] { "dotha.nine_songs" }, Opens = "saltmarrow.chapel.door_open", Scraps = 2,
+                Wants = new[] { "dotha.nine_songs" }, Opens = "saltmarrow.chapel.door_open", Scraps = 2, Prop = "ChapelDoor",
                 Brief = "A door of salt-eaten paper behind the altar, cut with one line: \"Sing me in.\" It opens for a song, " +
                         "and Merrow's End's are the only ones on the coast. Behind it, the chapel's reliquary: two scraps of good vellum.",
             });
@@ -111,7 +113,7 @@ namespace OWSBG.Core
             _all.Add(new Asker
             {
                 Id = "ninth_door", Kind = AskerKind.Door, Room = "Emberdown_Chimneys_3", Node = "Ninth_Door",
-                Wants = new[] { "kettil.count" }, Opens = "emberdown.ninth.door_open", Scraps = 2,
+                Wants = new[] { "kettil.count" }, Opens = "emberdown.ninth.door_open", Scraps = 2, Prop = "NinthDoor",
                 Brief = "A door at the ninth chimney's top with no builder's name over it and fresh soot on the stone. Nobody " +
                         "remembers cutting it, so it admits only the counted: a count with the bearer in it is its key. Behind it, " +
                         "the builder's satchel: two scraps, and a name rubbed out.",

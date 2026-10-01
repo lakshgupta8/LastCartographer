@@ -29,10 +29,11 @@ namespace OWSBG.Tests
 
         public static readonly string[] GreyfoldStrips = { "Paper_Mid_Edge", "Paper_Far_Cathedral", "Paper_Farther_Edge", "Paper_Mid_Fence", "Paper_Mid_Outpost", "Paper_Mid_Nave", "Paper_Mid_Road", "Paper_Mid_Shore", "Paper_Mid_Pool", "Paper_Mid_Line", "Paper_Mid_LastCamp", "Paper_Far_White", "Paper_Farther_Blank" };
         public static readonly string[] GreyfoldTiles = { "Ground_Chalk", "Ground_Cobbles", "Ground_WhiteSand", "Ground_Line" };
-        public static readonly string[] GreyfoldProps = { "Prop_WetEdge", "Prop_Desk", "Prop_Ledger", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_Tether", "Prop_Fence", "Prop_Milepost", "Prop_Tent", "Prop_Stake", "Prop_Cobble", "Prop_Atlas", "Prop_Footprints", "Prop_Beam" };
+        public static readonly string[] GreyfoldProps = { "Prop_WetEdge", "Prop_Desk", "Prop_Ledger", "Prop_Vantage", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_Tether", "Prop_Fence", "Prop_Milepost", "Prop_Tent", "Prop_Stake", "Prop_Cobble", "Prop_Atlas", "Prop_Footprints", "Prop_Beam",
+            "Prop_CutTether", "Prop_OldTether" };   // the dressing (ENV-06)
         public static readonly string[] BlankStrips = { "Paper_Mid_Lantern", "Paper_Mid_Hollow", "Paper_Mid_Drift", "Paper_Mid_Capital", "Paper_Mid_Crayon", "Paper_Mid_Mirror", "Paper_Mid_Causeway", "Paper_Mid_LampRoom", "Paper_Far_Islands", "Paper_Farther_Grey" };
         public static readonly string[] BlankTiles = { "Ground_Grey", "Ground_Street", "Ground_Crayon", "Ground_Causeway" };
-        public static readonly string[] BlankProps = { "Prop_Desk", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_House", "Prop_Island", "Prop_Chair", "Prop_Crayon", "Prop_Beacon", "Prop_Well", "Prop_Door" };
+        public static readonly string[] BlankProps = { "Prop_Desk", "Prop_Lamp", "Prop_LampGlow", "Prop_Seeds", "Prop_Bound", "Prop_House", "Prop_Island", "Prop_Chair", "Prop_Crayon", "Prop_Beacon", "Prop_Well", "Prop_Door", "Prop_Doorframe" };   // Ilse's doorframe is the dressing's (ENV-06)
 
         static Manifest LoadKit(string region) => JsonUtility.FromJson<Manifest>(File.ReadAllText(Path.GetFullPath(Kits + region + "/kit.json")));
         static string SceneText(string id) => File.ReadAllText(Path.GetFullPath(Scenes + "Greybox_" + id + ".unity"));
@@ -88,8 +89,8 @@ namespace OWSBG.Tests
         [Test]
         public void BothKitsAreRenderedInWhiteAndGhostGrey()
         {
-            CheckKit("Greyfold", GreyfoldStrips, GreyfoldTiles, GreyfoldProps, "thirteen strips, four tiles, seventeen props (the wet edge among them)");
-            CheckKit("Blank", BlankStrips, BlankTiles, BlankProps, "ten strips, four tiles, twelve props");
+            CheckKit("Greyfold", GreyfoldStrips, GreyfoldTiles, GreyfoldProps, "thirteen strips, four tiles, nineteen props (the wet edge among them)");
+            CheckKit("Blank", BlankStrips, BlankTiles, BlankProps, "ten strips, four tiles, thirteen props");
             // No two kits share a layer name: a material is named after its layer, and the last build would win.
             var all = new Dictionary<string, string>();
             foreach (var dir in Directory.GetDirectories(Path.GetFullPath("Assets/_Project/Art/Environment")))

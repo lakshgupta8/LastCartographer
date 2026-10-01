@@ -1185,6 +1185,8 @@ namespace OWSBG.Setup
             public readonly List<(System.Type type, string name, Vector2 pos, Vector2 size)> Enemies = new List<(System.Type, string, Vector2, Vector2)>();
             public readonly List<(Vector2 pos, int n)> Seeds = new List<(Vector2, int)>();
             public readonly List<(string name, Vector2 pos, float z)> Props = new List<(string, Vector2, float)>();
+            // The dressing (ENV-06): catalog pieces that are only seen, stood by their piece id (the read ones come with their trigger, PlacementSetup).
+            public readonly List<(string piece, Vector2 pos, float z)> Dressings = new List<(string, Vector2, float)>();
             // The region's dressing (ENV-03): the kit tiles the ground wears, the paper layers behind, and who stands here.
             public string FloorTile = "Ground_Boardwalk", PlatTile = "Ground_Boardwalk";
             public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
@@ -1277,6 +1279,7 @@ namespace OWSBG.Setup
             public RoomRecipe Salamander(float x, float y = 0.35f) { Enemies.Add((typeof(Salamander), "Salamander_" + Enemies.Count, new Vector2(x, y), new Vector2(1.2f, 0.5f))); return this; }
             public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
             public RoomRecipe Prop(string name, float x, float y = 0f, float z = 0.7f) { Props.Add((name, new Vector2(x, y), z)); return this; }
+            public RoomRecipe Dress(string piece, float x, float y = 0f, float z = 0.7f) { Dressings.Add((piece, new Vector2(x, y), z)); return this; }
             public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
             public RoomRecipe Warden(float x) { Enemies.Add((typeof(Warden), "Warden_" + Enemies.Count, new Vector2(x, 0.8f), new Vector2(0.7f, 1.6f))); return this; }
             public RoomRecipe Tiles(string floor, string plat) { FloorTile = floor; PlatTile = plat; return this; }
@@ -1341,7 +1344,7 @@ namespace OWSBG.Setup
                     .East(Scene(A)),
                 new RoomRecipe("Saltmarrow_Stilts").Tall()
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(-5f, 5f, 3f).Plat(0f, 7.5f, 3f).Plat(5f, 10f, 3f).Plat(0f, 12f, 4f)
-                    .Skimmer(-5f, 7f).Skimmer(6f, 12.5f).Crab(10f)
+                    .Skimmer(-5f, 7f).Skimmer(6f, 12.5f).Crab(10f).Dress("stilts.ladders", 16f, 0f, 0.9f)   // a roost door with no steps, a ladder lashed on after
                     .West(Scene(A)).East(Scene("Saltmarrow_Boardwalk")).Up(Scene("Saltmarrow_Roots_1"), 0f, 12.3f),
                 new RoomRecipe("Saltmarrow_Boardwalk")
                     .Floor(-20f, -6f).Floor(-2f, 8f).Floor(12f, 20f).Shallows(-6f, -2f).Shallows(8f, 12f)
@@ -1354,7 +1357,7 @@ namespace OWSBG.Setup
                     .West(Scene(B)).East(Scene("Saltmarrow_Ferry")),
                 new RoomRecipe("Saltmarrow_Ferry")
                     .Floor(-20f, 20f).Plat(4f, 2.5f, 3f).Plat(9f, 4.5f, 3f)
-                    .Smudge(-6f).Smudge(6f).Prop("Tether", -15f).Prop("Tether", 15f).Prop("Bound", -12f).Prop("Bound", 12f)
+                    .Smudge(-6f).Smudge(6f).Prop("Tether", -15f).Prop("Tether", 15f).Prop("Bound", -12f).Prop("Bound", 12f).Dress("ferry.boats", 0f, 0f, 0.9f)
                     .West(Scene("Saltmarrow_Tetherline")).East(Scene("Saltmarrow_Chain_1")),
                 new RoomRecipe("Saltmarrow_Chain_1").Tall()
                     .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(-1f, 5f, 3f).Plat(4f, 7.5f, 3f).Plat(0f, 10f, 5f).Vantage("FirstLamp", 0f, 10.3f)
@@ -1366,7 +1369,7 @@ namespace OWSBG.Setup
                     .West(Scene("Saltmarrow_Chain_1")).East(Scene("Saltmarrow_Chain_3")),
                 new RoomRecipe("Saltmarrow_Chain_3") { Faded = true }
                     .Floor(-20f, 20f).Plat(-4f, 2.5f, 3f).Plat(2f, 4.5f, 3f)
-                    .Smudge(-8f).Smudge(8f).Seed(2f, 5.3f, 3)
+                    .Smudge(-8f).Smudge(8f).Seed(2f, 5.3f, 3).Dress("chain.faded_keeper", 10f, 0f, 2.5f)   // the keeper's silhouette, between the walk and the strip
                     .West(Scene("Saltmarrow_Chain_2")).East(Scene(C)),
                 new RoomRecipe("Saltmarrow_Roots_1")
                     .Floor(-20f, -2f).Floor(2f, 20f).Plat(8f, 3f, 3f).Plat(13f, 6f, 3f)
@@ -1506,7 +1509,7 @@ namespace OWSBG.Setup
                     .Up(E("Hollow_2"), 10f, 12.3f).Down(E("Hollow_4"), -16f),
                 new RoomRecipe("Emberdown_Hollow_4").Tall().Tiles("Ground_Basalt", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
                     .Floor(-20f, 20f).Plat(-16f, 12f, 4f).Plat(-12f, 9f, 3f).Plat(-16f, 6f, 3f).Plat(-12f, 3f, 3f)
-                    .Arena(typeof(Collapse), "collapse", 6f, new Vector2(2.2f, 2.6f), -6f, 18f)
+                    .Arena(typeof(Collapse), "collapse", 6f, new Vector2(2.2f, 2.6f), -6f, 18f).Dress("hollow.bottom", -18.5f, 0f, 0.9f)   // out of the light, west of the plats
                     .Up(E("Hollow_3"), -16f, 12.3f),
             };
         }
@@ -1588,6 +1591,7 @@ namespace OWSBG.Setup
                 // ---- the Sunken Library: anchored, and it shows ----
                 new RoomRecipe("Verdance_Library_1").Tiles("Ground_Flag", "Ground_Flag").VerdancePapers("Mid_Shelves", "Far_Canopy", null)
                     .Floor(-20f, -15f).Floor(-9f, 8f).Floor(12f, 20f).Anchor(-13f, 5f).Anchor(-8f, 6f).Plat(-2f, 2.5f, 3f).Plat(4f, 2.5f, 3f)   // the way in from the grove is by thread; the dust does not move
+                    .Dress("library.dust", -4f, 0.4f, 0.6f)
                     .West(V("Grove_4")).Down(V("Library_2"), 10f),
                 new RoomRecipe("Verdance_Library_2").Tall().Tiles("Ground_Flag", "Ground_Flag").VerdancePapers("Mid_Shelves", "Far_Canopy", null)
                     .Floor(-20f, 20f).Plat(10f, 12f, 4f).Plat(4f, 9f, 3f).Plat(10f, 6f, 3f).Plat(4f, 3f, 3f)
@@ -1611,7 +1615,7 @@ namespace OWSBG.Setup
                     .Floor(-20f, 20f).Desk(-12f).Plat(4f, 3f, 3f).Plat(12f, 6f, 3f).Anchor(8f, 6f).Anchor(15f, 9.5f).Skimmer(6f, 5f)   // the gate's roots as anchors up the wall
                     .West(V("Aldermere_3")).East(V("Gate_2")),
                 new RoomRecipe("Verdance_Gate_2").Tiles("Ground_Flag", "Ground_Flag").VerdancePapers("Mid_Gate")
-                    .Floor(-20f, 20f).Plat(-2f, 3f, 3f).Plat(10f, 3f, 3f).Vantage("Gate", -15f, 0f)
+                    .Floor(-20f, 20f).Plat(-2f, 3f, 3f).Plat(10f, 3f, 3f).Vantage("Gate", -15f, 0f).Dress("gate.ledge", 15.5f, 0f, 0.9f)
                     .Root(0f, 5f).Root(6f, 8f).Root(12f, 5f)   // where the Gatekeeper's roots hold
                     .Remnant("Innkeeper", -11f, "Gate_Inn", remnant)   // the one-night inn, once the gate is surveyed
                     .Arena(typeof(Gatekeeper), "gatekeeper", 8f, new Vector2(2.4f, 3.2f), -6f, 17f)
@@ -1679,7 +1683,7 @@ namespace OWSBG.Setup
                     .Floor(-20f, 20f).Plat(-12f, 12f, 4f).Plat(-6f, 9f, 3f).Plat(-12f, 6f, 3f).Plat(-6f, 3f, 3f).Smudge(8f)
                     .Up(H("Bridges_2"), -12f, 12.3f).East(H("Lowmarket_2")),
                 new RoomRecipe("Halden_Lowmarket_2").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
-                    .Floor(-20f, 20f).Plat(8f, 2.5f, 3f).Desk(-14f).Prop("Notice", -9f).Vantage("Market", 14f, 0f)
+                    .Floor(-20f, 20f).Plat(8f, 2.5f, 3f).Desk(-14f).Vantage("Market", 14f, 0f)   // the notice board is the readable's (ENV-06, PlacementSetup): it changes once the place is anchored
                     .Npc("Brisk", -4f, "Lowmarket_Strike", folk).Npc("Anvers", 0f, "Lowmarket_Strike", guild)   // the strike hall
                     .West(H("Lowmarket_1")).East(H("Lowmarket_3")),
                 new RoomRecipe("Halden_Lowmarket_3").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
@@ -1698,7 +1702,7 @@ namespace OWSBG.Setup
                     .West(H("Hall_2")).East(H("Orchard_1")),
                 // ---- the Old Orchard: the only fallen leaves in Halden ----
                 new RoomRecipe("Halden_Orchard_1").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Orchard")
-                    .Floor(-20f, 20f).Plat(-4f, 2.5f, 3f).Plat(6f, 2.5f, 3f)
+                    .Floor(-20f, 20f).Plat(-4f, 2.5f, 3f).Plat(6f, 2.5f, 3f).Dress("orchard.leaves", 12f, 0f, 0.9f)
                     .West(H("Hall_3")).East(H("Orchard_2")),
                 new RoomRecipe("Halden_Orchard_2").Tall().Tiles("Ground_Cobble", "Ground_Granite").HaldenPapers("Mid_Orchard")
                     .Floor(-20f, 20f).Vantage("Leaves", -4f, 0f).Prop("Gravestone", 8f)
@@ -1851,7 +1855,7 @@ namespace OWSBG.Setup
                     .West(Scene("Halden_Orchard_2")).East(G("EdgeCamp_2")),   // [isolde.cache] on the map
                 new RoomRecipe("Greyfold_EdgeCamp_2").Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_Outpost")
                     .Floor(-20f, 20f).Plat(8f, 2.5f, 3f).Desk(-12f).Prop("Ledger", -8f).Prop("Beam", -4f)   // the hub: a ledger nobody posts to, Isolde's initials in a beam
-                    .Prop("Tent", -17f).Prop("Tether", 2f).Prop("Tether", 5f).Vantage("Outpost", 14f, 0f)
+                    .Prop("Tent", -17f).Prop("Tether", 2f).Prop("Tether", 5f).Dress("edgecamp.tethers", 11f, 0f, 0.9f).Vantage("Outpost", 14f, 0f)
                     .West(G("EdgeCamp_1")).East(G("Edge")),
                 // ---- the half-cathedral: the nave east of the prologue's room ----
                 new RoomRecipe("Greyfold_Cathedral_2").Tall().Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_Nave", "Far_White", "Farther_Blank", 12f)
@@ -1886,6 +1890,7 @@ namespace OWSBG.Setup
                     .Floor(-20f, 20f).Desk(-16f).Npc("Halvard", -12f, "Threshold_Halvard", halvard)   // the Guild's field desk behind the line; Halvard's third, once he has spoken
                     .Arena(typeof(Halvard), "halvard_3", 6f, new Vector2(0.9f, 2f), -8f, 11f, Ability.None, "threshold.halvard.spoken")
                     .Warden(13f).Warden(15.5f).Warden(18f).Prop("Stake", 12f).Prop("Stake", 14.5f).Prop("Stake", 17f).Prop("Stake", 19f)   // Wardens in a line, tethers staked across the white
+                    .Dress("threshold.old_tether", 10.5f, 0f, 0.9f)   // and one old Ferrymen's tether among them
                     .West(G("Pool_2")).East(G("Threshold_2")),
                 new RoomRecipe("Greyfold_Threshold_2").Tiles("Ground_Line", "Ground_Line").GreyfoldPapers("Mid_Line")
                     .Floor(-20f, 8f).White(8f, 20f)   // the line itself: past it, nothing holds her but Clarity
@@ -1998,6 +2003,11 @@ namespace OWSBG.Setup
             foreach (var v in r.Vantages) MakeVantage(room, v.name, r.Id + "/" + v.name, v.pos);
             foreach (var sd in r.Seeds) MakeSeeds(room, sd.pos, sd.n);
             foreach (var p in r.Props) { MakeProp(room, room.transform, p.name, p.pos, p.z); MakePropLight(room, p.name, p.pos); }
+            foreach (var d in r.Dressings)
+            {
+                var piece = Dressing.Find(d.piece) ?? throw new System.ArgumentException("no dressing piece " + d.piece);
+                MakeDressing(room, room.transform, piece.Id, piece.Prop, piece.PropAfter, piece.Change, d.pos, d.z);
+            }
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
             foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
@@ -3055,6 +3065,19 @@ namespace OWSBG.Setup
                 else if (hour == "dusk") { lighting.NightOverride = 0.3f; lighting.DuskOverride = 1f; }
                 lighting.Snap(shotRoom != null ? Mix.RegionOf(shotRoom.RoomId) ?? Region.Saltmarrow : Region.Saltmarrow);
             }
+            // ENV-06: OWSBG_SHOT_WORLD="flag=1;fate:Place=Anchored" sets the world first, so a piece that changes shows its second drawing.
+            var worldEnv = System.Environment.GetEnvironmentVariable("OWSBG_SHOT_WORLD");
+            if (!string.IsNullOrEmpty(worldEnv))
+            {
+                foreach (var pair in worldEnv.Split(';'))
+                {
+                    var kv = pair.Split('=');
+                    if (kv.Length != 2) continue;
+                    if (kv[0].StartsWith("fate:")) GameState.World.Set(Places.Key(kv[0].Substring(5)), (int)System.Enum.Parse(typeof(PlaceFate), kv[1]));
+                    else GameState.World.Set(kv[0], int.Parse(kv[1]));
+                }
+                foreach (var dp in Object.FindObjectsByType<DressingProp>(FindObjectsInactive.Include, FindObjectsSortMode.None)) dp.Apply();
+            }
             var brain = cam.GetComponent<CinemachineBrain>();
             if (brain != null) brain.enabled = false;
             var wren = Object.FindFirstObjectByType<WrenController>();
@@ -3135,7 +3158,27 @@ namespace OWSBG.Setup
         /// under the parent, a little behind the play plane. Null when the region has no such drawing, so the caller
         /// keeps its greybox block. Named Prop_[name] so the fade group finds it.
         /// </summary>
-        static MeshRenderer MakeProp(Room room, Transform parent, string name, Vector2 feet, float z = 0.5f, string objectName = null)
+        /// <summary>
+        /// A piece of the dressing (ENV-06): its drawing on a quad, and where the piece changes with its place, the second
+        /// drawing beside it under a <see cref="DressingProp"/> that shows one or the other. Both are named Prop_* so the
+        /// fade group takes them. Null when the region's kit has no drawing for it (the caller keeps its block).
+        /// </summary>
+        internal static GameObject MakeDressing(Room room, Transform parent, string piece, string prop, string after, DressingChange change, Vector2 feet, float z)
+        {
+            if (string.IsNullOrEmpty(prop) || KitLayer(room, "Prop_" + prop) == null) return null;
+            var go = new GameObject("Dressing_" + prop);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = new Vector3(feet.x, feet.y, 0f);
+            var before = MakeProp(room, go.transform, prop, Vector2.zero, z);
+            if (string.IsNullOrEmpty(after)) return go;
+            var changed = MakeProp(room, go.transform, after, Vector2.zero, z);
+            if (changed == null) { Debug.LogWarning("[OWSBG] dressing " + piece + ": no drawing Prop_" + after + " in " + RegionOf(room.RoomId)); return go; }
+            changed.gameObject.SetActive(false);
+            go.AddComponent<DressingProp>().Configure(piece, before.gameObject, changed.gameObject, change);
+            return go;
+        }
+
+        internal static MeshRenderer MakeProp(Room room, Transform parent, string name, Vector2 feet, float z = 0.5f, string objectName = null)
         {
             var entry = KitLayer(room, "Prop_" + name);
             var tex = KitTexture(room, "Prop_" + name);

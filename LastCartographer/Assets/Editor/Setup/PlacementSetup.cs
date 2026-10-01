@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using OWSBG.Core;
 using OWSBG.Narrative;
 using OWSBG.World;
 using UnityEditor;
@@ -9,15 +11,21 @@ using UnityEngine.SceneManagement;
 namespace OWSBG.Setup
 {
     /// <summary>
-    /// Puts what can be read or asked on the built coast into its greybox rooms (NAR-15's readable pieces, DES-15's askers):
-    /// a trigger with an <see cref="NpcTalker"/> on the piece's Yarn scene, and a small block to find it by, until the art
-    /// pass (ENV-06) swaps in the prop. Re-running replaces what it placed ("Read_&lt;node&gt;") and touches nothing else.
+    /// Puts what can be read or asked into its greybox rooms (NAR-15's readable pieces, DES-15's askers): a trigger with an
+    /// <see cref="NpcTalker"/> on the piece's Yarn scene, and under it the piece's drawing from the region's kit (ENV-06):
+    /// the catalog's <c>Prop</c>, with its changed drawing beside it under a <see cref="DressingProp"/> where the piece
+    /// changes with its place; a door asker's shut and open drawings on its flag. Where the room's recipe already stands
+    /// the drawing (a milestone, the standing stones, the exam desks) only the trigger is placed; where no drawing exists
+    /// (a bird who asks is a character, not a prop) a small block stands in. Re-running replaces what it placed
+    /// ("Read_&lt;node&gt;") and touches nothing else.
     /// <c>Unity.exe -batchmode -executeMethod OWSBG.Setup.PlacementSetup.Place -quit</c>, or OWSBG → Place the Coast's Readables.
     /// </summary>
     public static class PlacementSetup
     {
         public const string Prefix = "Read_";
         const string ScenesDir = "Assets/_Project/Scenes/Greybox/Greybox_";
+        /// <summary>How near the recipe's own drawing must stand for the trigger to take it as the piece.</summary>
+        public const float StandsWithin = 3.5f;
 
         /// <summary>Room, Yarn scene, where Wren stands to read it (on the floor or a platform's top), the prompt, and whether it asks.</summary>
         public static readonly (string room, string node, float x, float y, string prompt, bool asks)[] Places =
@@ -67,12 +75,31 @@ namespace OWSBG.Setup
             ("Blank_Capital_4", "Capital_Corvin_Argue", -9.5f, 0f, "Talk", true),      // Corvin's argument, which asks (Offerings): beside him, before the door
         };
 
+        /// <summary>Readables that are not catalog pieces or askers, and the drawing that stands for them (ENV-06).</summary>
+        public static readonly Dictionary<string, string> Extra = new Dictionary<string, string>
+        {
+            { "Gate_Inscription", "Inscription" },   // the gate's band of letters
+            { "Orchard_Gravestone", "Gravestone" },  // the recipe's stone
+            { "Observatory_Frame", "Frame" },        // the recipe's frame
+            { "EdgeCamp_Notice", "Ledger" },         // Voss's notice is pinned over the recipe's dead ledger
+        };
+
+        /// <summary>What stands for a scene: the catalog piece's drawings, a door's shut and open, an extra's, or nothing (a bird who asks).</summary>
+        public static (string prop, string after, DressingChange change) DrawingFor(string node)
+        {
+            var piece = Dressing.ByNode(node);
+            if (piece != null) return (piece.Prop, piece.PropAfter, piece.Change);
+            var asker = Offerings.All.FirstOrDefault(a => a.Node == node);
+            if (asker != null) return asker.Prop == null ? (null, null, default) : (asker.Prop, asker.Prop + "_Open", DressingChange.OnFlag(asker.Opens));
+            return Extra.TryGetValue(node, out var extra) ? (extra, null, default) : (null, null, default);
+        }
+
         [MenuItem("OWSBG/Place the Coast's Readables")]
         public static void Place()
         {
             var readable = MakeMaterial("M_Greybox_Readable", new Color(0.86f, 0.80f, 0.62f));
             var asker = MakeMaterial("M_Greybox_Asker", new Color(0.78f, 0.52f, 0.22f));
-            int placed = 0;
+            int placed = 0, drawn = 0, blocks = 0;
             foreach (var group in Places.GroupBy(p => p.room))
             {
                 string path = ScenesDir + group.Key + ".unity";
@@ -83,33 +110,33 @@ namespace OWSBG.Setup
                 {
                     var old = room.transform.Find(Prefix + p.node);
                     if (old != null) Object.DestroyImmediate(old.gameObject);
-                    Make(room.transform, p.node, new Vector2(p.x, p.y), p.prompt, p.asks ? asker : readable);
+                }
+                var fade = room.GetComponentInChildren<FadeGroup>(true);
+                if (fade != null) fade.RemoveMissing();
+                foreach (var p in group)
+                {
+                    var made = Make(room, p.node, new Vector2(p.x, p.y), p.prompt, p.asks ? asker : readable, fade);
                     placed++;
+                    if (made == Made.Drawing) drawn++; else if (made == Made.Block) blocks++;
                 }
                 EditorSceneManager.MarkSceneDirty(scene);
                 EditorSceneManager.SaveScene(scene);
             }
             AssetDatabase.SaveAssets();
-            Debug.Log("[OWSBG] place: " + placed + " readables in " + Places.Select(p => p.room).Distinct().Count() + " rooms");
+            Debug.Log("[OWSBG] place: " + placed + " readables in " + Places.Select(p => p.room).Distinct().Count() + " rooms; " + drawn + " drawn here, " + blocks + " blocks, the rest the recipes' drawings");
         }
 
-        static void Make(Transform room, string node, Vector2 at, string prompt, Material mat)
+        enum Made { Recipe, Drawing, Block }
+
+        static Made Make(Room room, string node, Vector2 at, string prompt, Material mat, FadeGroup fade)
         {
             var go = new GameObject(Prefix + node) { layer = LayerMask.NameToLayer("Trigger") };
-            go.transform.SetParent(room, false);
+            go.transform.SetParent(room.transform, false);
             go.transform.position = new Vector3(at.x, at.y, 0f);
             var col = go.AddComponent<BoxCollider2D>();
             col.isTrigger = true;
             col.size = new Vector2(1.6f, 2f);
             col.offset = new Vector2(0f, 1f);
-
-            var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            block.name = "Marker";
-            Object.DestroyImmediate(block.GetComponent<Collider>());
-            block.transform.SetParent(go.transform, false);
-            block.transform.localPosition = new Vector3(0f, 0.6f, 0.4f);
-            block.transform.localScale = new Vector3(0.5f, 1.2f, 0.2f);
-            block.GetComponent<MeshRenderer>().sharedMaterial = mat;
 
             var talker = go.AddComponent<NpcTalker>();
             var so = new SerializedObject(talker);
@@ -117,6 +144,30 @@ namespace OWSBG.Setup
             so.FindProperty("_prompt").stringValue = prompt;
             so.FindProperty("_faceWren").boolValue = false;
             so.ApplyModifiedPropertiesWithoutUndo();
+
+            var (prop, after, change) = DrawingFor(node);
+            if (prop != null && Stands(room, prop, at)) return Made.Recipe;   // the recipe's own drawing is the piece
+            var drawn = prop != null ? ProjectSetup.MakeDressing(room, go.transform, node, prop, after, change, Vector2.zero, 0.4f) : null;
+            if (drawn == null) { Marker(go, mat); return Made.Block; }
+            if (fade != null)
+                foreach (var r in drawn.GetComponentsInChildren<MeshRenderer>(true)) fade.AddLayer(r, 5);
+            return Made.Drawing;
+        }
+
+        /// <summary>Whether the room already stands Prop_[prop] near enough to be the piece.</summary>
+        public static bool Stands(Room room, string prop, Vector2 at)
+            => room.GetComponentsInChildren<Transform>(true).Any(t => t.name == "Prop_" + prop
+                                                                  && Mathf.Abs(t.position.x - at.x) <= StandsWithin && Mathf.Abs(t.position.y - at.y) <= 2.5f);
+
+        static void Marker(GameObject go, Material mat)
+        {
+            var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            block.name = "Marker";
+            Object.DestroyImmediate(block.GetComponent<Collider>());
+            block.transform.SetParent(go.transform, false);
+            block.transform.localPosition = new Vector3(0f, 0.6f, 0.4f);
+            block.transform.localScale = new Vector3(0.5f, 1.2f, 0.2f);
+            block.GetComponent<MeshRenderer>().sharedMaterial = mat;
         }
 
         static Material MakeMaterial(string name, Color color)

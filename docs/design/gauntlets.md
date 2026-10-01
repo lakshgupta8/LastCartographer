@@ -5,7 +5,9 @@ returns Wren to the last solid ground for a mask, never a full death. Six gauntl
 Blank. The Blank's traversal is the drift between islands and Clarity (PRG-18), not a course.
 
 The data is `Gauntlets` (Core). The greybox is `GauntletKits` (World), which builds each one to a recipe. The rooms
-are `GauntletRooms` (Narrative), built at runtime as scenes named `Gauntlet_<id>` until each region is built.
+are `GauntletRooms` (Narrative), built at runtime as scenes named `Gauntlet_<id>` until each region is built; the
+updrafts' is the first in its built room (ENV-07, `Windreach_Gate_2`): the course is the room's own lip, grass and
+ledge, with the `Gauntlet`, the hazard and the goal added by the recipe (`Gauntlet(id, ...)`).
 Crossing one writes `gauntlet.<id>.done` and pays one vellum scrap, the first time only.
 
 | Gauntlet | Region, room | Built around | The course |

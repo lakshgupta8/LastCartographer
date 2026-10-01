@@ -69,7 +69,7 @@ namespace OWSBG.Tests
 
         IEnumerator GoTo(string room, string spawn)
         {
-            var scene = Camp.StandInScene(room);
+            var scene = CampWalk.SceneFor(room);   // the built rooms (ENV-07)
             RoomManager.Instance.Transition(scene, spawn);
             yield return Until(() => RoomManager.Instance.CurrentRoom == scene && !RoomManager.Instance.IsTransitioning, 10f, scene);
         }
@@ -98,7 +98,7 @@ namespace OWSBG.Tests
 
         static CampSite Site() => Room.Current!.GetComponent<CampSite>();
         static NpcTalker? Talker(string name) => Room.Current!.GetComponentsInChildren<NpcTalker>(false).FirstOrDefault(t => t.gameObject.name == name);
-        static string? Exit(string side) => Room.Current!.GetComponentsInChildren<RoomTransition>(true).FirstOrDefault(t => t.gameObject.name == "Transition_" + side)?.TargetScene;
+        static bool ExitsTo(string scene) => Room.Current!.GetComponentsInChildren<RoomTransition>(true).Any(t => t.TargetScene == scene);
 
         [UnityTest]
         public IEnumerator TheCampStandsAtItsSiteAndAshesWhereItIsNot()
@@ -106,24 +106,25 @@ namespace OWSBG.Tests
             yield return Boot();
             var w = GameState.World;
             Assert.IsTrue(RoomManager.Generators.Contains(CampRooms.Build), "the stand-ins registered themselves");
+            StringAssert.StartsWith(WorldGraph.GreyboxPrefix, CampWalk.SceneFor(Camp.PostRoom), "and the built rooms (ENV-07) are used instead");
 
-            // The post: the desk that stays, at the head of the camp's road.
-            yield return GoTo(Camp.PostRoom, "Start");
+            // The post: the desk that stays, at the head of the camp's road, with the Steppe's walk behind it.
+            yield return GoTo(Camp.PostRoom, "West");
             Assert.IsNotNull(Room.Current!.GetComponentInChildren<DraftingDesk>(), "the walkers' post keeps the desk");
             Assert.IsNull(Site(), "the post is not a site");
-            Assert.IsNull(Exit("To_West"));
-            Assert.AreEqual(Camp.StandInScene("Windreach_Camp_2"), Exit("To_East"));
+            Assert.IsTrue(ExitsTo("Greybox_Windreach_Stones_3"), "the Nine Stones behind it");
+            Assert.IsTrue(ExitsTo(CampWalk.SceneFor("Windreach_Camp_2")), "the fire ring ahead");
 
             yield return GoTo("Windreach_Camp_2", "West");
             Assert.IsTrue(Site().IsCampHere, "the fire ring first");
-            Assert.AreEqual("Camp_Idrenne", Talker("Npc_Idrenne")!.StartNode);
+            Assert.AreEqual("Camp_Idrenne", Talker("Idrenne_Greybox")!.StartNode);
             Assert.IsNotNull(Talker("Bedroll"));
             Assert.IsNull(Talker("Ashes"), "no ashes where the fire is lit");
-            Assert.AreEqual(Camp.StandInScene("Windreach_River_2"), Exit("To_East"));
+            Assert.IsTrue(ExitsTo("Greybox_Windreach_River_1"), "the river's far bank ahead");
 
             yield return GoTo("Windreach_River_2", "West");
             Assert.IsFalse(Site().IsCampHere);
-            Assert.IsNull(Talker("Npc_Idrenne"), "nobody at the riverbed yet");
+            Assert.IsNull(Talker("Idrenne_Greybox"), "nobody at the riverbed yet");
             Assert.AreEqual(CampSite.AshesAheadNode, Talker("Ashes")!.StartNode);
             yield return Talk(CampSite.AshesAheadNode);
             StringAssert.Contains("some nights", _first);
@@ -132,7 +133,7 @@ namespace OWSBG.Tests
             w.Set(Camp.NightKey, 1);
             DayClock.Sleep(w);
             yield return Until(() => Site().IsCampHere, 1f, "the camp to arrive");
-            Assert.AreEqual("River_Idrenne_Night", Talker("Npc_Idrenne")!.StartNode, "the second fire's scene");
+            Assert.AreEqual("River_Idrenne_Night", Talker("Idrenne_Greybox")!.StartNode, "the second fire's scene");
 
             yield return GoTo("Windreach_Camp_2", "East");
             Assert.IsFalse(Site().IsCampHere, "the fire ring is ashes now");
@@ -146,7 +147,7 @@ namespace OWSBG.Tests
         {
             yield return Boot();
             var w = GameState.World;
-            yield return GoTo("Windreach_Camp_2", "Start");
+            yield return GoTo("Windreach_Camp_2", "West");
 
             yield return Talk(CampSite.BedrollNode);
             StringAssert.Contains("Nobody's walking", _first, "not before the first fire");
@@ -158,7 +159,7 @@ namespace OWSBG.Tests
             StringAssert.Contains("first light", _first, "she is still here tonight, and says when they go");
 
             yield return Talk(CampSite.BedrollNode, 1);
-            Assert.AreEqual(Camp.StandInScene("Windreach_Camp_2"), RoomManager.Instance.CurrentRoom, "not yet: she stays");
+            Assert.AreEqual(CampWalk.SceneFor("Windreach_Camp_2"), RoomManager.Instance.CurrentRoom, "not yet: she stays");
             Assert.AreEqual(0, Camp.Site(w));
 
             DayClock.SetPhase(w, DayPhase.Night);
@@ -172,7 +173,7 @@ namespace OWSBG.Tests
             }
             finally { Captions.Shown -= seen; }
             var rm = RoomManager.Instance;
-            Assert.AreEqual(Camp.StandInScene("Windreach_River_2"), rm.CurrentRoom, "she walked with them to the riverbed");
+            Assert.AreEqual(CampWalk.SceneFor("Windreach_River_2"), rm.CurrentRoom, "she walked with them to the riverbed");
             Assert.AreEqual(1, Camp.Site(w));
             Assert.AreEqual(day + 1, DayClock.Day(w), "a day on the walk");
             Assert.AreEqual(DayPhase.Dusk, DayClock.Phase(w), "camp made at dusk");

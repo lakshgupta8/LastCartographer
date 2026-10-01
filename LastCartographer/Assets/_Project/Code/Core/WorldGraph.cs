@@ -261,9 +261,9 @@ namespace OWSBG.Core
             _placeZones["Saltmarrow_Chapel"] = "Saltmarrow.SaltChapel";
             _placeZones["Saltmarrow_BoneBridge"] = "Saltmarrow.BoneBridge";
             _placeZones["Saltmarrow_IrisFields"] = "Saltmarrow.IrisFields";
-            // The highland's (ENV-03), the forest's (ENV-04) and the Plateau's (ENV-05) rooms are the plan's, zone by zone.
+            // The highland's (ENV-03), the forest's (ENV-04), the Plateau's (ENV-05) and the Steppe's (ENV-07) rooms are the plan's, zone by zone.
             foreach (var plan in RoomPlans.All)
-                if ((plan.Id.StartsWith("Emberdown_") || plan.Id.StartsWith("Verdance_") || plan.Id.StartsWith("Halden_")) && !_placeZones.ContainsKey(plan.Id)) _placeZones[plan.Id] = plan.Zone;
+                if ((plan.Id.StartsWith("Emberdown_") || plan.Id.StartsWith("Verdance_") || plan.Id.StartsWith("Halden_") || plan.Id.StartsWith("Windreach_")) && !_placeZones.ContainsKey(plan.Id)) _placeZones[plan.Id] = plan.Zone;
         }
     }
 }

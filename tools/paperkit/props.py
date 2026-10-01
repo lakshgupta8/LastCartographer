@@ -18,6 +18,7 @@ from kitlib import Palette as _Palette, ridge, blob
 import emberdown as _ember
 import verdance as _verd
 import halden as _hald
+import windreach as _wind
 
 KITS = os.path.dirname(OUT)   # Art/Environment: one folder and kit.json per region
 
@@ -42,6 +43,10 @@ REGIONS = {
     "Halden": dict(paper=_hald.PAPER, ink=_hald.INK, colours=dict(
         PAPER=_hald.PAPER, SILVER=_hald.STONE, OLIVE=_hald.VERDIGRIS, RUST=lerp(_hald.SLATE, _hald.BRASS, 0.35), INK=_hald.INK,
         BRASS=_hald.BRASS, ROPE=lerp(_hald.SLATE, _hald.PAPER, 0.4), GLOW=(0.97, 0.88, 0.58), WET=lerp(_hald.VERDIGRIS, _hald.PAPER, 0.5), STEEL=_hald.SLATE)),
+    # Windreach (ENV-07): straw paper, sky blue, storm violet, gold, grey-brown ink; the furniture is weathered wood and grass.
+    "Windreach": dict(paper=_wind.PAPER, ink=_wind.INK, colours=dict(
+        PAPER=_wind.PAPER, SILVER=_wind.STONE, OLIVE=_wind.STRAW, RUST=_wind.WOOD, INK=_wind.INK,
+        BRASS=_wind.GOLD, ROPE=lerp(_wind.STRAW, _wind.PAPER, 0.3), GLOW=(0.98, 0.86, 0.50), WET=lerp(_wind.SKY, _wind.PAPER, 0.5), STEEL=_wind.IRON)),
 }
 
 
@@ -541,6 +546,200 @@ def prop_notice(rng, p):
     return 1.5, 2.0, 2.0
 
 
+# ---------------------------------------------------------------- Windreach (ENV-07): the Steppe's own
+
+def prop_stone(rng, p):
+    """Prop_Stone: a standing stone of the Nine: a tapering slab, lichen on its north face, the clans' notches."""
+    stone, lichen, dark = p("stone", SILVER), p("lichen", lerp(BRASS, OLIVE, 0.5)), p("dark", lerp(INK, SILVER, 0.3))
+    w, h = 1.1, 2.9
+    polygon("slab", [(-w / 2, 0.0), (w / 2, 0.0), (w * 0.4, h * 0.92), (w * 0.08, h), (-w * 0.38, h * 0.95)], stone, y=0.05)
+    for i in range(3):
+        blob("lichen_%d" % i, rng, -w * 0.28, h * rng.uniform(0.35, 0.85), w * 0.16, h * 0.06, lichen, y=-0.02, n=10, wobble=0.35)
+    for i in range(rng.randint(4, 7)):
+        box("notch_%d" % i, w * 0.16, h * 0.22 + i * 0.17, 0.2, 0.035, dark, y=-0.04)
+    line("crack", -w * 0.1, h * 0.3, w * 0.05, h * 0.7, 0.025, dark, y=-0.04)
+    return 1.5, 3.0, 2.0
+
+
+def prop_wagon(rng, p):
+    """Prop_Wagon: a walking-wagon: a plank body on two tall wheels, a canvas hoop, the shafts down on the grass."""
+    wood, dark, cloth, paper = p("wood", RUST), p("dark", lerp(RUST, INK, 0.5)), p("cloth", lerp(PAPER, OLIVE, 0.2)), p("paper", PAPER)
+    w, h, r = 3.2, 2.6, 0.75
+    for k, wx in enumerate((-w * 0.3, w * 0.3)):
+        disc("wheel_%d" % k, wx, r, r, wood, y=0.02)
+        disc("wheel_in_%d" % k, wx, r, r * 0.8, paper, y=0.01)
+        for s in range(6):
+            ob = box("spoke_%d_%d" % (k, s), 0.0, 0.0, 0.05, r * 1.7, dark, y=-0.01)
+            ob.rotation_euler = (0, math.pi * s / 6, 0)
+            ob.location = (wx, ob.location[1], r)
+        disc("hub_%d" % k, wx, r, r * 0.16, dark, y=-0.02, n=10)
+    box("body", 0.0, r + h * 0.22, w, h * 0.36, wood, y=-0.03)
+    for i in range(4):
+        box("plank_%d" % i, 0.0, r + h * 0.1 + i * h * 0.09, w, 0.02, dark, y=-0.04)
+    top = r + h * 0.4
+    pts = [(-w / 2, top), (w / 2, top)]
+    for i in range(10, -1, -1):
+        a = math.pi * i / 10
+        pts.append((w / 2 * math.cos(a), top + h * 0.5 * math.sin(a)))
+    polygon("hoop", pts, cloth, y=-0.05)
+    for i in range(1, 4):
+        a = math.pi * i / 4
+        line("rib_%d" % i, w / 2 * math.cos(a) * 0.98, top, w / 2 * math.cos(a) * 0.98, top + h * 0.5 * math.sin(a) * 0.98, 0.02, dark, y=-0.06)
+    line("shaft", w * 0.5, r + h * 0.1, w * 0.62, 0.1, 0.06, wood, y=-0.02)
+    return 4.0, 3.0, 2.0
+
+
+def prop_fire(rng, p):
+    """Prop_Fire: the camp's fire: a ring of stones, logs, a flame, the glow over it."""
+    stone, dark, flame, glow = p("stone", SILVER), p("dark", lerp(RUST, INK, 0.5)), p("flame", BRASS), p("glow", GLOW)
+    for i in range(7):
+        blob("ring_%d" % i, rng, -0.6 + 1.2 * i / 6, 0.09, 0.13, 0.08, stone, y=0.0, n=8, wobble=0.3)
+    polygon("glow", [(-0.4, 0.1), (0.4, 0.1), (0.15, 1.05), (-0.12, 0.9)], glow, y=-0.02)
+    polygon("flame", [(-0.22, 0.1), (0.22, 0.1), (0.06, 0.62), (-0.03, 0.52)], flame, y=-0.04)
+    for i in range(3):
+        box("log_%d" % i, (i - 1) * 0.16, 0.13, 0.5, 0.06, dark, y=-0.03)
+    return 1.5, 1.25, 2.0
+
+
+def prop_ashes(rng, p):
+    """Prop_Ashes: where the camp isn't: the ring of stones round old ashes."""
+    stone, ash = p("stone", SILVER), p("ash", lerp(SILVER, INK, 0.5))
+    blob("ash", rng, 0.0, 0.1, 0.45, 0.09, ash, y=-0.02, n=12, wobble=0.3)
+    for i in range(7):
+        blob("ring_%d" % i, rng, -0.6 + 1.2 * i / 6, 0.09, 0.13, 0.08, stone, y=0.0, n=8, wobble=0.3)
+    for i in range(3):
+        box("char_%d" % i, rng.uniform(-0.3, 0.3), 0.1, rng.uniform(0.2, 0.4), 0.05, ash, y=-0.03)
+    return 1.5, 0.5, 2.0
+
+
+def prop_bedroll(rng, p):
+    """Prop_Bedroll: a clan bedroll rolled tight and tied, for anyone walking with them."""
+    cloth, dark, rope = p("cloth", lerp(RUST, PAPER, 0.3)), p("dark", lerp(RUST, INK, 0.5)), p("rope", ROPE)
+    disc("roll", 0.0, 0.22, 0.22, cloth, y=0.0, n=16, squash=1.0)
+    box("body", 0.0, 0.22, 1.1, 0.44, cloth, y=0.02)
+    disc("end", 0.55, 0.22, 0.22, dark, y=-0.02, n=16)
+    disc("end_in", 0.55, 0.22, 0.12, cloth, y=-0.04, n=12)
+    for x in (-0.3, 0.2):
+        box("tie_%s" % x, x, 0.22, 0.05, 0.48, rope, y=-0.03)
+    return 1.5, 0.5, 2.0
+
+
+def prop_hull(rng, p):
+    """Prop_Hull: a boat on its side in the dry river's mud, planks, a name on the bow, a smudge's shadow in it."""
+    wood, dark, paper, mud = p("wood", RUST), p("dark", lerp(RUST, INK, 0.55)), p("paper", PAPER), p("mud", lerp(OLIVE, PAPER, 0.5))
+    w, h = 2.8, 1.4
+    pts = []
+    for i in range(16):
+        a = 2 * math.pi * i / 16
+        pts.append((w / 2 * math.cos(a), h / 2 + h / 2 * math.sin(a) * (1.0 if math.sin(a) > 0 else 0.5)))
+    polygon("hull", pts, wood, y=0.0)
+    for i in range(4):
+        line("plank_%d" % i, -w * 0.45, h * 0.2 + i * h * 0.18, w * 0.45, h * 0.25 + i * h * 0.17, 0.02, dark, y=-0.03)
+    box("keel", 0.0, h * 0.62, w * 0.9, 0.05, dark, y=-0.04)
+    for i in range(3):
+        line("name_%d" % i, w * 0.25 + i * 0.12, h * 0.3, w * 0.3 + i * 0.12, h * 0.5, 0.015, paper, y=-0.05)
+    blob("mud", rng, 0.0, 0.05, w * 0.5, 0.06, mud, y=0.05, n=12, wobble=0.3)
+    return 3.0, 1.5, 2.0
+
+
+def prop_reeds(rng, p):
+    """Prop_Reeds: dead reeds on the bank, every head leaning east."""
+    stalk, head = p("stalk", lerp(OLIVE, INK, 0.3)), p("head", lerp(OLIVE, INK, 0.5))
+    for i in range(9):
+        x = -0.8 + 1.6 * (i + rng.uniform(0.2, 0.8)) / 9
+        h = rng.uniform(1.0, 1.9)
+        tx, tz = x + 0.3 * h, h
+        line("stalk_%d" % i, x, 0.0, tx, tz, 0.03, stalk, y=0.0 - 0.002 * i)
+        disc("head_%d" % i, tx, tz, rng.uniform(0.05, 0.09), head, y=-0.02, n=8)
+    return 2.0, 2.0, 2.0
+
+
+def prop_lipstone(rng, p):
+    """Prop_LipStone: a flat stone on the Gate's lip, a place carved in it: what the clan sings."""
+    stone, dark, lichen = p("stone", lerp(SILVER, PAPER, 0.2)), p("dark", lerp(INK, SILVER, 0.2)), p("lichen", lerp(BRASS, OLIVE, 0.5))
+    polygon("flat", [(-0.7, 0.0), (0.7, 0.0), (0.62, 0.4), (-0.66, 0.42)], stone, y=0.0)
+    for k in range(4):
+        line("carve_%d" % k, -0.45 + k * 0.25, 0.14, -0.3 + k * 0.25, 0.3, 0.025, dark, y=-0.04)
+    blob("lichen", rng, 0.5, 0.35, 0.1, 0.05, lichen, y=-0.03, n=8)
+    return 1.5, 0.5, 2.0
+
+
+def prop_swirl(rng, p):
+    """Prop_Swirl: one turn of an updraft: an ink ribbon winding up the column, tileable top to bottom (the room
+    stacks and scrolls it)."""
+    ink, pale = p("swirl", lerp(STEEL, INK, 0.3)), p("pale", lerp(STEEL, PAPER, 0.6))
+    n = 28
+    prev = None
+    for i in range(n + 1):
+        t = i / n
+        pt = (0.78 * math.sin(t * 2 * math.pi), t * 2.0)
+        if prev is not None:
+            th = 0.09 * (0.55 + 0.45 * abs(math.cos(t * 2 * math.pi)))
+            line("rib_%d" % i, prev[0], prev[1], pt[0], pt[1], th, ink, y=0.0)
+        prev = pt
+    prev = None
+    for i in range(n + 1):
+        t = i / n
+        pt = (0.5 * math.sin(t * 2 * math.pi + 2.2), t * 2.0)
+        if prev is not None:
+            line("thin_%d" % i, prev[0], prev[1], pt[0], pt[1], 0.035, pale, y=0.05)
+        prev = pt
+    return 2.0, 2.0, 1.6
+
+
+def prop_hearth(rng, p):
+    """Prop_Hearth: Idrenne's hearth: the ring of stones, the fire, the cooking-stone flat over it, a pot on a tripod."""
+    stone, dark, flame, glow, key, iron = p("stone", SILVER), p("dark", lerp(RUST, INK, 0.5)), p("flame", BRASS), p("glow", GLOW), p("key", lerp(STEEL, INK, 0.3)), p("iron", STEEL)
+    for i in range(9):
+        blob("ring_%d" % i, rng, -1.0 + 2.0 * i / 8, 0.1, 0.15, 0.09, stone, y=0.0, n=8, wobble=0.3)
+    polygon("glow", [(-0.5, 0.12), (0.5, 0.12), (0.2, 0.75), (-0.15, 0.7)], glow, y=-0.02)
+    polygon("flame", [(-0.28, 0.12), (0.28, 0.12), (0.08, 0.5), (-0.04, 0.44)], flame, y=-0.04)
+    box("keystone", 0.0, 0.58, 1.0, 0.18, key, y=-0.06)
+    for i in range(3):
+        a = -0.5 + i * 0.5
+        line("leg_%d" % i, a * 1.2, 0.15, a * 0.15, 1.9, 0.05, iron, y=0.03)
+    line("chain", 0.0, 1.85, 0.0, 1.35, 0.03, iron, y=-0.01)
+    disc("pot", 0.0, 1.1, 0.38, iron, y=-0.03, n=14, squash=0.7)
+    return 2.5, 2.0, 2.0
+
+
+def _grass_tuft(rng, p, n, h, w):
+    grass, dark = p("grass", lerp(OLIVE, PAPER, 0.15)), p("dark", lerp(OLIVE, INK, 0.3))
+    for i in range(n):
+        t = (i + 0.5) / n - 0.5
+        bh = h * rng.uniform(0.55, 1.0)
+        lean = 0.3 + t * 0.6
+        x = t * w
+        polygon("blade_%d" % i, [(x - 0.035, 0.0), (x + 0.035, 0.0), (x + lean * bh, bh)], dark if i % 3 == 0 else grass, y=-0.003 * i)
+
+
+def prop_grass_a(rng, p):
+    """Prop_Grass_A: a tuft of long grass, leaning east; the room's grass is rows of these, and they part for her."""
+    _grass_tuft(rng, p, 7, 1.1, 0.5)
+    return 1.0, 1.25, 1.6
+
+
+def prop_grass_b(rng, p):
+    """Prop_Grass_B: a thinner tuft."""
+    _grass_tuft(rng, p, 5, 1.2, 0.35)
+    return 1.0, 1.25, 1.6
+
+
+def prop_grass_c(rng, p):
+    """Prop_Grass_C: a broad low tuft."""
+    _grass_tuft(rng, p, 9, 0.9, 0.7)
+    return 1.0, 1.25, 1.6
+
+
+def prop_grass_tall(rng, p):
+    """Prop_Grass_Tall: the high grass past the Gate: a tuft over anyone's head, seed-heads on it."""
+    _grass_tuft(rng, p, 9, 2.3, 0.8)
+    head = p("head", lerp(BRASS, OLIVE, 0.4))
+    for i in range(4):
+        disc("head_%d" % i, rng.uniform(0.2, 0.9), rng.uniform(1.9, 2.4), rng.uniform(0.06, 0.1), head, y=-0.05, n=8)
+    return 1.5, 2.5, 1.6
+
+
 PROPS = [
     ("Prop_Desk", prop_desk), ("Prop_Ledger", prop_ledger), ("Prop_Dummy", prop_dummy), ("Prop_Stall", prop_stall),
     ("Prop_Vantage", prop_vantage), ("Prop_Lamp", prop_lamp), ("Prop_LampGlow", prop_lampglow), ("Prop_Seeds", prop_seeds),
@@ -566,6 +765,15 @@ PROPS = [
     ("Prop_Gravestone", prop_gravestone, "Halden"), ("Prop_Wheel", prop_wheel, "Halden"), ("Prop_Scaffold", prop_scaffold, "Halden"),
     ("Prop_Frame", prop_frame, "Halden"), ("Prop_Slots", prop_slots, "Halden"), ("Prop_ExamDesk", prop_examdesk, "Halden"),
     ("Prop_Notice", prop_notice, "Halden"),
+    # Windreach (ENV-07): the shared furniture in the Steppe's palette, and the Steppe's own.
+    ("Prop_Desk", prop_desk, "Windreach"), ("Prop_Ledger", prop_ledger, "Windreach"), ("Prop_Vantage", prop_vantage, "Windreach"),
+    ("Prop_Lamp", prop_lamp, "Windreach"), ("Prop_LampGlow", prop_lampglow, "Windreach"), ("Prop_Seeds", prop_seeds, "Windreach"),
+    ("Prop_Bound", prop_bound, "Windreach"),
+    ("Prop_Stone", prop_stone, "Windreach"), ("Prop_Wagon", prop_wagon, "Windreach"), ("Prop_Fire", prop_fire, "Windreach"),
+    ("Prop_Ashes", prop_ashes, "Windreach"), ("Prop_Bedroll", prop_bedroll, "Windreach"), ("Prop_Hull", prop_hull, "Windreach"),
+    ("Prop_Reeds", prop_reeds, "Windreach"), ("Prop_LipStone", prop_lipstone, "Windreach"), ("Prop_Swirl", prop_swirl, "Windreach"),
+    ("Prop_Hearth", prop_hearth, "Windreach"), ("Prop_Grass_A", prop_grass_a, "Windreach"), ("Prop_Grass_B", prop_grass_b, "Windreach"),
+    ("Prop_Grass_C", prop_grass_c, "Windreach"), ("Prop_Grass_Tall", prop_grass_tall, "Windreach"),
 ]
 
 

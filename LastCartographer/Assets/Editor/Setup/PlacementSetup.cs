@@ -53,6 +53,11 @@ namespace OWSBG.Setup
             ("Halden_Bastion_1", "Bastion_Plaque", 12f, 0f, "Read", false),          // the plaque by the door cut in the tower's foot
             ("Halden_Bastion_3", "Office_Drawing", 12f, 0f, "Read", false),          // the chick's drawing on Voss's wall
             ("Halden_Observatory_2", "Observatory_Frame", 2f, 0f, "Read", false),    // the frame of the Great Atlas, and the choice
+            // Windreach (ENV-07): the Steppe's readables and the Gate's asker.
+            ("Windreach_Stones_1", "Stones_Notches", -6.5f, 0f, "Read", false),       // the first stone's notches, one a walk
+            ("Windreach_Camp_1", "Camp_WagonCloth", 6f, 0f, "Read", false),           // the route woven on the wagon that stays
+            ("Windreach_Gate_1", "Gate_Lip", 8.5f, 0f, "Read", false),                // the carved stones on the lip
+            ("Windreach_Gate_1", "Gate_Brek", 4f, 0f, "Talk", true),                  // Brek beside the stones, who asks (Offerings)
         };
 
         [MenuItem("OWSBG/Place the Coast's Readables")]

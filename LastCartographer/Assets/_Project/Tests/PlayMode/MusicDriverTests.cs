@@ -177,6 +177,7 @@ namespace OWSBG.Tests
         {
             yield return PlayTheCoast();
             yield return new WaitForSecondsRealtime(MusicDriver.FadeSeconds + 0.2f);
+            yield return Until(() => Driver.OutgoingCount == 0, 30f);   // an earlier test's theme (the Steppe's, since ENV-07) hands over to the coast on its own bar line first
             var salt = Score.ThemeOf(Region.Saltmarrow);
             var ember = Score.ThemeOf(Region.Emberdown);
             double coastStart = Driver.StartAt;

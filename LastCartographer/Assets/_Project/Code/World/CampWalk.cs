@@ -16,10 +16,12 @@ namespace OWSBG.World
         public static bool IsWalking { get; private set; }
         public static event Action<int> Arrived;
 
-        /// <summary>The scene a camp room loads as: the built room if there is one, else its stand-in.</summary>
+        /// <summary>The scene a camp room loads as: the built room (ENV-07) when the catalogue has it, else its stand-in.</summary>
         public static string SceneFor(string room)
         {
             var rm = RoomManager.Instance;
+            string built = WorldGraph.GreyboxPrefix + room;
+            if (rm != null && rm.IsBuilt(built)) return built;
             return rm != null && rm.IsAddressable(room) ? room : Camp.StandInScene(room);
         }
 

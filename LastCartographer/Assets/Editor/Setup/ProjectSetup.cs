@@ -286,6 +286,7 @@ namespace OWSBG.Setup
             foreach (var recipe in EmberdownRecipes()) BuildRecipe(recipe);   // the highland (ENV-03)
             foreach (var recipe in VerdanceRecipes()) BuildRecipe(recipe);    // the forest (ENV-04)
             foreach (var recipe in HaldenRecipes()) BuildRecipe(recipe);      // the Plateau (ENV-05)
+            foreach (var recipe in WindreachRecipes()) BuildRecipe(recipe);   // the Steppe (ENV-07)
             PlacementSetup.Place();   // the coast's readables and askers stand in the rebuilt rooms
             SetupRenderFeatures();
             BuildPersistent();
@@ -1129,7 +1130,7 @@ namespace OWSBG.Setup
             public readonly List<(string name, Vector2 pos)> Vantages = new List<(string, Vector2)>();
             public readonly List<(System.Type type, string name, Vector2 pos, Vector2 size)> Enemies = new List<(System.Type, string, Vector2, Vector2)>();
             public readonly List<(Vector2 pos, int n)> Seeds = new List<(Vector2, int)>();
-            public readonly List<(string name, Vector2 pos)> Props = new List<(string, Vector2)>();
+            public readonly List<(string name, Vector2 pos, float z)> Props = new List<(string, Vector2, float)>();
             // The region's dressing (ENV-03): the kit tiles the ground wears, the paper layers behind, and who stands here.
             public string FloorTile = "Ground_Boardwalk", PlatTile = "Ground_Boardwalk";
             public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
@@ -1142,14 +1143,37 @@ namespace OWSBG.Setup
             public string WalkId, WalkFlag; public int WalkValue; public float WalkSeconds;
             public readonly List<(string title, (string name, Vector2 pos)[] beats)> Verses = new List<(string, (string, Vector2)[])>();
             public (System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward, string flag)? ArenaOf;
+            // The Steppe's (ENV-07): the camp's site in this room, grass that leans and parts, updrafts drawn as ink, a gauntlet on the room's own ground.
+            public int CampSiteIndex = -1;
+            public readonly List<(float x0, float x1, int n, bool tall, float z, float y)> Grasses = new List<(float, float, int, bool, float, float)>();
+            public readonly List<(float x, float bottom, float height, float speed)> Updrafts = new List<(float, float, float, float)>();
+            public (string id, float hx0, float hx1, float gx0, float gx1, float gtop, float startX)? GauntletOf;
+            /// <summary>The Steppe's usual three: the walk's own layer, grass to the horizon, the storm sky; the crater and the cliff take the rim instead.</summary>
+            public RoomRecipe WindreachPapers(string mid, string far = "Far_Steppe", string farther = "Farther_Storm")
+            {
+                Paper(mid, 3f, 0f, new Color(0.70f, 0.60f, 0.34f), 6f);
+                if (far != null) Paper(far, 8f, 2f, new Color(0.74f, 0.74f, 0.60f), 10f);
+                if (farther != null) Paper(farther, 16f, 6f, new Color(0.62f, 0.72f, 0.86f), 16f);
+                return this;
+            }
+            /// <summary>One of the Long Grass Camp's three sites stands here (0 the fire ring, 1 the riverbed, 2 the high grass).</summary>
+            public RoomRecipe Camp(int site) { CampSiteIndex = site; return this; }
+            /// <summary>A row of grass tufts between two x's; tall is the high grass; a negative z puts it in front of the walk.</summary>
+            public RoomRecipe Grass(float x0, float x1, int n, bool tall = false, float z = 0.6f, float y = 0f) { Grasses.Add((x0, x1, n, tall, z, y)); return this; }
+            /// <summary>An updraft column two wide from <paramref name="bottom"/>, lifting at <paramref name="speed"/> (nine rides; three is too weak to).</summary>
+            public RoomRecipe Updraft(float x, float bottom, float height, float speed = 9f) { Updrafts.Add((x, bottom, height, speed)); return this; }
+            /// <summary>The region's gauntlet on this room's ground: the hazard between two x's under the gap, the goal over the far ground, where she starts.</summary>
+            public RoomRecipe Gauntlet(string id, float hx0, float hx1, float gx0, float gx1, float gtop, float startX) { GauntletOf = (id, hx0, hx1, gx0, gx1, gtop, startX); return this; }
 
             public RoomRecipe(string id) { Id = id; }
             public RoomRecipe Tall() { Bounds = new Rect(-20f, -3f, 40f, 19f); return this; }
             public RoomRecipe Floor(float x0, float x1) { Ground.Add(("Floor_" + Ground.Count, new Vector2((x0 + x1) * 0.5f, -0.5f), new Vector2(x1 - x0, 1f))); return this; }
             public RoomRecipe Shallows(float x0, float x1) { Ground.Add(("Shallows_" + Ground.Count, new Vector2((x0 + x1) * 0.5f, -3f), new Vector2(x1 - x0, 1f))); return this; }
             public RoomRecipe Plat(float x, float y, float w) { Ground.Add(("Plat_" + Ground.Count, new Vector2(x, y), new Vector2(w, 0.6f))); return this; }
-            public RoomRecipe West(string target) { Spawns.Add(("West", new Vector2(-17f, 0f))); Exits.Add(("To_W", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f), target, "East")); return this; }
-            public RoomRecipe East(string target) { Spawns.Add(("East", new Vector2(17f, 0f))); Exits.Add(("To_E", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f), target, "West")); return this; }
+            public RoomRecipe West(string target, float y = 0f) { Spawns.Add(("West", new Vector2(-17f, y))); Exits.Add(("To_W", new Vector2(-19.6f, 4f), new Vector2(0.8f, 10f), target, "East")); return this; }
+            public RoomRecipe East(string target, float y = 0f) { Spawns.Add(("East", new Vector2(17f, y))); Exits.Add(("To_E", new Vector2(19.6f, 4f), new Vector2(0.8f, 10f), target, "West")); return this; }
+            /// <summary>Raised ground that is still the floor (the far side of a gap), top at <paramref name="top"/>.</summary>
+            public RoomRecipe Ledge(float x0, float x1, float top) { Ground.Add(("Ledge_" + Ground.Count, new Vector2((x0 + x1) * 0.5f, top - 0.5f), new Vector2(x1 - x0, 1f))); return this; }
             /// <summary>An exit above the top platform (its centre x, its top y); arrives at the target's Bottom.</summary>
             public RoomRecipe Up(string target, float x, float topY) { Spawns.Add(("Top", new Vector2(x, topY + 0.05f))); Exits.Add(("To_Up", new Vector2(x, topY + 2.2f), new Vector2(4f, 0.8f), target, "Bottom")); return this; }
             /// <summary>A drop through the floor gap centred on x; arrives at the target's Top. The floor must leave the gap.</summary>
@@ -1164,7 +1188,7 @@ namespace OWSBG.Setup
             /// <summary>A salamander on its ledge (y is the ledge's top plus 0.35).</summary>
             public RoomRecipe Salamander(float x, float y = 0.35f) { Enemies.Add((typeof(Salamander), "Salamander_" + Enemies.Count, new Vector2(x, y), new Vector2(1.2f, 0.5f))); return this; }
             public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
-            public RoomRecipe Prop(string name, float x, float y = 0f) { Props.Add((name, new Vector2(x, y))); return this; }
+            public RoomRecipe Prop(string name, float x, float y = 0f, float z = 0.7f) { Props.Add((name, new Vector2(x, y), z)); return this; }
             public RoomRecipe Cantor(float x) { Enemies.Add((typeof(Cantor), "Cantor_" + Enemies.Count, new Vector2(x, 2.6f), new Vector2(0.8f, 0.9f))); return this; }
             public RoomRecipe Warden(float x) { Enemies.Add((typeof(Warden), "Warden_" + Enemies.Count, new Vector2(x, 0.8f), new Vector2(0.7f, 1.6f))); return this; }
             public RoomRecipe Tiles(string floor, string plat) { FloorTile = floor; PlatTile = plat; return this; }
@@ -1572,7 +1596,7 @@ namespace OWSBG.Setup
                     .West(H("Lowmarket_1")).East(H("Lowmarket_3")),
                 new RoomRecipe("Halden_Lowmarket_3").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
                     .Floor(-20f, 20f).Plat(6f, 3f, 3f).Warden(10f)
-                    .West(H("Lowmarket_2")),   // east to Windreach_Stones_1 [act2.started] waits for the steppe (ENV-07)
+                    .West(H("Lowmarket_2")).East(Scene("Windreach_Stones_1")),   // the south road [act2.started] onto the Steppe (ENV-07)
                 // ---- the Journeyman's Hall: the hub ----
                 new RoomRecipe("Halden_Hall_1").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall")
                     .Floor(-20f, 20f).Plat(-8f, 2.5f, 3f).Plat(10f, 2.5f, 3f).Warden(-2f).Warden(12f)   // the Guild's steps
@@ -1624,6 +1648,97 @@ namespace OWSBG.Setup
             };
         }
 
+
+        /// <summary>
+        /// The Steppe (ENV-07, docs/design/windreach-greyfold-blank-rooms.md): one long walk east, the Nine Stones, the camp
+        /// that moves, the dry river, the cut bank, the Wind Gate's leap and its glide course, the high grass, Idrenne's
+        /// hearth and the crater. Grass everywhere that leans with the wind and parts for her; updrafts drawn as ink.
+        /// </summary>
+        static List<RoomRecipe> WindreachRecipes()
+        {
+            var idrenne = new Color(0.86f, 0.86f, 0.90f);
+            var hale = new Color(0.62f, 0.56f, 0.40f);
+            var fore = new Color(0.44f, 0.38f, 0.22f);
+            string W(string id) => Scene("Windreach_" + id);
+            return new List<RoomRecipe>
+            {
+                // ---- the Nine Stones: out of Lowmarket's south gate onto the grass ----
+                new RoomRecipe("Windreach_Stones_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Stones")
+                    .Floor(-20f, 20f).Plat(6f, 2.5f, 3f).Prop("Stone", -8f).Vantage("Waymark", 12f, 0f).Warden(2f)   // the first stone, notched; Hale's escort out of uniform
+                    .Grass(-19f, -10f, 14).Grass(-4f, 4f, 10).Grass(14f, 19f, 8)
+                    .West(Scene("Halden_Lowmarket_3")).East(W("Stones_2")),
+                new RoomRecipe("Windreach_Stones_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Stones")
+                    .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(4f, 3f, 3f)
+                    .Prop("Stone", -16f).Prop("Stone", -11f).Prop("Stone", -6f).Prop("Stone", -1f).Prop("Stone", 4f).Prop("Stone", 9f).Prop("Stone", 14f)   // stones two to eight
+                    .Vantage("Fifth", 6.5f, 0f).Smudge(-14f).Smudge(16f)
+                    .Updraft(-8f, 0f, 6f, 3f).Updraft(11.5f, 0f, 6f, 3f)   // ink-swirls, too weak to ride yet
+                    .Grass(-19f, 19f, 36)
+                    .West(W("Stones_1")).East(W("Stones_3")),
+                new RoomRecipe("Windreach_Stones_3").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Stones")
+                    .Floor(-20f, 20f).Npc("Hale", -12f, "Stones_Hale", hale).Prop("Stone", 10.5f, 0f, 1f)   // the ninth stone, where the route turns north; the surveyor at dusk
+                    .Arena(typeof(Hale), "hale", 13f, new Vector2(0.8f, 1.8f), -8f, 16f, Ability.None, "windreach.hale.challenged")   // the duel, if she calls it
+                    .Grass(-19f, -9f, 14)
+                    .West(W("Stones_2")).East(W("Camp_1")),
+                // ---- the Long Grass Camp: the hub, which moves ----
+                new RoomRecipe("Windreach_Camp_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Camp")
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Desk(-12f).Ledger("Windreach", -8f).Prop("Wagon", 8f).Vantage("Wagons", 15f, 0f)   // the walkers' post: the wagon that stays, the desk, the ledger
+                    .Grass(-19f, -14f, 8).Grass(-3f, 4f, 10).Grass(12f, 19f, 10)
+                    .West(W("Stones_3")).East(W("Camp_2")),
+                new RoomRecipe("Windreach_Camp_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Camp")
+                    .Floor(-20f, 20f).Plat(-15f, 2.5f, 3f).Camp(0)   // the fire ring: the first night
+                    .Grass(-19f, -11f, 12).Grass(13f, 19f, 10)
+                    .West(W("Camp_1")).East(W("River_1")),
+                // ---- the Dry River: a Wingbeat wide at the camp's edge ----
+                new RoomRecipe("Windreach_River_1").Tiles("Ground_Cracked", "Ground_Cracked").WindreachPapers("Mid_River")
+                    .Floor(-20f, -14f).Floor(-5f, 20f).Smudge(-9.5f).Prop("Reeds", -17f).Prop("Hull", 10f).Plat(14f, 2.5f, 3f)   // the river with no water; a pogo off what hangs over it crosses it
+                    .Grass(-19f, -15f, 6)
+                    .West(W("Camp_2")).East(W("River_2")),
+                new RoomRecipe("Windreach_River_2").Tiles("Ground_Cracked", "Ground_Cracked").WindreachPapers("Mid_River")
+                    .Floor(-20f, 20f).Plat(14f, 2.5f, 3f).Prop("Hull", -15f).Prop("Hull", 16f).Smudge(-13f).Smudge(15f).Vantage("Bed", -3f, 0f).Camp(1)   // boats on their sides; the second night pitches here
+                    .West(W("River_1")).East(W("River_3")),
+                new RoomRecipe("Windreach_River_3").Tall().Tiles("Ground_Cracked", "Ground_Lip").WindreachPapers("Mid_Cliff", "Far_Rim")
+                    .Floor(-20f, 20f).Smudge(-8f).Prop("Reeds", -15f)
+                    .Wall(12f, 0f, 12f).Wall(16f, 0f, 12f).Plat(14f, 12f, 3f)   // the cut bank: only Talonhold climbs it
+                    .Grass(-19f, -12f, 10)
+                    .West(W("River_2")).Up(W("Gate_1"), 14f, 12.3f),
+                // ---- the Wind Gate: the leap, then the first glide ----
+                new RoomRecipe("Windreach_Gate_1").Tiles("Ground_Lip", "Ground_Lip").WindreachPapers("Mid_WindGate", "Far_Rim")
+                    .Floor(-20f, -2f).Floor(2f, 16f).Vantage("Gate", -12f, 0f)
+                    .Prop("LipStone", 6f).Prop("LipStone", 8.5f).Prop("LipStone", 11f)   // the flat stones on the lip, each carved with a place
+                    .Npc("Idrenne", 14f, "Gate_Idrenne_Leap", idrenne)   // the clan sings, the young jump
+                    .Grass(-19f, -13f, 8)
+                    .Down(W("River_3"), 0f).East(W("Gate_2")),
+                new RoomRecipe("Windreach_Gate_2").Tiles("Ground_Lip", "Ground_Turf").WindreachPapers("Mid_HighGrass", "Far_Rim")
+                    .Floor(-20f, -11f).Ledge(11f, 20f, 3f)   // the lip, twenty-two units of long grass, a far ledge three up
+                    .Updraft(-7f, -2f, 10f).Updraft(0f, -2f, 10f).Updraft(7f, -2f, 10f)   // the three ink-swirls to ride
+                    .Gauntlet("updrafts", -11f, 11f, 11f, 20f, 3f, -15f)
+                    .Grass(-10.5f, 10.5f, 40, false, 0.6f, -2.5f)   // the long grass she falls into
+                    .Grass(-19f, -12f, 10)
+                    .West(W("Gate_1")).East(W("Fire_1"), 3f),   // down to Greyfold_Pool_1 [Windmemory] waits for the white (ENV-08)
+                // ---- Idrenne's Fire: the high grass, the hearth ----
+                new RoomRecipe("Windreach_Fire_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_HighGrass")
+                    .Paper("Fore_Grass", -4f, -0.8f, fore, 2.0f)
+                    .Floor(-20f, 20f).Plat(14f, 3f, 3f).Camp(2)   // the third night: the clan walks her in
+                    .Grass(-19f, -8f, 9, true, -0.7f).Grass(12.5f, 19f, 5, true, -0.7f).Grass(-19f, 19f, 30, true, 0.9f)   // grass over her head, before and behind
+                    .West(W("Gate_2")).East(W("Fire_2")),
+                new RoomRecipe("Windreach_Fire_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Hearth")
+                    .Floor(-20f, 2f).Floor(6f, 20f).Prop("Wagon", -15f).Prop("Hearth", -6f).Vantage("Hearth", 12f, 0f).Prop("Wagon", 17f)
+                    .Npc("Idrenne", -3f, "Fire_Idrenne", idrenne)   // how the clans do it, plainly; the cooking-stone
+                    .Grass(-19f, -17f, 4).Grass(8f, 10f, 4)
+                    .West(W("Fire_1")).Down(W("Star_1"), 4f),   // a glide down to the rim
+                // ---- the Fallen Star: the crater ----
+                new RoomRecipe("Windreach_Star_1").Tall().Tiles("Ground_Cinder", "Ground_Lip").WindreachPapers("Mid_Crater", "Far_Rim")
+                    .Floor(-20f, 20f).Plat(-14f, 12f, 4f).Plat(-8f, 7f, 3f).Plat(-2f, 3.5f, 3f)   // the rim: the glide down from the hearth lands here
+                    .Updraft(-17f, 0f, 12f)   // and the crater's heat carries her back up
+                    .Desk(4f).Prop("Wagon", 9f).Npc("Idrenne", -5f, "Star_Idrenne", idrenne).Vantage("Rim", 16f, 0f)   // the smiths' wagon keeps a desk
+                    .Up(W("Fire_2"), -14f, 12.3f).East(W("Star_2")),
+                new RoomRecipe("Windreach_Star_2").Tiles("Ground_Cinder", "Ground_Cinder").WindreachPapers("Mid_Crater", "Far_Rim")
+                    .Floor(-20f, 20f)
+                    .Arena(typeof(FallenStar), "fallen_star", 8f, new Vector2(2.4f, 3.2f), -8f, 18f, Ability.None, "windreach.star.woken")   // woken when the stone is lifted
+                    .West(W("Star_1")),
+            };
+        }
+
         static void BuildRecipe(RoomRecipe r)
         {
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -1633,8 +1748,9 @@ namespace OWSBG.Setup
             var waterMat = MakeLitMaterial("M_Greybox_Shallows", new Color(0.50f, 0.56f, 0.56f));
             foreach (var g in r.Ground)
             {
-                MakeGround(room, g.name, g.c, g.s, g.name.StartsWith("Shallows") ? waterMat : g.name.StartsWith("Floor") ? floorMat : platMat);
-                string tile = g.name.StartsWith("Shallows") ? "Ground_Shallows" : r.Faded ? "Ground_Boardwalk_Faded" : g.name.StartsWith("Floor") ? r.FloorTile : r.PlatTile;
+                bool isFloor = g.name.StartsWith("Floor") || g.name.StartsWith("Ledge");
+                MakeGround(room, g.name, g.c, g.s, g.name.StartsWith("Shallows") ? waterMat : isFloor ? floorMat : platMat);
+                string tile = g.name.StartsWith("Shallows") ? "Ground_Shallows" : r.Faded ? "Ground_Boardwalk_Faded" : isFloor ? r.FloorTile : r.PlatTile;
                 SkinGround(room, g.name, tile, 4f);
             }
 
@@ -1660,11 +1776,14 @@ namespace OWSBG.Setup
             foreach (var e in r.Exits) MakeTransition(room, e.name, e.c, e.s, e.target, e.spawn);
             foreach (var v in r.Vantages) MakeVantage(room, v.name, r.Id + "/" + v.name, v.pos);
             foreach (var sd in r.Seeds) MakeSeeds(room, sd.pos, sd.n);
-            foreach (var p in r.Props) MakeProp(room, room.transform, p.name, p.pos, 0.7f);
+            foreach (var p in r.Props) MakeProp(room, room.transform, p.name, p.pos, p.z);
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
             foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
             for (int i = 0; i < r.Anchors.Count; i++) MakeAnchor(room, i, r.Anchors[i]);
+            if (r.CampSiteIndex >= 0) MakeCampSite(room, r.CampSiteIndex);
+            for (int i = 0; i < r.Grasses.Count; i++) { var g = r.Grasses[i]; MakeGrass(room, i, g.x0, g.x1, g.n, g.tall, g.z, g.y); }
+            for (int i = 0; i < r.Updrafts.Count; i++) { var u = r.Updrafts[i]; MakeUpdraft(room, i, u.x, u.bottom, u.height, u.speed); }
             if (!string.IsNullOrEmpty(r.WalkId))
             {
                 var walk = MakeBoundsWalk(room, r.WalkId, r.WalkFlag, r.WalkValue);
@@ -1688,11 +1807,179 @@ namespace OWSBG.Setup
                 MakeArena(room, a.type, a.bossId, a.pos, a.size, a.doorW, a.doorE, a.reward, a.flag, r.Roots);
             }
             MakeFadeGroup(room);
+            if (r.GauntletOf.HasValue) { var g = r.GauntletOf.Value; MakeGauntlet(room, g.id, g.hx0, g.hx1, g.gx0, g.gx1, g.gtop, g.startX); }
             EditorSceneManager.SaveScene(scene, RoomPath(r.Id));
             Debug.Log("[OWSBG] saved " + RoomPath(r.Id));
         }
 
         static int Enemies_Index(RoomRecipe r, string name) => r.Enemies.FindIndex(e => e.name == name);
+
+        /// <summary>
+        /// One of the Long Grass Camp's sites in its built room (ENV-07, PRG-21): the camp (wagons in a ring, the fire,
+        /// Idrenne with that site's fire scene, the bedroll) in one group and the ashes in another, and the CampSite that
+        /// shows whichever the camp's position says. The kit's drawings where it has them, blocks where it hasn't.
+        /// </summary>
+        static void MakeCampSite(Room room, int site)
+        {
+            var campGo = new GameObject("Camp");
+            campGo.transform.SetParent(room.transform, false);
+            var ashesGo = new GameObject("AshesRing");
+            ashesGo.transform.SetParent(room.transform, false);
+            var wood = new Color(0.46f, 0.34f, 0.24f);
+            foreach (var x in new[] { -9f, 7f, 11f })
+                MakeKitOrBlock(room, campGo.transform, "Wagon", new Vector2(x, 0f), 0.6f, new Vector3(3.5f, 2.4f, 2f), "M_Greybox_Wagon", wood);
+            MakeKitOrBlock(room, campGo.transform, "Fire", new Vector2(1f, 0f), 0.3f, new Vector3(1.2f, 0.6f, 1.2f), "M_Greybox_Fire", new Color(0.95f, 0.55f, 0.20f));
+            MakeNpc(room, "Idrenne_Greybox", new Vector2(3f, 0f), Camp.FireNodeOf(site), new Color(0.86f, 0.86f, 0.90f), "Idrenne");
+            room.transform.Find("Idrenne_Greybox").SetParent(campGo.transform, true);
+            MakeTalkerProp(room, campGo.transform, "Bedroll", new Vector2(-5.5f, 0f), CampSite.BedrollNode, "Rest", "Bedroll", new Vector3(1.2f, 0.4f, 0.8f), new Color(0.55f, 0.40f, 0.30f));
+            var ashes = MakeTalkerProp(room, ashesGo.transform, "Ashes", new Vector2(1f, 0f), CampSite.AshesAheadNode, "Look", "Ashes", new Vector3(1.6f, 0.3f, 1.6f), new Color(0.52f, 0.50f, 0.48f));
+            MakeSpawn(room, CampWalk.SpawnName, new Vector2(-4f, 0f));
+            var s = room.gameObject.AddComponent<CampSite>();
+            s.SiteRoom = Camp.RoomOfSite(site);
+            s.CampGroup = campGo;
+            s.AshesGroup = ashesGo;
+            s.Ashes = ashes;
+            bool here = site == 0;   // the camp starts at the fire ring; CampSite follows it from there
+            campGo.SetActive(here);
+            ashesGo.SetActive(!here);
+        }
+
+        /// <summary>Something to read or use that is not a person: a trigger with a talker on its scene, drawn by the kit or as a block.</summary>
+        static NpcTalker MakeTalkerProp(Room room, Transform parent, string name, Vector2 pos, string node, string prompt, string prop, Vector3 blockScale, Color blockColor)
+        {
+            var go = new GameObject(name) { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(parent, false);
+            go.transform.position = new Vector3(pos.x, pos.y, 0f);
+            var col = go.AddComponent<BoxCollider2D>();
+            col.isTrigger = true;
+            col.size = new Vector2(1.6f, 1.6f);
+            col.offset = new Vector2(0f, 0.8f);
+            var talker = go.AddComponent<NpcTalker>();
+            var so = new SerializedObject(talker);
+            so.FindProperty("_startNode").stringValue = node;
+            so.FindProperty("_prompt").stringValue = prompt;
+            so.FindProperty("_faceWren").boolValue = false;
+            so.ApplyModifiedPropertiesWithoutUndo();
+            MakeKitOrBlock(room, go.transform, prop, Vector2.zero, 0.4f, blockScale, "M_Greybox_" + prop, blockColor);
+            return talker;
+        }
+
+        static void MakeKitOrBlock(Room room, Transform parent, string prop, Vector2 feet, float z, Vector3 blockScale, string blockMat, Color blockColor)
+        {
+            if (MakeProp(room, parent, prop, feet, z) != null) return;
+            var block = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            block.name = prop;
+            Object.DestroyImmediate(block.GetComponent<Collider>());
+            block.transform.SetParent(parent, false);
+            block.transform.localPosition = new Vector3(feet.x, feet.y + blockScale.y * 0.5f, z);
+            block.transform.localScale = blockScale;
+            block.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial(blockMat, blockColor);
+        }
+
+        /// <summary>
+        /// A row of the kit's grass tufts on a GrassField (ENV-07): each tuft is the drawing on a root at its feet, so the
+        /// field can lean it with the wind and part it round Wren. A tall row is the high grass; a row in front of the walk
+        /// (a negative z) is what she walks through. Nothing when the kit has no grass.
+        /// </summary>
+        static void MakeGrass(Room room, int index, float x0, float x1, int n, bool tall, float z, float y)
+        {
+            if (KitLayer(room, tall ? "Prop_Grass_Tall" : "Prop_Grass_A") == null) return;
+            var fieldGo = new GameObject("GrassField_" + index);
+            fieldGo.transform.SetParent(room.transform, false);
+            var field = fieldGo.AddComponent<GrassField>();
+            if (tall) { field.windLean = 6f; field.pushLean = 34f; field.pushRadius = 1.4f; }
+            int seed = index * 7919;
+            foreach (char c in room.RoomId) seed = seed * 31 + c;
+            var rng = new System.Random(seed);
+            string[] kinds = { "Grass_A", "Grass_B", "Grass_C" };
+            for (int i = 0; i < n; i++)
+            {
+                float x = x0 + (x1 - x0) * (i + 0.5f) / n + (float)(rng.NextDouble() - 0.5) * (x1 - x0) / n * 0.6f;
+                var root = new GameObject("Tuft_" + i);
+                root.transform.SetParent(fieldGo.transform, false);
+                root.transform.position = new Vector3(x, y, z + (float)rng.NextDouble() * 0.05f);
+                float s = 0.85f + (float)rng.NextDouble() * 0.3f;
+                root.transform.localScale = new Vector3(s, s, 1f);
+                var r = MakeProp(room, root.transform, tall ? "Grass_Tall" : kinds[rng.Next(3)], Vector2.zero, 0f);
+                r.shadowCastingMode = ShadowCastingMode.Off;
+                field.Tufts.Add(root.transform);
+                field.Phases.Add((float)rng.NextDouble() * 6.28f);
+            }
+        }
+
+        /// <summary>
+        /// An updraft (ENV-07): the lift in a column two units wide, drawn as the kit's ink-swirl stacked up it and rising
+        /// (InkSwirl), or the greybox's flat quad. It lifts her only with Windmemory, as the Updraft says.
+        /// </summary>
+        static void MakeUpdraft(Room room, int index, float x, float bottom, float height, float speed)
+        {
+            var go = new GameObject("Updraft_" + index) { layer = LayerMask.NameToLayer("Trigger") };
+            go.transform.SetParent(room.transform, false);
+            go.transform.position = new Vector3(x, bottom + height * 0.5f, 0f);
+            var box = go.AddComponent<BoxCollider2D>();
+            box.isTrigger = true;
+            box.size = new Vector2(2f, height);
+            var u = go.AddComponent<Updraft>();
+            u.speed = speed;
+            var entry = KitLayer(room, "Prop_Swirl");
+            if (entry != null)
+            {
+                var swirl = go.AddComponent<InkSwirl>();
+                swirl.height = height;
+                swirl.segment = entry.heightUnits;
+                int n = Mathf.CeilToInt(height / entry.heightUnits);
+                for (int i = 0; i < n; i++)
+                {
+                    var r = MakeProp(room, go.transform, "Swirl", new Vector2(0f, -height * 0.5f + i * entry.heightUnits), 0.45f, "Swirl_" + i);
+                    r.shadowCastingMode = ShadowCastingMode.Off;
+                    swirl.Ribbons.Add(r.transform);
+                }
+            }
+            else
+            {
+                var v = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                v.name = "Swirl";
+                Object.DestroyImmediate(v.GetComponent<Collider>());
+                v.transform.SetParent(go.transform, false);
+                v.transform.localPosition = new Vector3(0f, 0f, 0.5f);
+                v.transform.localScale = new Vector3(1.2f, height, 1f);
+                v.GetComponent<MeshRenderer>().sharedMaterial = MakeLitMaterial("M_Greybox_Updraft", new Color(0.96f, 0.72f, 0.46f));
+            }
+        }
+
+        /// <summary>
+        /// A gauntlet in its built room (ENV-07, CMB-18): the course is the room's own ground; this adds the Gauntlet
+        /// that remembers her last solid ground, marks the floors and ledges solid, puts the hazard she falls into under
+        /// the gap and the goal over the far ground. After the fade group, so the floors still fade as floors.
+        /// </summary>
+        static void MakeGauntlet(Room room, string id, float hx0, float hx1, float gx0, float gx1, float gtop, float startX)
+        {
+            var plan = Gauntlets.Find(id);
+            if (plan == null) throw new System.InvalidOperationException("no gauntlet " + id);
+            var go = new GameObject("Gauntlet_" + id);
+            go.transform.SetParent(room.transform, false);
+            var g = go.AddComponent<Gauntlet>();
+            g.Id = id;
+            g.Needs = plan.Needs;
+            g.LastSafe = new Vector2(startX, 0f);
+            int ground = LayerMask.NameToLayer("Ground");
+            foreach (Transform t in room.transform)
+                if (t.gameObject.layer == ground && (t.name.StartsWith("Floor_") || t.name.StartsWith("Ledge_") || t.name.StartsWith("Plat_"))) t.gameObject.AddComponent<SolidGround>();
+            var hz = new GameObject("Hazard_" + id) { layer = LayerMask.NameToLayer("Trigger") };
+            hz.transform.SetParent(room.transform, false);
+            hz.transform.position = new Vector3((hx0 + hx1) * 0.5f, -3f, 0f);
+            hz.AddComponent<BoxCollider2D>().size = new Vector2(hx1 - hx0, 1f);
+            var hzZone = hz.AddComponent<GauntletZone>();
+            hzZone.Role = GauntletZone.Kind.Hazard;
+            hzZone.Gauntlet = g;
+            var goal = new GameObject("Goal_" + id) { layer = LayerMask.NameToLayer("Trigger") };
+            goal.transform.SetParent(room.transform, false);
+            goal.transform.position = new Vector3((gx0 + gx1) * 0.5f, gtop + 1f, 0f);
+            goal.AddComponent<BoxCollider2D>().size = new Vector2(gx1 - gx0, 2f);
+            var goalZone = goal.AddComponent<GauntletZone>();
+            goalZone.Role = GauntletZone.Kind.Goal;
+            goalZone.Gauntlet = g;
+        }
 
         /// <summary>
         /// A permanent Inkthread anchor-point (ENV-04): the component the thread finds, under the kit's drawing of a
@@ -1754,6 +2041,16 @@ namespace OWSBG.Setup
             else if (type == typeof(Halvard)) { var b = MakeBoss<Halvard>(room, "Halvard", pos, size); ((Halvard)b).floorY = 0f; ((Halvard)b).arenaMinX = doorW + 0.5f; ((Halvard)b).arenaMaxX = doorE - 0.5f; boss = b; }
             else if (type == typeof(Oriel)) { var b = MakeBoss<Oriel>(room, "Oriel", pos, size); ((Oriel)b).floorY = 0f; ((Oriel)b).arenaMinX = doorW + 0.5f; ((Oriel)b).arenaMaxX = doorE - 0.5f; boss = b; }
             else if (type == typeof(CompleteSurvey)) { var b = MakeBoss<CompleteSurvey>(room, "CompleteSurvey", pos, size); ((CompleteSurvey)b).floorY = 0f; ((CompleteSurvey)b).arenaMinX = doorW + 0.5f; ((CompleteSurvey)b).arenaMaxX = doorE - 0.5f; boss = b; }
+            else if (type == typeof(Hale))
+            {
+                // The duel's stones: nine along the arena's floor, two paces apart, the last under the kit's ninth stone.
+                var b = MakeBoss<Hale>(room, "Hale", pos, size);
+                var h = (Hale)b;
+                h.floorY = 0f; h.arenaMinX = doorW + 0.5f; h.arenaMaxX = doorE - 0.5f;
+                for (int i = 0; i < Hale.StoneCount; i++) h.stoneXs.Add(doorW + 2.5f + i * 2f);
+                boss = b;
+            }
+            else if (type == typeof(FallenStar)) { var b = MakeBoss<FallenStar>(room, "FallenStar", pos, size); ((FallenStar)b).floorY = 0f; ((FallenStar)b).arenaMinX = doorW + 1.7f; ((FallenStar)b).arenaMaxX = doorE - 1.7f; boss = b; }
             else throw new System.InvalidOperationException("no recipe arena for " + type.Name);
             var bossSo = new SerializedObject(boss);
             int health = Tuning.BossHealth(bossId);
@@ -1844,6 +2141,7 @@ namespace OWSBG.Setup
             foreach (var r in EmberdownRecipes()) list.Add(RoomPath(r.Id));
             foreach (var r in VerdanceRecipes()) list.Add(RoomPath(r.Id));
             foreach (var r in HaldenRecipes()) list.Add(RoomPath(r.Id));
+            foreach (var r in WindreachRecipes()) list.Add(RoomPath(r.Id));
             return list;
         }
 

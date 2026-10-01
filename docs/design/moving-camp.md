@@ -44,10 +44,18 @@ rooms are `CampRooms` (Narrative). The Yarn is `Windreach_Camp_Road.yarn`: the b
 **Yarn:** `<<camp walk>>` (waits until she's there); `camp_ready()`, `camp_site()` (0 the fire ring, 1 the
 riverbed, 2 the high grass).
 
+## The rooms
+
+Windreach is built (ENV-07): the post and the three sites are `Greybox_Windreach_Camp_1`, `_Camp_2`, `_River_2` and
+`_Fire_1`, each site with its camp group (the kit's wagons, the fire, Idrenne on that site's fire scene, the bedroll),
+its ashes group and its `CampSite`, and the post with the desk, the camp's ledger and the wagon that stays
+(`ProjectSetup.MakeCampSite`). `CampWalk.SceneFor` asks `RoomManager.IsBuilt` (the Addressables catalogue) and takes
+the built room; the stand-ins below remain only for a catalogue without them.
+
 ## Stand-in rooms
 
-Windreach isn't built (ENV-07). Until it is, `CampRooms` builds the camp's four rooms at runtime when RoomManager asks
-for `Camp_<planned room>`: `Camp_Windreach_Camp_1`, `_Camp_2`, `_River_2`, `_Fire_1`.
+`CampRooms` builds the camp's four rooms at runtime when RoomManager asks for `Camp_<planned room>`:
+`Camp_Windreach_Camp_1`, `_Camp_2`, `_River_2`, `_Fire_1`.
 - **Each room:** grass, straw and sky paper; spawns Start, West, East and Camp.
 - **Exits:** they're joined in walking order along the flattened grass (post → fire ring → riverbed → high grass),
   so the camp's road can be walked as well as travelled.
@@ -105,8 +113,8 @@ day moves on by them.
 
 ## Open
 
-- **The real rooms:** Windreach's built rooms (ENV-07) replace the stand-ins. The camp's three sites then need the
-  wagons and the fire dressed, and `CampSite` placed.
+- ~~**The real rooms:** Windreach's built rooms (ENV-07) replace the stand-ins.~~ Built: the sites are dressed from the
+  kit and `CampSite` is placed by the recipe (`Camp(site)`); `MovingCampTests` walks the built rooms.
 - **The walk as a set piece.** v1's day passes behind closed paper. A walked version (the clan on the road in the
   background, a fledgling leaping) is CHR-14's and AUD's.
 - **The ledger travels?** Commissions.md's "Windreach's moving camp carries its own" is answered as no for v1: the

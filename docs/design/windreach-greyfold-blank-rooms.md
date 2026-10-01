@@ -102,6 +102,27 @@ generated from what she left unanchored (PRG-20) and drifts past the Hollow's fa
 | **Aury_2** Aury's lamp room | AurysLighthouse | Aury, who asks if you've eaten, the keystone in his wings. In Act 3 his island drifts to the Hollow, and Sable sits with him. | — | — | Aury, Sable | up → Hollow_3 [Clarity, `act3.started`], W → Aury_1 |
 <!-- /table -->
 
+**Windreach built (ENV-07).** All fourteen rooms are scenes from recipes (`ProjectSetup.WindreachRecipes`), on the
+Steppe's kit (paper-kit.md §2e), with grass in rows that lean with the wind and part for her (`GrassField`) and updrafts
+drawn as ink (`InkSwirl`): the south road out of Lowmarket's gate onto `Ground_Turf` under the stones (the first stone
+notched and readable, Hale's escort as a Warden out of uniform; stones two to eight along the long walk with two
+swirls too weak to ride; the ninth stone with Hale at dusk, his duel's arena waiting for `windreach.hale.challenged`,
+its nine stones two paces apart along the floor); the walkers' post with the desk, the camp's ledger, the wagon that
+stays and its cloth; the camp's three sites in their real rooms (`CampSite` on Camp_2, River_2 and Fire_1: wagons in a
+ring, the fire, Idrenne with that site's fire scene, the bedroll, and the ashes' ring where the camp is not;
+`CampWalk.SceneFor` prefers the built room, so the stand-ins retire); the Dry River on `Ground_Cracked`, a nine-unit
+gap at the camp's edge with a smudge over it to pogo, boats on their sides with smudges in them; the cut bank as two
+Talonhold walls twelve high under `Paper_Mid_Cliff`; the leap on `Ground_Lip` with its three carved stones, Idrenne,
+and Brek who asks; the Gate's glide course as the region's gauntlet on the room's own ground (the lip, twenty-two units
+of long grass as the hazard, three swirls, a ledge three up with the goal over it; `Gauntlet` and `SolidGround` in the
+scene); the high grass with `Paper_Fore_Grass` and tall tufts before and behind her; the hearth with Idrenne, the
+cooking-stone and the drop down to the rim; the crater rim with the smiths' wagon, its desk and a swirl to ride back
+up; the anvil-crater with the Fallen Star waiting for `windreach.star.woken`. The epilogue walk goes to the fire ring.
+Not yet: the Gate's glide down into the Greyfold's white (ENV-08); the leap as a set piece (a jump that must fall before
+Windmemory catches); Hale's escort as its own family; the river's gap takes no mask (no hazard under it: she lands on
+nothing and the room's bounds hold her); the flag and ability gates on the map's doors (greybox transitions read
+neither).
+
 ## 3. Rules these plans follow
 - The map's gates, exactly, between zones (tested). Inside a zone only its own ability gates a room: the Wind
   Gate's updrafts want Windmemory, which the leap in the same zone teaches. The Road That Stops has no gate inside

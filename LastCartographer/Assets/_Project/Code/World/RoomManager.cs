@@ -47,6 +47,16 @@ namespace OWSBG.World
         public static event Action<string, float> Transitioned;
         /// <summary>True when the room came in through Addressables (as opposed to Build Settings or adoption).</summary>
         public bool IsAddressable(string scene) => !string.IsNullOrEmpty(scene) && _scenes.ContainsKey(scene);
+        /// <summary>A room the catalogue can load (a built scene), or one already loaded; asked synchronously, so only once Addressables has its locators.</summary>
+        public bool IsBuilt(string scene)
+        {
+            if (string.IsNullOrEmpty(scene)) return false;
+            if (_scenes.ContainsKey(scene)) return true;
+            if (!_useAddressables) return false;
+            foreach (var locator in Addressables.ResourceLocators)
+                if (locator.Locate(scene, typeof(SceneInstance), out var locations) && locations.Count > 0) return true;
+            return false;
+        }
         /// <summary>Neighbour rooms whose bundles are being kept resident.</summary>
         public IReadOnlyCollection<string> PreloadedNeighbours => _preloads.Keys;
         public bool IsPreloading { get; private set; }

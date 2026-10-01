@@ -45,7 +45,7 @@ namespace OWSBG.Tests
         }
 
         static IEnumerable<RoomPlan> Plans => RoomPlans.All.Where(p => p.Id.StartsWith("Halden_"));
-        static bool Unbuilt(string to) => to.StartsWith("Windreach_") || to.StartsWith("Greyfold_");
+        static bool Unbuilt(string to) => to.StartsWith("Greyfold_");
 
         [Test]
         public void ThePlateausKitIsRenderedInItsPalette()
@@ -99,7 +99,7 @@ namespace OWSBG.Tests
                 Assert.GreaterOrEqual(Count(text, "RoomId: " + p.Id), 1, p.Id + " names itself");
                 foreach (var e in p.Exits)
                 {
-                    if (Unbuilt(e.To)) continue;   // the south road to Windreach and the orchard's road to the Edge wait for ENV-07 and ENV-08
+                    if (Unbuilt(e.To)) continue;   // the orchard's road to the Edge waits for ENV-08
                     Assert.GreaterOrEqual(Count(text, "TargetScene: Greybox_" + e.To), 1, p.Id + " exits to " + e.To + " as planned");
                 }
                 Assert.GreaterOrEqual(Count(text, transition), p.Exits.Count(e => !Unbuilt(e.To)), p.Id + "'s transitions");

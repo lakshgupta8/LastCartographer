@@ -155,6 +155,46 @@ Props (`props.py`, region `Halden`): the shared furniture and the anchor-point i
 2.5 × 1.25) and `Prop_Notice` (survey scheduled, pasted over itself, 1.5 × 2). A piece that turns (a branch, a rib, a
 spoke) is built at the origin and placed after (`rbox`): a box turned in place turns about the world origin.
 
+### 2e. The Windreach kit (ENV-07)
+
+`tools/paperkit/windreach.py`, on the same plumbing. Straw paper (0.93, 0.88, 0.70), sky blue, storm violet, gold,
+grey-brown ink (art-direction 5). The wind is from the west: every blade in every layer leans east. The recipes pick up
+to three a room (`WindreachPapers(mid, far, farther)`); the cliff and the crater take the rim for their far layer.
+Layer names are unique across the kits (`WindreachRoomsTests` holds it): a material is named after its layer, and two
+kits sharing a name would overwrite each other's drawing at build.
+
+| Layer | z | Rooms | What it is |
+|---|---|---|---|
+| `Paper_Fore_Grass` | −4 | the high grass | long grass in front of the walk, dark, a thick line |
+| `Paper_Mid_Stones` | 3 | the Nine Stones | standing stones in a line across the grass, lichen on their north faces, notches, long shadows east |
+| `Paper_Mid_Camp` | 3 | the Long Grass Camp | walking-wagons in a ring, the fire, the route woven on one wagon's cloth, smoke going east |
+| `Paper_Mid_River` | 3 | the Dry River | the far bank of cracked mud, boats on their sides, dead reeds, the cut bank rising at the east |
+| `Paper_Mid_Cliff` | 3 | the cut bank | twelve units of cliff: strata, talon grooves, the lip's grass at the top |
+| `Paper_Mid_WindGate` | 3 | the leap | the lip's flat carved stones, two tall stones leaning toward each other, the wind drawn as ink-swirls |
+| `Paper_Mid_HighGrass` | 3 | the glide course, the high grass | grass over anyone's head, seed-heads, a trampled way through the middle |
+| `Paper_Mid_Hearth` | 3 | Idrenne's Fire | the hearth in its ring, the cooking-stone flat on it, a pot on a tripod, wagons either side |
+| `Paper_Mid_Crater` | 3 | the Fallen Star | the iron wall the Star threw up, the Star as the anvil, hammer-marks, sparks, the smiths' wagon |
+| `Paper_Far_Steppe` | 8 | the walk | grass to the horizon in pale bands, the stones' line going away small, far wagons |
+| `Paper_Far_Rim` | 8 | the cliff, the Gate, the crater | the crater's far rim and the heights, pale violet, grass along their tops |
+| `Paper_Farther_Storm` | 16 | outdoors | sky that is most of the screen: storm violet banked on the horizon, a gold light under it, a flight going east |
+
+Tiles: `Ground_Turf` (packed earth, grass along the top), `Ground_Cracked` (the riverbed's mud in plates),
+`Ground_Lip` (the Gate's flat stones, carved, lichen in the joints), `Ground_Cinder` (the crater's floor, iron flecks, a
+glow in the cracks). Props (`props.py`, region `Windreach`): the shared furniture in the Steppe's colours, plus
+`Prop_Stone` (a standing stone, 1.5 × 3), `Prop_Wagon` (a walking-wagon, 4 × 3), `Prop_Fire` and `Prop_Ashes` (the
+camp's fire, and its ring where the camp is not), `Prop_Bedroll`, `Prop_Hull` (a boat on its side, 3 × 1.5),
+`Prop_Reeds`, `Prop_LipStone` (a flat stone carved with a place), `Prop_Swirl` (one turn of an updraft's ribbon, 2 × 2,
+tileable top to bottom), `Prop_Hearth` (the ring, the cooking-stone, the pot on its tripod, 2.5 × 2), and the grass:
+`Prop_Grass_A/B/C` (tufts, 1 × 1.25) and `Prop_Grass_Tall` (the high grass, 1.5 × 2.5).
+
+**The grass** (`GrassField`, World): a recipe's `Grass(x0, x1, n, tall, z, y)` is a row of tufts, each the drawing on a
+root at its feet; the field leans them with the wind (gusts travelling east along the row, the tips going east) and
+parts them round Wren (a tuft within about a unit bends away from her, most when she stands in it, and springs back once
+she has passed). The high grass stands in rows before and behind her at the third fire. One behaviour per field;
+tufts cast no shadows. **The updrafts** (`InkSwirl`): `Updraft(x, bottom, height, speed)` is the lift in a column two
+wide with the ribbon stacked up it, rising and wrapping from the top back to the foot, swaying a little; the Nine
+Stones' are too weak to ride (three a second), the Gate's and the crater's carry her (nine).
+
 ### 2a. Props (ENV-09)
 
 `tools/paperkit/props.py` draws the hubs' furniture with the same helpers: one cut-out each at 96 px/unit, feet at

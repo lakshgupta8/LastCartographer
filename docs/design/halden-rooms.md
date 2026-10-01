@@ -75,8 +75,9 @@ its east wall as two Talonhold walls and a thread point; the Bastion: the tower'
 desk on the top landing, Maren at its foot), Oriel at the yard's edge and her arena waiting for `pell.report_sent`, the
 window into Voss's office with Pell; the dome stair and the frame with Pell, Voss, Runa and Teodor around it, the
 Complete Survey's arena waiting for `ending.chorus_led`; the Vault with its seven slots and Pell counting. Both climbs
-come down onto it: Overlook_2 → Bridges_1, Gate_2 → Mills_1. The epilogue walk now goes to Pell's Hall. Not yet: the
-south gate's road to Windreach (ENV-07) and the orchard's to the Edge Camp (ENV-08); Lowmarket's faded variant; the
+come down onto it: Overlook_2 → Bridges_1, Gate_2 → Mills_1. The epilogue walk now goes to Pell's Hall. The south
+gate's road onto the Steppe is built (ENV-07): Lowmarket_3 → Windreach_Stones_1. Not yet: the orchard's road to the Edge
+Camp (ENV-08); Lowmarket's faded variant; the
 Crown hall as a room; the chalk lines of an empty yard; the flag gates on the map's doors (greybox transitions do not
 read flags).
 

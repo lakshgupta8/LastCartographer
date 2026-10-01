@@ -12,7 +12,8 @@ namespace OWSBG.Tests
     /// <summary>
     /// Portraits for dialogue (CHR-13, docs/design/portraits.md): every Yarn speaker has a face or is named faceless,
     /// never both; each face is drawn from the body the speaker is met in; every face is packed as a strip of rest,
-    /// talk and the two in the Remnant's grey; the persistent dialogue page carries them all.
+    /// talk and the two in the Remnant's grey; two speakers in one look still read apart; the persistent dialogue page
+    /// carries them all.
     /// </summary>
     public class PortraitTests
     {
@@ -126,6 +127,37 @@ namespace OWSBG.Tests
                 Assert.AreEqual(0, shapeDiffers, e.speaker + "'s grey is the same drawing");
                 // The ink removed: every fill most of the way to the paper, the line some of the way (InkSprite's ColourState).
                 Assert.Less(toPaperGrey, toPaperDrawn * 0.5, e.speaker + "'s grey is nearer the paper");
+            }
+        }
+
+        [Test]
+        public void TheBirdsWhoShareALookStillReadApart()
+        {
+            // Ostry and Anvers are rooks, Hask and Brask choughs, Brek and Lorne cranes: one of each pair has a touch of
+            // their own (portraits.py TOUCHES), so the two faces differ over a twentieth of what either covers.
+            var shared = Portraits.Faces.GroupBy(kv => kv.Value).Where(g => g.Count() > 1).ToList();
+            CollectionAssert.AreEquivalent(new[] { "Folk_Rook", "Folk_Chough", "Folk_Crane" }, shared.Select(g => g.Key));
+            foreach (var g in shared)
+            {
+                var names = g.Select(kv => kv.Key).ToArray();
+                for (int i = 0; i < names.Length; i++)
+                for (int j = i + 1; j < names.Length; j++)
+                {
+                    var a = Decode(Folder + Portraits.FileOf(names[i]));
+                    var b = Decode(Folder + Portraits.FileOf(names[j]));
+                    var pa = a.GetPixels32(); var pb = b.GetPixels32();
+                    int either = 0, differ = 0;
+                    for (int y = 0; y < Portraits.Cell; y++)
+                    for (int x = 0; x < Portraits.Cell; x++)
+                    {
+                        Color32 p = pa[y * a.width + x], q = pb[y * b.width + x];
+                        if (p.a <= 127 && q.a <= 127) continue;
+                        either++;
+                        if ((p.a > 127) != (q.a > 127) || Mathf.Abs(p.r - q.r) + Mathf.Abs(p.g - q.g) + Mathf.Abs(p.b - q.b) > 60) differ++;
+                    }
+                    Object.DestroyImmediate(a); Object.DestroyImmediate(b);
+                    Assert.Greater(differ / (float)either, 0.05f, names[i] + " and " + names[j] + " share a face");
+                }
             }
         }
 

@@ -11,12 +11,15 @@ at rest, and frames the head from three-quarters in front, turned toward the lin
 open). Rendered at twice the portrait's size into .frames/portraits/<Speaker>_<frame>.png; portraits_pack.py
 downsamples them, adds the Remnant's grey (the shader's colour state, worked on the pixels) and writes the strips.
 
+Where two speakers wear the same look, one of them has a touch of their own in the portrait (TOUCHES): Ostry a
+muffler and the Guild's pin, Brask a miner's helmet and lamp, Lorne a grown crane's grey and spectacles.
+
 The list is SPEAKERS below and again in Unity (`Portraits.Faces`, Core), which the tests compare with the pack.
 """
 import json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import bpy
-from inklib import D, cone, empty, mat, reset_scene, setup_render, render, argv_after_dashes, FRAMES_ROOT, INK
+from inklib import D, cone, cube, sphere, empty, mat, reset_scene, setup_render, render, argv_after_dashes, FRAMES_ROOT, INK
 import cast
 import townsfolk
 import wardens
@@ -50,6 +53,65 @@ def bird(name):
 
 def folk(look_id):
     spec = look(look_id)
+    return lambda: cast.Townsfolk(spec, townsfolk.marks)
+
+
+# ---------------------------------------------------------------- the touches that tell a shared look apart
+
+GUILD_BRASS = (0.78, 0.62, 0.30)
+
+
+def ring(name, major, minor, material, parent, loc, rot):
+    """A torus (a spectacle's rim) on a parent, in its space."""
+    bpy.ops.mesh.primitive_torus_add(major_radius=major, minor_radius=minor, major_segments=28, minor_segments=8)
+    ob = bpy.context.active_object
+    ob.name = name
+    ob.data.materials.append(material)
+    ob.parent = parent
+    ob.location = loc
+    ob.rotation_euler = rot
+    return ob
+
+
+def touch_ostry(b):
+    """The Guild's agent in his first winter at the ninth chimney: a wool muffler, and the Guild's brass pin."""
+    s = b.spec
+    nr, br = s["neck_r"], s["body_r"]
+    wool, brass = cast.m((0.52, 0.18, 0.16)), cast.m(GUILD_BRASS)
+    cone("muffler", nr * 1.85, nr * 1.6, 0.085, wool, b.neck, loc=(0, 0, 0.02))
+    cube("muffler_end", (0.07, 0.025, 0.18), wool, b.neck, loc=(0.05, -nr * 1.55, -0.07), rot=(0, D(-12), 0))
+    sphere("guild_pin", 0.024, brass, b.body, loc=(br * 0.60, -br * 0.66, br * 0.46))
+
+
+def touch_brask(b):
+    """A Hollowvein miner, buried with his shift: the leather helmet and its lamp."""
+    hr = b.spec["head_r"]
+    leather, brass, glass = cast.m((0.32, 0.25, 0.18)), cast.m(GUILD_BRASS), cast.m((0.95, 0.88, 0.58))
+    sphere("helmet", hr * 1.02, leather, b.head, loc=(-hr * 0.06, 0, hr * 0.36), scale=(1.06, 1.06, 0.62))
+    cone("helmet_brim", hr * 1.12, hr * 1.12, 0.014, leather, b.head, loc=(-hr * 0.06, 0, hr * 0.22))
+    cone("lamp_body", hr * 0.20, hr * 0.25, hr * 0.22, brass, b.head, loc=(hr * 0.92, 0, hr * 0.60), rot=(0, D(62), 0))
+    sphere("lamp_glass", hr * 0.15, glass, b.head, loc=(hr * 1.04, 0, hr * 0.66))
+
+
+def touch_lorne(b):
+    """The Guild's surveyor at the baths: careful, correct, spectacles on a brass wire."""
+    s = b.spec
+    hr, er = s["head_r"], s["eye_r"]
+    brass = cast.m(GUILD_BRASS)
+    ex, ey, ez = hr * 0.45, -hr * 0.86, hr * 0.2          # cast.Townsfolk's eye
+    ring("spectacle", er * 1.55, 0.0055, brass, b.head, (ex, ey - 0.012, ez), (D(90), 0, 0))
+    cube("spectacle_arm", (hr * 0.85, 0.006, 0.008), brass, b.head, loc=(ex - er * 1.55 - hr * 0.42, ey + 0.004, ez + 0.004))
+    cube("spectacle_bridge", (er * 1.1, 0.006, 0.008), brass, b.head, loc=(ex + er * 1.55 + er * 0.45, ey + 0.01, ez - 0.004))
+
+
+TOUCHES = {"Ostry": touch_ostry, "Brask": touch_brask, "Lorne": touch_lorne}
+
+# Lorne is a grown crane, where Brek is a young one, tawny before the grey: grey, the black throat, the red crown.
+LORNE = dict(body=(0.60, 0.62, 0.64), dark=(0.38, 0.40, 0.44), cap=(0.80, 0.18, 0.14), bib=(0.12, 0.12, 0.14), beak=(0.52, 0.50, 0.42))
+
+
+def folk_as(look_id, **changes):
+    spec = dict(look(look_id), **changes)
     return lambda: cast.Townsfolk(spec, townsfolk.marks)
 
 
@@ -94,7 +156,7 @@ SPEAKERS = [
     ("Traveller", "Folk_Thrush", folk("Thrush")),
     ("Brek", "Folk_Crane", folk("Crane")),
     ("Ossa", "Folk_Plover", folk("Plover")),        # a child of the clan at the third fire (windreach-arc.md)
-    ("Lorne", "Folk_Crane", folk("Crane")),         # the Guild's surveyor at the baths, a crane (emberdown-arc.md)
+    ("Lorne", "Folk_Crane", folk_as("Crane", **LORNE)),   # the Guild's surveyor at the baths, a crane (emberdown-arc.md)
     ("Brask", "Folk_Chough", folk("Chough")),       # the Hollowvein's miner on his island (blank-islands.md)
 ]
 
@@ -149,6 +211,8 @@ def main():
             continue
         reset_scene()
         rig = build()
+        if speaker in TOUCHES:
+            TOUCHES[speaker](rig)
         if not hasattr(rig, "jaw"):
             jaw_for_warden(rig)
         rig.reset()

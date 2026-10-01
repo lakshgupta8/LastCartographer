@@ -12,7 +12,7 @@ The contact sheet is `docs/art/portraits.png`. The page as it plays, Sable drawn
 Data: `Portraits` (Core) holds who has a face and what body it is drawn from, who speaks faceless, and who is a
 Remnant at rest.
 Page: `DialogueView` (UI) holds the strips and is wired by `ProjectSetup.LoadPortraits`.
-Tests: `PortraitTests` (edit, 5), `DialoguePortraitTests` (play, 4).
+Tests: `PortraitTests` (edit, 6), `DialoguePortraitTests` (play, 4).
 
 ## 1. Who has a face
 
@@ -34,9 +34,18 @@ Tests: `PortraitTests` (edit, 5), `DialoguePortraitTests` (play, 4).
 Every Yarn speaker must be on one list or the other, never both, and never neither. A new speaker is a decision
 someone makes, and `PortraitTests` holds the lists to the project.
 
-Some looks are shared. Ostry and Anvers are both rooks, Hask and Brask choughs, Brek and Lorne cranes. Sable and Aury
-are the same bird, since he is "her brother, the same bird in a keeper's coat", so their portraits read alike. In
-play his is grey.
+Some looks are shared: Ostry and Anvers are both rooks, Hask and Brask choughs, Brek and Lorne cranes. In each pair
+one speaker has a touch of their own in the portrait (`TOUCHES` in `portraits.py`, decided 2026-10-02), taken from
+their arc:
+- **Ostry**, the Guild's agent in his first winter at the ninth chimney, has a wine-red muffler and the Guild's
+  brass pin.
+- **Brask**, a Hollowvein miner buried with his shift, has a leather helmet with its lamp.
+- **Lorne**, the Guild's careful surveyor, is a grown crane (grey, the red crown) where Brek is the young tawny one,
+  and wears spectacles on a brass wire.
+
+The touches are the portrait's only. Ostry's sheets in the ninth chimney are the plain rook, so the hand pass should
+carry the muffler into the room or drop it from the portrait. Sable and Aury are the same bird, since he is "her
+brother, the same bird in a keeper's coat"; his coat still sets the two portraits apart, and in play his is grey.
 
 ## 2. The drawing
 
@@ -95,6 +104,7 @@ UI element would match exactly; that is for the hand pass if it matters.
 | A face is drawn from the body the speaker is met in: the named birds' looks, the cast's own sheets | `PortraitTests.EachFaceIsDrawnFromTheBodyTheSpeakerIsMetIn` |
 | The pack and the table list the same speakers; four 256-px frames each; import settings | `PortraitTests.EveryFaceIsPackedAsAStripOfFourFrames` |
 | The beak opens; the grey is the same outline with less colour, nearer the paper | `PortraitTests.TheBeakOpensAndTheRemnantIsTheSameDrawingGreyed` |
+| The rooks, the choughs and the cranes each differ over a twentieth of what either covers | `PortraitTests.TheBirdsWhoShareALookStillReadApart` |
 | The persistent page carries every strip; the contact sheet exists | `PortraitTests.ThePersistentPageCarriesEveryPortrait` |
 | Sable's line shows her face, talking and then resting | `DialoguePortraitTests.ASpeakerWithAFaceShowsItTalkingThenResting` |
 | The ashes show no face; Wren's choices show none | `DialoguePortraitTests.AThingThatSpeaksShowsNoFace` |

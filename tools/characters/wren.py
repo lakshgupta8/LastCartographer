@@ -1,5 +1,5 @@
-"""Wren, built and animated in Blender (CHR-02, CHR-03): a small round bird in an ink-blue cowl with the
-needle-quill, rendered side-on to frames the packer turns into sprite sheets.
+"""Wren, built and animated in Blender (CHR-02, CHR-03, CHR-05): a small round bird in an ink-blue cowl with the
+needle-quill (the cowl and the grip change with her Charter), rendered side-on to frames the packer turns into sprite sheets.
 
 Run from the repo root, then pack:
 
@@ -7,6 +7,9 @@ Run from the repo root, then pack:
     python tools/characters/pack.py wren
     ... -P tools/characters/wren.py -- idle run          (only those clips)
     ... -P tools/characters/wren.py -- turnaround        (the model sheet only)
+    ... -P tools/characters/wren.py -- charters          (the five other Charters' sheets, CHR-05)
+    python tools/characters/pack.py wren_warden wren_drifter wren_ferryman wren_unwriter wren_remnant
+    python tools/characters/charters_sheet.py            (the six side by side: docs/art/wren-charters.png)
 
 The model is parts on a hierarchy of empties (root, hips, body, head, wings, tail, quill, legs), so every
 clip is a function of time that sets a few rotations and offsets: no armature, nothing baked. Frames are
@@ -15,7 +18,7 @@ same flat washes and Freestyle ink line as the paper kits, so she and the world 
 """
 import math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from inklib import D, Rig, sphere, cone, cube, mat, lerp, run, argv_after_dashes, INK, PAPER
+from inklib import D, Rig, sphere, cone, cube, slab, mat, lerp, run, argv_after_dashes, INK, PAPER
 
 CELL = 2.0        # units per frame cell: room for the quill and the jumps
 
@@ -28,40 +31,64 @@ BRASS = (0.78, 0.62, 0.30)
 BEAK = (0.55, 0.42, 0.22)
 
 
+ROPE = (0.52, 0.40, 0.26)
+
+# Each Charter changes her silhouette (CHR-05, combat doc 5): the cowl's shape and colour, and how she grips the
+# quill. grip: the quill's rest angle, degrees forward of upright (the clips turn it from there); hold: how far
+# along the shaft her hand is (+ reaches further, - holds it short); weight: the shaft's thickness; at: where the
+# hand is on the near wing (default before her breast).
+CHARTERS = {
+    # the start: the ink-blue cape-cowl, the quill held up and forward a third of the way along
+    "Surveyor": dict(cowl=COWL, grip=30, hold=0.0, weight=1.0),
+    # heavy: a broad stiff mantle with a high collar in Warden slate, the heavy quill laid back over the shoulder
+    "Warden": dict(cowl=(0.28, 0.34, 0.44), grip=-28, hold=-0.1, weight=1.7, at=(-0.06, -0.1, 0.0)),
+    # aerial: a short ochre hood with two scarf-tails streaming behind, the quill held short and low like a knife
+    "Drifter": dict(cowl=(0.62, 0.42, 0.22), grip=55, hold=-0.22, weight=0.85),
+    # a boatman's wide-brimmed hood in sea-grey, the quill upright like a punt-pole with the cord wound round it
+    "Ferryman": dict(cowl=(0.28, 0.38, 0.36), grip=12, hold=0.06, weight=1.0, at=(0.30, -0.1, -0.14)),
+    # the Choir's pale wool lumped round her shoulders, the quill turned round: the blunt end forward to rub out
+    "Unwriter": dict(cowl=(0.88, 0.86, 0.80), grip=34, hold=0.0, weight=1.0),
+    # grey, the hood up with its point drooping, torn at the hem, the quill broken short and carried low
+    "Remnant": dict(cowl=(0.46, 0.46, 0.47), grip=55, hold=-0.04, weight=1.0),
+}
+VARIANTS = ["Warden", "Drifter", "Ferryman", "Unwriter", "Remnant"]   # each on its own sheets, Wren_<Charter>
+
+
+def character_of(charter):
+    return "Wren" if charter == "Surveyor" else "Wren_" + charter
+
+
 class Wren(Rig):
-    def __init__(self):
+    def __init__(self, charter="Surveyor"):
         super().__init__()
+        c = CHARTERS[charter]
         root = self.add("root")
         hips = self.add("hips", root, (0, 0, 0.32))
         body = self.add("body", hips, (0, 0, 0.30))
         head = self.add("head", body, (0.14, 0, 0.42))
         wing_near = self.add("wing_near", body, (0.0, -0.27, 0.12))
         wing_far = self.add("wing_far", body, (0.0, 0.27, 0.12))
-        quill = self.add("quill", wing_near, (0.16, -0.1, -0.14), rot=(0, D(30), 0))   # held up and forward
+        quill = self.add("quill", wing_near, c.get("at", (0.16, -0.1, -0.14)), rot=(0, D(c["grip"]), 0))   # the Charter's grip
         tail = self.add("tail", body, (-0.30, 0, -0.02))
         leg_l = self.add("leg_l", root, (0.05, -0.1, 0.32))
         leg_r = self.add("leg_r", root, (0.05, 0.1, 0.32))
 
-        brown, dark, cream, cowl = mat("brown", BROWN), mat("dark", BROWN_DARK), mat("cream", CREAM), mat("cowl", COWL)
+        brown, dark, cream, cowl = mat("brown", BROWN), mat("dark", BROWN_DARK), mat("cream", CREAM), mat("cowl", c["cowl"])
         brass, ink, beak = mat("brass", BRASS), mat("ink", INK), mat("beak", BEAK)
         sphere("body_mesh", 0.33, brown, body, scale=(1.0, 0.85, 1.05))
         sphere("breast", 0.25, cream, body, loc=(0.14, 0, -0.09), scale=(0.9, 0.8, 1.0))
-        cone("cowl", 0.41, 0.19, 0.44, cowl, body, loc=(0.0, 0, 0.14))
-        sphere("clasp", 0.045, brass, body, loc=(0.20, -0.24, 0.28))
         sphere("head_mesh", 0.21, brown, head, scale=(1.05, 0.95, 1.0))
         cone("beak", 0.07, 0.006, 0.2, beak, head, loc=(0.27, 0, -0.02), rot=(0, D(90), 0))
         sphere("eye", 0.035, ink, head, loc=(0.10, -0.19, 0.05))
         sphere("glint", 0.011, mat("paper", PAPER), head, loc=(0.115, -0.222, 0.062))
-        cone("crest", 0.05, 0.005, 0.16, dark, head, loc=(-0.08, 0, 0.19), rot=(0, D(-35), 0))
         sphere("wing_near_mesh", 0.2, dark, wing_near, loc=(-0.05, -0.04, -0.08), scale=(1.3, 0.35, 0.7), rot=(0, D(-15), 0))
         sphere("wing_far_mesh", 0.2, dark, wing_far, loc=(-0.05, 0.04, -0.08), scale=(1.3, 0.35, 0.7), rot=(0, D(-15), 0))
         cube("tail_mesh", (0.36, 0.16, 0.06), dark, tail, loc=(-0.14, 0, 0.04), rot=(0, D(-25), 0))
-        cone("quill_mesh", 0.022, 0.016, 1.1, ink, quill, loc=(0, 0, 0.25))
-        cone("nib", 0.02, 0.0, 0.1, brass, quill, loc=(0, 0, 0.85))
-        sphere("quill_end", 0.03, brass, quill, loc=(0, 0, -0.30))
         for leg in (leg_l, leg_r):
             cone("shin" + leg.name[-2:], 0.026, 0.022, 0.32, dark, leg, loc=(0, 0, -0.16))
             cube("foot" + leg.name[-2:], (0.17, 0.06, 0.03), dark, leg, loc=(0.05, 0, -0.32))
+        COWLS[charter](self, body, head, cowl, brass, dark)
+        QUILLS.get(charter, quill_plain)(self, quill, c["hold"], c["weight"], ink, brass)
         self.snapshot()
 
     def flap(self, a):
@@ -73,6 +100,99 @@ class Wren(Rig):
         """Legs swung forward by l and r degrees."""
         self.rot(self.leg_l, y=l)
         self.rot(self.leg_r, y=r)
+
+
+# ---------------------------------------------------------------- the Charters' cowls and grips (CHR-05)
+
+def cowl_surveyor(w, body, head, cowl, brass, dark):
+    cone("cowl", 0.41, 0.19, 0.44, cowl, body, loc=(0.0, 0, 0.14))
+    sphere("clasp", 0.045, brass, body, loc=(0.20, -0.24, 0.28))
+    cone("crest", 0.05, 0.005, 0.16, dark, head, loc=(-0.08, 0, 0.19), rot=(0, D(-35), 0))
+
+
+def cowl_warden(w, body, head, cowl, brass, dark):
+    # a broad stiff mantle squared at the shoulders and a high collar standing up behind the head
+    cone("cowl", 0.47, 0.31, 0.36, cowl, body, loc=(0.0, 0, 0.17))
+    cube("collar", (0.16, 0.50, 0.30), cowl, body, loc=(-0.12, 0, 0.42), rot=(0, D(-12), 0))
+    cube("shoulder", (0.34, 0.06, 0.12), cowl, body, loc=(0.02, -0.40, 0.30), rot=(0, D(8), 0))
+    for k in range(3):
+        sphere("rivet%d" % k, 0.03, brass, body, loc=(-0.08 + 0.12 * k, -0.44, 0.31))
+    cone("crest", 0.05, 0.005, 0.10, dark, head, loc=(-0.08, 0, 0.19), rot=(0, D(-55), 0))
+
+
+def cowl_drifter(w, body, head, cowl, brass, dark):
+    # a short close hood and two scarf-tails streaming back from the nape
+    cone("cowl", 0.37, 0.21, 0.28, cowl, body, loc=(0.0, 0, 0.24))
+    sphere("hood", 0.235, cowl, head, loc=(-0.05, 0, 0.03), scale=(1.0, 1.02, 0.95))
+    tails = w.add("scarf", body, (-0.16, 0, 0.36), rot=(0, D(-8), 0))
+    slab("scarf_near", [(0.0, 0.05), (-0.62, -0.02), (-0.70, -0.12), (-0.58, -0.06), (0.0, -0.05)], 0.03, cowl, tails, loc=(0, -0.12, 0))
+    slab("scarf_far", [(0.0, 0.05), (-0.48, 0.06), (-0.55, -0.02), (-0.44, 0.0), (0.0, -0.05)], 0.03, cowl, tails, loc=(0, 0.12, 0.02))
+    sphere("clasp", 0.04, brass, body, loc=(0.20, -0.22, 0.32))
+
+
+def cowl_ferryman(w, body, head, cowl, brass, dark):
+    # a cape-cowl and a boatman's wide flat brim over the head
+    cone("cowl", 0.42, 0.20, 0.42, cowl, body, loc=(0.0, 0, 0.15))
+    cone("brim", 0.40, 0.38, 0.04, cowl, head, loc=(0.0, 0, 0.13), rot=(0, D(-8), 0), scale=(1.0, 0.9, 1.0))
+    cone("crown", 0.20, 0.15, 0.12, cowl, head, loc=(-0.02, 0, 0.20), rot=(0, D(-8), 0))
+    cone("knot", 0.05, 0.03, 0.10, mat("rope", ROPE), body, loc=(0.20, -0.24, 0.28), rot=(D(90), 0, 0))
+
+
+def cowl_unwriter(w, body, head, cowl, brass, dark):
+    # the Choir's wool: a soft cowl lumped round her shoulders and over the crown
+    cone("cowl", 0.40, 0.22, 0.40, cowl, body, loc=(0.0, 0, 0.16))
+    for k, (x, y, z, r) in enumerate([(-0.26, -0.16, 0.0, 0.14), (-0.08, -0.32, -0.04, 0.13), (0.14, -0.30, 0.0, 0.12),
+                                      (-0.30, 0.10, 0.06, 0.13), (-0.16, -0.24, 0.28, 0.12), (0.06, -0.24, 0.30, 0.11)]):
+        sphere("wool%d" % k, r, cowl, body, loc=(x, y, z), scale=(1.0, 0.8, 0.85))
+    sphere("hood", 0.225, cowl, head, loc=(-0.07, 0, 0.05), scale=(0.95, 1.02, 0.95))
+
+
+def cowl_remnant(w, body, head, cowl, brass, dark):
+    # the cowl gone grey, the hood pulled up with its torn point drooping behind, the hem in tatters, the clasp lost
+    cone("cowl", 0.41, 0.19, 0.40, cowl, body, loc=(0.0, 0, 0.16))
+    for k, (x, deg, ln) in enumerate([(-0.30, -18, 0.30), (-0.14, -6, 0.20), (0.04, 4, 0.27), (0.20, 12, 0.15)]):
+        slab("tatter%d" % k, [(-0.05, 0.0), (0.05, 0.0), (0.02, -ln), (-0.01, -ln * 0.7), (-0.03, -ln * 0.95)], 0.025, cowl, body,
+             loc=(x, -0.36 + 0.06 * abs(x), -0.04), rot=(0, D(deg), 0))
+    sphere("hood", 0.23, cowl, head, loc=(-0.06, 0, 0.04), scale=(0.98, 1.02, 0.96))
+    cone("hood_point", 0.10, 0.0, 0.40, cowl, head, loc=(-0.25, 0, 0.08), rot=(0, D(-122), 0))
+
+
+COWLS = {"Surveyor": cowl_surveyor, "Warden": cowl_warden, "Drifter": cowl_drifter,
+         "Ferryman": cowl_ferryman, "Unwriter": cowl_unwriter, "Remnant": cowl_remnant}
+
+
+def quill_plain(w, quill, hold, weight, ink, brass):
+    """The needle-quill along the hand's Z: the shaft, the brass nib ahead, the brass end behind."""
+    cone("quill_mesh", 0.022 * weight, 0.016 * weight, 1.1, ink, quill, loc=(0, 0, 0.25 + hold))
+    cone("nib", 0.02 * weight, 0.0, 0.1, brass, quill, loc=(0, 0, 0.85 + hold))
+    sphere("quill_end", 0.03 * weight, brass, quill, loc=(0, 0, -0.30 + hold))
+
+
+def quill_ferryman(w, quill, hold, weight, ink, brass):
+    quill_plain(w, quill, hold, weight, ink, brass)
+    rope = mat("rope", ROPE)
+    for k in range(4):   # the cord wound round the shaft below the hand, its loop hanging free
+        sphere("coil%d" % k, 0.04, rope, quill, loc=(0, 0, -0.08 - 0.05 * k + hold), scale=(1.0, 1.0, 0.45))
+    slab("cord", [(0.0, 0.0), (0.02, 0.0), (0.10, -0.22), (0.04, -0.30), (-0.02, -0.24), (0.06, -0.20)], 0.02, rope, quill,
+         loc=(0.02, 0, -0.24 + hold), rot=(0, D(-30), 0))
+
+
+def quill_unwriter(w, quill, hold, weight, ink, brass):
+    # turned round: the brass nib tucked behind the hand, a soft pale crumb of wool leading
+    cone("quill_mesh", 0.022, 0.016, 1.1, ink, quill, loc=(0, 0, 0.25 + hold))
+    cone("nib", 0.02, 0.0, 0.1, brass, quill, loc=(0, 0, -0.35 + hold), rot=(D(180), 0, 0))
+    sphere("rubber", 0.075, mat("wool", (0.95, 0.93, 0.88)), quill, loc=(0, 0, 0.84 + hold), scale=(1.0, 1.0, 1.25))
+
+
+def quill_remnant(w, quill, hold, weight, ink, brass):
+    # broken short: no nib, a splintered end where it snapped
+    cone("quill_mesh", 0.022, 0.018, 0.74, ink, quill, loc=(0, 0, 0.07 + hold))
+    cone("splinter", 0.018, 0.0, 0.12, ink, quill, loc=(0.008, 0, 0.49 + hold), rot=(0, D(14), 0))
+    cone("splinter2", 0.012, 0.0, 0.07, ink, quill, loc=(-0.01, 0, 0.47 + hold), rot=(0, D(-20), 0))
+    sphere("quill_end", 0.03, brass, quill, loc=(0, 0, -0.30 + hold))
+
+
+QUILLS = {"Ferryman": quill_ferryman, "Unwriter": quill_unwriter, "Remnant": quill_remnant}
 
 
 # ---------------------------------------------------------------- clips
@@ -399,4 +519,10 @@ CLIPS = [
 
 
 if __name__ == "__main__":
-    run("Wren", CELL, CLIPS, Wren, CELL / 2, only=argv_after_dashes())
+    # "-- Warden Drifter" renders those Charters' sheets (Wren_<Charter>), "-- charters" all five variants; any
+    # other words are clips (or "turnaround"). With no Charter named, the Surveyor's own sheets (Wren).
+    args = argv_after_dashes()
+    charters = [a for a in args if a in CHARTERS] or (VARIANTS if "charters" in args else ["Surveyor"])
+    only = [a for a in args if a not in CHARTERS and a != "charters"]
+    for charter in charters:
+        run(character_of(charter), CELL, CLIPS, lambda charter=charter: Wren(charter), CELL / 2, only=only)

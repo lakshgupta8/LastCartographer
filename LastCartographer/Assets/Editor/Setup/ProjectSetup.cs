@@ -540,7 +540,18 @@ namespace OWSBG.Setup
             var qr = MakeSpriteQuad(go, "M_Wren_Ink", "Wren", new Vector3(0.8f, 1.2f, 1f), new Vector3(0f, 0.6f, 0f), false, out var sheets);
             if (sheets != null)
             {
-                go.AddComponent<InkSheetPlayer>().Configure(qr, sheets);
+                var player = go.AddComponent<InkSheetPlayer>();
+                player.Configure(qr, sheets);
+                // Her other Charters' drawings (CHR-05): the same clips in each cowl and grip, worn by CharterSet.
+                var sets = new List<SheetSet>();
+                foreach (CharterKind kind in System.Enum.GetValues(typeof(CharterKind)))
+                {
+                    var set = CharterSet.SheetSetOf(kind);
+                    var clips = set != null ? LoadSheets("Wren_" + set) : null;
+                    if (clips != null) sets.Add(new SheetSet { Name = set, Clips = clips });
+                }
+                player.ConfigureSets(sets);
+                Debug.Log("[OWSBG] Wren's Charters: " + sets.Count + " drawn beside the Surveyor's");
                 go.AddComponent<WrenAnimator>();
             }
 

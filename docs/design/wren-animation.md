@@ -1,7 +1,7 @@
-# Wren's Model and Animation (CHR-02, CHR-03, v1)
+# Wren's Model and Animation (CHR-02, CHR-03, CHR-04, CHR-05, v1)
 
 How Wren is built and moved for version one, and how the team replaces her frame by frame later.
-The model sheet is `docs/art/wren-turnaround.png`.
+The model sheet is `docs/art/wren-turnaround.png`; her six Charters side by side are `docs/art/wren-charters.png`.
 
 ## 1. The pipeline
 
@@ -105,11 +105,48 @@ restart their clips so the first frame always shows.
 
 ## 7. Open
 
-- The Charter silhouettes (CHR-05): cowl shape and quill grip per Charter are a second set of sheets or a
-  tint; the player already keeps the material shared for it.
 - CHR-04 gave the four abilities and the three flourishes their own frames (the table above); the hand-drawn
   pass may still want the thread's line drawn from the quill's nib rather than the controller's.
 - A sheet without the new clips (a hand pass mid-way) falls back: a flourish to the rising slash, the slide to the
   cling, the rise to the glide, the cast and the catch to the pull and the air.
 - Her shadow on the walkway is the quad's; a drawn contact shadow would sit better.
 - The ink line's weight does not yet thicken at the bottom of forms (art-direction 4).
+- The Charters' grips keep the Surveyor's swings: each clip turns the quill the same number of degrees from the
+  Charter's rest angle, so the Warden's sweep starts from her shoulder and the Drifter's thrust runs low. A hand
+  pass may want each Charter's own combo drawn (the Warden's sweep, shove and overhead are still the Surveyor's
+  three swings in her cowl).
+
+## 8. The Charter silhouettes (CHR-05)
+
+Each Charter changes her silhouette (combat doc 5): the cowl's shape and colour, and how she holds the quill.
+`wren.py` builds her with a Charter (`Wren(charter)`, the table `CHARTERS`) and renders every clip again in it;
+the Surveyor's are the base sheets, the other five are sets beside them.
+
+| Charter | Cowl | Grip | Sheets |
+|---|---|---|---|
+| Surveyor | the ink-blue cape-cowl, brass clasp | the needle-quill up and forward, held a third along | `Wren/` |
+| Warden | a broad stiff mantle in Warden slate, a high collar, a riveted shoulder | the heavy quill (1.7 thick) laid back over the shoulder, held behind her | `Wren_Warden/` |
+| Drifter | a short ochre hood and two scarf-tails streaming back | held short and low, like a knife | `Wren_Drifter/` |
+| Ferryman | a sea-grey cape-cowl and a boatman's wide brim | upright like a punt-pole, held before her beak, the cord wound round it and its loop hanging | `Wren_Ferryman/` |
+| Unwriter | the Choir's pale wool lumped round her shoulders and over the crown | turned round: the nib tucked behind the hand, a pale crumb of wool leading | `Wren_Unwriter/` |
+| Remnant | gone grey, the hood pulled up with its torn point drooping behind, the hem in long tatters, the clasp lost | broken short, no nib, carried low | `Wren_Remnant/` |
+
+Every set has all of her clips at the base sheets' frame counts, rates and loops, so the animator never asks
+which Charter she wears. In the engine:
+
+- `InkSheetPlayer` carries the other drawings as named `SheetSet`s. `UseSet(name)` swaps the strips under
+  whatever is playing without restarting it (the run carries on at the same frame in the new cowl); a set
+  missing a clip draws it from the base, so a hand pass can redraw a Charter clip by clip.
+- `CharterSet.Apply` wears `SheetSetOf(kind)` (null for the Surveyor). While a drawing exists the tint stands
+  down to white; a Charter with no set yet keeps the base sheets under its old greybox tint.
+- `ProjectSetup.BuildWren` loads `Art/Characters/Wren_<Charter>/` for each Charter and hands the sets to the
+  player on the persistent Wren.
+
+To redraw: render one Charter (`wren.py -- Warden`, or a few clips: `-- Warden idle run`), pack it
+(`pack.py wren_warden`) and rebuild; `charters_sheet.py` redraws the side-by-side sheet. Each Charter has its own
+model sheet, `docs/art/wren_<charter>-turnaround.png`.
+
+Verification: `WrenCharterSheetTests` (edit mode: five sets, every clip frame for frame with the base, every pair
+of the six differing over a tenth of their outline at rest, every strip wired on the persistent Wren, the model
+sheets in the docs) and `CharterSilhouetteTests` (play mode: each Charter worn in its own drawing with no tint
+over it, a swap mid-run carrying the clip on at its frame, an undrawn Charter on the base under its tint).

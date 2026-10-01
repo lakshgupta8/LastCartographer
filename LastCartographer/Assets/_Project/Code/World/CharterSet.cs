@@ -24,7 +24,7 @@ namespace OWSBG.World
         public int MaskCap;            // Drifter 4; 0 = none
         public float DashScale = 1f;   // Warden 0.7
         public int ExtraAirDashes;     // Drifter 1
-        public Color Tint = Color.white;   // greybox silhouette stand-in
+        public Color Tint = Color.white;   // the silhouette's stand-in until her sheets for this Charter are drawn
         public int BindCost = Tuning.BindCost;           // Unwriter 4
         public int InkthreadCost = Tuning.InkthreadCost;      // Ferryman 1 (read by the Inkthread when it exists, CMB-04)
         public bool ErasesProjectiles;     // Unwriter: strikes erase enemy projectiles
@@ -152,7 +152,9 @@ namespace OWSBG.World
     /// <summary>
     /// On Wren. Holds the Charter profiles and applies the equipped one (from
     /// <see cref="WorldState.Equipment"/>) to the strike, Flourishes, Inkwell, vitals and controller.
-    /// Swapping happens at a drafting desk; this listens for the change.
+    /// Swapping happens at a drafting desk; this listens for the change. Her silhouette changes with it (CHR-05):
+    /// the sheet player wears the Charter's own drawing of her clips (cowl and grip), or, before that set is
+    /// drawn, the base sheets under the Charter's tint.
     /// </summary>
     [RequireComponent(typeof(WrenController))]
     public sealed class CharterSet : MonoBehaviour
@@ -170,11 +172,15 @@ namespace OWSBG.World
         Inkwell _ink;
         WrenVitals _vitals;
         Renderer _visual;
+        InkSheetPlayer _sheets;
         Equipment _bound;
         MaterialPropertyBlock _mpb;
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
 
         public IReadOnlyList<CharterProfile> Profiles => _profiles;
+
+        /// <summary>The name of a Charter's drawing among Wren's sheet sets (Art/Characters/Wren_[name]); the Surveyor's are the base sheets.</summary>
+        public static string SheetSetOf(CharterKind kind) => kind == CharterKind.Surveyor ? null : kind.ToString();
 
         public CharterProfile Find(CharterKind kind)
         {
@@ -249,10 +255,17 @@ namespace OWSBG.World
                 _ctrl.DashScale = p.DashScale;
                 _ctrl.ExtraAirDashes = p.ExtraAirDashes;
             }
+            if (_sheets == null) _sheets = GetComponent<InkSheetPlayer>();
+            bool drawn = false;
+            if (_sheets != null)
+            {
+                string set = SheetSetOf(p.Kind);
+                drawn = (_sheets.UseSet(set) || set == null) && _sheets.Clips.Count > 0;
+            }
             if (_visual != null)
             {
                 _visual.GetPropertyBlock(_mpb);
-                _mpb.SetColor(BaseColorId, p.Tint);
+                _mpb.SetColor(BaseColorId, drawn ? Color.white : p.Tint);
                 _visual.SetPropertyBlock(_mpb);
             }
             Applied?.Invoke(p);

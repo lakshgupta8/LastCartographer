@@ -53,7 +53,8 @@ with the new lines.
 
 ## Open
 
-- **Silhouettes** (cowl and grip per Charter) are CHR-05's; the greybox tint stands in.
+- **Silhouettes** (cowl and grip per Charter): drawn in CHR-05 (`wren-animation.md` §8): the Ferryman's brim and
+  cord-wound pole, the Unwriter's wool and the quill turned round, the Remnant's grey hood pulled up, its torn hem and broken quill.
 - **The Ferryman's tether-swing** is a reach-and-reel combo until Inkthread exists (CMB-04). Then its cheap thread,
   and swinging attacks off it, can be built for real.
 - **Only Hale throws.** The roster's spitters (CMB-09) will use `EnemyProjectile`, and a Sighting-lens parry could

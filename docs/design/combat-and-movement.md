@@ -61,7 +61,7 @@ Design rule: the Inkwell is a **tempo** resource, not a bank. Full-well players 
 
 ## 5. Charters (stances, like crests)
 
-Wren carries one Charter at a time; swap at a drafting desk. Each rewrites her combo and default Flourish and changes silhouette (cowl shape, quill grip). They map to the three dialogue voices.
+Wren carries one Charter at a time; swap at a drafting desk. Each rewrites her combo and default Flourish and changes silhouette (cowl shape, quill grip; drawn in `wren-animation.md` §8). They map to the three dialogue voices.
 
 | Charter | Combo | Flourish default | Passive | Feel |
 |---|---|---|---|---|

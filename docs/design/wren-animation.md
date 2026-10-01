@@ -115,6 +115,9 @@ restart their clips so the first frame always shows.
   Charter's rest angle, so the Warden's sweep starts from her shoulder and the Drifter's thrust runs low. Each
   Charter's own combo is left to the hand pass (decided 2026-10-02): the Warden's sweep, shove and overhead stay
   the Surveyor's three swings in her cowl until then, and a redrawn strike clip drops into its set by name.
+- The Surveyor's and the Unwriter's quills reach the cell's edge in the strike poses, so the tip can be cut off.
+  The cell stays 2 × 2 units (decided 2026-10-02): the hand pass redraws those frames and can widen the cell then
+  (`CELL` in `wren.py`, the quad's size in `BuildWren`).
 
 ## 8. The Charter silhouettes (CHR-05)
 

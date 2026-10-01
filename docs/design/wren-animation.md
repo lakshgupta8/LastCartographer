@@ -112,9 +112,9 @@ restart their clips so the first frame always shows.
 - Her shadow on the walkway is the quad's; a drawn contact shadow would sit better.
 - The ink line's weight does not yet thicken at the bottom of forms (art-direction 4).
 - The Charters' grips keep the Surveyor's swings: each clip turns the quill the same number of degrees from the
-  Charter's rest angle, so the Warden's sweep starts from her shoulder and the Drifter's thrust runs low. A hand
-  pass may want each Charter's own combo drawn (the Warden's sweep, shove and overhead are still the Surveyor's
-  three swings in her cowl).
+  Charter's rest angle, so the Warden's sweep starts from her shoulder and the Drifter's thrust runs low. Each
+  Charter's own combo is left to the hand pass (decided 2026-10-02): the Warden's sweep, shove and overhead stay
+  the Surveyor's three swings in her cowl until then, and a redrawn strike clip drops into its set by name.
 
 ## 8. The Charter silhouettes (CHR-05)
 

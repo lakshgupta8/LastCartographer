@@ -12,7 +12,7 @@ open). Rendered at twice the portrait's size into .frames/portraits/<Speaker>_<f
 downsamples them, adds the Remnant's grey (the shader's colour state, worked on the pixels) and writes the strips.
 
 Where two speakers wear the same look, one of them has a touch of their own in the portrait (TOUCHES): Brask a
-miner's helmet and lamp, Lorne a grown crane's grey and spectacles. (Ostry, Anvers, Hollin and Wend are drawn as
+miner's helmet and lamp, Lorne a grown crane's grey and spectacles; Garrow is the crane grown old. (Ostry, Anvers, Hollin and Wend are drawn as
 themselves in townsfolk.py OWN, so their portraits are their own birds.)
 
 The list is SPEAKERS below and again in Unity (`Portraits.Faces`, Core), which the tests compare with the pack.
@@ -108,6 +108,11 @@ def own(name):
     raise KeyError(name)
 
 
+# Garrow is an old crane, who failed the leap forty-one years ago: ash-pale, stooped, the crown faded, the eye milky.
+GARROW = dict(body=(0.80, 0.80, 0.78), dark=(0.58, 0.58, 0.56), cap=(0.66, 0.42, 0.38), beak=(0.62, 0.58, 0.48),
+              eye=(0.72, 0.70, 0.60), stoop=14, neck_lean=32)
+
+
 def folk_as(look_id, **changes):
     spec = dict(look(look_id), **changes)
     return lambda: cast.Townsfolk(spec, townsfolk.marks)
@@ -156,6 +161,7 @@ SPEAKERS = [
     ("Brek", "Folk_Crane", folk("Crane")),
     ("Ossa", "Folk_Plover", folk("Plover")),        # a child of the clan at the third fire (windreach-arc.md)
     ("Lorne", "Folk_Crane", folk_as("Crane", **LORNE)),   # the Guild's surveyor at the baths, a crane (emberdown-arc.md)
+    ("Garrow", "Folk_Crane", folk_as("Crane", **GARROW)), # the old crane at the third fire (windreach-arc.md)
     ("Brask", "Folk_Chough", folk("Chough")),       # the Hollowvein's miner on his island (blank-islands.md)
 ]
 

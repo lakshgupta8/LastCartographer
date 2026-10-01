@@ -55,7 +55,10 @@ hers either way.
   Never says "always" or "never" (`SteppeTests` holds every one of her lines to it). Calls Wren "map-bird".
 - **Hale** (godwit, Guild surveyor; added to the cast): professional courtesy, a colleague to her. Works alone and
   does not say "we", the opposite of Voss.
-- **Ossa** (a child) and **Brek** (old; failed the leap forty-one years ago) at the third fire.
+- **Ossa** (a child) and **Garrow** (an old crane; failed the leap forty-one years ago) at the third fire.
+- **Brek** (a clan fledgling, a young crane) by the Gate's stones after Wren's leap: he has no place to stand on
+  and asks for one (`Gate_Brek`, offerings.md). Two birds, decided 2026-10-02: the old one who never flew is
+  Garrow, so the fledgling who will jump next spring keeps the name.
 
 ## 6. Commissions (the camp's ledger, `CommissionCatalog.Windreach()`)
 | Commission | Posts after | Steps | Reward |

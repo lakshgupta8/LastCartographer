@@ -135,8 +135,8 @@ namespace OWSBG.Tests
         [Test]
         public void TheBirdsWhoShareALookStillReadApart()
         {
-            // Hask and Brask are choughs, Brek and Lorne cranes: one of each pair has a touch of their own
-            // (portraits.py TOUCHES), so the two faces differ over a twentieth of what either covers.
+            // Hask and Brask are choughs; Brek, Lorne and Garrow cranes: each has a touch or a colour of their own
+            // (portraits.py TOUCHES, LORNE, GARROW), so any two faces differ over a twentieth of what either covers.
             var shared = Portraits.Faces.GroupBy(kv => kv.Value).Where(g => g.Count() > 1).ToList();
             CollectionAssert.AreEquivalent(new[] { "Folk_Chough", "Folk_Crane" }, shared.Select(g => g.Key));
             foreach (var g in shared)

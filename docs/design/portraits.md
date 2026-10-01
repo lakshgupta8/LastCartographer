@@ -24,7 +24,7 @@ Tests: `PortraitTests` (edit, 6), `DialoguePortraitTests` (play, 4).
 | Hask, Tobin, Ansel, Arden, Brisk, Tam, the Keeper, the Innkeeper | the look each wears (`Townsfolk.Named`) |
 | Ostry, Anvers, Hollin, Wend | their own drawings, the nightjar, the heron, the thrush and the dove their arcs name (`Townsfolk.OwnDrawn`, townsfolk.md §3) |
 | the Gannet, the Traveller, Brek | the asker's look (`Offerings.Asker.Look`, the Crane for Brek) |
-| Ossa, Lorne, Brask | the species their arc gives them, from the library (Plover, Crane, Chough); none of them is stood up in a room yet |
+| Ossa, Lorne, Garrow, Brask | the species their arc gives them, from the library (Plover, Crane, Crane, Chough); none of them is stood up in a room yet |
 
 **Faceless** (`Portraits.Faceless`) covers:
 - the things and places that speak (the ashes, a door, the pages, the milestones, the Mine, the Hollow);
@@ -35,13 +35,16 @@ Tests: `PortraitTests` (edit, 6), `DialoguePortraitTests` (play, 4).
 Every Yarn speaker must be on one list or the other, never both, and never neither. A new speaker is a decision
 someone makes, and `PortraitTests` holds the lists to the project.
 
-Two looks are shared: Hask and Brask are choughs, Brek and Lorne cranes. In each pair one speaker has a touch of
+Two looks are shared: Hask and Brask are choughs; Brek, Lorne and Garrow are cranes. In each pair one speaker has a touch of
 their own in the portrait (`TOUCHES` in `portraits.py`, decided 2026-10-02), taken from their arc:
 - **Brask**, a Hollowvein miner buried with his shift, has a leather helmet with its lamp.
 - **Lorne**, the Guild's careful surveyor, is a grown crane (grey, the red crown) where Brek is the young tawny one,
   and wears spectacles on a brass wire.
+- **Garrow**, who failed the leap forty-one years ago, is the crane grown old: ash-pale, stooped, the crown faded,
+  the eye milky. He is not Brek. The story had one Brek at both the third fire (old) and the Gate (a fledgling), so
+  the old one was renamed (decided 2026-10-02).
 
-Neither Brask nor Lorne stands in a room yet, so the touches are only in the portraits for now. Ostry, Anvers,
+None of Brask, Lorne and Garrow stands in a room yet, so the touches are only in the portraits for now. Ostry, Anvers,
 Hollin and Wend first shared looks too (two rooks, a jay, a finch). They are now drawn as the species their arcs
 give them, so their portraits and their rooms show the same bird. Sable and Aury are the same bird, since he is "her
 brother, the same bird in a keeper's coat"; his coat still sets the two portraits apart, and in play his is grey.
@@ -103,7 +106,7 @@ UI element would match exactly; that is for the hand pass if it matters.
 | A face is drawn from the body the speaker is met in: the named birds' looks, the cast's own sheets | `PortraitTests.EachFaceIsDrawnFromTheBodyTheSpeakerIsMetIn` |
 | The pack and the table list the same speakers; four 256-px frames each; import settings | `PortraitTests.EveryFaceIsPackedAsAStripOfFourFrames` |
 | The beak opens; the grey is the same outline with less colour, nearer the paper | `PortraitTests.TheBeakOpensAndTheRemnantIsTheSameDrawingGreyed` |
-| The rooks, the choughs and the cranes each differ over a twentieth of what either covers | `PortraitTests.TheBirdsWhoShareALookStillReadApart` |
+| The choughs and the cranes each differ over a twentieth of what either covers | `PortraitTests.TheBirdsWhoShareALookStillReadApart` |
 | The persistent page carries every strip; the contact sheet exists | `PortraitTests.ThePersistentPageCarriesEveryPortrait` |
 | Sable's line shows her face, talking and then resting | `DialoguePortraitTests.ASpeakerWithAFaceShowsItTalkingThenResting` |
 | The ashes show no face; Wren's choices show none | `DialoguePortraitTests.AThingThatSpeaksShowsNoFace` |

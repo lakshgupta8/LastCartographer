@@ -34,6 +34,7 @@ namespace OWSBG.Core
             { "Gannet", "Folk_Gannet" }, { "Traveller", "Folk_Thrush" }, { "Brek", "Folk_Crane" },
             { "Ossa", "Folk_Plover" },     // a child of the clan at the third fire
             { "Lorne", "Folk_Crane" },     // the Guild's surveyor at the baths
+            { "Garrow", "Folk_Crane" },    // the old crane at the third fire, who failed the leap forty-one years ago
             { "Brask", "Folk_Chough" },    // the Hollowvein's miner, on his island
         };
 

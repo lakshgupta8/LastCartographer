@@ -14,6 +14,13 @@ mirrors the quad to face the other way. The Remnant grey is not drawn: NpcInk wa
 (docs/design/npc-animation.md §4), so the gannet on the faded rail and the inn's traveller are these sheets, greyed.
 
 The library is listed again in Unity (`Townsfolk.Looks`, Core), which the tests compare to what is packed here.
+
+Four minor named birds are not looks but drawings of their own (OWN, `Townsfolk.OwnDrawn`), because their arcs give
+them a species no look has: Ostry the nightjar (emberdown-arc.md), Anvers the heron (halden-arc.md), Mayor Hollin the
+thrush and Sister Wend the dove (verdance-arc.md). Same bird, same clips, under their own names:
+
+    ... -- own                                   (only those four)
+    python tools/characters/pack.py ostry anvers hollin wend
 """
 import math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -214,6 +221,78 @@ LOOKS = [
 ]
 
 
+# ---------------------------------------------------------------- the minor named birds drawn as themselves
+
+GUILD_BRASS = (0.78, 0.62, 0.30)
+
+
+def ostry_extras(b, s):
+    """The Guild's agent at the ninth chimney, a season into a posting that never ends: a wool muffler, the Guild's pin."""
+    marks(b, s)
+    nr, br = s["neck_r"], s["body_r"]
+    wool = m((0.52, 0.18, 0.16))
+    cone("muffler", nr * 1.9, nr * 1.65, 0.085, wool, b.neck, loc=(0, 0, 0.0))
+    cube("muffler_end", (0.07, 0.025, 0.18), wool, b.neck, loc=(0.05, -nr * 1.6, -0.08), rot=(0, D(-12), 0))
+    sphere("guild_pin", 0.024, m(GUILD_BRASS), b.body, loc=(br * 0.60, -br * 0.66, br * 0.42))
+
+
+def anvers_extras(b, s):
+    """A Guild clerk: the pin, and a pen tucked behind the crest."""
+    marks(b, s)
+    hr, br = s["head_r"], s["body_r"]
+    sphere("guild_pin", 0.024, m(GUILD_BRASS), b.body, loc=(br * 0.62, -br * 0.62, br * 0.48))
+    cone("clerk_pen", 0.012, 0.003, hr * 2.6, m(PAPER), b.head, loc=(-hr * 0.55, -hr * 0.55, hr * 0.55), rot=(0, D(-58), 0))
+
+
+def hollin_extras(b, s):
+    """The mayor of Aldermere, where the festival never ended: the chain of office, a festival ribbon."""
+    marks(b, s)
+    nr, br = s["neck_r"], s["body_r"]
+    brass = m(GUILD_BRASS)
+    # the chain: links on the breast's surface, draped from the near shoulder to the far, low at the front
+    sx, sy, sz = s["body_scale"]
+    for k in range(11):
+        a = math.radians(-75 + k * 15)                    # round the front, near side to far
+        nx, ny = math.cos(a) * 0.80, math.sin(a) * 0.80
+        nz = 0.62 - 0.30 * math.cos(a)
+        r = math.sqrt(nx * nx + ny * ny + nz * nz)
+        sphere("chain%d" % k, 0.027, brass, b.body, loc=(br * sx * nx / r * 1.02, br * sy * ny / r * 1.02, br * sz * nz / r * 1.02))
+    cone("medallion", 0.075, 0.075, 0.02, brass, b.body, loc=(br * sx * 0.80, -br * 0.10, br * sz * 0.36), rot=(0, D(66), 0))
+    cube("ribbon", (0.05, 0.02, 0.14), m((0.82, 0.36, 0.30)), b.body, loc=(br * 0.30, -br * 0.84, br * 0.50), rot=(0, D(10), 0))
+
+
+def wend_extras(b, s):
+    """A Cantor sister: the Choir's pale wool about the head and shoulders, and a small bell on a cord."""
+    marks(b, s)
+    hr, nr, br = s["head_r"], s["neck_r"], s["body_r"]
+    wool = m((0.90, 0.88, 0.82))
+    sphere("wool_hood", hr * 1.12, wool, b.head, loc=(-hr * 0.22, 0, hr * 0.12), scale=(1.0, 1.08, 1.05))
+    cone("wool_cowl", br * 0.95, nr * 1.6, br * 0.55, wool, b.body, loc=(br * 0.18, 0, br * 0.78))
+    cube("bell_cord", (0.012, 0.012, 0.16), m((0.45, 0.38, 0.30)), b.body, loc=(br * 0.62, -br * 0.80, br * 0.30))
+    cone("bell", 0.038, 0.055, 0.065, m(GUILD_BRASS), b.body, loc=(br * 0.62, -br * 0.84, br * 0.12))
+
+
+# (name, cell, spec, extras): who they are in the arcs
+OWN = [
+    # a nightjar: long and flat, the wide flat head and the tiny bill, the big dark eye, mottled bark-grey, a pale throat bar
+    ("Ostry", 2.0, dict(body_r=0.27, body_scale=(1.3, 0.9, 0.8), leg_len=0.14, neck_len=0.02, neck_r=0.08, neck_lean=10,
+                        head_r=0.15, head_scale=(1.15, 1.0, 0.8), beak_r=0.035, beak_len=0.05, eye_r=0.042, tail_len=0.36, wing_len=1.5,
+                        body=(0.52, 0.46, 0.40), dark=(0.36, 0.31, 0.26), speckles=(0.26, 0.21, 0.16), bib=(0.88, 0.86, 0.80),
+                        beak=(0.30, 0.26, 0.22), leg=(0.45, 0.38, 0.32)), ostry_extras),
+    # a grey heron: tall, the long neck and dagger bill, the black stripe back from the eye into a plume
+    ("Anvers", 2.6, dict(body_r=0.30, body_scale=(1.1, 0.8, 1.0), head_r=0.10, head_scale=(1.25, 0.85, 0.85), neck_len=0.42, neck_r=0.05,
+                         neck_lean=18, leg_len=0.52, leg_r=0.017, foot=0.15, tail_len=0.18, body=(0.62, 0.64, 0.68), dark=(0.40, 0.42, 0.46),
+                         beak=(0.86, 0.70, 0.30), beak_len=0.28, beak_r=0.035, stripe=(0.08, 0.08, 0.10), crest=(0.02, 0.18, -62),
+                         eye=(0.80, 0.70, 0.20), leg=(0.62, 0.52, 0.36)), anvers_extras),
+    # a song thrush, a mayor's: brown, the speckled cream breast
+    ("Hollin", 2.0, dict(body_r=0.28, body=(0.56, 0.44, 0.30), dark=(0.42, 0.32, 0.22), breast=(0.90, 0.86, 0.72), breast_r=0.74,
+                         speckles=(0.30, 0.22, 0.14), beak=(0.40, 0.32, 0.24), leg=(0.70, 0.56, 0.42)), hollin_extras),
+    # a dove: pale grey, the pink breast, the small head and bill
+    ("Wend", 2.0, dict(body_r=0.27, head_r=0.12, neck_len=0.06, body=(0.76, 0.74, 0.78), dark=(0.58, 0.56, 0.62), breast=(0.84, 0.72, 0.74),
+                       breast_r=0.72, beak=(0.30, 0.26, 0.28), beak_len=0.08, leg=(0.78, 0.38, 0.38)), wend_extras),
+]
+
+
 def main():
     only = argv_after_dashes()
     for look, region, cell, spec in LOOKS:
@@ -221,6 +300,10 @@ def main():
         if only and name not in only and look not in only:
             continue
         run(name, cell, CLIPS, lambda spec=spec: Townsfolk(spec, marks), cell / 2, line=3.0, ink=INK)
+    for name, cell, spec, extras in OWN:
+        if only and name not in only and "own" not in only:
+            continue
+        run(name, cell, CLIPS, lambda spec=spec, extras=extras: Townsfolk(spec, extras), cell / 2, line=3.0, ink=INK)
 
 
 if __name__ == "__main__":

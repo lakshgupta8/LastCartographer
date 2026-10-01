@@ -11,8 +11,9 @@ at rest, and frames the head from three-quarters in front, turned toward the lin
 open). Rendered at twice the portrait's size into .frames/portraits/<Speaker>_<frame>.png; portraits_pack.py
 downsamples them, adds the Remnant's grey (the shader's colour state, worked on the pixels) and writes the strips.
 
-Where two speakers wear the same look, one of them has a touch of their own in the portrait (TOUCHES): Ostry a
-muffler and the Guild's pin, Brask a miner's helmet and lamp, Lorne a grown crane's grey and spectacles.
+Where two speakers wear the same look, one of them has a touch of their own in the portrait (TOUCHES): Brask a
+miner's helmet and lamp, Lorne a grown crane's grey and spectacles. (Ostry, Anvers, Hollin and Wend are drawn as
+themselves in townsfolk.py OWN, so their portraits are their own birds.)
 
 The list is SPEAKERS below and again in Unity (`Portraits.Faces`, Core), which the tests compare with the pack.
 """
@@ -73,16 +74,6 @@ def ring(name, major, minor, material, parent, loc, rot):
     return ob
 
 
-def touch_ostry(b):
-    """The Guild's agent in his first winter at the ninth chimney: a wool muffler, and the Guild's brass pin."""
-    s = b.spec
-    nr, br = s["neck_r"], s["body_r"]
-    wool, brass = cast.m((0.52, 0.18, 0.16)), cast.m(GUILD_BRASS)
-    cone("muffler", nr * 1.85, nr * 1.6, 0.085, wool, b.neck, loc=(0, 0, 0.02))
-    cube("muffler_end", (0.07, 0.025, 0.18), wool, b.neck, loc=(0.05, -nr * 1.55, -0.07), rot=(0, D(-12), 0))
-    sphere("guild_pin", 0.024, brass, b.body, loc=(br * 0.60, -br * 0.66, br * 0.46))
-
-
 def touch_brask(b):
     """A Hollowvein miner, buried with his shift: the leather helmet and its lamp."""
     hr = b.spec["head_r"]
@@ -104,10 +95,17 @@ def touch_lorne(b):
     cube("spectacle_bridge", (er * 1.1, 0.006, 0.008), brass, b.head, loc=(ex + er * 1.55 + er * 0.45, ey + 0.01, ez - 0.004))
 
 
-TOUCHES = {"Ostry": touch_ostry, "Brask": touch_brask, "Lorne": touch_lorne}
+TOUCHES = {"Brask": touch_brask, "Lorne": touch_lorne}
 
 # Lorne is a grown crane, where Brek is a young one, tawny before the grey: grey, the black throat, the red crown.
 LORNE = dict(body=(0.60, 0.62, 0.64), dark=(0.38, 0.40, 0.44), cap=(0.80, 0.18, 0.14), bib=(0.12, 0.12, 0.14), beak=(0.52, 0.50, 0.42))
+
+
+def own(name):
+    for n, cell, spec, extras in townsfolk.OWN:
+        if n == name:
+            return lambda: cast.Townsfolk(spec, extras)
+    raise KeyError(name)
 
 
 def folk_as(look_id, **changes):
@@ -140,17 +138,18 @@ SPEAKERS = [
     ("Voss", "Voss", bosses.Voss),
     # the minor named birds, in the look each wears (Townsfolk.Named)
     ("Hask", "Folk_Chough", folk("Chough")),
-    ("Ostry", "Folk_Rook", folk("Rook")),
-    ("Wend", "Folk_Finch", folk("Finch")),
     ("Tobin", "Folk_Woodpecker", folk("Woodpecker")),
     ("Ansel", "Folk_Owlet", folk("Owlet")),
-    ("Hollin", "Folk_Jay", folk("Jay")),
     ("Arden", "Folk_Goose", folk("Goose")),
     ("Brisk", "Folk_Starling", folk("Starling")),
-    ("Anvers", "Folk_Rook", folk("Rook")),
     ("Tam", "Folk_Sparrow", folk("Sparrow")),
     ("Keeper", "Folk_Magpie", folk("Magpie")),
     ("Innkeeper", "Folk_Nuthatch", folk("Nuthatch")),
+    # the minor named birds drawn as themselves (townsfolk.py OWN): the nightjar, the heron, the thrush, the dove
+    ("Ostry", "Ostry", own("Ostry")),
+    ("Anvers", "Anvers", own("Anvers")),
+    ("Hollin", "Hollin", own("Hollin")),
+    ("Wend", "Wend", own("Wend")),
     # the birds who ask, and the speakers the arcs name a species for but the greybox has not stood up yet
     ("Gannet", "Folk_Gannet", folk("Gannet")),
     ("Traveller", "Folk_Thrush", folk("Thrush")),

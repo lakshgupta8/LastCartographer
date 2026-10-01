@@ -21,7 +21,8 @@ Tests: `PortraitTests` (edit, 6), `DialoguePortraitTests` (play, 4).
 | Sable, Dotha, Isolde, Pell, Runa, Kettil, Teodor, Idrenne, Maren, Corvin, Ilse, Corra, Aury | their own bird in `cast.py` |
 | Halvard, Brann, Oriel, the Warden at the Bastion | the Warden rig in `wardens.py` (the generic one is CHR-06's) |
 | Hale, Voss | the Warden rig as `bosses.py` dresses them |
-| Hask, Ostry, Wend, Tobin, Ansel, Hollin, Arden, Brisk, Anvers, Tam, the Keeper, the Innkeeper | the look each wears (`Townsfolk.Named`) |
+| Hask, Tobin, Ansel, Arden, Brisk, Tam, the Keeper, the Innkeeper | the look each wears (`Townsfolk.Named`) |
+| Ostry, Anvers, Hollin, Wend | their own drawings, the nightjar, the heron, the thrush and the dove their arcs name (`Townsfolk.OwnDrawn`, townsfolk.md §3) |
 | the Gannet, the Traveller, Brek | the asker's look (`Offerings.Asker.Look`, the Crane for Brek) |
 | Ossa, Lorne, Brask | the species their arc gives them, from the library (Plover, Crane, Chough); none of them is stood up in a room yet |
 
@@ -34,17 +35,15 @@ Tests: `PortraitTests` (edit, 6), `DialoguePortraitTests` (play, 4).
 Every Yarn speaker must be on one list or the other, never both, and never neither. A new speaker is a decision
 someone makes, and `PortraitTests` holds the lists to the project.
 
-Some looks are shared: Ostry and Anvers are both rooks, Hask and Brask choughs, Brek and Lorne cranes. In each pair
-one speaker has a touch of their own in the portrait (`TOUCHES` in `portraits.py`, decided 2026-10-02), taken from
-their arc:
-- **Ostry**, the Guild's agent in his first winter at the ninth chimney, has a wine-red muffler and the Guild's
-  brass pin.
+Two looks are shared: Hask and Brask are choughs, Brek and Lorne cranes. In each pair one speaker has a touch of
+their own in the portrait (`TOUCHES` in `portraits.py`, decided 2026-10-02), taken from their arc:
 - **Brask**, a Hollowvein miner buried with his shift, has a leather helmet with its lamp.
 - **Lorne**, the Guild's careful surveyor, is a grown crane (grey, the red crown) where Brek is the young tawny one,
   and wears spectacles on a brass wire.
 
-The touches are the portrait's only. Ostry's sheets in the ninth chimney are the plain rook, so the hand pass should
-carry the muffler into the room or drop it from the portrait. Sable and Aury are the same bird, since he is "her
+Neither Brask nor Lorne stands in a room yet, so the touches are only in the portraits for now. Ostry, Anvers,
+Hollin and Wend first shared looks too (two rooks, a jay, a finch). They are now drawn as the species their arcs
+give them, so their portraits and their rooms show the same bird. Sable and Aury are the same bird, since he is "her
 brother, the same bird in a keeper's coat"; his coat still sets the two portraits apart, and in play his is grey.
 
 ## 2. The drawing

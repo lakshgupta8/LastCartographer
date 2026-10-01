@@ -72,6 +72,8 @@ namespace OWSBG.Tests
                 Assert.IsTrue(Directory.Exists(Path.GetFullPath("Assets/_Project/Art/Characters/" + kv.Value)), kv.Key + "'s body, " + kv.Value + ", is drawn");
             foreach (var kv in Townsfolk.Named)
                 Assert.AreEqual(Townsfolk.Character(kv.Value), Portraits.Faces[kv.Key], kv.Key + " wears the look the rooms dress them in");
+            foreach (var name in Townsfolk.OwnDrawn)
+                Assert.AreEqual(name, Portraits.Faces[name], name + " is drawn as themselves");
             foreach (var m in Cast.Members)
                 if (m.Name != "Marrow" && Portraits.Faces.TryGetValue(m.Name, out var body))
                     Assert.AreEqual(m.Name, body, m.Name + " is drawn from their own sheets");
@@ -133,10 +135,10 @@ namespace OWSBG.Tests
         [Test]
         public void TheBirdsWhoShareALookStillReadApart()
         {
-            // Ostry and Anvers are rooks, Hask and Brask choughs, Brek and Lorne cranes: one of each pair has a touch of
-            // their own (portraits.py TOUCHES), so the two faces differ over a twentieth of what either covers.
+            // Hask and Brask are choughs, Brek and Lorne cranes: one of each pair has a touch of their own
+            // (portraits.py TOUCHES), so the two faces differ over a twentieth of what either covers.
             var shared = Portraits.Faces.GroupBy(kv => kv.Value).Where(g => g.Count() > 1).ToList();
-            CollectionAssert.AreEquivalent(new[] { "Folk_Rook", "Folk_Chough", "Folk_Crane" }, shared.Select(g => g.Key));
+            CollectionAssert.AreEquivalent(new[] { "Folk_Chough", "Folk_Crane" }, shared.Select(g => g.Key));
             foreach (var g in shared)
             {
                 var names = g.Select(kv => kv.Key).ToArray();

@@ -26,10 +26,10 @@ namespace OWSBG.Core
             // the Guild's birds on the Warden rig
             { "Halvard", "Halvard" }, { "Brann", "Brann" }, { "Oriel", "Oriel" }, { "Warden", "Warden" },
             { "Hale", "Hale" }, { "Voss", "Voss" },
-            // the minor named birds, in their looks (Townsfolk.Named)
-            { "Hask", "Folk_Chough" }, { "Ostry", "Folk_Rook" }, { "Wend", "Folk_Finch" }, { "Tobin", "Folk_Woodpecker" },
-            { "Ansel", "Folk_Owlet" }, { "Hollin", "Folk_Jay" }, { "Arden", "Folk_Goose" }, { "Brisk", "Folk_Starling" },
-            { "Anvers", "Folk_Rook" }, { "Tam", "Folk_Sparrow" }, { "Keeper", "Folk_Magpie" }, { "Innkeeper", "Folk_Nuthatch" },
+            // the minor named birds, in their looks (Townsfolk.Named), or drawn as themselves (Townsfolk.OwnDrawn)
+            { "Hask", "Folk_Chough" }, { "Tobin", "Folk_Woodpecker" }, { "Ansel", "Folk_Owlet" }, { "Arden", "Folk_Goose" },
+            { "Brisk", "Folk_Starling" }, { "Tam", "Folk_Sparrow" }, { "Keeper", "Folk_Magpie" }, { "Innkeeper", "Folk_Nuthatch" },
+            { "Ostry", "Ostry" }, { "Anvers", "Anvers" }, { "Hollin", "Hollin" }, { "Wend", "Wend" },
             // the birds who ask, and speakers an arc gives a species before the greybox stands them up
             { "Gannet", "Folk_Gannet" }, { "Traveller", "Folk_Thrush" }, { "Brek", "Folk_Crane" },
             { "Ossa", "Folk_Plover" },     // a child of the clan at the third fire

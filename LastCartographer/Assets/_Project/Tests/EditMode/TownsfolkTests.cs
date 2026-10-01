@@ -105,6 +105,26 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void TheNamedBirdsTheArcsGiveASpeciesAreDrawnAsThatBird()
+        {
+            // Ostry the nightjar, Anvers the heron, Hollin the thrush, Wend the dove: their own sheets, the look's six
+            // clips, and the room's NPC resting on their own idle rather than a look's.
+            CollectionAssert.AreEquivalent(new[] { "Ostry", "Anvers", "Hollin", "Wend" }, Townsfolk.OwnDrawn);
+            foreach (var name in Townsfolk.OwnDrawn)
+            {
+                Assert.IsFalse(Townsfolk.Named.ContainsKey(name), name + " wears no look");
+                var json = Path.GetFullPath("Assets/_Project/Art/Characters/" + name + "/" + name.ToLowerInvariant() + ".json");
+                Assert.IsTrue(File.Exists(json), name + "'s sheets");
+                var text = File.ReadAllText(json);
+                foreach (var clip in Townsfolk.Clips) StringAssert.Contains("\"name\": \"" + clip + "\"", text, name + " " + clip);
+                var mat = AssetDatabase.LoadAssetAtPath<Material>(Materials + "M_Npc_" + name + "_Greybox.mat");
+                Assert.IsNotNull(mat, name + "'s material (built)");
+                Assert.AreEqual(name, CharacterOf(mat), name + " rests on their own idle");
+                Assert.AreEqual(Color.white, mat.GetColor("_BaseColor"), name + " is no longer a tinted stand-in");
+            }
+        }
+
+        [Test]
         public void TheBirdsWhoAskAreDrawnAndNoBlockIsLeftUnderAnyReadable()
         {
             string ink = Guid("Narrative/NpcInk.cs"), sheets = Guid("World/InkSheetPlayer.cs");

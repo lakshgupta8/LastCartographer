@@ -10,7 +10,7 @@ Drawings: `tools/characters/townsfolk.py`, packed by `pack.py` to `Art/Character
 `docs/art/folk_<look>-turnaround.png`. Data: `Townsfolk` (Core: the looks, the clips, who wears what). Builder:
 `RoomRecipe.Folk(look, x, activity, face, y, remnant)` → `ProjectSetup.MakeFolk`; `ProjectSetup.DressPerson` dresses
 anyone (an NPC, one of the crowd, an asker) from a character's sheets; `PlacementSetup` draws the birds who ask.
-Tests: `TownsfolkTests` (edit, 4), `TownsfolkPlayTests` (play, 2).
+Tests: `TownsfolkTests` (edit, 5), `TownsfolkPlayTests` (play, 2).
 
 ## 1. The looks
 
@@ -24,8 +24,8 @@ finch, a lark), 2.0 for most, 2.4 for a raven and a young crane, 2.6 for a goose
 |---|---|---|
 | Saltmarrow | Gull, Tern, Gannet, Puffin, Eider, Turnstone | the Tetherline's gull, the iris fields' tern, the Boardwalk's puffin and turnstone; the **gannet** at the faded light (an asker, grey); the **eider** on the Stilts' top roost, her wings bound, watching the leap |
 | Emberdown | Chough, Raven, Ptarmigan, Dipper, Ouzel, Grouse | Hask (chough); the Rest's chough, raven at the anvil, dipper, ptarmigan; the Bell's ouzel; the **grouse** under the roosts, watching the leap (the counting voice, once AUD gives it one) |
-| The Verdance | Thrush, Woodpecker, Finch, Jay, Nuthatch, Owlet | Wend (finch), Tobin (woodpecker), Hollin (jay), Ansel (owlet), the Innkeeper (nuthatch, a Remnant); the **traveller** at the one-night inn (an asker, grey); the Quiet House's brother; Aldermere's villagers on the last day |
-| Halden | Pigeon, Starling, Rook, Sparrow, Goose, Magpie | Ostry and Anvers (rooks), Brisk (starling), Tam (sparrow), Arden (goose), the orchard's Keeper (magpie); the picket line at the pulp yard (two starlings, one cheering on the crate, a pigeon, a clerk watching), Lowmarket's pigeon, the Hall's sparrow, the geese of Arden's family |
+| The Verdance | Thrush, Woodpecker, Finch, Jay, Nuthatch, Owlet | Tobin (woodpecker), Ansel (owlet), the Innkeeper (nuthatch, a Remnant); the **traveller** at the one-night inn (an asker, grey); the Quiet House's brother; Aldermere's villagers on the last day |
+| Halden | Pigeon, Starling, Rook, Sparrow, Goose, Magpie | Brisk (starling), Tam (sparrow), Arden (goose), the orchard's Keeper (magpie); the picket line at the pulp yard (two starlings, one cheering on the crate, a pigeon, a clerk watching), Lowmarket's pigeon, the Hall's sparrow, the geese of Arden's family |
 | Windreach | Lark, Hoopoe, Kestrel, Bustard, Plover, Crane | **Brek** at the Gate (a young crane, an asker); the clan at the wagon (a hoopoe, a lark cheering, a plover watching the leap), the elder by the first fire, the walkers at the third, the singer and the elder at the Gate, a scout on the walk |
 
 The Greyfold and the Blank have no living townsfolk: theirs are these looks as Remnant (`NpcInkState.Remnant`), and
@@ -45,9 +45,21 @@ word names the clip, so talk and walk still win and a clip the sheets lack idles
   the quad on the look's sheets, `InkSheetPlayer`, `NpcAnimator` with its activity, `NpcInk` at its rest state
   (drawn, or Remnant when told). No talker, no collider: nobody to bump, nobody to talk to. Faces the way it was
   told (the quad mirrored).
-- **A minor named bird** (`Townsfolk.Named`: Hask, Ostry, Wend, Tobin, Ansel, Hollin, Arden, Brisk, Anvers, Tam, the
-  Keeper, the Innkeeper) keeps its own object, talker and material (`M_Npc_<Name>_Greybox`) and rests on its look's
-  idle, the tint stood down to white, through `MakeNpc` → `DressPerson`.
+- **A minor named bird** (`Townsfolk.Named`: Hask, Tobin, Ansel, Arden, Brisk, Tam, the Keeper, the Innkeeper) keeps
+  its own object, talker and material (`M_Npc_<Name>_Greybox`) and rests on its look's idle, the tint stood down to
+  white, through `MakeNpc` → `DressPerson`.
+- **A minor named bird drawn as themselves** (`Townsfolk.OwnDrawn`, `townsfolk.py` OWN): four whose arcs give them a
+  species no look has. They are the same bird with the same six clips, packed under their own names, so `MakeNpc`
+  finds their sheets as it does the cast's (decided 2026-10-02: the story's species over the library's):
+  - **Ostry**, a nightjar (emberdown-arc.md): long and flat, the wide flat head and tiny bill, mottled bark-grey,
+    in a wine-red muffler with the Guild's pin.
+  - **Anvers**, a grey heron (halden-arc.md): tall, the dagger bill, the black stripe into a plume, the Guild's pin
+    and a pen behind the crest.
+  - **Mayor Hollin**, a song thrush (verdance-arc.md): with the chain of office and a festival ribbon.
+  - **Sister Wend**, a dove and a Cantor (verdance-arc.md): in the Choir's pale wool, a small bell on a cord.
+
+  The Rook, Jay and Finch looks stay in the library, worn by the strike's clerk, Aldermere's villagers and the mill's
+  village.
 - **A bird who asks** (`Offerings.Asker.Look`, `Remnant`, `FacesWest`): `PlacementSetup` dresses the `Read_<node>`
   trigger itself from the library, so the asker's talker is the person's. The gannet (Remnant, facing west), the
   traveller (Remnant), Brek (a young crane). Corvin's asker has no body: his own drawing already stands beside it
@@ -61,6 +73,7 @@ word names the clip, so talk and walk still win and a clip the sheets lack idles
 |---|---|
 | thirty looks, six per living region, each packed with the six clips at 96 px/unit at its own cell, 12 fps, looping, a model sheet each | `TownsfolkTests.TheLibraryIsSixLooksForEachLivingRegionPackedWithTheSixClips` |
 | every look worn somewhere; every named bird's material on its look's idle with no tint | `EveryLookIsWornSomewhereAndTheNamedBirdsWearTheirs` |
+| Ostry, Anvers, Hollin and Wend wear no look: their own sheets with the six clips, their room's material on their own idle, no tint | `TheNamedBirdsTheArcsGiveASpeciesAreDrawnAsThatBird` |
 | the three birds drawn (the Remnant ones resting grey), Corvin's asker beside his drawing, no block under any readable | `TheBirdsWhoAskAreDrawnAndNoBlockIsLeftUnderAnyReadable`, `DressingPropTests.NoBlockIsLeftStandingNowTheBirdsWhoAskAreDrawn` |
 | the crowds where the brief put them with their activities; everyone animating and carrying a colour state | `TheCrowdsStandWhereTheBriefPutsThem` |
 | in play: the clan cheers and watches, the rest idle, nobody to talk to; an activity changed is followed | `TownsfolkPlayTests.TheClanCheersAndWatchesAtTheCampAndTheRestIdle` |

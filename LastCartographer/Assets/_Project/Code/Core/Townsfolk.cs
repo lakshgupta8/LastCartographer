@@ -51,14 +51,14 @@ namespace OWSBG.Core
             // ---- the Verdance
             L("Thrush", Region.Verdance, "song thrush", 2.0f, "brown, the speckled breast: the one-night inn's traveller, grey"),
             L("Woodpecker", Region.Verdance, "green woodpecker", 2.0f, "green, the red cap, the stiff tail: the mill's Tobin"),
-            L("Finch", Region.Verdance, "chaffinch", 1.6f, "a pink breast, a slate cap, white wing bars: Wend, and the village"),
-            L("Jay", Region.Verdance, "jay", 2.0f, "pink-brown, the blue wing patch, a black moustache: Hollin, and Aldermere's villagers"),
+            L("Finch", Region.Verdance, "chaffinch", 1.6f, "a pink breast, a slate cap, white wing bars: the mill's village"),
+            L("Jay", Region.Verdance, "jay", 2.0f, "pink-brown, the blue wing patch, a black moustache: Aldermere's villagers"),
             L("Nuthatch", Region.Verdance, "nuthatch", 1.6f, "blue-grey over orange, the eye-stripe: the cloister's brothers; the inn's keeper, grey"),
             L("Owlet", Region.Verdance, "little owl", 1.6f, "round, the facial disc, pale spots, the big eyes: Brother Ansel on his page"),
             // ---- Halden
             L("Pigeon", Region.Halden, "rock pigeon", 2.0f, "blue-grey, the two wing bars, the sheen on the breast: the city's crowds"),
             L("Starling", Region.Halden, "starling", 2.0f, "dark and speckled, the yellow bill: the millworkers; Brisk and the picket"),
-            L("Rook", Region.Halden, "rook", 2.0f, "black, the bare grey face: the Guild's clerks; Anvers, Ostry"),
+            L("Rook", Region.Halden, "rook", 2.0f, "black, the bare grey face: the Guild's clerks on the strike's line"),
             L("Sparrow", Region.Halden, "house sparrow", 1.6f, "small and brown, the grey crown, a black bib: Tam, and the Hall's journeymen"),
             L("Goose", Region.Halden, "greylag goose", 2.6f, "big, grey-brown, the orange bill: Arden's family on the bridge"),
             L("Magpie", Region.Halden, "magpie", 2.0f, "black and white, the long tail, the white shoulder: the orchard's keeper"),
@@ -71,22 +71,25 @@ namespace OWSBG.Core
             L("Crane", Region.Windreach, "young crane", 2.4f, "tall, tawny before the grey, the long neck and legs: Brek at the Gate"),
         };
 
-        /// <summary>The minor named birds (the recipes' NPCs without sheets of their own) and the look each wears.</summary>
+        /// <summary>The minor named birds (the recipes' NPCs without sheets of their own) and the look each wears; see <see cref="OwnDrawn"/> for those with their own.</summary>
         public static readonly IReadOnlyDictionary<string, string> Named = new Dictionary<string, string>
         {
             { "Hask", "Chough" },          // the miner on the furnace stair
-            { "Ostry", "Rook" },           // the Guild's agent over the ninth's door
-            { "Wend", "Finch" },           // the mill's question, asked on the road
             { "Tobin", "Woodpecker" },
             { "Ansel", "Owlet" },          // page 214
-            { "Hollin", "Jay" },           // Aldermere's mayor
             { "Arden", "Goose" },          // the family paid to stand on the bridge
             { "Brisk", "Starling" },       // the strike
-            { "Anvers", "Rook" },
             { "Tam", "Sparrow" },          // eleven identical years of notes
             { "Keeper", "Magpie" },        // the orchard's
             { "Innkeeper", "Nuthatch" },   // the one-night inn's, a Remnant
         };
+
+        /// <summary>
+        /// The minor named birds drawn as themselves, on the same bird with the same clips, because their arcs give them a
+        /// species no look has (townsfolk.py OWN): Ostry the nightjar, Anvers the heron, Mayor Hollin the thrush, Sister
+        /// Wend the dove. Their sheets are under their own names, so the rooms dress them as they do the cast.
+        /// </summary>
+        public static readonly string[] OwnDrawn = { "Ostry", "Anvers", "Hollin", "Wend" };
 
         public static IReadOnlyList<TownsfolkLook> Looks => _looks;
         public static TownsfolkLook Find(string id) => _looks.Find(l => l.Id == id);

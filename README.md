@@ -243,6 +243,12 @@ as the cast, with the hub's four clips and the crowd's two (`watching`, `cheerin
 a minor named bird or a bird who asks wears one of them instead of standing as a block, and the Remnant grey is
 `NpcInk`'s state, not a drawing. The recipes' `.Folk(look, x, activity, face)` stands them (`docs/design/townsfolk.md`).
 
+## Portraits
+Every bird who speaks has a face beside their lines (`docs/design/portraits.md`): `tools/characters/portraits.py`
+frames the body they are met in, head and shoulders, at rest and mid-word, and `portraits_pack.py` adds the Remnant's
+grey. The dialogue page moves the beak while a line is new and greys a speaker as far as the bird in the room has
+faded. Things that speak, the Lantern and Marrow speak without one (`Portraits.Faceless`).
+
 ## The fledglings
 In one room of every region young birds leap from a perch in the background (`docs/design/fledglings.md`): six in turn,
 and for each ability Wren has one more of them glides, a little further each. Anchored places never glide, a fade thins

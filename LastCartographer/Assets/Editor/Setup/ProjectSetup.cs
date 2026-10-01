@@ -393,7 +393,10 @@ namespace OWSBG.Setup
             doc.panelSettings = EnsurePanelSettings();
             uiGo.AddComponent<OWSBG.UI.UiRoot>();
             uiGo.AddComponent<OWSBG.UI.HudView>();
-            uiGo.AddComponent<OWSBG.UI.DialogueView>();
+            var dialogueView = uiGo.AddComponent<OWSBG.UI.DialogueView>();
+            var portraits = LoadPortraits();
+            dialogueView.ConfigurePortraits(portraits);
+            Debug.Log("[OWSBG] dialogue portraits: " + portraits.Count);
             uiGo.AddComponent<OWSBG.UI.DeskMenu>();
             uiGo.AddComponent<OWSBG.UI.BossView>();
             uiGo.AddComponent<OWSBG.UI.LedgerView>();
@@ -3403,6 +3406,28 @@ namespace OWSBG.Setup
             if (tex == null || ground == null) return;
             ground.GetComponent<MeshRenderer>().sharedMaterial =
                 MakePaperMaterial("M_" + tile, tex, RegionPaper(RegionOf(room.RoomId)), true, tileUnits);
+        }
+
+        // ---- dialogue portraits (CHR-13, docs/design/portraits.md)
+
+        [System.Serializable] class PortraitManifest { public int cell; public string[] frames; public PortraitEntry[] speakers; }
+        [System.Serializable] class PortraitEntry { public string speaker, body, file; }
+
+        /// <summary>Every speaker's strip that portraits_pack.py wrote (Art/Portraits/portraits.json), or none before it has run.</summary>
+        static List<OWSBG.UI.PortraitSheet> LoadPortraits()
+        {
+            var list = new List<OWSBG.UI.PortraitSheet>();
+            var folder = Root + "/Art/Portraits/";
+            if (!File.Exists(folder + "portraits.json")) return list;
+            var manifest = JsonUtility.FromJson<PortraitManifest>(File.ReadAllText(folder + "portraits.json"));
+            if (manifest?.speakers == null) return list;
+            foreach (var e in manifest.speakers)
+            {
+                var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(folder + e.file);
+                if (tex == null) { Debug.LogWarning("[OWSBG] portrait missing: " + folder + e.file); continue; }
+                list.Add(new OWSBG.UI.PortraitSheet { Speaker = e.speaker, Sheet = tex });
+            }
+            return list;
         }
 
         // ---- character sheets (CHR-03, docs/design/wren-animation.md)

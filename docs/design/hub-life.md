@@ -31,7 +31,8 @@ The day, where people stand in it, and what an anchored town does with both. Run
 | night | 0.62–1.00 | 5.7 min | cool, darker (`_OWSBG_Night`), easing before dawn |
 
 The tints are two globals read by the paper-grain pass after the held grade; `DayCycle` eases them over 1.5 s
-so `<<clock>>` and room changes never pop.
+so `<<clock>>` and room changes never pop. The region's sun follows them too (ENV-10, lighting.md §2): night
+dims it to a third and cools it, dusk warms it; the white and anchored Halden have no hour and keep their light.
 
 ## 3. Story hooks
 ```yarn

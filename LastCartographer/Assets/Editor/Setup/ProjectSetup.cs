@@ -368,6 +368,25 @@ namespace OWSBG.Setup
             vol.isGlobal = true;
             vol.sharedProfile = GetOrCreateVolumeProfile();
 
+            // The regions' light (ENV-10, docs/design/lighting.md): one volume per region over the base, weight 0, and
+            // the blender that hands the sun, the ambient, the paper and the weights to the room Wren is in.
+            var lightGo = new GameObject("RegionLighting");
+            var regionVolumes = new List<Volume>();
+            foreach (Region region in System.Enum.GetValues(typeof(Region)))
+            {
+                var vgo = new GameObject("Volume_" + region);
+                vgo.transform.SetParent(lightGo.transform, false);
+                var rv = vgo.AddComponent<Volume>();
+                rv.isGlobal = true;
+                rv.priority = 1f;
+                rv.weight = 0f;
+                rv.sharedProfile = RegionVolumeProfile(region);
+                regionVolumes.Add(rv);
+            }
+            var lighting = lightGo.AddComponent<RegionLighting>();
+            lighting.Configure(sun, cam, regionVolumes);
+            lighting.Snap(Region.Saltmarrow);
+
             // The atlas UI: one UI Toolkit document with the HUD, dialogue page, desk page and boss bar.
             var uiGo = new GameObject("UI");
             var doc = uiGo.AddComponent<UIDocument>();
@@ -512,6 +531,9 @@ namespace OWSBG.Setup
             belt.groundMask = LayerMask.GetMask("Ground");
             go.AddComponent<CharterSet>();   // after the components it drives; profiles default in Awake
             go.AddComponent<ClarityMeter>(); // the controller adds it at runtime too, for scenes built before PRG-18
+            var lanternLight = MakeLight(go.transform, "LanternLight", new Vector3(0f, 0.55f, -0.8f), LanternLight.Colour, 6f, 0f);
+            lanternLight.enabled = false;
+            go.AddComponent<LanternLight>().Configure(lanternLight);   // comes up with the lantern-radius (ENV-10)
 
             // Visual: an InkSprite quad. With her sheets (CHR-03) it is a 2 x 2 unit frame window with her feet at the
             // origin; without them, the 1.2-unit placeholder.
@@ -1975,7 +1997,7 @@ namespace OWSBG.Setup
             foreach (var e in r.Exits) MakeTransition(room, e.name, e.c, e.s, e.target, e.spawn);
             foreach (var v in r.Vantages) MakeVantage(room, v.name, r.Id + "/" + v.name, v.pos);
             foreach (var sd in r.Seeds) MakeSeeds(room, sd.pos, sd.n);
-            foreach (var p in r.Props) MakeProp(room, room.transform, p.name, p.pos, p.z);
+            foreach (var p in r.Props) { MakeProp(room, room.transform, p.name, p.pos, p.z); MakePropLight(room, p.name, p.pos); }
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
             foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
@@ -2127,6 +2149,7 @@ namespace OWSBG.Setup
             foreach (var x in new[] { -9f, 7f, 11f })
                 MakeKitOrBlock(room, campGo.transform, "Wagon", new Vector2(x, 0f), 0.6f, new Vector3(3.5f, 2.4f, 2f), "M_Greybox_Wagon", wood);
             MakeKitOrBlock(room, campGo.transform, "Fire", new Vector2(1f, 0f), 0.3f, new Vector3(1.2f, 0.6f, 1.2f), "M_Greybox_Fire", new Color(0.95f, 0.55f, 0.20f));
+            MakeLight(campGo.transform, "Light_Fire", new Vector3(1f, 0.6f, -0.8f), new Color(1f, 0.60f, 0.25f), 5f, 2.2f);   // the fire's light (ENV-10)
             MakeNpc(room, "Idrenne_Greybox", new Vector2(3f, 0f), Camp.FireNodeOf(site), new Color(0.86f, 0.86f, 0.90f), "Idrenne");
             room.transform.Find("Idrenne_Greybox").SetParent(campGo.transform, true);
             MakeTalkerProp(room, campGo.transform, "Bedroll", new Vector2(-5.5f, 0f), CampSite.BedrollNode, "Rest", "Bedroll", new Vector3(1.2f, 0.4f, 0.8f), new Color(0.55f, 0.40f, 0.30f));
@@ -2608,6 +2631,7 @@ namespace OWSBG.Setup
             r.sharedMaterial = mat;
             r.shadowCastingMode = ShadowCastingMode.Off;
             r.receiveShadows = false;
+            MakeLayerLights(room, name, z, y);
         }
 
         // The training target (ENV-09): the behaviour and its trigger on the root, the kit's drawing under it
@@ -2835,8 +2859,63 @@ namespace OWSBG.Setup
             so.FindProperty("_spawn").stringValue = name;
             so.FindProperty("_litByVantage").stringValue = litByVantage;
             so.FindProperty("_glow").objectReferenceValue = glowR;
+            var lampLight = MakeLight(go.transform, "Light", new Vector3(0f, 1.6f, -0.8f), RegionLight.LampColour(room.RoomId), 5f, 1.8f);
+            lampLight.enabled = false;   // the travel point lights it with the glow (ENV-10)
+            so.FindProperty("_light").objectReferenceValue = lampLight;
             so.ApplyModifiedPropertiesWithoutUndo();
             MakeSpawn(room, name, pos);
+        }
+
+        // ---- the light in a room (ENV-10, docs/design/lighting.md §3)
+
+        /// <summary>A point light, no shadows, under a parent: what a lamp, a hearth or a furnace casts on the paper.</summary>
+        static Light MakeLight(Transform parent, string name, Vector3 localPos, Color colour, float range, float intensity)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            go.transform.localPosition = localPos;
+            var light = go.AddComponent<Light>();
+            light.type = LightType.Point;
+            light.color = colour;
+            light.range = range;
+            light.intensity = intensity;
+            light.shadows = LightShadows.None;
+            return light;
+        }
+
+        /// <summary>The light a hub's prop casts, when it is one that burns: a lamp on its stand, the camp's hearth.</summary>
+        static void MakePropLight(Room room, string prop, Vector2 feet)
+        {
+            var lamp = RegionLight.LampColour(room.RoomId);
+            switch (prop)
+            {
+                case "Lamp": MakeLight(room.transform, "Light_Lamp", new Vector3(feet.x, feet.y + 1.6f, -0.8f), lamp, 5f, 1.8f); break;
+                case "Hearth": MakeLight(room.transform, "Light_Hearth", new Vector3(feet.x, feet.y + 0.9f, -0.8f), new Color(1f, 0.60f, 0.25f), 6f, 2.4f); break;
+            }
+        }
+
+        /// <summary>The light a backdrop strip carries: the furnace doors, the springs' sulphur, the Lantern's colour, Aury's lamp.</summary>
+        static void MakeLayerLights(Room room, string layer, float z, float y)
+        {
+            float front = z - 1.2f;   // between the strip and the play plane, so the ground takes it too
+            switch (layer)
+            {
+                case "Mid_Furnaces":
+                    foreach (var x in new[] { -8f, 0f, 8f })
+                        MakeLight(room.transform, "Light_Furnace", new Vector3(x, y + 2f, front), RegionLight.For(Region.Emberdown).Lamp, 6f, 2.2f);
+                    break;
+                case "Mid_Springs":
+                    foreach (var x in new[] { -5f, 5f })
+                        MakeLight(room.transform, "Light_Spring", new Vector3(x, y + 1f, front), new Color(0.75f, 0.90f, 0.50f), 5f, 1.0f);
+                    break;
+                case "Mid_Lantern":
+                    MakeLight(room.transform, "Light_Lantern", new Vector3(0f, y + 3f, front), RegionLight.For(Region.Blank).Lamp, 9f, 2.0f);
+                    MakeLight(room.transform, "Light_Lantern_Gold", new Vector3(1.5f, y + 2f, front), new Color(1f, 0.85f, 0.55f), 6f, 1.4f);
+                    break;
+                case "Mid_LampRoom":
+                    MakeLight(room.transform, "Light_LampRoom", new Vector3(0f, y + 6f, front), new Color(1f, 0.90f, 0.70f), 10f, 2.4f);
+                    break;
+            }
         }
 
         // The hub's Commissions board: a paper sheet on a post, and a trigger.
@@ -2892,27 +2971,66 @@ namespace OWSBG.Setup
             tr.TargetSpawn = targetSpawn;
         }
 
+        /// <summary>A region's post as an asset (PP_[Region]), written from the table every build (ENV-10).</summary>
+        static VolumeProfile RegionVolumeProfile(Region region)
+        {
+            var profilePath = Root + "/Settings/Rendering/PP_" + region + ".asset";
+            var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(profilePath);
+            if (profile == null)
+            {
+                profile = ScriptableObject.CreateInstance<VolumeProfile>();
+                AssetDatabase.CreateAsset(profile, profilePath);
+            }
+            profile.components.RemoveAll(c => c == null);
+            RegionLighting.FillProfile(profile, RegionLight.For(region));
+            PersistComponents(profile);
+            return profile;
+        }
+
+        /// <summary>
+        /// A profile's components live inside its asset or not at all: VolumeProfile.Add makes them in memory, and a
+        /// save without adding them to the asset writes nulls (the base profile had carried four since PRG-04).
+        /// </summary>
+        static void PersistComponents(VolumeProfile profile)
+        {
+            foreach (var c in profile.components)
+            {
+                if (c == null) continue;
+                if (!AssetDatabase.Contains(c))
+                {
+                    c.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;
+                    AssetDatabase.AddObjectToAsset(c, profile);
+                }
+                EditorUtility.SetDirty(c);
+            }
+            EditorUtility.SetDirty(profile);
+            AssetDatabase.SaveAssets();
+        }
+
         static VolumeProfile GetOrCreateVolumeProfile()
         {
             var profilePath = Root + "/Settings/Rendering/PP_Default.asset";
             var profile = AssetDatabase.LoadAssetAtPath<VolumeProfile>(profilePath);
-            if (profile != null) return profile;
-            profile = ScriptableObject.CreateInstance<VolumeProfile>();
-            AssetDatabase.CreateAsset(profile, profilePath);
-            var dof = profile.Add<DepthOfField>(true);
+            if (profile == null)
+            {
+                profile = ScriptableObject.CreateInstance<VolumeProfile>();
+                AssetDatabase.CreateAsset(profile, profilePath);
+            }
+            profile.components.RemoveAll(c => c == null);
+            // What every region shares (ENV-10 moves bloom and the vignette to the regions' own volumes; these are the coast's).
+            var dof = profile.TryGet<DepthOfField>(out var d) ? d : profile.Add<DepthOfField>(true);
             dof.mode.Override(DepthOfFieldMode.Gaussian);
             dof.gaussianStart.Override(24f);
             dof.gaussianEnd.Override(40f);
             dof.gaussianMaxRadius.Override(1.0f);
-            var bloom = profile.Add<Bloom>(true);
+            var bloom = profile.TryGet<Bloom>(out var b) ? b : profile.Add<Bloom>(true);
             bloom.intensity.Override(0.25f);
             bloom.threshold.Override(1.1f);
-            var vig = profile.Add<Vignette>(true);
+            var vig = profile.TryGet<Vignette>(out var v) ? v : profile.Add<Vignette>(true);
             vig.intensity.Override(0.22f);
-            var tone = profile.Add<Tonemapping>(true);
+            var tone = profile.TryGet<Tonemapping>(out var t) ? t : profile.Add<Tonemapping>(true);
             tone.mode.Override(TonemappingMode.ACES);
-            EditorUtility.SetDirty(profile);
-            AssetDatabase.SaveAssets();
+            PersistComponents(profile);
             return profile;
         }
 
@@ -2927,6 +3045,16 @@ namespace OWSBG.Setup
             EditorSceneManager.OpenScene(roomPath, OpenSceneMode.Additive);
             var cam = Camera.main;
             if (cam == null) { Debug.LogError("[OWSBG] no main camera"); return; }
+            // The room's region's light (ENV-10); OWSBG_SHOT_HOUR=dusk|night lights it at that hour.
+            var lighting = Object.FindFirstObjectByType<RegionLighting>();
+            var shotRoom = Object.FindFirstObjectByType<Room>();
+            if (lighting != null)
+            {
+                var hour = System.Environment.GetEnvironmentVariable("OWSBG_SHOT_HOUR");
+                if (hour == "night") { lighting.NightOverride = 1f; lighting.DuskOverride = 0f; }
+                else if (hour == "dusk") { lighting.NightOverride = 0.3f; lighting.DuskOverride = 1f; }
+                lighting.Snap(shotRoom != null ? Mix.RegionOf(shotRoom.RoomId) ?? Region.Saltmarrow : Region.Saltmarrow);
+            }
             var brain = cam.GetComponent<CinemachineBrain>();
             if (brain != null) brain.enabled = false;
             var wren = Object.FindFirstObjectByType<WrenController>();

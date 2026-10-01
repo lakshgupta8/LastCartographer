@@ -297,7 +297,8 @@ and washes it to paper with one `_Ink` value. Two properties were added for the 
   reads under the camera's tilt, and every block of a room shares one material.
 - `_Shadows` (0/1): the walkway takes Wren's shadow; a backdrop strip never does.
 - `_Lighting` (0–1): how much of the scene light a drawing takes. Backdrops 0.3, so the sun does not bleach
-  the wash; ground 0.7; birds 1.
+  the wash; ground 0.7; birds 1. Since ENV-10 the lamps (every point light) are summed in before it as a
+  two-step pool on the paper, so a backdrop takes a third of a lamp and a bird all of it (lighting.md §3).
 
 Backdrops light flat (`_ShadowStep` 0). Ground keeps a shallow ramp (0.2) so the shadow reads as ink.
 `ProjectSetup.RegionPaper` holds the six paper colours from art-direction 5.

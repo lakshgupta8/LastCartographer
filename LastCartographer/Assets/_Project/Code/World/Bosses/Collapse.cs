@@ -116,6 +116,7 @@ namespace OWSBG.World
             }
         }
 
+        public const float LampIntensity = 2.4f;
         public float SectionCentre(int i) => arenaMinX + (i + 0.5f) * SectionWidth;
         public int SectionOf(float x) => Mathf.Clamp(Mathf.FloorToInt((x - arenaMinX) / SectionWidth), 0, lampCount - 1);
         public bool IsLampOut(int i) => i >= 0 && i < _out.Length && _out[i];
@@ -194,6 +195,10 @@ namespace OWSBG.World
                 bool lit = i == LitLamp && !IsLampOut(i);
                 BossPart.Show(_lamps[i], lit ? "lit" : "dark", LampMaterial(lit));
             }
+            // The lit lamp as light (ENV-10): the one section drawn is the one section lit.
+            Glow(new Color(1f, 0.80f, 0.42f), 8f);
+            bool anyLit = LitLamp >= 0 && LitLamp < _lamps.Count && !IsLampOut(LitLamp);
+            SetGlow(anyLit ? LampIntensity : 0f, anyLit ? _lamps[LitLamp].position : (Vector3?)null);
         }
 
         static Material LampMaterial(bool lit) => lit ? InkMaterials.Lit("Collapse_Lamp_Lit", new Color(0.98f, 0.80f, 0.42f)) : InkMaterials.Lit("Collapse_Lamp_Dark", new Color(0.22f, 0.20f, 0.18f));

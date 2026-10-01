@@ -19,6 +19,8 @@ namespace OWSBG.World
         [Tooltip("Lamps: lit once this vantage has ever been drawn.")]
         [SerializeField] string _litByVantage = "";
         [SerializeField] Renderer _glow;
+        [Tooltip("Lamps: the light it casts once lit (ENV-10).")]
+        [SerializeField] Light _light;
 
         /// <summary>The point Wren is standing at, or null.</summary>
         public static TravelPoint Nearby { get; private set; }
@@ -32,6 +34,10 @@ namespace OWSBG.World
         public string PlaceId { get { var room = GetComponentInParent<Room>(); return room != null ? room.RoomId : ""; } }
         public bool IsLit => _kind == WaypointKind.Desk || string.IsNullOrEmpty(_litByVantage) || GameState.World.IsEverSurveyed(_litByVantage);
         public Waypoint Definition => Atlas.FindWaypoint(_waypointId);
+        public Light Light => _light;
+
+        /// <summary>Setup and tests: the light a lamp casts once it is lit.</summary>
+        public void ConfigureLight(Light light) { _light = light; if (_light != null) _light.enabled = IsLit; }
 
         WrenController _wren;
 
@@ -74,7 +80,9 @@ namespace OWSBG.World
 
         void Update()
         {
-            if (_glow != null) _glow.enabled = IsLit;
+            bool lit = IsLit;
+            if (_glow != null) _glow.enabled = lit;
+            if (_light != null && _light.enabled != lit) _light.enabled = lit;
         }
     }
 }

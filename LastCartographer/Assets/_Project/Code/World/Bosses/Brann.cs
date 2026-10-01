@@ -198,7 +198,13 @@ namespace OWSBG.World
                 Burn();
             }
             base.FixedUpdate();
+            // His brass as light (ENV-10): in the dark it is the only telegraph, so it is the only light.
+            Glow(new Color(1f, 0.55f, 0.22f), 7f);
+            SetGlow(IsFightActive && !IsDead ? GlowIntensity : 0f);
         }
+
+        /// <summary>The light his brass gives now: a quarter at rest, all of it as he telegraphs.</summary>
+        public float GlowIntensity => 0.4f + 2.6f * Glow;
 
         void AdvanceFloor(float dt)
         {

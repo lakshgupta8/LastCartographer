@@ -100,6 +100,8 @@ Shader "OWSBG/InkSprite"
             #pragma fragment Frag
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #pragma multi_compile_fog
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -147,6 +149,24 @@ Shader "OWSBG/InkSprite"
                 half lit = step(_ShadowStep, ndl * lerp(1.0h, mainLight.shadowAttenuation, _Shadows));
                 half3 ambient = SampleSH(n);
                 half3 light = lerp(_ShadowTint.rgb, half3(1, 1, 1), lit) * mainLight.color + ambient * 0.5h;
+
+                // The lamps (ENV-10): every other light is a pool on the paper round it, stepped in two like the
+                // sun's ramp so it reads as wash and not as shading. No facing: a lantern lights the paper, not a form.
+            #if defined(_ADDITIONAL_LIGHTS)
+                InputData inputData = (InputData)0;
+                inputData.positionWS = IN.positionWS;
+                inputData.normalWS = n;
+                inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(IN.positionCS);
+                half3 lamps = 0;
+                uint lampCount = GetAdditionalLightsCount();
+                LIGHT_LOOP_BEGIN(lampCount)
+                    Light lamp = GetAdditionalLight(lightIndex, IN.positionWS, half4(1, 1, 1, 1));
+                    half a = saturate(lamp.distanceAttenuation * lamp.shadowAttenuation);
+                    half pool = a > 0.45h ? 1.0h : a > 0.12h ? 0.5h : 0.0h;
+                    lamps += lamp.color * pool;
+                LIGHT_LOOP_END
+                light += lamps;
+            #endif
 
                 // Ink state: desaturate and wash toward paper as ink leaves.
                 half gray = dot(tex.rgb, half3(0.299h, 0.587h, 0.114h));

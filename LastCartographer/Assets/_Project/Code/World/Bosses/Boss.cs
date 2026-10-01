@@ -236,6 +236,39 @@ namespace OWSBG.World
         public static bool IsDownStrike(in HitInfo hit) => hit.Direction.y < -0.5f;
         public static bool IsUpStrike(in HitInfo hit) => hit.Direction.y > 0.5f;
 
+        // ---- a fight's light (ENV-10, docs/design/lighting.md) ------------------------------------------------------------
+
+        Light _glow;
+
+        /// <summary>The boss's own light, made the first time it is asked for: a point light, no shadows, off until SetGlow.</summary>
+        public Light GlowLight { get { return _glow; } }
+
+        protected Light Glow(Color colour, float range)
+        {
+            if (_glow != null) return _glow;
+            var go = new GameObject("Glow");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = new Vector3(0f, 0f, -0.9f);
+            _glow = go.AddComponent<Light>();
+            _glow.type = LightType.Point;
+            _glow.color = colour;
+            _glow.range = range;
+            _glow.shadows = LightShadows.None;
+            _glow.intensity = 0f;
+            _glow.enabled = false;
+            return _glow;
+        }
+
+        /// <summary>How bright the boss's light is now (0 puts it out), and where it sits in the world if not on the body.</summary>
+        protected void SetGlow(float intensity, Vector3? worldPosition = null)
+        {
+            if (_glow == null) return;
+            bool on = intensity > 0.001f;
+            if (_glow.enabled != on) _glow.enabled = on;
+            _glow.intensity = intensity;
+            if (worldPosition.HasValue) _glow.transform.position = worldPosition.Value + new Vector3(0f, 0f, -0.9f);
+        }
+
         /// <summary>Called by the arena when the doors close.</summary>
         public void BeginFight()
         {

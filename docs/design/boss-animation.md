@@ -112,8 +112,9 @@ look's extras are a `Rig` subclass's `__init__` in `families.py`. A new part is 
 
 - **The captures show the bosses at rest.** Their fights' parts appear only in play; the tests see them, the
   screenshots don't.
-- **Brann's phase-3 glow and the Star's burning** are drawn states (`burn` shows the cracks), not light; a lit
-  pass belongs to ENV-10.
+- **Brann's brass, the Star's burning and the Collapse's lit lamp are lights since ENV-10** (`Boss.Glow`,
+  lighting.md §3) as well as drawn states; the other fights' glows (the Gatekeeper's roots, Corra's crayon) are
+  still only drawn.
 - **The Collapse's beast is one drawing moved from section to section.** The bible's "as wide as the floor" would
   be four drawings or one four sections wide; v1 draws it in the lit section only, as the rule says.
 - **Her drawing uses three of Wren's clips.** Oriel's mirror reads the Charter; the Archivist's drawing of her

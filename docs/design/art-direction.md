@@ -40,6 +40,7 @@ Silksong is painted, gothic, high-contrast, saturated pools of colour in darknes
 | Greyfold / Blank | white | none | none | Wren's blue and lantern gold | ghost-grey |
 
 - **Lighting per region:** always art-directed time of day; no real-time clock.
+  Version one is `docs/design/lighting.md` (ENV-10): one row per region (sun, ambient, paper, post, lamp colour) blended as she crosses, the day dimming the regions that have an hour, and real lights where something burns.
 
 ## 6. UI
 - Everything is paper and ink. The map is Wren's atlas: a book that opens across the screen; unsurveyed areas are blank pages; surveying animates the pen drawing it.

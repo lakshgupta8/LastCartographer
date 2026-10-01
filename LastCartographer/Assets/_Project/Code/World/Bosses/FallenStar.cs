@@ -119,6 +119,16 @@ namespace OWSBG.World
 
         protected override void OnDefeated() { ClearAll(); }
 
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            // The burning as light (ENV-10): the cracks glow in the drawing, and the room takes the ember light off it.
+            Glow(new Color(1f, 0.45f, 0.15f), 9f);
+            SetGlow(IsBurning && !IsDead ? BurnIntensity : 0f);
+        }
+
+        public const float BurnIntensity = 3.2f;
+
         void FaceWren()
         {
             if (Wren == null) return;

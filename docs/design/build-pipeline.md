@@ -153,6 +153,14 @@ part is the capture itself (a forced render into a texture, two read-backs and a
 each there. The test now times its first capture and reports itself ignored, with the seconds and the device,
 past ten seconds; here a capture takes well under one and the whole test 4 s.
 
+The eleventh run (2026-10-02, after the first pass of every plan row): play mode failed on the same test, in a
+new way. It wrote the first picture inside the ten-second guard and still ran into the three-minute timeout, 292
+seconds in all, so the slow part there is now past the first capture (or before it, in the scene's load: the guard
+timed only the capture). The test now keeps a clock over every step (the scene, each picture) and steps aside past
+sixty seconds in all, naming each step's seconds and the graphics device, so the runner's report says where the
+time went rather than only that it ran out. A `Null` graphics device (`-nographics`) steps aside at once. Here the
+whole test takes two seconds.
+
 The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
 `UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,
 which signs in with the account, so the build job now uses v6. It also passes `-buildOutput` to the folder the

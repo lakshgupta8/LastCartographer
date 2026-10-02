@@ -34,7 +34,43 @@ namespace OWSBG.Tests
             ("Mothcloud", "M_Enemy_Mothcloud", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
             ("Pulpwasp", "M_Enemy_Pulpwasp", new[] { "idle", "move", "spit", "hurt", "death" }),
             ("Sketch", "M_Enemy_Sketch", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
+            // and their regions' looks (2e)
+            ("Mothcloud_Ash", "M_Enemy_Mothcloud_Ash", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
+            ("Mothcloud_Dust", "M_Enemy_Mothcloud_Dust", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
+            ("Pulpwasp_Cinder", "M_Enemy_Pulpwasp_Cinder", new[] { "idle", "move", "spit", "hurt", "death" }),
+            ("Pulpwasp_Gall", "M_Enemy_Pulpwasp_Gall", new[] { "idle", "move", "spit", "hurt", "death" }),
+            ("Sketch_Chalk", "M_Enemy_Sketch_Chalk", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
+            ("Sketch_Thin", "M_Enemy_Sketch_Thin", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
         };
+
+        static string MetaGuid(string assetPath) => System.Text.RegularExpressions.Regex.Match(File.ReadAllText(Path.GetFullPath(assetPath + ".meta")), @"guid: ([0-9a-f]+)").Groups[1].Value;
+        static int Uses(string scene, string guid) => File.ReadAllText(Path.GetFullPath(Scenes + scene + ".unity")).Split(new[] { guid }, System.StringSplitOptions.None).Length - 1;
+
+        /// <summary>The roster's later families wear their regions (enemy-animation.md 2e): the look's material rests on its own idle strip, and the rooms the plans place them in carry that look.</summary>
+        [Test]
+        public void TheRostersLooksWearTheirRegions()
+        {
+            var ink = Shader.Find("OWSBG/InkSprite");
+            foreach (var look in new[] { "Mothcloud_Ash", "Mothcloud_Dust", "Pulpwasp_Cinder", "Pulpwasp_Gall", "Sketch_Chalk", "Sketch_Thin" })
+            {
+                var m = AssetDatabase.LoadAssetAtPath<Material>(Materials + "M_Enemy_" + look + ".mat");
+                Assert.IsNotNull(m, look + "'s material");
+                Assert.AreEqual(ink, m.shader, look);
+                Assert.AreEqual(look + "_idle", m.GetTexture("_BaseMap")?.name, look + " rests on its own idle strip");
+                var family = look.Split('_')[0];
+                Assert.AreEqual(Load(family).cellUnits, Load(look).cellUnits, look + " keeps the family's cell");
+                CollectionAssert.AreEquivalent(Load(family).clips.Select(c => c.name), Load(look).clips.Select(c => c.name), look + " has the family's clips");
+            }
+            Assert.GreaterOrEqual(Uses("Greybox_Greyfold_Cathedral_2", MetaGuid(Materials + "M_Enemy_Mothcloud_Ash.mat")), 1, "ash-moths in the nave");
+            Assert.GreaterOrEqual(Uses("Greybox_Windreach_River_2", MetaGuid(Materials + "M_Enemy_Mothcloud_Dust.mat")), 1, "dust-moths over the riverbed");
+            Assert.GreaterOrEqual(Uses("Greybox_Verdance_Grove_4", MetaGuid(Materials + "M_Enemy_Mothcloud.mat")), 2, "the Lantern Grove's are lantern-moths");
+            Assert.GreaterOrEqual(Uses("Greybox_Emberdown_Chimneys_4", MetaGuid(Materials + "M_Enemy_Pulpwasp_Cinder.mat")), 1, "a cinder-wasp over the flues");
+            Assert.GreaterOrEqual(Uses("Greybox_Verdance_Road_2", MetaGuid(Materials + "M_Enemy_Pulpwasp_Gall.mat")), 1, "a gall-wasp on the old road");
+            Assert.GreaterOrEqual(Uses("Greybox_Halden_Mills_2", MetaGuid(Materials + "M_Enemy_Pulpwasp.mat")), 2, "the mills' are pulp-wasps");
+            Assert.GreaterOrEqual(Uses("Greybox_Blank_Capital_1", MetaGuid(Materials + "M_Enemy_Sketch_Chalk.mat")), 1, "a chalk Sketch in the capital");
+            Assert.GreaterOrEqual(Uses("Greybox_Halden_Lowmarket_1", MetaGuid(Materials + "M_Enemy_Sketch_Thin.mat")), 1, "Lowmarket's thin one");
+            Assert.GreaterOrEqual(Uses("Greybox_Greyfold_Road_1", MetaGuid(Materials + "M_Enemy_Sketch.mat")), 1, "the road's is the Sketch itself");
+        }
 
         [System.Serializable] class Manifest { public string character; public int ppu, cell; public float cellUnits; public Entry[] clips; }
         [System.Serializable] class Entry { public string name, file; public int fps, frames; public bool loop; }

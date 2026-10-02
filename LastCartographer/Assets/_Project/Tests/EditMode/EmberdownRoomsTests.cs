@@ -156,7 +156,7 @@ namespace OWSBG.Tests
             var scripts = new Dictionary<string, string>
             {
                 ["cave-bat"] = Guid("World/Enemies/CaveBat.cs"), ["salamander"] = Guid("World/Enemies/Salamander.cs"),
-                ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["Warden"] = Guid("World/Enemies/Warden.cs"),
+                ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["Warden"] = Guid("World/Enemies/Warden.cs"), ["pulp-wasp"] = Guid("World/Enemies/Pulpwasp.cs"),
             };
             int rooms = 0, creatures = 0;
             foreach (var p in Plans)
@@ -177,7 +177,7 @@ namespace OWSBG.Tests
                 rooms++;
             }
             Assert.AreEqual(21, rooms);
-            Assert.AreEqual(23, creatures, "nine bats, nine salamanders, four smudges and the Warden on the road");
+            Assert.AreEqual(24, creatures, "nine bats, nine salamanders, four smudges, the Warden on the road and the flue road's cinder-wasp");
             // The bat by the ninth chimney's vantage keeps its distance (an enemy within eight units cancels a survey).
             var ninth = SceneText("Emberdown_Chimneys_3");
             var bat = Regex.Match(ninth, @"m_Name: Bat_\d+[\s\S]*?m_LocalPosition: \{x: ([-0-9.]+), y: ([-0-9.]+)");

@@ -47,7 +47,7 @@ window at its top, the Vault below that window, and the dome, shut until Act 3.
 | **Mills_1** The mill race | PaperMills | Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air. | — | Warden, smudge, pulp-wasp | — | W → Gate_2 [Inkthread], E → Mills_2 |
 | **Mills_2** The drying lofts | PaperMills | Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead. | Lofts | smudge ×2, pulp-wasp ×2 | — | up → Bridges_4, W → Mills_1, E → Mills_3 |
 | **Mills_3** The pulp yard | PaperMills | The strike's picket line: the millworkers of Lowmarket have downed tools. The Hall steps are beyond. | — | — | — | W → Mills_2, E → Hall_1 |
-| **Lowmarket_1** The stair down | Lowmarket | Below the walls. The paint is thinner here, and so is everything else. | — | smudge | — | up → Bridges_2, E → Lowmarket_2 |
+| **Lowmarket_1** The stair down | Lowmarket | Below the walls. The paint is thinner here, and so is everything else. | — | smudge, Sketch | — | up → Bridges_2, E → Lowmarket_2 |
 | **Lowmarket_2** Lowmarket | Lowmarket | The district below the walls, fading; its notice board reads 'survey scheduled'. The strike hall, where the decision is made. | Market | — | desk | W → Lowmarket_1, E → Lowmarket_3 |
 | **Lowmarket_3** The south gate | Lowmarket | The south road to Windreach, barred until Act 2 opens it. | — | Warden | — | W → Lowmarket_2, E → Stones_1 [`act2.started`] |
 | **Hall_1** The Hall steps | JourneymansHall | The Guild's steps. Unlicensed now, she comes in past the Wardens or not at all until Interlude A resolves. | — | Warden ×2 | — | W → Mills_3, E → Hall_2 |

@@ -41,7 +41,7 @@ straight down, because the long roll-call is walked downward (bounds-walk.md: Ho
 | **Chimneys_1** The first chimney | NineChimneys | Runa climbs the old way and Wren learns Talonhold at its foot; the shaft above needs it. | — | salamander | Runa | W → Rest_3, up → Chimneys_2 [Talonhold] |
 | **Chimneys_2** The shafts | NineChimneys | Wall to wall up three chimneys at once; salamanders on the ledges. | Shaft | salamander ×2, cave-bat | — | down → Chimneys_1 [Talonhold], up → Chimneys_3 [Talonhold] |
 | **Chimneys_3** The ninth chimney | NineChimneys | Nobody remembers building it. A Guild agent lives at the top (the Ninth Chimney commission). | Ninth | cave-bat | desk | down → Chimneys_2 [Talonhold], E → Chimneys_4 |
-| **Chimneys_4** The flue road | NineChimneys | A tunnel of old flues east toward the baths; the heat rises through the floor. | — | salamander ×2 | — | W → Chimneys_3, E → Baths_1 [Talonhold] |
+| **Chimneys_4** The flue road | NineChimneys | A tunnel of old flues east toward the baths; the heat rises through the floor. | — | salamander ×2, pulp-wasp | — | W → Chimneys_3, E → Baths_1 [Talonhold] |
 | **Baths_1** The steam walk | CinderBaths | Boardwalks over hot pools; steam hides the next hold. | — | salamander, smudge | — | W → Chimneys_4 [Talonhold], E → Baths_2 |
 | **Baths_2** The baths | CinderBaths | The Cinder Bath Debate: Kettil and a Guild surveyor argue in real numbers, and Runa sings them back. | Baths | — | Kettil, Runa | W → Baths_1, E → Baths_3 |
 | **Baths_3** The vents | CinderBaths | Vents that breathe on a rhythm; the climb out to the ridge is a wall. | — | cave-bat ×2 | — | W → Baths_2, E → Overlook_1 [Talonhold] |
@@ -86,7 +86,7 @@ and below.
 | Room | Zone | What it is for | Vantage | Enemies | Stands here | Exits |
 |---|---|---|---|---|---|---|
 | **Road_1** The iris gap | OldRoad | From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken. | — | crab, skimmer | — | W → Saltmarrow.IrisFields [Wingbeat (soft)], E → Road_2 |
-| **Road_2** The milestones | OldRoad | Flying-age milestones, every one giving the distance to a place that is gone. | Milestone | smudge, crab | — | W → Road_1, E → Road_3 |
+| **Road_2** The milestones | OldRoad | Flying-age milestones, every one giving the distance to a place that is gone. | Milestone | smudge, crab, pulp-wasp | — | W → Road_1, E → Road_3 |
 | **Road_3** The first trees | OldRoad | The trees begin: trunks eighty wingspans tall, light in shafts, near silence. | — | Cantor | — | W → Road_2, E → House_1 |
 | **House_1** The roots gate | QuietHouse | The Quiet House's door in the roots of one tree; the brothers bow and do not speak. | — | — | — | W → Road_3, E → House_2 |
 | **House_2** The cloister | QuietHouse | The hub: desk, ledger, Teodor. The root stair goes down from its floor. | Cloister | — | Teodor, desk | W → House_1, E → House_3, down → Chapel_1 |
@@ -101,7 +101,7 @@ and below.
 | **Library_2** The reading room | SunkenLibrary | Brother Ansel on page 214 for thirty-eight years. Teodor will not turn it for you. | Page | — | Teodor | up → Library_1 |
 | **Aldermere_1** The lane | Aldermere | Aldermere on its last day: bunting, bread, a desk the inn keeps for travellers. | — | — | desk | W → House_3, E → Aldermere_2 |
 | **Aldermere_2** The square | Aldermere | The last evening. Attend it, or try to stop it and the Choir sings over the square (6.6). | Square | — | Teodor, arena: choir | W → Aldermere_1, E → Aldermere_3 |
-| **Aldermere_3** The ash field | Aldermere | Where the village is already paper; the canopy road starts over it by thread. | — | Cantor, smudge | — | W → Aldermere_2, E → Gate_1 [Inkthread] |
+| **Aldermere_3** The ash field | Aldermere | Where the village is already paper; the canopy road starts over it by thread. | — | Cantor, smudge, pulp-wasp | — | W → Aldermere_2, E → Gate_1 [Inkthread] |
 | **Gate_1** The approach | OvergrownGate | A desk under the roots, then the gate's roots as anchors up the wall. | — | skimmer | desk | W → Aldermere_3 [Inkthread], E → Gate_2 |
 | **Gate_2** The Overgrown Gate | OvergrownGate | The Gatekeeper's arena (6.7); beyond it, the canopy road to the Paper Mills. | Gate | — | arena: gatekeeper | W → Gate_1, E → Mills_1 [Inkthread] |
 <!-- /table -->

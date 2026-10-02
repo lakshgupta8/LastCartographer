@@ -237,7 +237,7 @@ namespace OWSBG.Tests
             // "lost Remnant ×2" in the plan is two LostRemnant components in the scene; nothing the plan leaves out. The Edge's smudges are the prologue's.
             var scripts = new Dictionary<string, string>
             {
-                ["lost Remnant"] = Guid("World/Enemies/LostRemnant.cs"), ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["Warden"] = Guid("World/Enemies/Warden.cs"), ["Sketch"] = Guid("World/Enemies/Sketch.cs"),
+                ["lost Remnant"] = Guid("World/Enemies/LostRemnant.cs"), ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["Warden"] = Guid("World/Enemies/Warden.cs"), ["Sketch"] = Guid("World/Enemies/Sketch.cs"), ["moths"] = Guid("World/Enemies/Mothcloud.cs"),
             };
             int rooms = 0, creatures = 0;
             foreach (var p in Plans.Where(p => p.Id != Edge))
@@ -246,7 +246,7 @@ namespace OWSBG.Tests
                 var wanted = scripts.ToDictionary(kv => kv.Key, _ => 0);
                 foreach (var part in Regex.Replace(p.Enemies ?? "", @"\s*\([^)]*\)", "").Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    var m = Regex.Match(part, @"^(lost Remnant|smudge|Warden|Sketch)(?: ×(\d+))?$");
+                    var m = Regex.Match(part, @"^(lost Remnant|smudge|Warden|Sketch|moths)(?: ×(\d+))?$");
                     Assert.IsTrue(m.Success, p.Id + " plans a creature the greybox knows: " + part);
                     wanted[m.Groups[1].Value] += m.Groups[2].Success ? int.Parse(m.Groups[2].Value) : 1;
                 }
@@ -258,7 +258,7 @@ namespace OWSBG.Tests
                 rooms++;
             }
             Assert.AreEqual(20, rooms);
-            Assert.AreEqual(20, creatures, "ten of the lost, four smudges, the line's three Wardens and three Sketches");
+            Assert.AreEqual(23, creatures, "ten of the lost, four smudges, the line's three Wardens, five Sketches and the nave's ash-moths");
             // Every vantage keeps its distance from the creatures (an enemy within eight units cancels a survey).
             foreach (var p in Plans.Where(p => p.Vantage != null && p.Id != Edge))
             {

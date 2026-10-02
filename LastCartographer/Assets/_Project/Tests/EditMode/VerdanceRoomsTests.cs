@@ -179,7 +179,7 @@ namespace OWSBG.Tests
             var scripts = new Dictionary<string, string>
             {
                 ["crab"] = Guid("World/Enemies/MarshCrab.cs"), ["skimmer"] = Guid("World/Enemies/ReedSkimmer.cs"),
-                ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["Cantor"] = Guid("World/Enemies/Cantor.cs"), ["moths"] = Guid("World/Enemies/Mothcloud.cs"),
+                ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["Cantor"] = Guid("World/Enemies/Cantor.cs"), ["moths"] = Guid("World/Enemies/Mothcloud.cs"), ["pulp-wasp"] = Guid("World/Enemies/Pulpwasp.cs"),
             };
             int rooms = 0, creatures = 0;
             foreach (var p in Plans)
@@ -200,7 +200,7 @@ namespace OWSBG.Tests
                 rooms++;
             }
             Assert.AreEqual(19, rooms);
-            Assert.AreEqual(18, creatures, "two crabs, five skimmers, four smudges, three Cantors and four moth clouds");
+            Assert.AreEqual(20, creatures, "two crabs, five skimmers, four smudges, three Cantors, four moth clouds and two gall-wasps");
             // Every vantage keeps its distance from the creatures (an enemy within eight units cancels a survey).
             foreach (var p in Plans.Where(p => p.Vantage != null))
             {

@@ -948,6 +948,15 @@ namespace OWSBG.Setup
             return LoadSheets(look) != null ? look : "Smudge";
         }
 
+        /// <summary>The roster's later families in their regions (CMB-09, enemy-animation.md 2e): the look's sheets when they exist, else the family's.</summary>
+        static string Look(string family, string look) => LoadSheets(look) != null ? look : family;
+        static string MothLook(string roomId) => roomId.StartsWith("Greyfold_") || roomId.StartsWith("Blank_") ? Look("Mothcloud", "Mothcloud_Ash")
+            : roomId.StartsWith("Windreach_") ? Look("Mothcloud", "Mothcloud_Dust") : "Mothcloud";
+        static string WaspLook(string roomId) => roomId.StartsWith("Emberdown_") ? Look("Pulpwasp", "Pulpwasp_Cinder")
+            : roomId.StartsWith("Verdance_") ? Look("Pulpwasp", "Pulpwasp_Gall") : "Pulpwasp";
+        static string SketchLook(string roomId) => roomId.StartsWith("Blank_") ? Look("Sketch", "Sketch_Chalk")
+            : roomId.StartsWith("Halden_") ? Look("Sketch", "Sketch_Thin") : "Sketch";
+
         /// <summary>The Cantor family (CHR-08): doves on the coast and in the forest, crows with cracked bells beyond.</summary>
         static string CantorLook(string roomId)
         {
@@ -1513,7 +1522,7 @@ namespace OWSBG.Setup
                     .Npc("Ostry", 14f, "Chimneys_Ninth_Agent", stranger).Bat(16f, 6.5f)   // over the ninth's door, clear of the vantage's eight units
                     .Down(E("Chimneys_2"), -8f).East(E("Chimneys_4")),
                 new RoomRecipe("Emberdown_Chimneys_4").Tiles("Ground_Basalt", "Ground_Basalt").EmberdownPapers("Mid_Gallery", "Far_Dark")
-                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(2f, 4f, 3f).Plat(10f, 2.5f, 3f).Salamander(-12f).Salamander(6f)
+                    .Floor(-20f, 20f).Plat(-6f, 2.5f, 3f).Plat(2f, 4f, 3f).Plat(10f, 2.5f, 3f).Salamander(-12f).Salamander(6f).Wasp(-2f, 5.5f)   // a cinder-wasp over the flues
                     .West(E("Chimneys_3")).East(E("Baths_1")),
                 // ---- the Cinder Baths ----
                 new RoomRecipe("Emberdown_Baths_1").Tiles("Ground_Timber", "Ground_Basalt").EmberdownPapers("Mid_Springs")
@@ -1577,7 +1586,7 @@ namespace OWSBG.Setup
                     .West(Scene("Saltmarrow_IrisFields")).East(V("Road_2")),
                 new RoomRecipe("Verdance_Road_2").Tiles("Ground_Moss", "Ground_Root").VerdancePapers()
                     .Floor(-20f, 20f).Plat(-6f, 3f, 3f).Plat(4f, 2.5f, 3f).Prop("Milestone", -14f).Prop("Milestone", 0f).Prop("Milestone", 12f).Vantage("Milestone", -11f, 0f)
-                    .Smudge(6f).Crab(15f)
+                    .Smudge(6f).Crab(15f).Wasp(-5f, 5f)   // a gall-wasp over the milestones
                     .West(V("Road_1")).East(V("Road_3")),
                 new RoomRecipe("Verdance_Road_3").Tiles("Ground_Moss", "Ground_Root").VerdancePapers()
                     .Paper("Fore_Ferns", -4f, -0.8f, ferns, 1.6f)
@@ -1648,7 +1657,7 @@ namespace OWSBG.Setup
                     .West(V("Aldermere_1")).East(V("Aldermere_3")),
                 new RoomRecipe("Verdance_Aldermere_3").Tiles("Ground_Lane", "Ground_Root").VerdancePapers("Mid_Ash")
                     .Floor(-20f, 4f).Plat(10f, 4f, 3f).Floor(16f, 20f).Anchor(7f, 5.5f).Anchor(14f, 8f)   // the canopy road starts over the field by thread
-                    .Cantor(-6f).Smudge(-13f).Prop("Bunting", -16f).Prop("Bunting", -3f)
+                    .Cantor(-6f).Smudge(-13f).Wasp(5f, 5f).Prop("Bunting", -16f).Prop("Bunting", -3f)
                     .West(V("Aldermere_2")).East(V("Gate_1")),
                 // ---- the Overgrown Gate: a gate for flyers ----
                 new RoomRecipe("Verdance_Gate_1").Tiles("Ground_Flag", "Ground_Root").VerdancePapers("Mid_Gate")
@@ -1721,7 +1730,7 @@ namespace OWSBG.Setup
                     .West(H("Mills_2")).East(H("Hall_1")),
                 // ---- Lowmarket: below the walls ----
                 new RoomRecipe("Halden_Lowmarket_1").Tall().Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
-                    .Floor(-20f, 20f).Plat(-12f, 12f, 4f).Plat(-6f, 9f, 3f).Plat(-12f, 6f, 3f).Plat(-6f, 3f, 3f).Smudge(8f)
+                    .Floor(-20f, 20f).Plat(-12f, 12f, 4f).Plat(-6f, 9f, 3f).Plat(-12f, 6f, 3f).Plat(-6f, 3f, 3f).Smudge(8f).Sketch(2f)   // the paint is thinner here: a thin Sketch
                     .Up(H("Bridges_2"), -12f, 12.3f).East(H("Lowmarket_2")),
                 new RoomRecipe("Halden_Lowmarket_2").Tiles("Ground_Cobble", "Ground_Cobble").HaldenPapers("Mid_Lowmarket")
                     .Floor(-20f, 20f).Plat(8f, 2.5f, 3f).Desk(-14f).Vantage("Market", 14f, 0f)   // the notice board is the readable's (ENV-06, PlacementSetup): it changes once the place is anchored
@@ -1803,7 +1812,7 @@ namespace OWSBG.Setup
                 new RoomRecipe("Windreach_Stones_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Stones")
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(4f, 3f, 3f)
                     .Prop("Stone", -16f).Prop("Stone", -11f).Prop("Stone", -6f).Prop("Stone", -1f).Prop("Stone", 4f).Prop("Stone", 9f).Prop("Stone", 14f)   // stones two to eight
-                    .Vantage("Fifth", 6.5f, 0f).Smudge(-14f).Smudge(16f).Folk("Kestrel", 1.5f)   // a scout on the walk
+                    .Vantage("Fifth", 6.5f, 0f).Smudge(-14f).Smudge(16f).Moths(-7f, 5f).Folk("Kestrel", 1.5f)   // a scout on the walk
                     .Updraft(-8f, 0f, 6f, 3f).Updraft(11.5f, 0f, 6f, 3f)   // ink-swirls, too weak to ride yet
                     .Grass(-19f, 19f, 36)
                     .West(W("Stones_1")).East(W("Stones_3")),
@@ -1828,7 +1837,7 @@ namespace OWSBG.Setup
                     .Grass(-19f, -15f, 6)
                     .West(W("Camp_2")).East(W("River_2")),
                 new RoomRecipe("Windreach_River_2").Tiles("Ground_Cracked", "Ground_Cracked").WindreachPapers("Mid_River")
-                    .Floor(-20f, 20f).Plat(14f, 2.5f, 3f).Prop("Hull", -15f).Prop("Hull", 16f).Smudge(-13f).Smudge(15f).Vantage("Bed", -3f, 0f).Camp(1)   // boats on their sides; the second night pitches here
+                    .Floor(-20f, 20f).Plat(14f, 2.5f, 3f).Prop("Hull", -15f).Prop("Hull", 16f).Smudge(-13f).Smudge(15f).Moths(5f, 4.5f).Vantage("Bed", -3f, 0f).Camp(1)   // boats on their sides; the second night pitches here
                     .West(W("River_1")).East(W("River_3")),
                 new RoomRecipe("Windreach_River_3").Tall().Tiles("Ground_Cracked", "Ground_Lip").WindreachPapers("Mid_Cliff", "Far_Rim")
                     .Floor(-20f, 20f).Smudge(-8f).Prop("Reeds", -15f)
@@ -1901,7 +1910,7 @@ namespace OWSBG.Setup
                     .West(G("EdgeCamp_1")).East(G("Edge")),
                 // ---- the half-cathedral: the nave east of the prologue's room ----
                 new RoomRecipe("Greyfold_Cathedral_2").Tall().Tiles("Ground_Chalk", "Ground_Chalk").GreyfoldPapers("Mid_Nave", "Far_White", "Farther_Blank", 12f)
-                    .Floor(-20f, 20f).Plat(-14f, 3f, 3f).Plat(15f, 3f, 3f).Lost(-15f).Lost(16f)   // the lost, who hold to her colour
+                    .Floor(-20f, 20f).Plat(-14f, 3f, 3f).Plat(15f, 3f, 3f).Lost(-15f).Lost(16f).Moths(0f, 6f)   // the lost, who hold to her colour; ash-moths in the nave
                     .Figure("Marrow", 6f, marrow).Fledglings(-8f, 9f, 0f)   // thirty steps in, a grey chick, silent; outlines off the broken tower
                     .Arena(typeof(HalfCathedralBells), "bells", 1.5f, new Vector2(0.4f, 0.4f), -8f, 11f, Ability.None, AbilitySet.FlagKey(Ability.Clarity))   // with Clarity, the bells ring
                     .West(G("Edge")).East(G("Road_1")),
@@ -1982,14 +1991,14 @@ namespace OWSBG.Setup
                     .West(B("Hollow_2")).East(B("Capital_1")).Down(B("Aury_2"), 0f),   // Aury's light below [Clarity, act3.started]
                 // ---- the Old Capital: half-drawn, then drawn backwards ----
                 new RoomRecipe("Blank_Capital_1").Tiles("Ground_Street", "Ground_Street").BlankPapers("Mid_Capital", "Far_Islands", "Farther_Grey", 8f)
-                    .Floor(-20f, 20f).Plat(8f, 3f, 3f).Desk(-12f).Prop("Door", -9f).Prop("Lamp", 4f).Lost(12f)   // a desk in the doorway of what was a Guild office
+                    .Floor(-20f, 20f).Plat(8f, 3f, 3f).Desk(-12f).Prop("Door", -9f).Prop("Lamp", 4f).Lost(12f).Sketch(-1f)   // a desk in the doorway of what was a Guild office; a chalk Sketch in the street
                     .West(B("Hollow_3")).East(B("Capital_2")),
                 new RoomRecipe("Blank_Capital_2").Tiles("Ground_Crayon", "Ground_Crayon").BlankPapers("Mid_Crayon")
                     .Floor(-20f, 20f).Prop("Crayon", -16f).Npc("Corra", -12f, "Capital_Corra", corra)   // her room: the drawing that keeps everyone out
                     .Arena(typeof(CorrasDrawing), "corras_drawing", 6f, new Vector2(2.2f, 3.6f), -8f, 11f)
                     .West(B("Capital_1")).East(B("Capital_3")),
                 new RoomRecipe("Blank_Capital_3").Tiles("Ground_Street", "Ground_Street").BlankPapers("Mid_Mirror", "Far_Islands", "Farther_Grey", 8f)
-                    .Floor(-20f, 20f).Plat(-8f, 3f, 3f).Plat(0f, 5.5f, 3f).Desk(12f).Lost(-12f).Lost(4f)   // the streets reversed; a desk on the Observatory's steps
+                    .Floor(-20f, 20f).Plat(-8f, 3f, 3f).Plat(0f, 5.5f, 3f).Desk(12f).Lost(-12f).Lost(4f).Sketch(-4f)   // the streets reversed; a desk on the Observatory's steps
                     .West(B("Capital_2")).East(B("Capital_4")),
                 new RoomRecipe("Blank_Capital_4").Tiles("Ground_Street", "Ground_Street").BlankPapers("Mid_Mirror", "Far_Islands", "Farther_Grey", 8f)
                     .Floor(-20f, 20f).Npc("Corvin", -12f, "Capital_Corvin", corvin).Remnant("Marrow", -16f, "Capital_Marrow_Word", marrow).Prop("Chair", 14f)   // he has drawn her a chair
@@ -2078,9 +2087,9 @@ namespace OWSBG.Setup
                 else if (e.type == typeof(Cantor)) MakeEnemy<Cantor>(room, e.name, e.pos, e.size, CantorLook(r.Id));
                 else if (e.type == typeof(CaveBat)) MakeEnemy<CaveBat>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Salamander)) MakeEnemy<Salamander>(room, e.name, e.pos, e.size);
-                else if (e.type == typeof(Mothcloud)) MakeEnemy<Mothcloud>(room, e.name, e.pos, e.size);
-                else if (e.type == typeof(Pulpwasp)) MakeEnemy<Pulpwasp>(room, e.name, e.pos, e.size);
-                else if (e.type == typeof(Sketch)) MakeEnemy<Sketch>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Mothcloud)) MakeEnemy<Mothcloud>(room, e.name, e.pos, e.size, MothLook(r.Id));
+                else if (e.type == typeof(Pulpwasp)) MakeEnemy<Pulpwasp>(room, e.name, e.pos, e.size, WaspLook(r.Id));
+                else if (e.type == typeof(Sketch)) MakeEnemy<Sketch>(room, e.name, e.pos, e.size, SketchLook(r.Id));
                 else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);
                 else if (e.type == typeof(LostRemnant)) MakeEnemy<LostRemnant>(room, e.name, e.pos, e.size);
             }

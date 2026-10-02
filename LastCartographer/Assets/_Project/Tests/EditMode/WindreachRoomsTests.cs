@@ -212,7 +212,7 @@ namespace OWSBG.Tests
             // "smudge ×2" in the plan is two Smudge components in the scene; Hale's escort is a Warden out of uniform; nothing the plan leaves out.
             var scripts = new Dictionary<string, string>
             {
-                ["Warden"] = Guid("World/Enemies/Warden.cs"), ["smudge"] = Guid("World/Enemies/Smudge.cs"),
+                ["Warden"] = Guid("World/Enemies/Warden.cs"), ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["moths"] = Guid("World/Enemies/Mothcloud.cs"),
             };
             int rooms = 0, creatures = 0;
             foreach (var p in Plans)
@@ -234,7 +234,7 @@ namespace OWSBG.Tests
                 rooms++;
             }
             Assert.AreEqual(14, rooms);
-            Assert.AreEqual(7, creatures, "one escort and six smudges");
+            Assert.AreEqual(9, creatures, "one escort, six smudges and two dust-moth clouds");
             // Every vantage keeps its distance from the creatures (an enemy within eight units cancels a survey).
             foreach (var p in Plans.Where(p => p.Vantage != null))
             {

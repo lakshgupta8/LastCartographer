@@ -97,6 +97,25 @@ shore. Numbers in `tuning.md` §4.
 The cloud's `gather` and the Sketch's outline are states the shader shows (`_Ink`), as the Smudge's flicker is;
 the drawings are the same frames. The pellet is still the projectile's plain ink round (as Hale's flick is).
 
+## 2e. Their regions' looks (CMB-09, third batch)
+
+`tools/characters/roster_looks.py` builds each of the three in two more regions on the same rigs, as `families.py`
+builds the Smudges: re-coloured, with a piece of the region on them. The setup picks the look by the room's region
+(`MothLook`, `WaspLook`, `SketchLook`; the family's own sheets where no look is drawn), so the recipes still say
+`Moths`, `Wasp` and `Sketch` and the plans still say moths, pulp-wasp and Sketch.
+
+| Look | Region, rooms | What marks it |
+|---|---|---|
+| `Mothcloud_Ash` | the Greyfold and the Blank: the Half-Cathedral's nave | grey moths, the eye-spots gone white, ash on the wings; the line lighter |
+| `Mothcloud_Dust` | Windreach: the long walk's stones, the riverbed's boats | tawny moths of the long grass, two carrying a grass seed |
+| `Pulpwasp_Cinder` | Emberdown: the flue road | soot-black bands on ash, ember flecks, the sac an ember |
+| `Pulpwasp_Gall` | the Verdance: the milestones, the ash field | green-brown, the oak gall it was born in on its back |
+| `Sketch_Chalk` | the Blank: the capital's streets | chalk on white, the shade blue, the line nearly white |
+| `Sketch_Thin` | Halden: Lowmarket's stair ("the paint is thinner here") | a paler fill under a thinner line |
+
+Eleven families in twenty-five looks. `EnemySheetTests.TheRostersLooksWearTheirRegions` holds each look to its
+family's cell and clips, its material to its own idle strip, and the rooms above to the look.
+
 ## 3. What changes when a creature wears sheets
 
 - **Death:** the placeholder shrank to nothing in a quarter second. A drawing dies as its ink leaves: the

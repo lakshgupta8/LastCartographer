@@ -177,6 +177,11 @@ way (its scheduled start was behind a DSP clock reading 232,486 s, two and a hal
 job). It and the boss-layer test, the other two that wait on bar lines or a resolution, now step aside on the same
 measure; the three that check levels and buses still run there.
 
+The fourteenth run (2026-10-02): the ambience crossfade test (AUD-06), whose outgoing layers fade on the DSP clock,
+found them gone at the halfway mark on the same runner. The clock measure is now one helper for every play
+fixture that needs it (`AudioClock`: measured once per run, a test steps aside past a quarter off real time), and
+that test uses it too.
+
 The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
 `UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,
 which signs in with the account, so the build job now uses v6. It also passes `-buildOutput` to the folder the

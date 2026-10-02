@@ -130,9 +130,14 @@ namespace OWSBG.Tests
             Assert.AreNotEqual(again.x, Ambience.PointIn(layers[4], "Greybox_Saltmarrow_B", -8f, 8f, 0f, 8f).x, "another room, another spot");
         }
 
+        /// <summary>The crossfade runs on the DSP clock: where that is not real time (<see cref="AudioClock"/>) its test steps aside.</summary>
+        [UnitySetUp]
+        public IEnumerator MeasureTheClock() => AudioClock.Measure();
+
         [UnityTest]
         public IEnumerator AnotherRegionBringsItsOwnBed()
         {
+            AudioClock.NeedsRealtime();
             yield return PlayTheCoast();
             Driver.RoomOverride = "Greybox_Greyfold_Edge";
             MixDriver.Instance!.RoomOverride = "Greybox_Greyfold_Edge";

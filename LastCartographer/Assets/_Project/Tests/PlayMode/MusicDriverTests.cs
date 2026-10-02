@@ -77,29 +77,11 @@ namespace OWSBG.Tests
             GameState.NewGame();
         }
 
-        /// <summary>
-        /// The audio clock against the wall clock, measured once per run. A machine without an audio device (CI's
-        /// runners) mixes to nothing and its DSP clock can run ahead of real time: there the bar-line waits end at
-        /// once, stems started on one sample sit buffers apart when read, and a resolution's seconds pass in a frame.
-        /// The tests that measure those step aside there, with the rate.
-        /// </summary>
-        static float? s_clockRate;
-
+        /// <summary>The tests that wait on bar lines, read sample positions or time a resolution step aside where the audio clock is not real time (<see cref="AudioClock"/>).</summary>
         [UnitySetUp]
-        public IEnumerator MeasureTheClock()
-        {
-            if (s_clockRate != null) yield break;
-            double d0 = AudioSettings.dspTime; float r0 = Time.realtimeSinceStartup;
-            yield return new WaitForSecondsRealtime(0.5f);
-            s_clockRate = (float)((AudioSettings.dspTime - d0) / (Time.realtimeSinceStartup - r0));
-            Debug.Log("[OWSBG] the audio clock runs at " + s_clockRate.Value.ToString("0.00") + "x real time");
-        }
+        public IEnumerator MeasureTheClock() => AudioClock.Measure();
 
-        static void NeedsARealtimeClock()
-        {
-            if (s_clockRate < 0.8f || s_clockRate > 1.25f)
-                Assert.Ignore("the audio clock runs at " + s_clockRate.Value.ToString("0.00") + "x real time here (no audio device?); the music's timing wants one");
-        }
+        static void NeedsARealtimeClock() => AudioClock.NeedsRealtime();
 
         IEnumerator Until(System.Func<bool> done, float seconds)
         {

@@ -201,6 +201,7 @@ namespace OWSBG.Tests
         [UnityTest]
         public IEnumerator ARegionChangeHandsOverOnTheBarLineAndCrossesOver()
         {
+            NeedsARealtimeClock();
             yield return PlayTheCoast();
             yield return new WaitForSecondsRealtime(MusicDriver.FadeSeconds + 0.2f);
             yield return Until(() => Driver.OutgoingCount == 0, 30f);   // an earlier test's theme (the Steppe's, since ENV-07) hands over to the coast on its own bar line first
@@ -235,6 +236,7 @@ namespace OWSBG.Tests
         public IEnumerator ABossThemeChangesALayerOnTheBarLineAndAnOptionalFightsToItsRegionsMotif()
         {
             // Brann in the Furnace Stair: his theme at the first telegraph; phase 3 takes the furnace's roar away on the bar line and brings the glow.
+            NeedsARealtimeClock();
             Driver.RoomOverride = "Greybox_Emberdown_Stair_3";
             var ember = Score.ThemeOf(Region.Emberdown);
             yield return Until(() => Driver.Current == ember, 60f);

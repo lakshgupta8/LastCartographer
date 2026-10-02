@@ -172,6 +172,11 @@ took 1.4 s against 4.2 here; stems scheduled on one sample read 3072 samples apa
 in a frame). The fixture now measures the DSP clock against the wall clock once, half a second, and those two tests
 step aside when it is off by more than a quarter, naming the rate. The other five, which check levels and buses, still run.
 
+The thirteenth run (2026-10-02): the region handover test, which waits on the coast's bar line, failed the same
+way (its scheduled start was behind a DSP clock reading 232,486 s, two and a half days, twenty minutes into the
+job). It and the boss-layer test, the other two that wait on bar lines or a resolution, now step aside on the same
+measure; the three that check levels and buses still run there.
+
 The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
 `UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,
 which signs in with the account, so the build job now uses v6. It also passes `-buildOutput` to the folder the
@@ -193,7 +198,7 @@ one error), and `BuildPipelineTests` holds it to the CLI's two patterns. Both te
   Yarn Spinner's analyser copy; Unity picks the newer on both machines), and GitHub's notice that the v4 actions
   target Node 20.
 - **Play mode takes about twenty-five minutes on CI**, against nine here; the UI screenshots, the blur's measure
-  and the music's two timing tests step aside there (no GPU, no audio device), with their reasons in the report.
+  and the music's four timing tests step aside there (no GPU, no audio device), with their reasons in the report.
 - **No Steamworks SDK in the game** (overlay, achievements, cloud saves) and no store assets; this row only
   packages and uploads. An app id and depot id come with the Steamworks partner account.
 - **Not yet in the pipeline:** code signing, a Mac or Linux build, and IL2CPP.

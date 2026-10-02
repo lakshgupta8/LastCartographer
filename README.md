@@ -266,6 +266,12 @@ records a session as anyone plays (rooms, deaths, the Lamp-Keeper, how long they
 last desk after a crash, and `pwsh tools/playtest-gate.ps1` reads the answers and sessions in `logs/playtest/` against the
 round's bar. The tester brief and the facilitator's sheet are in `docs/playtest/round1/`. No round has been run yet.
 
+## The store page and press kit
+`docs/marketing/store-page.md` and `docs/marketing/press-kit/index.html` are written from `StorePage` (Core) by **OWSBG →
+Marketing → Write the Store Page and Press Kit**; `tools/marketing/cut_trailer.py` cuts a rough trailer from the clips and
+stills under Saltmarrow's theme (`docs/design/store-page.md`). Everything is a local draft: the name, date, price and contact
+say TBA.
+
 ## The feel-test
 **OWSBG → Play the Feel Course** or `LastCartographer.exe -feel -tester <name>` runs the controller's seven-station course and writes the session as JSON on quit. Put the testers' answers in `logs/feel/answers.csv` and run `pwsh tools/feel-gate.ps1` for the M0 gate's verdict (`docs/design/feel-test.md`).
 

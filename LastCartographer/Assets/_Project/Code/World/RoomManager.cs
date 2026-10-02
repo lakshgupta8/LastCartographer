@@ -94,6 +94,13 @@ namespace OWSBG.World
                 Adopt(existing, _startSpawn);
                 yield break;
             }
+            // -continue: the last desk's save, in the room she rested in (PRO-04's testers, after a crash).
+            if (Bootstrap.Continue && GameState.Load(Bootstrap.ContinueSlot) && !string.IsNullOrEmpty(GameState.World.RespawnRoom))
+            {
+                Debug.Log("[OWSBG] continuing from the save in slot " + Bootstrap.ContinueSlot + ": " + GameState.World.RespawnRoom);
+                yield return Load(GameState.World.RespawnRoom, GameState.World.RespawnSpawn, null);
+                yield break;
+            }
             bool prologue = !string.IsNullOrEmpty(_prologueRoom) && !Bootstrap.SkipPrologue && !GameState.World.Is("prologue.woke_on_shore");
             var first = prologue ? _prologueRoom : _startRoom;
             if (!string.IsNullOrEmpty(first))

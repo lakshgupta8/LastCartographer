@@ -33,6 +33,21 @@ namespace OWSBG.World
             }
         }
 
+        /// <summary>
+        /// A built player started with this picks up from the last desk she rested at (the save in
+        /// <see cref="ContinueSlot"/>), in that room, instead of a new game: a tester whose game closed starts again where
+        /// they were (PRO-04). Without a save it is a new game as usual.
+        /// </summary>
+        public const string ContinueArg = "-continue";
+
+        /// <summary>Tests: true or false overrides the command line.</summary>
+        public static bool? ContinueOverride { get; set; }
+
+        /// <summary>The slot <see cref="ContinueArg"/> reads (the desks write slot 0); tests point it elsewhere.</summary>
+        public static int ContinueSlot { get; set; }
+
+        public static bool Continue => ContinueOverride ?? System.Array.IndexOf(System.Environment.GetCommandLineArgs(), ContinueArg) >= 0;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void EnsurePersistent()
         {

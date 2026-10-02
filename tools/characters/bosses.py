@@ -304,10 +304,11 @@ GATEKEEPER_CLIPS = [
 ]
 
 
-# ================================================================ Surveyor Hale (the Warden rig; a bittern in a road-coat, a quill, a lens on a strap)
+# ================================================================ Surveyor Hale (the Warden rig; a godwit in a road-coat, a quill, a lens on a strap)
 
 COAT = (0.42, 0.36, 0.30)
-BITTERN = (0.70, 0.62, 0.48)
+GODWIT = (0.74, 0.47, 0.31)         # the rust of a godwit's neck and breast (windreach-arc.md)
+GODWIT_BILL = (0.84, 0.60, 0.52)    # the bill's pink base; the tip is ink
 GLASS = (0.55, 0.70, 0.72)
 
 
@@ -315,10 +316,27 @@ class Hale(Warden):
     def __init__(self):
         super().__init__()
         recolour(self, "blue", "coat", COAT)
-        recolour(self, "pale", "bittern", BITTERN)
+        recolour(self, "pale", "godwit", GODWIT)
         brass, ink, glass, paper, leather = mat("brass", BRASS), mat("ink", INK), mat("glass", GLASS), mat("paper", PAPER), mat("leather", (0.30, 0.24, 0.18))
         part(self, "gorget").hide_render = True            # not a Warden: no gorget
         part(self, "sight").hide_render = True
+        # A godwit, not a heron: a shorter neck, a rounder head, no crest, and the long bill turned a little up, pink to an
+        # ink tip.
+        part(self, "crest").hide_render = True
+        self.head.location = (0.06, 0, 0.22)
+        neck = part(self, "neck_m")
+        neck.scale = (1.1, 1.1, 0.72)
+        neck.location = (0.03, 0, 0.11)
+        part(self, "head_m").scale = (1.12, 0.95, 0.95)
+        bill = part(self, "bill")
+        bill.data.materials[0] = mat("godwit_bill", GODWIT_BILL)
+        bill.rotation_euler = (0, D(83), 0)
+        bill.scale = (0.9, 0.9, 1.15)
+        bill.location = (0.30, 0, 0.0)
+        legs = mat("godwit_legs", (0.24, 0.24, 0.26))      # the rig's legs share the neck's wash; a godwit's are dark
+        for name in ("thigh_l", "thigh_r", "shin_l", "shin_r"):
+            part(self, name).data.materials[0] = legs
+        cone("bill_tip", 0.012, 0.002, 0.1, ink, self.head, loc=(0.30 + 0.19 * math.sin(D(83)), 0, 0.19 * math.cos(D(83))), rot=(0, D(80), 0))
         self.lance.scale = (1, 1, 0.55)                    # a quill, not a lance
         part(self, "lance_tip").data.materials[0] = ink
         cone("quill_vane", 0.05, 0.02, 0.5, paper, self.lance, loc=(0.03, 0, 0.35), rot=(0, D(6), 0))

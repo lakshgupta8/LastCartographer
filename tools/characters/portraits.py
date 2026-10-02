@@ -179,12 +179,17 @@ def head_of(rig):
 
 
 def jaw_for_warden(rig):
-    """The Warden rig's bill is one cone: give it a lower half, hinged at the base, so the portrait can open it."""
-    ink = mat("ink", INK)
+    """The Warden rig's bill is one cone: give it a lower half, hinged at the base, so the portrait can open it. The
+    half follows the bill it sits under (its wash, its length, its angle), so a godwit's pink bill opens pink."""
+    bill = next(c for c in rig.head.children if c.name.startswith("bill"))
+    wash = bill.data.materials[0] if bill.data.materials else mat("ink", INK)
+    length = 0.28 * bill.scale[2]
+    angle = math.degrees(bill.rotation_euler[1]) + 2
     jaw = empty("jaw", rig.head, (0.09, 0, -0.03))
     rig.parts.append(jaw)
     rig.jaw = jaw
-    cone("bill_low", 0.026, 0.003, 0.28, ink, jaw, loc=(0.14, 0, -0.008), rot=(0, D(92), 0), scale=(1, 0.8, 0.6))
+    cone("bill_low", 0.026, 0.003, length, wash, jaw,
+         loc=(bill.location.x - 0.12, 0, bill.location.z + 0.022), rot=(0, D(angle), 0), scale=(1, 0.8, 0.6))
     rig.snapshot()
 
 

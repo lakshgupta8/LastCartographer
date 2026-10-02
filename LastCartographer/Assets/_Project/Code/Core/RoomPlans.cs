@@ -179,7 +179,7 @@ namespace OWSBG.Core
                 .Down("Emberdown_Hollow_4", Ability.None);
             R("Emberdown_Hollow_4", "Emberdown.Hollowvein", "The bottom", "The collapse itself: the Collapse wakes on the fourth verse (6.4). The keystone is under it.", null, "", new string[0], false, "collapse", "hollowvein")
                 .Up("Emberdown_Hollow_3", Ability.None);
-            R("Verdance_Road_1", "Verdance.OldRoad", "The iris gap", "From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken.", null, "crab, skimmer", new string[0], false, null, null)
+            R("Verdance_Road_1", "Verdance.OldRoad", "The iris gap", "From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken.", null, "crab, skimmer, reedling ×3", new string[0], false, null, null)
                 .West("Saltmarrow.IrisFields", Ability.Wingbeat, null, true)
                 .East("Verdance_Road_2", Ability.None);
             R("Verdance_Road_2", "Verdance.OldRoad", "The milestones", "Flying-age milestones, every one giving the distance to a place that is gone.", "Milestone", "smudge, crab, pulp-wasp", new string[0], false, null, null)
@@ -301,10 +301,10 @@ namespace OWSBG.Core
                 .West("Halden_Observatory_1", Ability.None);
             R("Halden_Vault_1", "Halden.Vault", "The Vault", "Seven slots, reached from the Guildmaster's window; one empty (Pell counts them, plant 5.2).", null, "", new[] { "pell" }, false, null, null)
                 .Up("Halden_Bastion_3", Ability.None, "halden.vault_opened");
-            R("Windreach_Stones_1", "Windreach.NineStones", "The south road's end", "Out of Lowmarket's south gate onto the Steppe: grass to the horizon, sky most of the screen. The first standing stone, lichen on its north face.", "Waymark", "Warden (out of uniform: Hale's escort)", new string[0], false, null, null)
+            R("Windreach_Stones_1", "Windreach.NineStones", "The south road's end", "Out of Lowmarket's south gate onto the Steppe: grass to the horizon, sky most of the screen. The first standing stone, lichen on its north face.", "Waymark", "Warden (out of uniform: Hale's escort), tussock", new string[0], false, null, null)
                 .West("Halden_Lowmarket_3", Ability.None, "act2.started")
                 .East("Windreach_Stones_2", Ability.None);
-            R("Windreach_Stones_2", "Windreach.NineStones", "The long walk", "Stones two to eight in the line the clans have walked since before the Guild; the stones are a map (the Nine Stones). Ink-swirl updrafts, too weak to ride yet.", "Fifth", "smudge ×2, moths", new string[0], false, null, null)
+            R("Windreach_Stones_2", "Windreach.NineStones", "The long walk", "Stones two to eight in the line the clans have walked since before the Guild; the stones are a map (the Nine Stones). Ink-swirl updrafts, too weak to ride yet.", "Fifth", "smudge ×2, moths, tussock", new string[0], false, null, null)
                 .West("Windreach_Stones_1", Ability.None)
                 .East("Windreach_Stones_3", Ability.None);
             R("Windreach_Stones_3", "Windreach.NineStones", "The ninth stone", "Where the route turns north. Surveyor Hale at dusk, sighting the stones one by one (6.9, optional); the camp's wagons are just east.", null, "", new[] { "hale" }, false, "hale", null)
@@ -316,7 +316,7 @@ namespace OWSBG.Core
             R("Windreach_Camp_2", "Windreach.LongGrassCamp", "The fire ring", "The camp's first night (the Moving Camp). Idrenne tells where she was standing when she learned each thing. The camp moves on to the riverbed, then the high grass.", null, "", new[] { "idrenne" }, false, null, null)
                 .West("Windreach_Camp_1", Ability.None)
                 .East("Windreach_River_1", Ability.Wingbeat, null, true);
-            R("Windreach_River_1", "Windreach.DryRiver", "The far bank", "A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it).", null, "smudge", new string[0], false, null, null)
+            R("Windreach_River_1", "Windreach.DryRiver", "The far bank", "A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it).", null, "smudge, tussock", new string[0], false, null, null)
                 .West("Windreach_Camp_2", Ability.Wingbeat, null, true)
                 .East("Windreach_River_2", Ability.None);
             R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried.", "Bed", "smudge ×2, moths", new[] { "idrenne" }, false, null, null)

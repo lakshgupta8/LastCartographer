@@ -85,7 +85,7 @@ and below.
 <!-- table:Verdance -->
 | Room | Zone | What it is for | Vantage | Enemies | Stands here | Exits |
 |---|---|---|---|---|---|---|
-| **Road_1** The iris gap | OldRoad | From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken. | — | crab, skimmer | — | W → Saltmarrow.IrisFields [Wingbeat (soft)], E → Road_2 |
+| **Road_1** The iris gap | OldRoad | From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken. | — | crab, skimmer, reedling ×3 | — | W → Saltmarrow.IrisFields [Wingbeat (soft)], E → Road_2 |
 | **Road_2** The milestones | OldRoad | Flying-age milestones, every one giving the distance to a place that is gone. | Milestone | smudge, crab, pulp-wasp | — | W → Road_1, E → Road_3 |
 | **Road_3** The first trees | OldRoad | The trees begin: trunks eighty wingspans tall, light in shafts, near silence. | — | Cantor | — | W → Road_2, E → House_1 |
 | **House_1** The roots gate | QuietHouse | The Quiet House's door in the roots of one tree; the brothers bow and do not speak. | — | — | — | W → Road_3, E → House_2 |

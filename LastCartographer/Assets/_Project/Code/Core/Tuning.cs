@@ -154,6 +154,8 @@ namespace OWSBG.Core
             E("Mothcloud", 3);      // the quill passes through a cloud: Blot it, then strike
             E("Pulpwasp", 3);       // keeps the quill's reach away: Longstroke the line
             E("Sketch", 4);         // an outline past her lantern-radius; drawn inside it
+            E("Tussock", 3);        // shelled and under the grass: pogo it when it surfaces
+            E("Reedling", 2);       // one is fodder; the clutch is a swarm: Blot it
         }
     }
 }

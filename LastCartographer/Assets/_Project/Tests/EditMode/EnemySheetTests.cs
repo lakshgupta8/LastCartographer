@@ -34,6 +34,8 @@ namespace OWSBG.Tests
             ("Mothcloud", "M_Enemy_Mothcloud", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
             ("Pulpwasp", "M_Enemy_Pulpwasp", new[] { "idle", "move", "spit", "hurt", "death" }),
             ("Sketch", "M_Enemy_Sketch", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
+            ("Tussock", "M_Enemy_Tussock", new[] { "idle", "ridge", "heave", "breach", "burrow", "hurt", "death" }),
+            ("Reedling", "M_Enemy_Reedling", new[] { "idle", "move", "peck", "lunge", "hurt", "death" }),
             // and their regions' looks (2e)
             ("Mothcloud_Ash", "M_Enemy_Mothcloud_Ash", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
             ("Mothcloud_Dust", "M_Enemy_Mothcloud_Dust", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),

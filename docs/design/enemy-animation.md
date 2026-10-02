@@ -116,6 +116,21 @@ builds the Smudges: re-coloured, with a piece of the region on them. The setup p
 Eleven families in twenty-five looks. `EnemySheetTests.TheRostersLooksWearTheirRegions` holds each look to its
 family's cell and clips, its material to its own idle strip, and the rooms above to the look.
 
+## 2f. The steppe's burrower and the brood's chicks (CMB-09, fourth batch)
+
+Two more families with mechanics of their own, in `roster_enemies.py` with the second batch. The tussock is the
+steppe's shelled one (combat doc §7: "pogo the shelled ones", and the crab's answer carried to a region that had
+none); the reedlings are the Reedmother's brood (bible 6.2) as a roster family, so the optional boss, when it is
+built, has its swarm already. Placed by `Tussock(x)` (the first stone, the long walk, the dry river's far bank)
+and `Reedlings(x)` (a clutch of three a step apart: the Pale Iris Fields, the iris gap). Numbers in `tuning.md` §4.
+
+| Creature | Silhouette | Cell | Clips | What names them |
+|---|---|---|---|---|
+| Tussock | a domed shell under a fringe of dry grass, two eyes under the fringe, stub claws; the shell and the mound of turf it travels under are props a clip shows | 1.6 | idle, ridge, heave, breach, burrow, hurt, death | `Tussock.State`: Ridge → `ridge` (a moving mound, toward her at 2.5 u/s within 8 units, turning at edges; unhittable, harmless); Heave (the telegraph, 0.4 s under her: the turf lifts, sought by its progress; a Strike tell); Breach (24 fps: up through the grass at 7 u/s, 0.35 s); Sit → `idle` (1.2 s on the surface); Burrow (0.4 s, sought by its progress), then a 1.5 s wait under the turf. Health 3; shelled: only a down-strike lands, and only while it is surfaced |
+| Reedling | a ball of fluff on stick legs, a wide bill, wing-nubs, drawn in a lighter ink: half-drawn | 1.2 | idle, move, peck, lunge, hurt, death | `Reedling.State`: Scurry → idle/move (after her within 7 units at 3 u/s, a hop every half second, a step from its siblings); Peck (the telegraph, 0.25 s: it rears, sought by its progress; a Strike tell); Lunge (24 fps: 0.3 s at 7 u/s); Scatter → `move` (0.6 s away from her when it or any of its clutch, the reedlings within 6 units, is struck), then it regroups. Health 2, any hit; the clutch is the swarm, and the Blot's slow holds all three |
+
+Thirteen families in twenty-seven looks.
+
 ## 3. What changes when a creature wears sheets
 
 - **Death:** the placeholder shrank to nothing in a quarter second. A drawing dies as its ink leaves: the

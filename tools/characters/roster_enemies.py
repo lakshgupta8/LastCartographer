@@ -347,6 +347,240 @@ SKETCH_CLIPS = [
 ]
 
 
+# ================================================================ Tussock (1.0 x 0.9, pogo it: shelled, and under the grass)
+
+# The steppe's palette: dry grass, turf, a shell the colour of a stone.
+TUSSOCK_GRASS = (0.72, 0.64, 0.38)
+TUSSOCK_GRASS_DARK = (0.52, 0.46, 0.26)
+TUSSOCK_SHELL = (0.50, 0.46, 0.40)
+TUSSOCK_TURF = (0.46, 0.38, 0.26)
+
+
+class Tussock(Rig):
+    """A shelled burrower that passes for a clump of the long grass: a domed shell under a fringe of blades, two
+    eyes under the fringe, stub claws. Built sitting, feet at z = -0.45 (its collider's centre is the drawing's).
+    The shell and the mound are props: a clip shows the shell above ground, the mound of turf it travels under,
+    or both as it heaves up or sinks."""
+
+    def __init__(self):
+        super().__init__()
+        root = self.add("root")
+        shell = self.add("shell", root)
+        mound = self.add("mound", root, (0, 0, -0.40))
+        grass, dark, shell_m, turf, ink = mat("grass", TUSSOCK_GRASS), mat("grass_dark", TUSSOCK_GRASS_DARK), mat("shell", TUSSOCK_SHELL), mat("turf", TUSSOCK_TURF), mat("ink", INK)
+        sphere("dome", 0.34, shell_m, shell, loc=(0, 0, -0.12), scale=(1.2, 1.0, 0.75))
+        sphere("rim", 0.35, turf, shell, loc=(0, 0, -0.30), scale=(1.25, 1.05, 0.25))
+        blades = self.add("blades", shell, (0, 0, 0.08))
+        for k in range(12):
+            a = -150 + 25 * k
+            r = 0.26 if k % 2 else 0.18
+            x, y = r * math.cos(math.radians(a)), r * math.sin(math.radians(a)) * 0.6
+            b = self.add("blade%d" % k, blades, (x, y, 0.0))
+            cone("blade%d_m" % k, 0.022, 0.002, 0.34 + 0.06 * (k % 3), grass if k % 3 else dark, b, rot=(D(-y * 60), D(x * 70), 0))
+        eyes = self.add("eyes", shell, (0.28, 0, -0.16))
+        for side in (-1, 1):
+            sphere("eye%d" % side, 0.028, ink, eyes, loc=(0, side * 0.10, 0))
+        for side in (-1, 1):
+            cone("claw%d" % side, 0.03, 0.004, 0.16, ink, shell, loc=(0.30, side * 0.16, -0.38), rot=(0, D(80), 0))
+        sphere("mound_m", 0.40, turf, mound, scale=(1.5, 1.0, 0.32))
+        for k in range(5):
+            x = -0.3 + 0.15 * k
+            cone("mound_blade%d" % k, 0.018, 0.002, 0.22, grass, mound, loc=(x, 0, 0.06), rot=(0, D(-35 + 18 * k), 0))
+        soil = self.add("soil", root)
+        for k in range(6):
+            sphere("soil%d" % k, 0.03, turf, soil, loc=(-0.3 + 0.12 * k, 0, 0.1 + 0.1 * (k % 3)))
+        self.prop("mound", mound)
+        self.prop("shell", shell)
+        self.prop("soil", soil)
+        self.snapshot()
+
+    def reset(self):
+        """At rest it sits on the surface (the turnaround): the shell shown, the mound and the soil not."""
+        super().reset()
+        self.show("shell")
+
+    def sway(self, t, amp=8.0):
+        for k in range(12):
+            self.rot("blade%d" % k, y=amp * math.sin(2 * math.pi * t + k * 0.7))
+
+
+def tus_idle(s, i, n):
+    t = i / n
+    s.show("shell")
+    s.sway(t)
+    s.move("shell", z=0.008 * math.sin(2 * math.pi * t))
+    s.scale("eyes", 1, 1, 0.3 + 0.7 * abs(math.cos(math.pi * t)))
+
+
+def tus_ridge(s, i, n):
+    t = i / n
+    s.show("shell", False)
+    s.show("mound")
+    s.move("mound", x=0.04 * math.sin(2 * math.pi * t), z=0.03 * abs(math.sin(2 * math.pi * t)))
+    s.scale("mound", 1 + 0.08 * math.sin(2 * math.pi * t), 1, 1 + 0.15 * abs(math.sin(2 * math.pi * t)))
+
+
+def tus_heave(s, i, n):
+    k = (0.3, 0.65, 1.0)[i]
+    s.show("mound"); s.show("shell"); s.show("soil")
+    s.scale("mound", 1 + 0.3 * k, 1, 1 + 1.2 * k)
+    s.move("mound", z=0.08 * k)
+    s.move("shell", z=-0.55 + 0.35 * k)
+    s.scale("shell", 1, 1, 0.5 + 0.4 * k)
+    s.scale("soil", 0.3 + 0.7 * k, 1, 0.3 + 0.7 * k)
+    s.sway(k * 0.5, 25)
+
+
+def tus_breach(s, i, n):
+    s.show("shell"); s.show("soil")
+    s.move("shell", z=(0.22, 0.12)[i])
+    s.scale("shell", 0.95, 1, 1.15)
+    s.move("soil", z=(0.25, 0.45)[i])
+    s.scale("soil", (1.2, 1.6)[i], 1, (1.2, 1.6)[i])
+    s.sway(0.0, 35)
+    s.scale("eyes", 1.3, 1, 1.3)
+
+
+def tus_burrow(s, i, n):
+    k = (0.3, 0.65, 1.0)[i]
+    s.show("mound"); s.show("shell")
+    s.move("shell", z=-0.5 * k)
+    s.scale("shell", 1, 1, 1 - 0.55 * k)
+    s.scale("mound", 0.6 + 0.4 * k, 1, 0.4 + 0.6 * k)
+    s.sway(0.0, -30 * k)
+
+
+def tus_hurt(s, i, n):
+    k = (1.0, 0.5)[i]
+    s.show("shell")
+    s.rot("shell", y=-18 * k)
+    s.move("shell", z=0.06 * k)
+    s.sway(0.0, 40 * k)
+
+
+def tus_death(s, i, n):
+    t = min(1.0, i / 3)
+    s.show("shell")
+    s.rot("shell", y=150 * t)
+    s.move("shell", z=0.2 * math.sin(math.pi * t) - 0.1 * t)
+    s.sway(0.0, -45 * t)
+    s.scale("eyes", 1 - 0.8 * t, 1, 1 - 0.8 * t)
+
+
+TUSSOCK_CLIPS = [
+    ("idle", 12, 4, True, tus_idle),
+    ("ridge", 12, 4, True, tus_ridge),
+    ("heave", 12, 3, False, tus_heave),
+    ("breach", 24, 2, True, tus_breach),
+    ("burrow", 12, 3, False, tus_burrow),
+    ("hurt", 12, 2, False, tus_hurt),
+    ("death", 12, 4, False, tus_death),
+]
+
+
+# ================================================================ Reedling (0.6 x 0.7, Blot the clutch)
+
+REEDLING = (0.90, 0.86, 0.72)
+REEDLING_CAP = (0.62, 0.54, 0.40)
+REEDLING_BILL = (0.80, 0.62, 0.36)
+
+
+class Reedling(Rig):
+    """A half-drawn marsh chick of the Reedmother's brood (bible 6.2): a ball of fluff on stick legs, a wide bill, the
+    wing-nubs of a bird that will not fly. Built standing, feet at z = -0.35 (its collider's centre is the drawing's).
+    Drawn in a lighter ink: the hand that drew it did not finish."""
+
+    def __init__(self):
+        super().__init__()
+        root = self.add("root")
+        body = self.add("body", root, (0, 0, 0.02))
+        head = self.add("head", body, (0.12, 0, 0.20))
+        fluff, cap, bill, ink = mat("fluff", REEDLING), mat("cap", REEDLING_CAP), mat("bill", REEDLING_BILL), mat("ink", INK)
+        sphere("body_m", 0.21, fluff, body, scale=(1.15, 0.95, 1.0))
+        sphere("cap_m", 0.19, cap, body, loc=(-0.04, 0, 0.08), scale=(1.0, 0.9, 0.55))
+        sphere("head_m", 0.13, fluff, head)
+        sphere("crown", 0.11, cap, head, loc=(-0.02, 0, 0.06), scale=(1.0, 0.9, 0.6))
+        cone("bill_m", 0.05, 0.004, 0.14, bill, head, loc=(0.13, 0, -0.02), rot=(0, D(90), 0))
+        for side in (-1, 1):
+            sphere("eye%d" % side, 0.025, ink, head, loc=(0.07, side * 0.08, 0.03))
+            w = self.add("wing%d" % side, body, (-0.02, side * 0.18, 0.02))
+            sphere("wing%d_m" % side, 0.07, cap, w, scale=(1.3, 0.5, 0.8))
+            leg = self.add("leg%d" % side, body, (0.0, side * 0.07, -0.18))
+            cone("leg%d_m" % side, 0.016, 0.01, 0.2, ink, leg, loc=(0, 0, -0.1))
+            cone("foot%d" % side, 0.014, 0.002, 0.12, ink, leg, loc=(0.05, 0, -0.2), rot=(0, D(90), 0))
+        self.snapshot()
+
+    def legs(self, t, amp=35.0):
+        self.rot("leg-1", y=amp * math.sin(2 * math.pi * t))
+        self.rot("leg1", y=amp * math.sin(2 * math.pi * t + math.pi))
+
+
+def chick_idle(c, i, n):
+    t = i / n
+    b = math.sin(2 * math.pi * t)
+    c.move("body", z=0.01 * b)
+    c.rot("head", y=5 * b)
+    for side in (-1, 1):
+        c.rot("wing%d" % side, x=side * 6 * b)
+
+
+def chick_move(c, i, n):
+    t = i / n
+    c.legs(t)
+    c.rot("body", y=12)
+    c.move("body", z=0.05 * abs(math.sin(2 * math.pi * t)))
+    for side in (-1, 1):
+        c.rot("wing%d" % side, x=side * 30 * math.sin(2 * math.pi * t * 2))
+    c.rot("head", y=-6 * math.sin(4 * math.pi * t))
+
+
+def chick_peck(c, i, n):
+    k = (0.4, 0.8, 1.0)[i]
+    c.rot("body", y=-18 * k)
+    c.rot("head", y=-30 * k)
+    c.move("body", z=0.03 * k)
+    for side in (-1, 1):
+        c.rot("wing%d" % side, x=side * 45 * k)
+
+
+def chick_lunge(c, i, n):
+    c.rot("body", y=(30, 38)[i])
+    c.rot("head", y=(35, 42)[i])
+    c.move("body", x=0.08, z=(-0.04, -0.07)[i])
+    c.rot("leg-1", y=(45, -40)[i])
+    c.rot("leg1", y=(-40, 45)[i])
+    for side in (-1, 1):
+        c.rot("wing%d" % side, x=side * -20)
+
+
+def chick_hurt(c, i, n):
+    k = (1.0, 0.5)[i]
+    c.rot("body", y=-25 * k)
+    c.rot("head", y=20 * k)
+    c.scale("body", 0.9, 1, 1.1)
+    for side in (-1, 1):
+        c.rot("wing%d" % side, x=side * 60 * k)
+
+
+def chick_death(c, i, n):
+    t = min(1.0, i / 3)
+    c.rot("body", y=-80 * t)
+    c.move("body", z=-0.22 * t)
+    c.rot("leg-1", y=-50 * t)
+    c.rot("leg1", y=50 * t)
+    c.rot("head", y=-30 * t)
+
+
+REEDLING_CLIPS = [
+    ("idle", 12, 4, True, chick_idle),
+    ("move", 12, 6, True, chick_move),
+    ("peck", 12, 3, False, chick_peck),
+    ("lunge", 24, 2, True, chick_lunge),
+    ("hurt", 12, 2, False, chick_hurt),
+    ("death", 12, 4, False, chick_death),
+]
+
+
 # ================================================================ all of them
 
 # name, cell (units), builder, clips, line thickness at 2x, ink colour
@@ -354,6 +588,8 @@ CREATURES = [
     ("Mothcloud", 1.8, Mothcloud, CLOUD_CLIPS, 2.4, INK),
     ("Pulpwasp", 1.6, Pulpwasp, WASP_CLIPS, 2.8, INK),
     ("Sketch", 2.0, Sketch, SKETCH_CLIPS, 2.6, GREY_INK),
+    ("Tussock", 1.6, Tussock, TUSSOCK_CLIPS, 2.8, INK),
+    ("Reedling", 1.2, Reedling, REEDLING_CLIPS, 2.6, lerp(INK, PAPER, 0.35)),
 ]
 
 

@@ -1310,6 +1310,13 @@ namespace OWSBG.Setup
             public RoomRecipe Moths(float x, float y) { Enemies.Add((typeof(Mothcloud), "Moths_" + Enemies.Count, new Vector2(x, y), new Vector2(1.4f, 1.2f))); return this; }
             public RoomRecipe Wasp(float x, float y) { Enemies.Add((typeof(Pulpwasp), "Wasp_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.7f))); return this; }
             public RoomRecipe Sketch(float x) { Enemies.Add((typeof(Sketch), "Sketch_" + Enemies.Count, new Vector2(x, 0.6f), new Vector2(1.0f, 1.2f))); return this; }
+            public RoomRecipe Tussock(float x) { Enemies.Add((typeof(Tussock), "Tussock_" + Enemies.Count, new Vector2(x, 0.45f), new Vector2(1.0f, 0.9f))); return this; }
+            /// <summary>A clutch of three reedlings a step apart (the brood comes in threes).</summary>
+            public RoomRecipe Reedlings(float x)
+            {
+                for (int k = -1; k <= 1; k++) Enemies.Add((typeof(Reedling), "Reedling_" + Enemies.Count, new Vector2(x + k * 0.9f, 0.35f), new Vector2(0.6f, 0.7f)));
+                return this;
+            }
             public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
             public RoomRecipe Prop(string name, float x, float y = 0f, float z = 0.7f) { Props.Add((name, new Vector2(x, y), z)); return this; }
             public RoomRecipe Dress(string piece, float x, float y = 0f, float z = 0.7f) { Dressings.Add((piece, new Vector2(x, y), z)); return this; }
@@ -1435,7 +1442,7 @@ namespace OWSBG.Setup
                 // The Pale Iris Fields (world-map §3, saltmarrow-rooms.md §3): irises to the horizon, the Ferrymen's purse,
                 // the Reedmother's nest in the middle of them (the Brood, 6.2, is not built); the road east to the Verdance.
                 new RoomRecipe("Saltmarrow_IrisFields")
-                    .Floor(-20f, 20f).Plat(-14f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Vantage("Irises", -10f, 0f)
+                    .Floor(-20f, 20f).Plat(-14f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Vantage("Irises", -10f, 0f).Reedlings(3f)   // the brood's clutch among the irises
                     .Paper("Mid_Irises", 3f, 0f, new Color(0.70f, 0.70f, 0.58f), 6f)
                     .Paper("Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f)
                     .Paper("Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f)
@@ -1582,7 +1589,7 @@ namespace OWSBG.Setup
                 // ---- the Old Road: east into the trees ----
                 new RoomRecipe("Verdance_Road_1").Tiles("Ground_Moss", "Ground_Root").VerdancePapers()
                     .Paper("Fore_Ferns", -4f, -0.8f, ferns, 1.6f)
-                    .Floor(-20f, -9f).Floor(-3f, 20f).Plat(6f, 3f, 3f).Skimmer(-6f, 3f).Crab(10f).Seed(14f, 0.5f, 2)   // the iris gap: six units, a skimmer over it (soft: a pogo crosses)
+                    .Floor(-20f, -9f).Floor(-3f, 20f).Plat(6f, 3f, 3f).Skimmer(-6f, 3f).Crab(10f).Reedlings(16f).Seed(14f, 0.5f, 2)   // the iris gap: six units, a skimmer over it (soft: a pogo crosses)
                     .West(Scene("Saltmarrow_IrisFields")).East(V("Road_2")),
                 new RoomRecipe("Verdance_Road_2").Tiles("Ground_Moss", "Ground_Root").VerdancePapers()
                     .Floor(-20f, 20f).Plat(-6f, 3f, 3f).Plat(4f, 2.5f, 3f).Prop("Milestone", -14f).Prop("Milestone", 0f).Prop("Milestone", 12f).Vantage("Milestone", -11f, 0f)
@@ -1806,13 +1813,13 @@ namespace OWSBG.Setup
             {
                 // ---- the Nine Stones: out of Lowmarket's south gate onto the grass ----
                 new RoomRecipe("Windreach_Stones_1").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Stones")
-                    .Floor(-20f, 20f).Plat(6f, 2.5f, 3f).Prop("Stone", -8f).Vantage("Waymark", 12f, 0f).Warden(2f)   // the first stone, notched; Hale's escort out of uniform
+                    .Floor(-20f, 20f).Plat(6f, 2.5f, 3f).Prop("Stone", -8f).Vantage("Waymark", 12f, 0f).Warden(2f).Tussock(-14f)   // the first stone, notched; Hale's escort out of uniform; a tussock in the grass
                     .Grass(-19f, -10f, 14).Grass(-4f, 4f, 10).Grass(14f, 19f, 8)
                     .West(Scene("Halden_Lowmarket_3")).East(W("Stones_2")),
                 new RoomRecipe("Windreach_Stones_2").Tiles("Ground_Turf", "Ground_Turf").WindreachPapers("Mid_Stones")
                     .Floor(-20f, 20f).Plat(-10f, 2.5f, 3f).Plat(4f, 3f, 3f)
                     .Prop("Stone", -16f).Prop("Stone", -11f).Prop("Stone", -6f).Prop("Stone", -1f).Prop("Stone", 4f).Prop("Stone", 9f).Prop("Stone", 14f)   // stones two to eight
-                    .Vantage("Fifth", 6.5f, 0f).Smudge(-14f).Smudge(16f).Moths(-7f, 5f).Folk("Kestrel", 1.5f)   // a scout on the walk
+                    .Vantage("Fifth", 6.5f, 0f).Smudge(-14f).Smudge(16f).Moths(-7f, 5f).Tussock(11f).Folk("Kestrel", 1.5f)   // a scout on the walk
                     .Updraft(-8f, 0f, 6f, 3f).Updraft(11.5f, 0f, 6f, 3f)   // ink-swirls, too weak to ride yet
                     .Grass(-19f, 19f, 36)
                     .West(W("Stones_1")).East(W("Stones_3")),
@@ -1833,7 +1840,7 @@ namespace OWSBG.Setup
                     .West(W("Camp_1")).East(W("River_1")),
                 // ---- the Dry River: a Wingbeat wide at the camp's edge ----
                 new RoomRecipe("Windreach_River_1").Tiles("Ground_Cracked", "Ground_Cracked").WindreachPapers("Mid_River")
-                    .Floor(-20f, -14f).Floor(-5f, 20f).Smudge(-9.5f).Prop("Reeds", -17f).Prop("Hull", 10f).Plat(14f, 2.5f, 3f)   // the river with no water; a pogo off what hangs over it crosses it
+                    .Floor(-20f, -14f).Floor(-5f, 20f).Smudge(-9.5f).Prop("Reeds", -17f).Prop("Hull", 10f).Plat(14f, 2.5f, 3f).Tussock(4f)   // the river with no water; a pogo off what hangs over it crosses it
                     .Grass(-19f, -15f, 6)
                     .West(W("Camp_2")).East(W("River_2")),
                 new RoomRecipe("Windreach_River_2").Tiles("Ground_Cracked", "Ground_Cracked").WindreachPapers("Mid_River")
@@ -2090,6 +2097,8 @@ namespace OWSBG.Setup
                 else if (e.type == typeof(Mothcloud)) MakeEnemy<Mothcloud>(room, e.name, e.pos, e.size, MothLook(r.Id));
                 else if (e.type == typeof(Pulpwasp)) MakeEnemy<Pulpwasp>(room, e.name, e.pos, e.size, WaspLook(r.Id));
                 else if (e.type == typeof(Sketch)) MakeEnemy<Sketch>(room, e.name, e.pos, e.size, SketchLook(r.Id));
+                else if (e.type == typeof(Tussock)) MakeEnemy<Tussock>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Reedling)) MakeEnemy<Reedling>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);
                 else if (e.type == typeof(LostRemnant)) MakeEnemy<LostRemnant>(room, e.name, e.pos, e.size);
             }

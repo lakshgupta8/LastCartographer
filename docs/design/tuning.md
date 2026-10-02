@@ -103,6 +103,8 @@ the table knows. A test rig without a sheet keeps what it is given. `BossKits` n
 | Moth cloud | 3 | 1 | The quill passes through it: Blot it, then strike |
 | Pulp-wasp | 3 | 1 | Keeps the quill's reach away: Longstroke the line |
 | Sketch | 4 | 1 | An outline past her lantern-radius; drawn inside it, any hit |
+| Tussock | 3 | 1 | Shelled and under the grass: pogo it when it surfaces |
+| Reedling | 2 | 1 | One is fodder; the clutch of three is a swarm: Blot it |
 
 Before this pass every enemy in every scene was at the component's default: 3 health, 1 contact.
 

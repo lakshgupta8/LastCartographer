@@ -171,5 +171,94 @@ namespace OWSBG.Tests
             }
             finally { Enemy.Telegraphed -= OnTell; }
         }
+
+        [UnityTest]
+        public IEnumerator TheTussockTravelsUnderTheGrassHeavesBreachesAndOnlyAPogoOnTheSurfacedShellLands()
+        {
+            var tussock = Make<Tussock>(new Vector2(3f, 0.45f), new Vector2(1.0f, 0.9f));
+            AttackKind? told = null;
+            void OnTell(Enemy e, AttackKind k) { if (e == tussock) told = k; }
+            Enemy.Telegraphed += OnTell;
+            try
+            {
+                yield return Frames(3);
+                Assert.AreEqual(3, tussock.MaxHealth, "the table's tussock");
+                Assert.AreEqual(EnemyAnswer.Pogo, tussock.Answer);
+                Assert.AreEqual(Tussock.Move.Ridge, tussock.State, "under the turf, travelling");
+                Assert.Less(tussock.GetComponent<Rigidbody2D>().linearVelocity.x, 0f, "toward her");
+                Assert.AreEqual("ridge", tussock.Clip);
+                Assert.IsFalse(tussock.IsSurfaced);
+                Assert.IsFalse(tussock.TakeHit(Strike(Vector2.down)), "a ridge in the grass cannot be struck, even from above");
+                Assert.IsNull(told);
+
+                _ctrl.Teleport(new Vector2(3.4f, 0f));                   // she stands over it
+                yield return Frames(2);
+                Assert.AreEqual(Tussock.Move.Heave, tussock.State, "under her: the turf lifts");
+                Assert.AreEqual(AttackKind.Strike, told, "the tell on the heave's first frame");
+                Assert.AreEqual("heave", tussock.Clip);
+                yield return Frames(30);
+                Assert.AreEqual(Tussock.Move.Breach, tussock.State, "then it breaches");
+                Assert.IsTrue(tussock.IsSurfaced);
+                Assert.IsFalse(tussock.TakeHit(Strike(Vector2.right)), "shelled: a side strike glances off");
+                Assert.IsTrue(tussock.TakeHit(Strike(Vector2.down)), "the pogo lands on the shell");
+                Assert.AreEqual(2, tussock.Health);
+                yield return Frames(30);
+                Assert.AreEqual(Tussock.Move.Sit, tussock.State, "it sits a moment on the surface");
+                Assert.AreEqual("idle", tussock.Clip);
+                yield return Frames(100);
+                Assert.AreEqual(Tussock.Move.Ridge, tussock.State, "then burrows and travels again");
+                Assert.IsFalse(tussock.IsSurfaced);
+            }
+            finally { Enemy.Telegraphed -= OnTell; }
+        }
+
+        [UnityTest]
+        public IEnumerator TheReedlingsScurryInAClutchPeckAndScatterTogetherWhenOneIsStruck()
+        {
+            var clutch = new Reedling[3];
+            var extra = new System.Collections.Generic.List<GameObject>();
+            for (int k = 0; k < 3; k++)
+            {
+                var go = new GameObject("Reedling_" + k) { layer = Layer("Enemy") };
+                go.transform.position = new Vector2(2f + 0.9f * k, 0.35f);
+                go.AddComponent<BoxCollider2D>().size = new Vector2(0.6f, 0.7f);
+                go.AddComponent<Rigidbody2D>();
+                clutch[k] = go.AddComponent<Reedling>();
+                if (k == 0) _enemy = go; else extra.Add(go);
+            }
+            AttackKind? told = null; Enemy who = null;
+            void OnTell(Enemy e, AttackKind k) { who = e; told = k; }
+            Enemy.Telegraphed += OnTell;
+            try
+            {
+                yield return Frames(3);
+                Assert.AreEqual(2, clutch[0].MaxHealth, "the table's chick: fodder alone");
+                Assert.AreEqual(EnemyAnswer.Blot, clutch[0].Answer, "the clutch is a swarm");
+                Assert.AreEqual(2, System.Linq.Enumerable.Count(clutch[0].Clutch), "its two siblings are its clutch");
+                foreach (var r in clutch) Assert.AreEqual(Reedling.Move.Scurry, r.State);
+                Assert.Less(clutch[0].GetComponent<Rigidbody2D>().linearVelocity.x, 0f, "the nearest scurries toward her");
+
+                _ctrl.Teleport(new Vector2(1.2f, 0f));
+                for (int i = 0; i < 40 && clutch[0].State != Reedling.Move.Peck; i++) yield return new WaitForFixedUpdate();
+                Assert.AreEqual(Reedling.Move.Peck, clutch[0].State, "within its reach it rears");
+                Assert.AreSame(clutch[0], who); Assert.AreEqual(AttackKind.Strike, told, "the tell on the peck's first frame");
+                Assert.AreEqual("peck", clutch[0].Clip);
+
+                Assert.IsTrue(clutch[2].TakeHit(Strike(Vector2.right)), "any strike lands on a chick");
+                Assert.AreEqual(1, clutch[2].Health);
+                foreach (var r in clutch) Assert.AreEqual(Reedling.Move.Scatter, r.State, r.name + " scatters with the clutch");
+                yield return Frames(8);
+                Assert.Greater(clutch[1].GetComponent<Rigidbody2D>().linearVelocity.x, 0f, "away from her");
+                yield return Frames(45);
+                foreach (var r in clutch) Assert.AreEqual(Reedling.Move.Scurry, r.State, r.name + " regroups");
+                foreach (var r in clutch) r.ApplySlow(2f);                 // the Blot's slow holds all three
+                foreach (var r in clutch) Assert.IsTrue(r.IsSlowed);
+            }
+            finally
+            {
+                Enemy.Telegraphed -= OnTell;
+                foreach (var go in extra) Object.Destroy(go);
+            }
+        }
     }
 }

@@ -161,6 +161,17 @@ sixty seconds in all, naming each step's seconds and the graphics device, so the
 time went rather than only that it ran out. A `Null` graphics device (`-nographics`) steps aside at once. Here the
 whole test takes two seconds.
 
+The twelfth run (2026-10-02): three play-mode tests that had never run on the runner, all measuring hardware it
+lacks. `LookTests` measures the foreground blur against a sharp render of the Quay's reeds: here a pen edge crosses
+in 0.4 px and the blur spreads it to 4; the runner's software rasteriser draws the sharp edge 2.6 px wide and the
+blurred one 3.3, so the measure has nothing to stand on. The test now steps aside when the sharp render's edge is
+two pixels or wider, naming both widths and the device; the paper-grain check, which does not depend on it, runs
+first. Two of `MusicDriverTests` (AUD-04) measure the stems' timing on the DSP clock: with no audio device the
+runner mixes to nothing and its clock ran ahead of real time (the boss test's bar-line wait ended at once, the test
+took 1.4 s against 4.2 here; stems scheduled on one sample read 3072 samples apart; the resolution's seconds passed
+in a frame). The fixture now measures the DSP clock against the wall clock once, half a second, and those two tests
+step aside when it is off by more than a quarter, naming the rate. The other five, which check levels and buses, still run.
+
 The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
 `UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,
 which signs in with the account, so the build job now uses v6. It also passes `-buildOutput` to the folder the
@@ -181,7 +192,8 @@ one error), and `BuildPipelineTests` holds it to the CLI's two patterns. Both te
 - **Two warnings to tidy:** a duplicate `System.Runtime.CompilerServices.Unsafe.dll` (Collections' test copy and
   Yarn Spinner's analyser copy; Unity picks the newer on both machines), and GitHub's notice that the v4 actions
   target Node 20.
-- **Play mode takes about twenty-five minutes on CI**, against nine here; the UI screenshots don't run there.
+- **Play mode takes about twenty-five minutes on CI**, against nine here; the UI screenshots, the blur's measure
+  and the music's two timing tests step aside there (no GPU, no audio device), with their reasons in the report.
 - **No Steamworks SDK in the game** (overlay, achievements, cloud saves) and no store assets; this row only
   packages and uploads. An app id and depot id come with the Steamworks partner account.
 - **Not yet in the pipeline:** code signing, a Mac or Linux build, and IL2CPP.

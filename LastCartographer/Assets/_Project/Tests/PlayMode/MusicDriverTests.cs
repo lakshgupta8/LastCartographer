@@ -77,6 +77,30 @@ namespace OWSBG.Tests
             GameState.NewGame();
         }
 
+        /// <summary>
+        /// The audio clock against the wall clock, measured once per run. A machine without an audio device (CI's
+        /// runners) mixes to nothing and its DSP clock can run ahead of real time: there the bar-line waits end at
+        /// once, stems started on one sample sit buffers apart when read, and a resolution's seconds pass in a frame.
+        /// The tests that measure those step aside there, with the rate.
+        /// </summary>
+        static float? s_clockRate;
+
+        [UnitySetUp]
+        public IEnumerator MeasureTheClock()
+        {
+            if (s_clockRate != null) yield break;
+            double d0 = AudioSettings.dspTime; float r0 = Time.realtimeSinceStartup;
+            yield return new WaitForSecondsRealtime(0.5f);
+            s_clockRate = (float)((AudioSettings.dspTime - d0) / (Time.realtimeSinceStartup - r0));
+            Debug.Log("[OWSBG] the audio clock runs at " + s_clockRate.Value.ToString("0.00") + "x real time");
+        }
+
+        static void NeedsARealtimeClock()
+        {
+            if (s_clockRate < 0.8f || s_clockRate > 1.25f)
+                Assert.Ignore("the audio clock runs at " + s_clockRate.Value.ToString("0.00") + "x real time here (no audio device?); the music's timing wants one");
+        }
+
         IEnumerator Until(System.Func<bool> done, float seconds)
         {
             float t = 0f;
@@ -97,6 +121,7 @@ namespace OWSBG.Tests
         [UnityTest]
         public IEnumerator TheRegionThemePlaysAsStemsInStep()
         {
+            NeedsARealtimeClock();
             Assert.IsNull(Driver.Decide(), "no room, no theme");
             yield return PlayTheCoast();
             var salt = Score.ThemeOf(Region.Saltmarrow);
@@ -134,6 +159,7 @@ namespace OWSBG.Tests
         [UnityTest]
         public IEnumerator ABossThemeArrivesWithTheFirstTelegraphAddsAStemAPhaseAndResolves()
         {
+            NeedsARealtimeClock();
             yield return PlayTheCoast();
             _boss = new GameObject("LampKeeper") { layer = Layer("Enemy") };
             _boss.transform.position = new Vector3(6f, 1f, 0f);

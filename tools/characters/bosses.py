@@ -1044,7 +1044,163 @@ HALFCATHEDRALBELLS_CLIPS = [
 # ================================================================ all of them
 
 # name, cell, builder, clips, line thickness at 2x, ink colour
+# ================================================================ Reedmother's Brood (cell 5.0; the nest in the burning beds)
+
+REED = (0.74, 0.66, 0.40)
+REED_DARK = (0.50, 0.42, 0.24)
+NEST_INNER = (0.30, 0.24, 0.16)
+EGG = (0.92, 0.90, 0.80)
+CHICK = (0.90, 0.86, 0.72)
+SMOKE = (0.55, 0.52, 0.50)
+
+
+class ReedmotherNest(Rig):
+    """A giant reed-nest: a bowl of woven reed with a fringe of reeds leaning out round its rim, a dark mouth at the top
+    that opens to call the brood (eggs and two chicks' heads inside it: a prop), and the Guild's fire on its east
+    side (a prop). Built on the floor, its collider's centre at z = 0, the floor at z = -1.3."""
+
+    def __init__(self):
+        super().__init__()
+        rng = random.Random(62)
+        root = self.add("root")
+        nest = self.add("nest", root, (0, 0, -0.2))
+        reed, dark, inner, egg_m, chick, ink, ember, smoke = (mat("reed", REED), mat("reed_dark", REED_DARK), mat("nest_inner", NEST_INNER), mat("egg", EGG),
+                                                             mat("chick", CHICK), mat("ink", INK), mat("ember", EMBER), mat("smoke", SMOKE))
+        sphere("bowl", 1.5, reed, nest, loc=(0, 0, -0.35), scale=(1.3, 0.9, 0.55))
+        sphere("bowl_dark", 1.45, dark, nest, loc=(0, 0, -0.55), scale=(1.32, 0.92, 0.42))
+        sphere("rim", 1.3, dark, nest, loc=(0, 0, 0.3), scale=(1.2, 0.8, 0.12))
+        for side, name in ((-1, "reeds_w"), (1, "reeds_e")):
+            group = self.add(name, nest, (side * 1.2, 0, 0.3))
+            for k in range(9):
+                y = rng.uniform(-0.9, 0.9)
+                r = self.add("%s_%d" % (name, k), group, (rng.uniform(-0.25, 0.25), y, 0.0))
+                cone("%s_%d_m" % (name, k), 0.045, 0.004, rng.uniform(1.2, 1.9), reed if k % 3 else dark, r, loc=(0, 0, 0.7),
+                     rot=(D(-y * 25), D(side * rng.uniform(25, 45)), 0))
+        mouth = self.add("mouth", nest, (0, 0, 0.45))
+        sphere("mouth_m", 0.7, inner, mouth, scale=(1.0, 0.7, 0.35))
+        for k in range(3):
+            sphere("egg%d" % k, 0.2, egg_m, mouth, loc=(-0.35 + 0.35 * k, 0.05 * (k - 1), 0.1), scale=(1.0, 0.9, 1.1))
+        chicks = self.add("chicks", mouth, (0, 0, 0.3))
+        for k, x in enumerate((-0.45, 0.4)):
+            head = self.add("chick%d" % k, chicks, (x, 0, 0))
+            sphere("chick%d_m" % k, 0.16, chick, head)
+            cone("chick%d_bill" % k, 0.06, 0.004, 0.16, dark, head, loc=(0.15, 0, -0.02), rot=(0, D(90), 0))
+            sphere("chick%d_eye" % k, 0.03, ink, head, loc=(0.08, -0.1, 0.04))
+        fire = self.add("fire", nest, (1.9, 0, -0.3))
+        for k in range(5):
+            cone("flame%d" % k, 0.18, 0.01, rng.uniform(0.6, 1.1), ember, fire, loc=(-0.3 + 0.15 * k, 0.02 * (k - 2), 0.25), rot=(0, D(rng.uniform(-12, 12)), 0))
+        for k in range(3):
+            sphere("smoke%d" % k, 0.22 + 0.06 * k, smoke, fire, loc=(0.1 * k, 0, 1.1 + 0.4 * k))
+        self.prop("mouth", mouth)
+        self.prop("chicks", chicks)
+        self.prop("fire", fire)
+        self.snapshot()
+
+    def reeds(self, w=0.0, e=0.0, droop=0.0):
+        """The west and east fringes leaned out by w and e degrees (negative draws them in), and drooping by droop."""
+        self.rot("reeds_w", y=-w + droop * 0.0)
+        self.rot("reeds_e", y=e)
+        for name in ("reeds_w", "reeds_e"):
+            for k in range(9):
+                self.rot("%s_%d" % (name, k), x=droop * (1 if k % 2 else -1) * 0.3, y=droop * (0.6 if name == "reeds_e" else -0.6))
+
+
+def nest_idle(s, i, n):
+    t = i / n
+    b = math.sin(2 * math.pi * t)
+    s.reeds(w=4 * b, e=-4 * b)
+    s.move("nest", z=0.01 * b)
+
+
+def nest_telegraph(s, i, n):
+    """The reeds draw in before the thresh."""
+    k = smoothstep((i + 1) / n)
+    s.reeds(w=-45 * k, e=-45 * k)
+    s.scale("nest", 1 - 0.08 * k, 1, 1 + 0.1 * k)
+
+
+def nest_thresh(s, i, n):
+    """The reeds lash out flat along the floor both sides."""
+    k = (0.7, 1.0)[i]
+    s.reeds(w=70 * k, e=70 * k)
+    s.scale("reeds_w", 1.6 * k + (1 - k), 1, 1)
+    s.scale("reeds_e", 1.6 * k + (1 - k), 1, 1)
+    s.scale("nest", 1 + 0.06 * k, 1, 1 - 0.12 * k)
+
+
+def nest_call(s, i, n):
+    """The nest opens: the mouth, the eggs, two heads."""
+    k = smoothstep((i + 1) / n)
+    s.show("mouth")
+    s.scale("mouth", 0.3 + 0.7 * k, 1, 0.3 + 0.7 * k)
+    if i == n - 1:
+        s.show("chicks")
+    s.reeds(w=15 * k, e=15 * k)
+    s.move("nest", z=0.08 * k)
+
+
+def nest_open(s, i, n):
+    t = i / n
+    b = math.sin(2 * math.pi * t)
+    s.show("mouth"); s.show("chicks")
+    s.reeds(w=15 + 3 * b, e=15 - 3 * b)
+    s.move("nest", z=0.08)
+    s.move("chicks", z=0.05 * abs(b))
+    s.rot("chick0", y=10 * b)
+    s.rot("chick1", y=-10 * b)
+
+
+def nest_burn(s, i, n):
+    t = i / n
+    b = math.sin(2 * math.pi * t)
+    s.show("fire")
+    s.reeds(w=4 * b, e=-6 * b)
+    s.scale("fire", 1 + 0.12 * b, 1, 1 + 0.2 * abs(b))
+    s.move("fire", z=0.06 * abs(b), x=0.04 * b)
+
+
+def nest_hurt(s, i, n):
+    k = (1.0, 0.5)[i]
+    s.show("mouth")
+    s.scale("mouth", 1, 1, 1 - 0.5 * k)
+    s.reeds(w=40 * k, e=40 * k)
+    s.scale("nest", 1 + 0.05 * k, 1, 1 - 0.08 * k)
+
+
+def nest_death(s, i, n):
+    """It burns: the fire takes the nest, the reeds go, the bowl sinks."""
+    t = min(1.0, i / 3)
+    s.show("fire")
+    s.move("fire", x=-1.6 * t, z=0.3 * t)
+    s.scale("fire", 1 + 0.8 * t, 1, 1 + 0.6 * t)
+    s.reeds(droop=60 * t)
+    s.move("nest", z=-0.5 * t)
+    s.scale("nest", 1 + 0.1 * t, 1, 1 - 0.5 * t)
+
+
+def nest_calm(s, i, n):
+    """The fire out: the reeds settle softly, the mouth closed, the nest lower and still."""
+    t = min(1.0, i / 3)
+    s.reeds(droop=22 * t)
+    s.move("nest", z=-0.12 * t)
+    s.scale("nest", 1 + 0.04 * t, 1, 1 - 0.08 * t)
+
+
+BROOD_CLIPS = [
+    ("idle", 12, 4, True, nest_idle),
+    ("telegraph", 12, 3, False, nest_telegraph),
+    ("thresh", 24, 2, True, nest_thresh),
+    ("call", 12, 3, False, nest_call),
+    ("open", 12, 4, True, nest_open),
+    ("burn", 12, 4, True, nest_burn),
+    ("hurt", 12, 2, False, nest_hurt),
+    ("death", 12, 4, False, nest_death),
+    ("calm", 12, 4, False, nest_calm),
+]
+
+
 BOSSES = [
+    ("ReedmotherBrood", 5.0, ReedmotherNest, BROOD_CLIPS, 3.0, INK),
     ("Collapse", 5.0, Collapse, COLLAPSE_CLIPS, 3.2, INK),
     ("Gatekeeper", 5.0, Gatekeeper, GATEKEEPER_CLIPS, 3.4, INK),
     ("Hale", 2.8, Hale, HALE_CLIPS, 3.0, INK),

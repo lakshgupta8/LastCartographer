@@ -30,6 +30,7 @@ namespace OWSBG.Tests
             ("Archivist", new[] { "idle", "telegraph", "draw", "swoop", "recover", "hold", "hurt", "death" }),
             ("CompleteSurvey", new[] { "idle", "hurt", "death" }),
             ("HalfCathedralBells", new[] { "idle", "hurt", "death" }),
+            ("ReedmotherBrood", new[] { "idle", "telegraph", "thresh", "call", "open", "burn", "hurt", "death", "calm" }),
         };
 
         static readonly (string name, string[] clips)[] Parts =

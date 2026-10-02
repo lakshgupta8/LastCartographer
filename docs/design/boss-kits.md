@@ -35,6 +35,24 @@ game's rooms use the same recipe.
   `IsDownStrike` means the pogo and `IsUpStrike` means the belly. The kits use these three tests to ask for the
   sheet's answers.
 
+## 6.2 Reedmother's Brood, the Pale Iris Fields
+
+The coast's optional boss, tier I, in the fields' own room (`Saltmarrow_IrisFields`, between the beds, doors at
+−5 and 11) rather than a runtime arena room. The nest is closed to the quill. On its call (a Shape, 20 frames: the
+mouth opens) a clutch of three reedlings hops out of it (CMB-09, enemy-animation.md §2f: copies of a reedling the
+room keeps dormant, drawn from its sheets) and the nest stays open 1.6 s (1.3, 1.0 by phase): that window is the
+only time it can be struck. Never more than six chicks at once. Its reeds thresh the floor either side (a Strike,
+18 frames, 3.5 units each way, 1.1 high: a jump clears them).
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Brood call, thresh | Jump the reeds; strike the open nest while the clutch is out, or Blot the clutch first |
+| 2 | Brood call, thresh, thresh | The same, faster |
+| 3 | Thresh, brood call, thresh; **the fire** (bible 6.2: the Guild's agents set the field alight) creeps in from the east edge toward the nest, a step every 4 s, four steps; standing in it costs a mask | **The choice.** Stamp the fire out (three down-strikes on it) and the Brood calms (`calm`), the beds stand and the Ferrymen's prices hold. Strike the nest down, or let the fire reach it, and the nest burns (`death`): `saltmarrow.iris_burned` is set and the Ferrymen's prices rise by half (`Economy.IrisBurned`) |
+
+Either way the fight ends in a win: the arena's flag is set, and the Tether-hook (Economy's stock) is hers. The
+sheet's lines run "Ours. Ours. Ours." to "...ours?" over the phases.
+
 ## 6.4 The Collapse, at the bottom of Hollowvein
 
 Four chorus lamps over four sections of the floor. The beat runs every 0.8 s and never stops for hurtstun. Each
@@ -259,6 +277,12 @@ region's rooms are built, its arena moves into them and that generator entry ret
   its roots, and then takes only up-strikes; a pass crosses the gate; a retry restores it.
 - **Every kit:** each one defeated sets its flag, gives its sheet's scraps and opens its doors.
 
+`ReedmotherBroodTests` (PlayMode, 5 tests): the nest closed turns the quill and opens to call a clutch of three
+(tuned reedlings), open takes the strike, closes again, and never passes the brood's limit; the reeds thresh the
+floor either side within the tier's read; stamping the fire out calms the Brood, the beds stand, the prices hold and
+the hook is hers; the fire reaching the nest burns the field and the Ferrymen's board goes up by half; killing the
+open nest burns the field too, through all three lines.
+
 `LateBossKitFightTests` (PlayMode, 10 tests) do the same for the late three:
 
 - **Oriel:** she mirrors the Warden's Charter, reversed (overhead, shove, sweep) with Blot; every step shows its
@@ -302,6 +326,9 @@ to every arena room in the real game and walk in to start each fight.
 
 ## Open
 
+- **The calmed nest fades like a death.** The Brood's calm ending plays `calm`, but the base death fade still takes
+  the drawing's ink and hides it; the bible has the nest stand. A boss death that leaves the body belongs with the
+  framework. Its intro is the recipe arena's plain one, with no Timeline, like the other recipe bosses.
 - **Hale can't win the survey yet.** Nothing happens if he sights all nine; the bible's stake (nine stones and the
   Guild can anchor Windreach) belongs to the fight's outcome with the region's room, where it could write
   `windreach.hale.finished`.

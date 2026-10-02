@@ -39,7 +39,7 @@ Shore ── Quay (A) ── Stilts ── Boardwalk ── Merrow's End (B) ─
 | **Roots_3** | Reedmother's Roots | Among the roots: a smudge in the dark, a skimmer in the light; the gap drops back down. | — | smudge, skimmer | down → Roots_2, E → Roots_4 |
 | **Roots_4** | Reedmother's Roots | The crown: three platforms up to the highest vantage on the coast; the view is the point. | Crown | crab, skimmer | W → Roots_3 |
 | **BoneBridge** (ENV-03) | Bone Bridge | The whale faded to its bones over the channel (`Paper_Mid_Bones`); a six-unit Wingbeat gap; the whale sings when its bones are drawn. The chapel opens east onto it under the altar's wall. | Whale | crab, smudge | W → Chapel, E → Emberdown Stair_1 |
-| **IrisFields** (ENV-04) | Pale Iris Fields | Irises to the horizon (`Paper_Mid_Irises`), the Reedmother's nest in the middle of them (the Brood, 6.2, unbuilt); seeds lying about; the road east to the Verdance's iris gap. Reedmother's crown opens east onto it. | Irises | crab, skimmer, reedling ×3 | W → Roots_4, E → Verdance Road_1 |
+| **IrisFields** (ENV-04) | Pale Iris Fields | Irises to the horizon (`Paper_Mid_Irises`), the Reedmother's nest in the middle of them (the Brood, 6.2, its arena between the beds); seeds lying about; the road east to the Verdance's iris gap. Reedmother's crown opens east onto it. | Irises | crab, skimmer, reedling ×3 | W → Roots_4, E → Verdance Road_1 |
 | **Greyfold_Edge** (hand-built) | Half-Cathedral | The prologue. | HalfCathedral | 3 smudges | the white → A "Shore" |
 
 Vantages in the slice: 8 (Tideline, Reedmother, Tetherpost, Bole, Crown, FirstLamp, SecondLamp, Lamp).

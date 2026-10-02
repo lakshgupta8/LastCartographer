@@ -64,7 +64,7 @@ tier.
 | Boss | Tier | Access | Health (was) | Why that access |
 |---|---|---|---|---|
 | The Lamp-Keeper | I | Windowed | **24** (24) | Open only while grounded after a dive |
-| Reedmother's Brood | I | Windowed | 24 (—) | Not built: the nest opens between broods |
+| Reedmother's Brood | I | Windowed | **24** (24) | Open only while it calls a clutch; stamping the fire out ends it without a blow |
 | Halvard (chapel) | I | Open | **30** (30) | |
 | The Collapse | II | Windowed | **27** (28) | Drawn for 60% of a beat, in one section |
 | Cinder Warden Brann | II | Open | **34** (36) | |

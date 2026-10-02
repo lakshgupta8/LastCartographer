@@ -1440,9 +1440,10 @@ namespace OWSBG.Setup
                     .Crab(-6f).Skimmer(5f, 8f).Seed(12f, 9.8f, 5)
                     .West(Scene("Saltmarrow_Roots_3")).East(Scene("Saltmarrow_IrisFields")),
                 // The Pale Iris Fields (world-map §3, saltmarrow-rooms.md §3): irises to the horizon, the Ferrymen's purse,
-                // the Reedmother's nest in the middle of them (the Brood, 6.2, is not built); the road east to the Verdance.
+                // the Reedmother's nest in the middle of them (the Brood, 6.2, its arena between the beds); the road east to the Verdance.
                 new RoomRecipe("Saltmarrow_IrisFields")
-                    .Floor(-20f, 20f).Plat(-14f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Vantage("Irises", -10f, 0f).Reedlings(3f)   // the brood's clutch among the irises
+                    .Floor(-20f, 20f).Plat(-14f, 2.5f, 3f).Plat(12f, 2.5f, 3f).Vantage("Irises", -10f, 0f).Reedlings(-16f)   // a stray clutch among the western irises
+                    .Arena(typeof(ReedmotherBrood), "reedmother_brood", 3f, new Vector2(3f, 2.6f), -5f, 11f)
                     .Paper("Mid_Irises", 3f, 0f, new Color(0.70f, 0.70f, 0.58f), 6f)
                     .Paper("Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f)
                     .Paper("Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f)
@@ -2478,6 +2479,18 @@ namespace OWSBG.Setup
                 boss = b;
             }
             else if (type == typeof(FallenStar)) { var b = MakeBoss<FallenStar>(room, "FallenStar", pos, size); ((FallenStar)b).floorY = 0f; ((FallenStar)b).arenaMinX = doorW + 1.7f; ((FallenStar)b).arenaMaxX = doorE - 1.7f; boss = b; }
+            else if (type == typeof(ReedmotherBrood))
+            {
+                // The nest in the burning beds (6.2): its clutches are copies of a reedling kept dormant in the room, drawn from its sheets.
+                var b = MakeBoss<ReedmotherBrood>(room, "ReedmotherBrood", pos, size);
+                var n = (ReedmotherBrood)b;
+                n.floorY = 0f; n.arenaMinX = doorW + 0.5f; n.arenaMaxX = doorE - 0.5f;
+                MakeEnemy<Reedling>(room, "Reedling_Template", new Vector2(pos.x, 0.35f), new Vector2(0.6f, 0.7f));
+                var template = room.transform.Find("Reedling_Template").gameObject;
+                template.SetActive(false);
+                n.chickTemplate = template;
+                boss = b;
+            }
             else if (type == typeof(HalfCathedralBells))
             {
                 // The bells hang over the nave's middle; their ropes are where the kit hangs them, and the vantage's steadying is by the west door.

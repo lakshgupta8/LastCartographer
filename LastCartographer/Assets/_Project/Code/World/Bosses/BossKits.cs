@@ -32,7 +32,7 @@ namespace OWSBG.World
 
         /// <summary>The bosses with a kit here, in the plan's order (CMB-13 to CMB-16).</summary>
         public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star", "voss",
-                                                "bells", "corras_drawing", "archivist", "complete_survey" };
+                                                "bells", "corras_drawing", "archivist", "complete_survey", "reedmother_brood" };
         public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0;
 
         public static BossKit Build(string bossId, Transform parent, Vector2 origin)
@@ -156,6 +156,15 @@ namespace OWSBG.World
                     kit.Boss = st;
                     break;
                 }
+                case "reedmother_brood":
+                {
+                    // The nest in the beds; its clutches are copies of a dormant reedling.
+                    var n = MakeBoss<ReedmotherBrood>(parent, "ReedmotherBrood", new Vector2(mid, floor + 1.3f), new Vector2(3f, 2.6f));
+                    n.floorY = floor; n.arenaMinX = minX; n.arenaMaxX = maxX;
+                    n.chickTemplate = ReedmotherBrood.MakeChickTemplate(parent, new Vector2(mid, floor + 0.35f));
+                    kit.Boss = n;
+                    break;
+                }
             }
 
             kit.Boss.ApplySheet(sheet);
@@ -185,6 +194,7 @@ namespace OWSBG.World
             "corras_drawing" => new Color(0.97f, 0.96f, 0.94f),
             "archivist" => new Color(0.36f, 0.34f, 0.38f),
             "complete_survey" => new Color(0.92f, 0.90f, 0.84f),
+            "reedmother_brood" => new Color(0.70f, 0.70f, 0.58f),
             _ => new Color(0.44f, 0.48f, 0.38f),
         };
 

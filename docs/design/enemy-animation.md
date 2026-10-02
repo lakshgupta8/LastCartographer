@@ -79,6 +79,24 @@ with her cowl inside it) and two more Cantors (a crow with a cracked bell, and t
 setup picks a look by region (`SmudgeLook`, `CantorLook`). `bosses.py` and `boss_parts.py` draw the nine late
 bosses and the pieces their fights make. All of it is in `docs/design/boss-animation.md`.
 
+## 2d. The roster's later families (CMB-09, second batch)
+
+`tools/characters/roster_enemies.py`, on the same plumbing: three families for the answers the combat rules name
+and no creature yet had (combat doc §7: "Blot the swarms, Longstroke the lined-up ones"; the Greyfold's rule that
+the picture exists only inside her lantern-radius), one each for the Verdance, Halden and the Greyfold. Placed by
+the room recipes (`Moths(x, y)`, `Wasp(x, y)`, `Sketch(x)`) where the room plans now list them: four clouds in the
+root chapel and the Lantern Grove, three wasps over the mills, three Sketches on the Road That Stops and the white
+shore. Numbers in `tuning.md` §4.
+
+| Creature | Silhouette | Cell | Clips | What names them |
+|---|---|---|---|---|
+| Lantern-moth cloud | a ring of five small rounds, cream with an amber eye-spot on each wing | 1.8 | idle, move, flare, dart, gather, hurt, death | `Mothcloud.State`: Drift → idle/move (toward her lantern within 7 units, else home); Flare (the telegraph, 0.3 s: the wings thrown wide, the eye-spots shown, sought by its progress; a Strike tell); Dart (24 fps: 0.4 s at 7 u/s through where she stood); `gather` while a Blot's slow holds it (the cloud pulled tight). Health 3; the quill passes through a cloud (`AcceptsHit` only while gathered): the answer is Blot, then the strikes |
+| Pulp-wasp | a round in paper-buff with ink-brown bands, hanging legs, the pulp sac under the jaw | 1.6 | idle, move, spit, hurt, death | `Pulpwasp.State`: Hover → idle/move (holds a stand-off of 4.5 units along the floor, backing from her and closing as she goes, 1.6 units over her); Spit (the telegraph, 0.4 s: the sac swells, sought by its progress; a Strike tell) then an `EnemyProjectile` pellet at 9 u/s toward her, every 2.4 s. Health 3; the quill's reach is short of the stand-off and the Longstroke's is not: a line of them is one stroke |
+| Sketch | a townsfolk oval with the fill left out: a long neck carried low, legs too long, a crest of loose strokes; the line in grey ink | 2.0 | idle, move, fill, lunge, hurt, death | `Sketch.State`: Pace → idle/move (toward her, turning at edges and walls, with gravity); Fill (the telegraph, 0.3 s: the neck comes up, the bird the hand meant, sought by its progress; a Strike tell); Lunge (24 fps: 0.35 s at 9 u/s along the ground, stopping at an edge). Outside her lantern-radius (`ClarityMeter.Radius`, else 3.5) it is an outline: `_Ink` falls to 0.18, it cannot be struck and cannot hurt, and it does not lunge. Health 4; inside the radius, any hit |
+
+The cloud's `gather` and the Sketch's outline are states the shader shows (`_Ink`), as the Smudge's flicker is;
+the drawings are the same frames. The pellet is still the projectile's plain ink round (as Hale's flick is).
+
 ## 3. What changes when a creature wears sheets
 
 - **Death:** the placeholder shrank to nothing in a quarter second. A drawing dies as its ink leaves: the

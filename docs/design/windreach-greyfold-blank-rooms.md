@@ -78,10 +78,10 @@ generated from what she left unanchored (PRG-20) and drifts past the Hollow's fa
 | **EdgeCamp_2** The Edge Camp | EdgeCamp | The abandoned Guild outpost: tether-posts, a ledger nobody posts to, Isolde's initials cut in a beam. The hub; the last place colour reaches by itself. | Outpost | — | desk | W → EdgeCamp_1, E → Edge |
 | **Edge** The Edge | HalfCathedral | The prologue's room, built (the greybox `Greyfold_Edge`): Isolde's desk; survey, bind, seal; then she walks in. Act 1 ends here too. | HalfCathedral | — | Isolde, desk | W → EdgeCamp_2, E → Cathedral_2 |
 | **Cathedral_2** The nave | HalfCathedral | Half a cathedral, white; the Road That Stops runs down its nave. Thirty steps in, a grey chick. With Clarity, the bells ring (6.12). | — | lost Remnant ×2 | Marrow, arena: bells | W → Edge, E → Road_1 |
-| **Road_1** The road in | RoadThatStops | Cobbles that fade a stride at a time. Platforms are drawn only inside Wren's lantern-radius; outside it, outlines. | — | smudge ×2 | — | W → Cathedral_2, E → Road_2 |
-| **Road_2** The mileposts | RoadThatStops | Mileposts for a road nobody finished, each one nearer to nothing. | Milepost | smudge, lost Remnant | — | W → Road_1, E → Road_3 |
+| **Road_1** The road in | RoadThatStops | Cobbles that fade a stride at a time. Platforms are drawn only inside Wren's lantern-radius; outside it, outlines. | — | smudge ×2, Sketch | — | W → Cathedral_2, E → Road_2 |
+| **Road_2** The mileposts | RoadThatStops | Mileposts for a road nobody finished, each one nearer to nothing. | Milepost | smudge, lost Remnant, Sketch | — | W → Road_1, E → Road_3 |
 | **Road_3** Where it stops | RoadThatStops | The road ends mid-stride. She steps off and stays herself: Clarity. Pell, sent to watch, sees her come back (the act break). | — | — | Pell | W → Road_2, E → Pool_1 [Clarity] |
-| **Pool_1** The white shore | MirrorPool | A beach of white paper; the glide from the Wind Gate lands here from above. Colour only in her radius. | — | lost Remnant, smudge | — | up → Gate_2 [Windmemory], W → Road_3 [Clarity], E → Pool_2 |
+| **Pool_1** The white shore | MirrorPool | A beach of white paper; the glide from the Wind Gate lands here from above. Colour only in her radius. | — | lost Remnant, smudge, Sketch | — | up → Gate_2 [Windmemory], W → Road_3 [Clarity], E → Pool_2 |
 | **Pool_2** The Mirror Pool | MirrorPool | Water that shows what is not on the bank: a grey chick in the reflection, none beside her. | Pool | — | Marrow | W → Pool_1, E → Threshold_1 [Clarity, `act2.threshold`] |
 | **Threshold_1** The Guild's line | Threshold | Tethers staked across the white, Wardens in a line, the Guild's field desk behind them. Halvard's third fight at the edge (6.3). | — | Warden ×3 | Halvard, desk, arena: halvard_3 | W → Pool_2 [Clarity, `act2.threshold`], E → Threshold_2 |
 | **Threshold_2** The Threshold | Threshold | The line itself. Voss, going in himself at last (6.11); Pell, if the report was kept. On the Return, Marrow echoes him. | — | — | Voss, Pell, Marrow, arena: voss | W → Threshold_1, E → LastCamp_1 [`greyfold.crossed`] |
@@ -146,7 +146,9 @@ to wall, with the kit's six islands on a `DriftField` that shows as many as drif
 Corra's crayon room with her drawing's arena; the mirror streets and their desk; the mirror-Observatory with Corvin, the
 chair and the Archivist waiting on `corvin.stance`; Aury's causeway from the faded third lighthouse (its west exit) with
 a patch of white, and his lamp room with the beacon, Aury and Sable, and the climb to the Hollow. The lost Remnant stand
-where the plan counts them (`Lost`). The Threshold's Wardens stand down on Halvard's word and the Edge's doors are shut
+where the plan counts them (`Lost`). Sketches pace the Road That Stops and the white shore: outlines past her
+lantern-radius, which cannot be struck and cannot hurt, drawn inside it, where they fill and lunge (`Sketch`,
+enemy-animation.md §2d). The Threshold's Wardens stand down on Halvard's word and the Edge's doors are shut
 while the prologue plays (`gates.md`). Not yet: Aury's two scenes (Act 2 by tether, Act 3 on his island) share one talker
 on the first; the tether from the faded third is a west exit on his causeway, not a crossing from the coast's room; the
 islands' own rooms keep the greybox look (paper-kit.md §7); the fights are in their rooms, and every door reads its

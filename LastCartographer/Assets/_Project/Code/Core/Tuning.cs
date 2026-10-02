@@ -151,6 +151,9 @@ namespace OWSBG.Core
             E("LostRemnant", 5);    // the Blank's
             E("CaveBat", 2);        // Emberdown's fodder on the wing: struck as it swoops
             E("Salamander", 3);     // its back burns: pogo only
+            E("Mothcloud", 3);      // the quill passes through a cloud: Blot it, then strike
+            E("Pulpwasp", 3);       // keeps the quill's reach away: Longstroke the line
+            E("Sketch", 4);         // an outline past her lantern-radius; drawn inside it
         }
     }
 }

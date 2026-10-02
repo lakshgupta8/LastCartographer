@@ -44,8 +44,8 @@ window at its top, the Vault below that window, and the dome, shut until Act 3.
 | **Bridges_2** The toll bridges | SevenBridges | Three bridges over the drop, tolled; the stair down to Lowmarket goes from the second. | Tollhouse | Warden, Cantor | — | W → Bridges_1, E → Bridges_3, down → Lowmarket_1 |
 | **Bridges_3** The seventh bridge | SevenBridges | Under repair for forty years; a family is paid to stand on it (the Seventh Bridge). A desk in the repair hut. | Seventh | — | desk | W → Bridges_2, E → Bridges_4 |
 | **Bridges_4** The last span | SevenBridges | Halvard's second hunt (6.3): he cuts the span section by section. The mills are below it. | — | — | Halvard, arena: halvard_2 | W → Bridges_3, down → Mills_2 |
-| **Mills_1** The mill race | PaperMills | Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air. | — | Warden, smudge | — | W → Gate_2 [Inkthread], E → Mills_2 |
-| **Mills_2** The drying lofts | PaperMills | Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead. | Lofts | smudge ×2 | — | up → Bridges_4, W → Mills_1, E → Mills_3 |
+| **Mills_1** The mill race | PaperMills | Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air. | — | Warden, smudge, pulp-wasp | — | W → Gate_2 [Inkthread], E → Mills_2 |
+| **Mills_2** The drying lofts | PaperMills | Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead. | Lofts | smudge ×2, pulp-wasp ×2 | — | up → Bridges_4, W → Mills_1, E → Mills_3 |
 | **Mills_3** The pulp yard | PaperMills | The strike's picket line: the millworkers of Lowmarket have downed tools. The Hall steps are beyond. | — | — | — | W → Mills_2, E → Hall_1 |
 | **Lowmarket_1** The stair down | Lowmarket | Below the walls. The paint is thinner here, and so is everything else. | — | smudge | — | up → Bridges_2, E → Lowmarket_2 |
 | **Lowmarket_2** Lowmarket | Lowmarket | The district below the walls, fading; its notice board reads 'survey scheduled'. The strike hall, where the decision is made. | Market | — | desk | W → Lowmarket_1, E → Lowmarket_3 |
@@ -87,7 +87,9 @@ Crown hall as a room; the chalk lines of an empty yard. The map's doors read the
   landing before Oriel's yard, the dome stair before the frame.
 - **Unlicensed.** From Act 1's end Wren is unlicensed (`Licence`), and Halden is anchored: every Warden here is
   hostile until Oriel stands them down (6.8) or the report is kept. Wardens stand on the bridges, the mill race,
-  the Hall steps, the south gate and the dome stair; the Hall itself (the hub) has none.
+  the Hall steps, the south gate and the dome stair; the Hall itself (the hub) has none. Pulp-wasps hover over
+  the mills (the race, a line of two over the lofts): each keeps a stand-off past the quill's reach and spits
+  pellets, so the answer is the Longstroke through the line (`Pulpwasp`, enemy-animation.md §2d).
 - **Always late afternoon.** Halden is anchored, so its hour is locked (hub-life.md): the whole region holds one
   phase of the day, and its people loop.
 

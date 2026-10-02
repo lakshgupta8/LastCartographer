@@ -30,6 +30,10 @@ namespace OWSBG.Tests
             // Emberdown's (CMB-09, enemy-animation.md 2b)
             ("CaveBat", "M_Enemy_CaveBat", new[] { "idle", "unfurl", "swoop", "move", "hurt", "death" }),
             ("Salamander", "M_Enemy_Salamander", new[] { "idle", "move", "flare", "rush", "cool", "hurt", "death" }),
+            // The roster's later families (CMB-09, enemy-animation.md 2d)
+            ("Mothcloud", "M_Enemy_Mothcloud", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
+            ("Pulpwasp", "M_Enemy_Pulpwasp", new[] { "idle", "move", "spit", "hurt", "death" }),
+            ("Sketch", "M_Enemy_Sketch", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
         };
 
         [System.Serializable] class Manifest { public string character; public int ppu, cell; public float cellUnits; public Entry[] clips; }

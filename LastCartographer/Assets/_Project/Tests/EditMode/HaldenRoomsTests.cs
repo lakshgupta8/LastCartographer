@@ -187,7 +187,7 @@ namespace OWSBG.Tests
             // "Warden x2" in the plan is two Warden components in the scene, awake (Halden is anchored), and nothing the plan leaves out.
             var scripts = new Dictionary<string, string>
             {
-                ["Warden"] = Guid("World/Enemies/Warden.cs"), ["Cantor"] = Guid("World/Enemies/Cantor.cs"), ["smudge"] = Guid("World/Enemies/Smudge.cs"),
+                ["Warden"] = Guid("World/Enemies/Warden.cs"), ["Cantor"] = Guid("World/Enemies/Cantor.cs"), ["smudge"] = Guid("World/Enemies/Smudge.cs"), ["pulp-wasp"] = Guid("World/Enemies/Pulpwasp.cs"),
             };
             int rooms = 0, creatures = 0;
             foreach (var p in Plans)
@@ -209,7 +209,7 @@ namespace OWSBG.Tests
                 rooms++;
             }
             Assert.AreEqual(21, rooms);
-            Assert.AreEqual(15, creatures, "ten Wardens, a Cantor and four smudges");
+            Assert.AreEqual(18, creatures, "ten Wardens, a Cantor, four smudges and three pulp-wasps");
             // Every vantage keeps its distance from the creatures (an enemy within eight units cancels a survey).
             foreach (var p in Plans.Where(p => p.Vantage != null))
             {

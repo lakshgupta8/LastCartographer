@@ -100,6 +100,9 @@ the table knows. A test rig without a sheet keeps what it is given. `BossKits` n
 | Lost Remnant | **5** (3) | 1 | The Blank's |
 | Cave-bat | 2 | 1 | Emberdown's fodder on the wing: struck as it swoops |
 | Salamander | 3 | 1 | Its back burns: pogo only |
+| Moth cloud | 3 | 1 | The quill passes through it: Blot it, then strike |
+| Pulp-wasp | 3 | 1 | Keeps the quill's reach away: Longstroke the line |
+| Sketch | 4 | 1 | An outline past her lantern-radius; drawn inside it, any hit |
 
 Before this pass every enemy in every scene was at the component's default: 3 health, 1 contact.
 

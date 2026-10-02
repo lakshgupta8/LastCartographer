@@ -198,7 +198,7 @@ namespace OWSBG.Core
             R("Verdance_House_3", "Verdance.QuietHouse", "The east door", "The brothers' garden and the lane to Aldermere; ash on the path.", null, "", new string[0], false, null, null)
                 .West("Verdance_House_2", Ability.None)
                 .East("Verdance_Aldermere_1", Ability.None);
-            R("Verdance_Chapel_1", "Verdance.RootChapel", "The root stair", "Down through the roots; lanterns hung from them.", null, "smudge", new string[0], false, null, null)
+            R("Verdance_Chapel_1", "Verdance.RootChapel", "The root stair", "Down through the roots; lanterns hung from them.", null, "smudge, moths", new string[0], false, null, null)
                 .Up("Verdance_House_2", Ability.None)
                 .Down("Verdance_Chapel_2", Ability.None);
             R("Verdance_Chapel_2", "Verdance.RootChapel", "The root chapel", "Teodor teaches Inkthread: the solvent-line reversed. The grove is across a gap only a thread crosses.", "Chapel", "", new[] { "teodor" }, false, null, null)
@@ -210,10 +210,10 @@ namespace OWSBG.Core
             R("Verdance_Grove_2", "Verdance.LanternGrove", "The lanterns", "Eleven lanterns in a ring: the vigil with Teodor. No choices.", "Lanterns", "", new[] { "teodor" }, true, null, null)
                 .West("Verdance_Grove_1", Ability.None)
                 .Up("Verdance_Grove_3", Ability.None);
-            R("Verdance_Grove_3", "Verdance.LanternGrove", "The canopy", "Up into the canopy by thread; the forest floor out of sight below.", "Canopy", "Cantor, skimmer", new string[0], false, null, null)
+            R("Verdance_Grove_3", "Verdance.LanternGrove", "The canopy", "Up into the canopy by thread; the forest floor out of sight below.", "Canopy", "Cantor, skimmer, moths", new string[0], false, null, null)
                 .Down("Verdance_Grove_2", Ability.None)
                 .East("Verdance_Grove_4", Ability.None);
-            R("Verdance_Grove_4", "Verdance.LanternGrove", "The high lanterns", "The grove's crown; a thread line east drops to the library's roof.", null, "smudge", new string[0], false, null, null)
+            R("Verdance_Grove_4", "Verdance.LanternGrove", "The high lanterns", "The grove's crown; a thread line east drops to the library's roof.", null, "smudge, moths ×2", new string[0], false, null, null)
                 .West("Verdance_Grove_3", Ability.None)
                 .East("Verdance_Library_1", Ability.Inkthread);
             R("Verdance_Library_1", "Verdance.SunkenLibrary", "The reading stair", "Down into a library the forest floor swallowed; anchored, and it shows: the dust does not move.", null, "", new string[0], false, null, null)
@@ -249,10 +249,10 @@ namespace OWSBG.Core
             R("Halden_Bridges_4", "Halden.SevenBridges", "The last span", "Halvard's second hunt (6.3): he cuts the span section by section. The mills are below it.", null, "", new[] { "halvard" }, false, "halvard_2", null)
                 .West("Halden_Bridges_3", Ability.None)
                 .Down("Halden_Mills_2", Ability.None);
-            R("Halden_Mills_1", "Halden.PaperMills", "The mill race", "Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air.", null, "Warden, smudge", new string[0], false, null, null)
+            R("Halden_Mills_1", "Halden.PaperMills", "The mill race", "Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air.", null, "Warden, smudge, pulp-wasp", new string[0], false, null, null)
                 .West("Verdance_Gate_2", Ability.Inkthread)
                 .East("Halden_Mills_2", Ability.None);
-            R("Halden_Mills_2", "Halden.PaperMills", "The drying lofts", "Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead.", "Lofts", "smudge ×2", new string[0], false, null, null)
+            R("Halden_Mills_2", "Halden.PaperMills", "The drying lofts", "Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead.", "Lofts", "smudge ×2, pulp-wasp ×2", new string[0], false, null, null)
                 .Up("Halden_Bridges_4", Ability.None)
                 .West("Halden_Mills_1", Ability.None)
                 .East("Halden_Mills_3", Ability.None);
@@ -355,16 +355,16 @@ namespace OWSBG.Core
             R("Greyfold_Cathedral_2", "Greyfold.HalfCathedral", "The nave", "Half a cathedral, white; the Road That Stops runs down its nave. Thirty steps in, a grey chick. With Clarity, the bells ring (6.12).", null, "lost Remnant ×2", new[] { "marrow" }, false, "bells", null)
                 .West("Greyfold_Edge", Ability.None)
                 .East("Greyfold_Road_1", Ability.None);
-            R("Greyfold_Road_1", "Greyfold.RoadThatStops", "The road in", "Cobbles that fade a stride at a time. Platforms are drawn only inside Wren's lantern-radius; outside it, outlines.", null, "smudge ×2", new string[0], false, null, null)
+            R("Greyfold_Road_1", "Greyfold.RoadThatStops", "The road in", "Cobbles that fade a stride at a time. Platforms are drawn only inside Wren's lantern-radius; outside it, outlines.", null, "smudge ×2, Sketch", new string[0], false, null, null)
                 .West("Greyfold_Cathedral_2", Ability.None)
                 .East("Greyfold_Road_2", Ability.None);
-            R("Greyfold_Road_2", "Greyfold.RoadThatStops", "The mileposts", "Mileposts for a road nobody finished, each one nearer to nothing.", "Milepost", "smudge, lost Remnant", new string[0], false, null, null)
+            R("Greyfold_Road_2", "Greyfold.RoadThatStops", "The mileposts", "Mileposts for a road nobody finished, each one nearer to nothing.", "Milepost", "smudge, lost Remnant, Sketch", new string[0], false, null, null)
                 .West("Greyfold_Road_1", Ability.None)
                 .East("Greyfold_Road_3", Ability.None);
             R("Greyfold_Road_3", "Greyfold.RoadThatStops", "Where it stops", "The road ends mid-stride. She steps off and stays herself: Clarity. Pell, sent to watch, sees her come back (the act break).", null, "", new[] { "pell" }, false, null, null)
                 .West("Greyfold_Road_2", Ability.None)
                 .East("Greyfold_Pool_1", Ability.Clarity);
-            R("Greyfold_Pool_1", "Greyfold.MirrorPool", "The white shore", "A beach of white paper; the glide from the Wind Gate lands here from above. Colour only in her radius.", null, "lost Remnant, smudge", new string[0], false, null, null)
+            R("Greyfold_Pool_1", "Greyfold.MirrorPool", "The white shore", "A beach of white paper; the glide from the Wind Gate lands here from above. Colour only in her radius.", null, "lost Remnant, smudge, Sketch", new string[0], false, null, null)
                 .Up("Windreach_Gate_2", Ability.Windmemory)
                 .West("Greyfold_Road_3", Ability.Clarity)
                 .East("Greyfold_Pool_2", Ability.None);

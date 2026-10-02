@@ -91,12 +91,12 @@ and below.
 | **House_1** The roots gate | QuietHouse | The Quiet House's door in the roots of one tree; the brothers bow and do not speak. | — | — | — | W → Road_3, E → House_2 |
 | **House_2** The cloister | QuietHouse | The hub: desk, ledger, Teodor. The root stair goes down from its floor. | Cloister | — | Teodor, desk | W → House_1, E → House_3, down → Chapel_1 |
 | **House_3** The east door | QuietHouse | The brothers' garden and the lane to Aldermere; ash on the path. | — | — | — | W → House_2, E → Aldermere_1 |
-| **Chapel_1** The root stair | RootChapel | Down through the roots; lanterns hung from them. | — | smudge | — | up → House_2, down → Chapel_2 |
+| **Chapel_1** The root stair | RootChapel | Down through the roots; lanterns hung from them. | — | smudge, moths | — | up → House_2, down → Chapel_2 |
 | **Chapel_2** The root chapel | RootChapel | Teodor teaches Inkthread: the solvent-line reversed. The grove is across a gap only a thread crosses. | Chapel | — | Teodor | up → Chapel_1, E → Grove_1 [Inkthread] |
 | **Grove_1** The grove edge | LanternGrove | Anchor-points in the branches; the first thread gauntlet. | — | skimmer ×2 | — | W → Chapel_2 [Inkthread], E → Grove_2 |
 | **Grove_2** The lanterns | LanternGrove | Eleven lanterns in a ring: the vigil with Teodor. No choices. | Lanterns | — | Teodor, desk | W → Grove_1, up → Grove_3 |
-| **Grove_3** The canopy | LanternGrove | Up into the canopy by thread; the forest floor out of sight below. | Canopy | Cantor, skimmer | — | down → Grove_2, E → Grove_4 |
-| **Grove_4** The high lanterns | LanternGrove | The grove's crown; a thread line east drops to the library's roof. | — | smudge | — | W → Grove_3, E → Library_1 [Inkthread] |
+| **Grove_3** The canopy | LanternGrove | Up into the canopy by thread; the forest floor out of sight below. | Canopy | Cantor, skimmer, moths | — | down → Grove_2, E → Grove_4 |
+| **Grove_4** The high lanterns | LanternGrove | The grove's crown; a thread line east drops to the library's roof. | — | smudge, moths ×2 | — | W → Grove_3, E → Library_1 [Inkthread] |
 | **Library_1** The reading stair | SunkenLibrary | Down into a library the forest floor swallowed; anchored, and it shows: the dust does not move. | — | — | — | W → Grove_4 [Inkthread], down → Library_2 |
 | **Library_2** The reading room | SunkenLibrary | Brother Ansel on page 214 for thirty-eight years. Teodor will not turn it for you. | Page | — | Teodor | up → Library_1 |
 | **Aldermere_1** The lane | Aldermere | Aldermere on its last day: bunting, bread, a desk the inn keeps for travellers. | — | — | desk | W → House_3, E → Aldermere_2 |
@@ -130,7 +130,9 @@ who bow and do not speak; Aldermere's after-state (§4).
 - **Enemies by answer** (combat doc §7): salamanders and bats in the mine country (pogo the salamanders, strike
   the bats as they dive), crabs and skimmers on the old road, Cantors in the Verdance (the Unwriters' country),
   smudges where something was forgotten (the galleries, the ash field). One Warden patrols the Overlook road:
-  the Guild watches the way to the Plateau.
+  the Guild watches the way to the Plateau. Lantern-moth clouds hang where the lanterns are (the root chapel,
+  the Lantern Grove's canopy and crown): the quill passes through a cloud until a Blot gathers it
+  (`Mothcloud`, enemy-animation.md §2d).
 - **Vantages** sit where the view is the point: back at the coast from the landings, the bell over the town, the
   ninth chimney, the Greyfold from the Overlook; the milestone, the cloister, the canopy, Ansel's page.
 

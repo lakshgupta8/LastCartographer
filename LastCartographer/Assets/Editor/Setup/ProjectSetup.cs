@@ -1297,6 +1297,10 @@ namespace OWSBG.Setup
             public RoomRecipe Bat(float x, float y) { Enemies.Add((typeof(CaveBat), "Bat_" + Enemies.Count, new Vector2(x, y), new Vector2(0.8f, 0.6f))); return this; }
             /// <summary>A salamander on its ledge (y is the ledge's top plus 0.35).</summary>
             public RoomRecipe Salamander(float x, float y = 0.35f) { Enemies.Add((typeof(Salamander), "Salamander_" + Enemies.Count, new Vector2(x, y), new Vector2(1.2f, 0.5f))); return this; }
+            // The roster's later families (CMB-09, enemy-animation.md 2d): a moth cloud in the air, a wasp at its hover, a Sketch on the ground.
+            public RoomRecipe Moths(float x, float y) { Enemies.Add((typeof(Mothcloud), "Moths_" + Enemies.Count, new Vector2(x, y), new Vector2(1.4f, 1.2f))); return this; }
+            public RoomRecipe Wasp(float x, float y) { Enemies.Add((typeof(Pulpwasp), "Wasp_" + Enemies.Count, new Vector2(x, y), new Vector2(0.9f, 0.7f))); return this; }
+            public RoomRecipe Sketch(float x) { Enemies.Add((typeof(Sketch), "Sketch_" + Enemies.Count, new Vector2(x, 0.6f), new Vector2(1.0f, 1.2f))); return this; }
             public RoomRecipe Seed(float x, float y, int n) { Seeds.Add((new Vector2(x, y), n)); return this; }
             public RoomRecipe Prop(string name, float x, float y = 0f, float z = 0.7f) { Props.Add((name, new Vector2(x, y), z)); return this; }
             public RoomRecipe Dress(string piece, float x, float y = 0f, float z = 0.7f) { Dressings.Add((piece, new Vector2(x, y), z)); return this; }
@@ -1595,7 +1599,7 @@ namespace OWSBG.Setup
                 // ---- the Root Chapel: down through the roots, then the thread ----
                 new RoomRecipe("Verdance_Chapel_1").Tall().Tiles("Ground_Root", "Ground_Root").VerdancePapers("Mid_Roots", "Far_Canopy", null)
                     .Floor(-20f, 6f).Floor(10f, 20f).Plat(-2f, 12f, 4f).Plat(4f, 9f, 3f).Plat(-2f, 6f, 3f).Plat(4f, 3f, 3f)
-                    .Prop("Lantern", -2f, 12.3f).Prop("Lantern", 4f, 3.3f).Smudge(-12f)
+                    .Prop("Lantern", -2f, 12.3f).Prop("Lantern", 4f, 3.3f).Smudge(-12f).Moths(1f, 7.5f)   // lantern-moths between the two lanterns
                     .Up(V("House_2"), -2f, 12.3f).Down(V("Chapel_2"), 8f),
                 new RoomRecipe("Verdance_Chapel_2").Tall().Tiles("Ground_Root", "Ground_Root").VerdancePapers("Mid_Roots", "Far_Lanterns", null)
                     .Floor(-20f, 4f).Floor(14f, 20f).Plat(8f, 12f, 4f).Plat(2f, 9f, 3f).Plat(-4f, 6f, 3f).Plat(1f, 3f, 3f)
@@ -1616,11 +1620,11 @@ namespace OWSBG.Setup
                     .West(V("Grove_1")).Up(V("Grove_3"), 15f, 8.3f),
                 new RoomRecipe("Verdance_Grove_3").Tall().Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
                     .Floor(-20f, -16f).Floor(-12f, 20f).Plat(-6f, 3f, 3f).Plat(4f, 6f, 3f).Plat(12f, 9f, 3f).Anchor(-1f, 7f).Anchor(8f, 10.5f).Vantage("Canopy", 12f, 9.3f)
-                    .Cantor(2f).Skimmer(-6f, 5f)
+                    .Cantor(2f).Skimmer(-6f, 5f).Moths(9f, 5.5f)
                     .Fledglings(4f, 6.3f, 0f).Down(V("Grove_2"), -14f).East(V("Grove_4")),
                 new RoomRecipe("Verdance_Grove_4").Tiles("Ground_Moss", "Ground_Root").VerdancePapers("Mid_Branches", "Far_Lanterns")
                     .Floor(-20f, -6f).Plat(-1f, 3f, 3f).Plat(5f, 6f, 3f).Plat(11f, 8f, 3f).Floor(14f, 20f).Anchor(9f, 9f).Anchor(15f, 10f)   // a thread line east drops to the library's roof
-                    .Smudge(-12f).Prop("Lantern", -1f, 3.3f).Prop("Lantern", 11f, 8.3f)
+                    .Smudge(-12f).Prop("Lantern", -1f, 3.3f).Prop("Lantern", 11f, 8.3f).Moths(1f, 5.5f).Moths(12f, 10.5f)   // the high lanterns' moths
                     .West(V("Grove_3")).East(V("Library_1")),
                 // ---- the Sunken Library: anchored, and it shows ----
                 new RoomRecipe("Verdance_Library_1").Tiles("Ground_Flag", "Ground_Flag").VerdancePapers("Mid_Shelves", "Far_Canopy", null)
@@ -1705,11 +1709,11 @@ namespace OWSBG.Setup
                     .West(H("Bridges_3")).Down(H("Mills_2"), -16f),
                 // ---- the Paper Mills: from the Overgrown Gate ----
                 new RoomRecipe("Halden_Mills_1").Tiles("Ground_Boards", "Ground_Boards").HaldenPapers("Mid_Mills")
-                    .Floor(-20f, 20f).Plat(-4f, 3f, 3f).Plat(8f, 3f, 3f).Prop("Wheel", -13f).Warden(2f).Smudge(14f)
+                    .Floor(-20f, 20f).Plat(-4f, 3f, 3f).Plat(8f, 3f, 3f).Prop("Wheel", -13f).Warden(2f).Smudge(14f).Wasp(9f, 5.5f)
                     .West(Scene("Verdance_Gate_2")).East(H("Mills_2")),
                 new RoomRecipe("Halden_Mills_2").Tall().Tiles("Ground_Boards", "Ground_Boards").HaldenPapers("Mid_Mills")
                     .Floor(-20f, 20f).Plat(-6f, 3f, 3f).Plat(-10f, 6f, 3f).Plat(-14f, 9f, 3f).Plat(-16f, 12f, 4f).Vantage("Lofts", 10f, 0f)
-                    .Smudge(-2f).Smudge(-14f).Prop("Wheel", 16f)
+                    .Smudge(-2f).Smudge(-14f).Prop("Wheel", 16f).Wasp(4f, 4f).Wasp(8f, 4f)   // a line of wasps over the lofts: one Longstroke
                     .Up(H("Bridges_4"), -16f, 12.3f).West(H("Mills_1")).East(H("Mills_3")),
                 new RoomRecipe("Halden_Mills_3").Tiles("Ground_Boards", "Ground_Boards").HaldenPapers("Mid_Mills")
                     .Floor(-20f, 20f).Plat(0f, 2.5f, 3f).Prop("Wheel", -14f).Prop("Notice", 8f)   // the picket line's board
@@ -1904,11 +1908,11 @@ namespace OWSBG.Setup
                 // ---- the Road That Stops: cobbles her lantern draws ----
                 new RoomRecipe("Greyfold_Road_1").Tiles("Ground_Cobbles", "Ground_Cobbles").GreyfoldPapers("Mid_Road")
                     .Floor(-20f, -12f).Cobble(-9f, -6.5f).Cobble(-3.5f, -1f).Cobble(2f, 4.5f).Cobble(7.5f, 10f).Floor(13f, 20f)   // the gauntlet's course, in its room
-                    .Gauntlet("road_that_stops", -12f, 13f, 13f, 20f, 0f, -15f).Smudge(15f).Smudge(18f)
+                    .Gauntlet("road_that_stops", -12f, 13f, 13f, 20f, 0f, -15f).Smudge(15f).Smudge(18f).Sketch(14f)
                     .West(G("Cathedral_2")).East(G("Road_2")),
                 new RoomRecipe("Greyfold_Road_2").Tiles("Ground_Cobbles", "Ground_Cobbles").GreyfoldPapers("Mid_Road")
                     .Floor(-20f, 20f).Cobble(-10f, -7.5f, 2.5f).Cobble(-4f, -1.5f, 4.5f).Cobble(4f, 6.5f, 2.5f)   // mileposts for a road nobody finished
-                    .Prop("Milepost", -14f).Prop("Milepost", 0f).Prop("Milepost", 12f).Vantage("Milepost", 15f, 0f).Smudge(-6f).Lost(3f)
+                    .Prop("Milepost", -14f).Prop("Milepost", 0f).Prop("Milepost", 12f).Vantage("Milepost", 15f, 0f).Smudge(-6f).Lost(3f).Sketch(-17f)
                     .West(G("Road_1")).East(G("Road_3")),
                 new RoomRecipe("Greyfold_Road_3").Tiles("Ground_Cobbles", "Ground_Cobbles").GreyfoldPapers("Mid_Road")
                     .Floor(-20f, 0f).White(0f, 20f).Prop("Footprints", -2.5f)   // the road ends mid-stride; past it, the white: Clarity, or it gives her back
@@ -1917,7 +1921,7 @@ namespace OWSBG.Setup
                 // ---- the Mirror Pool: the glide from the Wind Gate lands here ----
                 new RoomRecipe("Greyfold_Pool_1").Tall().Tiles("Ground_WhiteSand", "Ground_WhiteSand").GreyfoldPapers("Mid_Shore")
                     .Floor(-20f, -4f).White(-4f, 4f).Floor(4f, 20f).Plat(-16f, 4f, 3f).Plat(-12f, 8f, 3f).Plat(-14f, 12f, 3f)   // the white shore; the glide lands on the high ledge
-                    .Smudge(-8f).Lost(10f)
+                    .Smudge(-8f).Lost(10f).Sketch(15f)
                     .Up(Scene("Windreach_Gate_2"), -14f, 12.3f).West(G("Road_3")).East(G("Pool_2")),
                 new RoomRecipe("Greyfold_Pool_2").Tiles("Ground_WhiteSand", "Ground_WhiteSand").GreyfoldPapers("Mid_Pool")
                     .Floor(-20f, 20f).Plat(10f, 2.5f, 3f).Vantage("Pool", -12f, 0f)
@@ -2074,6 +2078,9 @@ namespace OWSBG.Setup
                 else if (e.type == typeof(Cantor)) MakeEnemy<Cantor>(room, e.name, e.pos, e.size, CantorLook(r.Id));
                 else if (e.type == typeof(CaveBat)) MakeEnemy<CaveBat>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Salamander)) MakeEnemy<Salamander>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Mothcloud)) MakeEnemy<Mothcloud>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Pulpwasp)) MakeEnemy<Pulpwasp>(room, e.name, e.pos, e.size);
+                else if (e.type == typeof(Sketch)) MakeEnemy<Sketch>(room, e.name, e.pos, e.size);
                 else if (e.type == typeof(Warden)) MakeEnemy<Warden>(room, e.name, e.pos, e.size, WardenLooks[(r.Id[^1] + Enemies_Index(r, e.name)) % 3]);
                 else if (e.type == typeof(LostRemnant)) MakeEnemy<LostRemnant>(room, e.name, e.pos, e.size);
             }

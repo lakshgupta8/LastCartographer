@@ -255,6 +255,11 @@ and for each ability Wren has one more of them glides, a little further each. An
 them, and in the Open World one doesn't come down. Drawn by `tools/characters/fledglings.py` (seven species), stood by
 the recipes' `.Fledglings(...)`, leapt by `FledglingLoop`.
 
+## The store's assets
+`docs/marketing/` holds the key art, the nine Steam capsules, thirteen screenshots and four trailer clips, all made from the
+game: `MarketingCaptureTests` (play mode, with `-captureMarketing`) captures the shots and clips, `tools/marketing/` renders Wren
+large, composes the capsules and encodes the clips (`docs/design/marketing-assets.md`). Nothing there is published.
+
 ## The feel-test
 **OWSBG → Play the Feel Course** or `LastCartographer.exe -feel -tester <name>` runs the controller's seven-station course and writes the session as JSON on quit. Put the testers' answers in `logs/feel/answers.csv` and run `pwsh tools/feel-gate.ps1` for the M0 gate's verdict (`docs/design/feel-test.md`).
 

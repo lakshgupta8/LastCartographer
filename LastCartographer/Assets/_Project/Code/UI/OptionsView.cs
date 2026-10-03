@@ -204,7 +204,7 @@ namespace OWSBG.UI
             _panel.style.top = new Length(50, LengthUnit.Percent);
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 760;
-            _title = InkTheme.Text("title", "", 30, InkTheme.Ink, FontStyle.Bold);
+            _title = InkTheme.TitleText("title", "", 34, InkTheme.Ink);
             _title.style.marginBottom = 12;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _hint = InkTheme.Text("hint", "", 18, InkTheme.Dim, FontStyle.Italic);
@@ -314,8 +314,7 @@ namespace OWSBG.UI
             InkTheme.SetPadding(row, 6f, 10f);
             InkTheme.SetRadius(row, 4f);
             row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
-            var marker = InkTheme.Text("marker", sel ? "▸" : "", 22, InkTheme.Wash);
-            marker.style.width = 26;
+            var marker = InkTheme.Marker(sel);
             var l = InkTheme.Text("label", label, 22, InkTheme.Dim);
             l.style.width = 260;
             var v = InkTheme.Text("value", arrows && sel ? "◂  " + value + "  ▸" : value, 22, column == 0 ? InkTheme.Wash : InkTheme.Ink, column == 0 ? FontStyle.Bold : FontStyle.Normal);

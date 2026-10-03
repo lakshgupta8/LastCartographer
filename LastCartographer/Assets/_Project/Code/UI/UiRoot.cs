@@ -58,6 +58,7 @@ namespace OWSBG.UI
             if (_contrast == Options.HighContrast) return;
             _contrast = Options.HighContrast;
             InkTheme.Recolour(Root, _contrast);
+            InkArt.Reskin(Root);   // the drawn paper stands down under high contrast, and comes back
         }
 
         void OnDestroy() { if (Instance == this) Instance = null; }

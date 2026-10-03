@@ -86,6 +86,8 @@ namespace OWSBG.UI
             _panel.style.backgroundColor = new Color(0f, 0f, 0f, 0f);
             InkTheme.SetBorder(_panel, new Color(0f, 0f, 0f, 0f), 0f);
             InkTheme.SetPadding(_panel, 0f, 0f);
+            _panel.RemoveFromClassList(InkArt.PaperClass);   // the spread's right page is its paper
+            _panel.style.backgroundImage = new StyleBackground(StyleKeyword.None);
             InkTheme.Show(_hint, false);
             _host.Add(_panel);
         }
@@ -148,7 +150,7 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 860;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Say("title", "journal.title", "Journal", 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.Title("title", "journal.title", "Journal", 34, InkTheme.Wash);
             _title.style.marginBottom = 14;
             _empty = InkTheme.Say("empty", "journal.empty", "No commissions taken. The ledgers are at the hubs.", 17, InkTheme.Dim);
             _open = new VisualElement { name = "open", pickingMode = PickingMode.Ignore };
@@ -169,10 +171,7 @@ namespace OWSBG.UI
             _toast.style.left = new Length(50, LengthUnit.Percent);
             _toast.style.translate = new Translate(new Length(-50, LengthUnit.Percent), 0);
             _toast.style.top = new Length(12, LengthUnit.Percent);
-            _toast.style.backgroundColor = InkTheme.Paper;
-            InkTheme.SetPadding(_toast, 8f, 18f);
-            InkTheme.SetRadius(_toast, 6f);
-            InkTheme.SetBorder(_toast, InkTheme.InkFaint, 1f);
+            InkTheme.Strip(_toast);
             InkTheme.Show(_toast, false);
             ui.Caption.Add(_toast);
             _built = true;

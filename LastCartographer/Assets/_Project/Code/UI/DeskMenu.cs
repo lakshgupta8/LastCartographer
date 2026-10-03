@@ -199,7 +199,7 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 760;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Say("title", "desk.title", "Drafting desk", 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.Title("title", "desk.title", "Drafting desk", 34, InkTheme.Wash);
             _title.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
@@ -225,13 +225,13 @@ namespace OWSBG.UI
             _rows.Clear();
             var profile = _charters != null ? _charters.Current : null;
             string charterName = profile != null ? profile.LocalName : e.Charter.ToString();
-            _rows.Add(MakeRow(0, Loc.T("desk.row.charter", "Charter"), charterName, ""));
+            _rows.Add(MakeRow(0, Loc.T("desk.row.charter", "Charter"), charterName, "", true, profile != null ? InkArt.CharterIcon(profile.Kind) : null));
             for (int i = 0; i < e.SlotCount; i++)
             {
                 var s = e.Slots[i];
                 string name = s.IsEmpty ? Loc.T("desk.slot.empty", "(empty)") : InstrumentInfo.Of(s.Kind).Name;
                 string uses = s.IsEmpty ? "" : (s.UsesLeft < 0 ? "∞" : s.UsesLeft + " / " + InstrumentInfo.Of(s.Kind).Uses);
-                _rows.Add(MakeRow(i + 1, Loc.F("desk.row.slot", "Slot {0}", i + 1), name, uses));
+                _rows.Add(MakeRow(i + 1, Loc.F("desk.row.slot", "Slot {0}", i + 1), name, uses, true, InkArt.InstrumentIcon(s.Kind)));
             }
             _rows.Add(MakeRow(FateRow, Loc.T("desk.row.place", "Place"), FateValue(out bool arrows), "", arrows));
             _rows.Add(MakeRow(MaskRow, Loc.T("desk.row.masks", "Masks"), MaskValue(), Loc.P("desk.scraps", Economy.Scraps(GameState.World), "{0} scrap", "{0} scraps"), false));
@@ -308,7 +308,7 @@ namespace OWSBG.UI
             }
         }
 
-        VisualElement MakeRow(int index, string label, string value, string extra, bool arrows = true)
+        VisualElement MakeRow(int index, string label, string value, string extra, bool arrows = true, Texture2D icon = null)
         {
             bool sel = index == Row;
             var row = InkTheme.Row("row-" + index);
@@ -317,8 +317,7 @@ namespace OWSBG.UI
             InkTheme.SetPadding(row, 6f, 10f);
             InkTheme.SetRadius(row, 4f);
             row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
-            var marker = InkTheme.Text("marker", sel ? "▸" : "", 22, InkTheme.Wash);
-            marker.style.width = 26;
+            var marker = InkTheme.Marker(sel);
             var l = InkTheme.Text("label", label, 22, InkTheme.Dim);
             l.style.width = 130;
             var v = InkTheme.Text("value", arrows ? "◂  " + value + "  ▸" : value, 22, InkTheme.Ink);
@@ -326,7 +325,8 @@ namespace OWSBG.UI
             var x = InkTheme.Text("extra", extra, 20, InkTheme.Wash, FontStyle.Bold);
             x.style.width = 90;
             x.style.unityTextAlign = TextAnchor.MiddleRight;
-            row.Add(marker); row.Add(l); row.Add(v); row.Add(x);
+            var pic = InkTheme.Icon("icon", icon, 26f);
+            row.Add(marker); row.Add(l); if (pic != null) row.Add(pic); row.Add(v); row.Add(x);
             return row;
         }
     }

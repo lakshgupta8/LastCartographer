@@ -200,7 +200,7 @@ namespace OWSBG.Tests
             Assert.IsFalse(atlas.Confirm());
             var quay = atlas.Panel.Q("place-Saltmarrow_A");
             Assert.IsNotNull(quay);
-            StringAssert.Contains("○ the Reedmother", ((Label)quay.Q("vantages")).text);
+            StringAssert.Contains("○ the Reedmother", AtlasView.VantageText(quay));
             StringAssert.Contains("· here", ((Label)quay.Q("here")).text);
             atlas.Close();
             Assert.IsFalse(wren.Frozen);
@@ -213,7 +213,7 @@ namespace OWSBG.Tests
             atlas.Open(wren);
             yield return null;
             CollectionAssert.AreEqual(new[] { "lamp.Saltmarrow_Lighthouse" }, atlas.Destinations.Select(d => d.Id).ToArray());
-            StringAssert.Contains("● the Reedmother", ((Label)atlas.Panel.Q("place-Saltmarrow_A").Q("vantages")).text);
+            StringAssert.Contains("● the Reedmother", AtlasView.VantageText(atlas.Panel.Q("place-Saltmarrow_A")));
             Assert.IsNotNull(atlas.Panel.Q("dest-lamp.Saltmarrow_Lighthouse"));
             float before = DayClock.Time(w);
             float hours = Travel.Hours(Atlas.FindWaypoint("desk.Saltmarrow_A"), Atlas.FindWaypoint("lamp.Saltmarrow_Lighthouse"));

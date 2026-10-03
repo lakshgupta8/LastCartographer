@@ -74,12 +74,9 @@ namespace OWSBG.UI
             _root.style.top = 36;
             _root.style.translate = new Translate(new Length(-50, LengthUnit.Percent), 0);
             _root.style.alignItems = Align.Center;
-            _root.style.backgroundColor = InkTheme.Paper;
-            InkTheme.SetPadding(_root, 10f, 26f);
-            InkTheme.SetRadius(_root, 6f);
-            InkTheme.SetBorder(_root, InkTheme.InkFaint, 1f);
+            InkTheme.Strip(_root);
             InkTheme.ApplyFont(_root);
-            _name = InkTheme.Text("walk-name", "", 30, InkTheme.Ink, FontStyle.Bold);
+            _name = InkTheme.TitleText("walk-name", "", 32, InkTheme.Ink);
             _line = InkTheme.Text("walk-line", "", 15, InkTheme.Dim);
             _line.style.marginTop = 2;
             _bar = new VisualElement { name = "walk-bar", pickingMode = PickingMode.Ignore };

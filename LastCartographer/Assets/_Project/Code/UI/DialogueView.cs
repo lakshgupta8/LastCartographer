@@ -25,6 +25,8 @@ namespace OWSBG.UI
     {
         /// <summary>The portrait's side, px (the strip's cells are 256).</summary>
         public const float PortraitSize = 168f;
+        /// <summary>How far the face sits in from the frame's edge, px: inside the drawn frame's rule (ENV-11).</summary>
+        public const float PortraitInset = 17f;
         /// <summary>Beak frames a second while the line is new.</summary>
         public const float TalkFps = 8f;
 
@@ -118,7 +120,7 @@ namespace OWSBG.UI
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
             _panel.style.minHeight = 150;
 
-            _speaker = InkTheme.Text("speaker", "", 20, InkTheme.Wash, FontStyle.Bold);
+            _speaker = InkTheme.TitleText("speaker", "", 22, InkTheme.Wash);
             _speaker.style.marginBottom = 8;
             _text = InkTheme.Text("line", "", 24, InkTheme.Ink);
             _prompt = InkTheme.Say("prompt", "dialogue.continue", "J / Space  ▸", 16, InkTheme.Dim);
@@ -134,10 +136,8 @@ namespace OWSBG.UI
             _portrait.style.flexShrink = 0;
             _portrait.style.marginRight = 18;
             _portrait.style.alignSelf = Align.FlexStart;
-            _portrait.style.backgroundColor = InkTheme.PaperDark;
             _portrait.style.overflow = Overflow.Hidden;
-            InkTheme.SetBorder(_portrait, InkTheme.InkFaint, 2f);
-            InkTheme.SetRadius(_portrait, 6f);
+            InkTheme.PortraitFrame(_portrait);
             _face = PortraitImage("face");
             _grey = PortraitImage("grey");
             _portrait.Add(_face); _portrait.Add(_grey);
@@ -161,7 +161,7 @@ namespace OWSBG.UI
         {
             var image = new Image { name = name, scaleMode = ScaleMode.ScaleToFit, pickingMode = PickingMode.Ignore };
             image.style.position = Position.Absolute;
-            image.style.left = 0; image.style.top = 0; image.style.right = 0; image.style.bottom = 0;
+            image.style.left = PortraitInset; image.style.top = PortraitInset; image.style.right = PortraitInset; image.style.bottom = PortraitInset;
             return image;
         }
 
@@ -221,8 +221,7 @@ namespace OWSBG.UI
                 row.AddToClassList("option");
                 InkTheme.SetPadding(row, 6f, 10f);
                 InkTheme.SetRadius(row, 4f);
-                var marker = InkTheme.Text("marker", "▸", 22, InkTheme.Wash);
-                marker.style.width = 26;
+                var marker = InkTheme.Marker(true);
                 marker.style.visibility = Visibility.Hidden;
                 var label = InkTheme.Text("text", (i + 1) + ".  " + texts[i], 22, available[i] ? InkTheme.Ink : InkTheme.Dim);
                 row.Add(marker); row.Add(label);

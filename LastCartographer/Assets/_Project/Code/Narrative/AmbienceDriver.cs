@@ -46,6 +46,8 @@ namespace OWSBG.Narrative
         public Region? Wanted { get; private set; }
         public bool IsReady(Region r) => _clips.ContainsKey(r);
         public bool IsRendering(Region r) => _rendering.ContainsKey(r);
+        /// <summary>A region's layers are still rendering on their thread (the probe waits for it).</summary>
+        public bool IsRenderingAny => _rendering.Count > 0;
         public AudioSource Source(string layer) => _sources.TryGetValue(layer, out var s) ? s : null;
         public AudioLowPassFilter Filter(string layer) => _filters.TryGetValue(layer, out var f) ? f : null;
         public float Level(string layer) => _levels.TryGetValue(layer, out var l) ? l : 0f;
@@ -71,9 +73,8 @@ namespace OWSBG.Narrative
         {
             get
             {
-                string room = Room;
-                if (string.IsNullOrEmpty(room)) return 0;
-                string place = room.StartsWith(WorldGraph.GreyboxPrefix, System.StringComparison.Ordinal) ? room.Substring(WorldGraph.GreyboxPrefix.Length) : room;
+                string place = Mix.PlaceOf(Room);
+                if (string.IsNullOrEmpty(place)) return 0;
                 try { return FadeStages.Get(GameState.World, place); } catch { return 0; }
             }
         }
@@ -98,12 +99,16 @@ namespace OWSBG.Narrative
             _rendering[r] = Task.Run(() => layers.ToDictionary(l => l.Name, l => Ambience.Render(l)));
         }
 
+        readonly List<Region> _finished = new List<Region>();
+
         void Finish()
         {
-            foreach (var r in _rendering.Keys.ToList())
+            if (_rendering.Count == 0) return;
+            _finished.Clear();   // the done ones, gathered first: a frame while a region renders allocates nothing either
+            foreach (var kv in _rendering) if (kv.Value.IsCompleted) _finished.Add(kv.Key);
+            foreach (var r in _finished)
             {
                 var task = _rendering[r];
-                if (!task.IsCompleted) continue;
                 _rendering.Remove(r);
                 if (task.IsFaulted) { Debug.LogWarning("[OWSBG] the ambience could not render " + r + ": " + task.Exception?.GetBaseException().Message); continue; }
                 var clips = new Dictionary<string, AudioClip>();
@@ -177,8 +182,9 @@ namespace OWSBG.Narrative
 
         void Tick()
         {
+            int stage = Stage;
             float gain = Mix.Live != null ? Mix.Live.Gain(Mix.Bus.Ambience) : Options.Get(Options.Volume.Master) * Options.Get(Options.Volume.Sound);
-            float cutoff = Mix.Live != null ? Mix.Live.Cutoff(Mix.Bus.Ambience) : Mix.StageCutoff(Stage);
+            float cutoff = Mix.Live != null ? Mix.Live.Cutoff(Mix.Bus.Ambience) : Mix.StageCutoff(stage);
             double now = AudioSettings.dspTime;
             for (int i = _outgoing.Count - 1; i >= 0; i--)
             {
@@ -190,14 +196,16 @@ namespace OWSBG.Narrative
                 o.Filter.cutoffFrequency = cutoff;
             }
             if (!Current.HasValue) return;
-            var targets = Ambience.LevelsAt(Current.Value, Stage);
+            // The levels the stage asks for, as Ambience.LevelsAt reads them, without its array.
             var layers = Ambience.Of(Current.Value);
+            int keep = AudioDirection.AmbienceLayersAt(Current.Value, stage);
             float step = Time.unscaledDeltaTime / FadeSeconds;
             float z = ListenerZ;
             for (int i = 0; i < layers.Count; i++)
             {
                 var l = layers[i];
-                float level = Mathf.MoveTowards(_levels[l.Name], targets[i], step * l.Level);
+                float target = l.Index < keep ? l.Level : 0f;
+                float level = Mathf.MoveTowards(_levels[l.Name], target, step * l.Level);
                 _levels[l.Name] = level;
                 var src = _sources[l.Name];
                 src.volume = level * gain;

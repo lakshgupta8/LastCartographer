@@ -1190,7 +1190,8 @@ namespace OWSBG.Setup
             EditorUtility.SetDirty(feature);
         }
 
-        // ---- Addressables (PRG-07): one group, one bundle per room, address = scene name.
+        // ---- Addressables (PRG-07): one group, one bundle per room, address = scene name; and the art shared between
+        // rooms in a group of its own (PRG-24), so a room's bundle references a sheet instead of carrying a copy.
 
         static IEnumerable<string> RoomScenePaths => AllRoomScenePaths();
 
@@ -2624,12 +2625,56 @@ namespace OWSBG.Setup
                 entry.address = Path.GetFileNameWithoutExtension(path);
                 entry.SetLabel("room", true, true, false);
             }
+            int artCount = SetupArtGroup(settings);
             // Play mode reads straight from the AssetDatabase: pressing Play needs no content build.
             for (int i = 0; i < settings.DataBuilders.Count; i++)
                 if (settings.DataBuilders[i] is BuildScriptFastMode) { settings.ActivePlayModeDataBuilderIndex = i; break; }
             settings.SetDirty(AddressableAssetSettings.ModificationEvent.BatchModification, null, true, true);
             AssetDatabase.SaveAssets();
-            Debug.Log("[OWSBG] Addressables: " + group.entries.Count + " rooms in group Rooms");
+            Debug.Log("[OWSBG] Addressables: " + group.entries.Count + " rooms in group Rooms, " + artCount + " assets in group Art");
+        }
+
+        /// <summary>
+        /// The art shared between rooms (PRG-24): every texture, material and shader under Art, in one group packed by
+        /// label (the characters together, each region's environment together, the materials, the shaders, the
+        /// portraits, the effects, the UI). Without it every room's bundle carried its own copy of each sheet, material
+        /// and shader it used, and a transition made them all again: 75 to 140 ms a room in the probe. Shared, a sheet is
+        /// made once and stays while any loaded room uses it, and a room's load is its own objects.
+        /// </summary>
+        static int SetupArtGroup(AddressableAssetSettings settings)
+        {
+            var art = settings.FindGroup("Art");
+            if (art == null)
+                art = settings.CreateGroup("Art", false, false, false, null, typeof(BundledAssetGroupSchema), typeof(ContentUpdateGroupSchema));
+            var bundled = art.GetSchema<BundledAssetGroupSchema>();
+            bundled.BuildPath.SetVariableByName(settings, AddressableAssetSettings.kLocalBuildPath);
+            bundled.LoadPath.SetVariableByName(settings, AddressableAssetSettings.kLocalLoadPath);
+            bundled.BundleMode = BundledAssetGroupSchema.BundlePackingMode.PackTogetherByLabel;
+            var guids = new HashSet<string>();
+            foreach (var filter in new[] { "t:Texture2D", "t:Material", "t:Shader" })
+                foreach (var guid in AssetDatabase.FindAssets(filter, new[] { Root + "/Art" })) guids.Add(guid);
+            int count = 0;
+            foreach (var guid in guids)
+            {
+                var path = AssetDatabase.GUIDToAssetPath(guid);
+                if (string.IsNullOrEmpty(path) || AssetDatabase.IsValidFolder(path)) continue;
+                var entry = settings.CreateOrMoveEntry(guid, art, false, false);
+                entry.address = path;
+                string label = ArtLabel(path);
+                foreach (var old in new List<string>(entry.labels)) if (old != label) entry.SetLabel(old, false, false, false);
+                entry.SetLabel(label, true, true, false);
+                count++;
+            }
+            return count;
+        }
+
+        /// <summary>"art.characters", "art.environment.saltmarrow", "art.materials": the bundle an art asset packs into.</summary>
+        static string ArtLabel(string path)
+        {
+            var rel = path.Substring((Root + "/Art/").Length).Split('/');
+            string top = rel[0].ToLowerInvariant();
+            if (top == "environment" && rel.Length > 2) return "art.environment." + rel[1].ToLowerInvariant();
+            return "art." + top;
         }
 
         /// <summary>Content build for players (bundles under Library/com.unity.addressables). Play mode does not need it.</summary>

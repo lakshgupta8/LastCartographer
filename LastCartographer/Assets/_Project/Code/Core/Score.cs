@@ -209,13 +209,28 @@ namespace OWSBG.Core
 
         static readonly List<Theme> _themes = new List<Theme>();
         public static IReadOnlyList<Theme> Themes => _themes;
-        public static Theme ThemeOf(Region r) => _themes.FirstOrDefault(t => t.Region == r && t.Boss == null && t.Coda == Ending.None);
+        static readonly Dictionary<Region, Theme> _themeOf = new Dictionary<Region, Theme>();
+        static readonly Dictionary<(string, Region?), Theme> _bossThemeOf = new Dictionary<(string, Region?), Theme>();
+        /// <summary>A region's own theme. Kept once found: the driver asks every frame, and a search closes over the region.</summary>
+        public static Theme ThemeOf(Region r)
+        {
+            if (_themeOf.TryGetValue(r, out var kept)) return kept;
+            var t = _themes.FirstOrDefault(x => x.Region == r && x.Boss == null && x.Coda == Ending.None);
+            if (t != null) _themeOf[r] = t;
+            return t;
+        }
         /// <summary>The ending's coda: what plays as the screen goes white and the title comes (AUD-08).</summary>
         public static Theme CodaOf(Ending e) => _themes.FirstOrDefault(t => t.Coda == e && e != Ending.None);
         public static Theme ThemeOfBoss(string family) => _themes.FirstOrDefault(t => t.Boss == family);
         /// <summary>A boss's theme in the region it is fought in (Halvard's count travels: three keys), else its first, else none.</summary>
-        public static Theme ThemeOfBoss(string family, Region? region) =>
-            (region.HasValue ? _themes.FirstOrDefault(t => t.Boss == family && t.Region == region.Value) : null) ?? ThemeOfBoss(family);
+        public static Theme ThemeOfBoss(string family, Region? region)
+        {
+            if (family == null) return null;
+            if (_bossThemeOf.TryGetValue((family, region), out var kept)) return kept;
+            var t = (region.HasValue ? _themes.FirstOrDefault(x => x.Boss == family && x.Region == region.Value) : null) ?? ThemeOfBoss(family);
+            if (t != null) _bossThemeOf[(family, region)] = t;
+            return t;
+        }
 
         /// <summary>The bosses the shared motif serves: any whose family has no theme of its own.</summary>
         public const string SharedBoss = "*";

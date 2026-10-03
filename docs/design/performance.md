@@ -44,8 +44,9 @@ pwsh tools/perf.ps1 -Exe <dev build> -Attribute
   - lifts the 60 fps cap, so a frame costs what it costs;
   - walks a route from the start room, always taking the first way on to a room it hasn't seen, and walking back
     from dead ends;
-  - samples 300 frames in each room once it has settled;
-  - times every transition.
+  - samples 300 frames in each room once it has settled (sixty frames and half a second at least, and until the
+    region's score and ambience have finished rendering on their threads: that garbage is the load's);
+  - times every transition, and says where the time went.
 - **What each room gets:**
   - frame times (average, median, 95th and 99th percentiles, worst);
   - draw batches, SetPass calls and triangles;
@@ -55,7 +56,8 @@ pwsh tools/perf.ps1 -Exe <dev build> -Attribute
 - **Bytes per frame need a development build.** Unity's per-frame allocation counter exists only there, so a release
   build reports "n/a" and counts collections instead.
 - **`-perfAttribute`** (development builds) finds who allocates. In the first room it switches off each of our script
-  types in turn and puts the frame's allocation down to the scripts whose absence lowers it.
+  types in turn and puts the frame's allocation down to the scripts whose absence lowers it; at the walk's end it
+  does the same for their coroutines, then switches everything of ours off to read the engine's share.
 - **The editor won't do for this.** Its own loop allocates over a megabyte a frame.
 - **`-skipPrologue`** is new for built players: they start at Saltmarrow, as the editor's Play From Saltmarrow does.
   Testers can use it too.
@@ -138,7 +140,17 @@ lists every run with its card, class, worst p95 (and projection), worst transiti
 
 **CI.** GitHub's hosted Windows runners have no GPU. The smoke job now also runs the probe headless on the build
 (`tools/perf.ps1 -Batch`) and uploads `perf-ci.json` beside the smoke log. It fails the run on a transition over
-100 ms, or on garbage or a collection in a quiet frame. Frame rate is left to the gate.
+100 ms, or on garbage or a collection in a quiet frame. Frame rate is left to the gate. The first time it ran there
+(the fifteenth run, 2026-10-03) it failed, and rightly: see "The art's cost" below. `tools/perf.ps1 -Advisory`
+turns a budget miss into a warning for a machine that is known not to be the game's; CI doesn't use it.
+
+**What the probe says now.** Each transition's line breaks its time down (`RoomManager.LastTransitionDetail`):
+finding the room's bundle, loading its assets, activating the scene (its Awakes), placing Wren, and unloading the
+old room with the new one's first frame; and the managed bytes the whole of it allocated. With `-Attribute` on a
+development build, the first room's garbage is laid at each script type's door by switching the type off and reading
+the frames either side (medians, so a type's OnDisable allocating once doesn't count as every frame), and at the
+walk's end the same is done for coroutines (a disabled behaviour's coroutines keep running, so each type's are
+stopped in turn) and for everything of ours at once, which leaves the engine's and the packages' share.
 
 **A probe fix the headless run found.** Uncapped and unrendered, the player runs at around 10,000 fps, so the probe's
 60-frame settle was over in 6 ms. The garbage from loading the room then set off a collection inside the Shore's
@@ -159,6 +171,43 @@ PowerShell didn't wait for it, the exit code was lost and the report wasn't ther
 |---|---|---|---|---|
 | Rendered, 1920×1080, RTX 3050 6GB Laptop (Above, 1.2×) | 1.90–2.38 ms (projected 2.86) | 12–27 ms | 0 collections | within budget; can't prove the target |
 | Headless (`-Batch`), as CI runs it | 0.11–0.17 ms (CPU only) | 5–13 ms | 0 collections, 2–4 per load | within budget |
+| Headless, GitHub's hosted Windows runner, `a664ab9` (2026-10-03) | 0.11–0.36 ms (CPU only) | 97–850 ms | 1 collection in four rooms | over budget: the art's cost, below |
+
+## The art's cost (2026-10-03), and the fix
+
+The probe's first run on CI failed on every transition and on garbage in four rooms, and the same build failed the
+same way here: transitions of 125–462 ms against the 5–13 ms measured on 2026-09-29, and a collection in three
+quiet rooms. Everything drawn had landed in between (the characters, the paper kit, the dressing, the score and the
+ambience), and two things had come with it.
+
+**Every room carried its own copy of the art.** No art was addressable, so each room's scene bundle embedded every
+sheet, material and shader it referenced: a coast room referenced 4–30 MB of raw character sheets, the build's
+bundles came to 330 MB, and a transition's time was almost all the assets' load (the breakdown: 75–139 ms of assets,
+under 7 ms of everything else). The fix is a second Addressables group, `Art`, holding every texture, material and
+shader under `Art`, packed by label: the characters together, each region's environment together, the materials,
+the shaders, the portraits, the effects, the UI (`ProjectSetup.SetupArtGroup`). A room's bundle now references
+them, a sheet is made once and stays while any loaded room uses it, and a room's load is its own objects: the
+bundles came to 104 MB (the scenes' 1 MB of them) and the transitions to 3–12 ms, with the first touch of a sheet
+nobody had used paid once.
+
+**Quiet frames allocated 4.4 KB.** A development build put it at the audio drivers, the NPCs' animators and the HUD:
+the region of a room was worked out from its name every frame (substrings, an array, a parse) by the ambience, the
+mix and the lighting; the fade stage took a substring; the ambience listed a region's layers with LINQ and built an
+array of their levels every frame; the score searched its themes with a closure every frame; both audio drivers
+listed their render tasks every frame; an animator passed its sheet's `Has` as a fresh delegate every frame and
+lower-cased its post's activity every frame; and the HUD rebuilt its seed and use counts and queried its slot labels
+ten times a second. Each is now looked up once and kept (`Mix.RegionOf`, `Mix.PlaceOf`, `Ambience.Of`,
+`Score.ThemeOf`, `NpcAnimator.ActivityClip`), or written only when it changes (the HUD), or gathered without a
+list (the drivers' `Finish`). The attribution's own measure was tightened on the way (medians, frames either side).
+
+### Measured, 2026-10-04 (this machine, headless, the route of six)
+
+| Build | Transitions | Garbage | Verdict |
+|---|---|---|---|
+| Development, `07df44b` before the fix | 86–145 ms (assets 75–139) | 4.2–4.5 KB/frame, 1 collection a room | over budget |
+| Development, art shared | 3–12 ms | 170–301 B/frame, 0 collections | transitions in; garbage over |
+| Development, art shared, quiet frames fixed | 4–11 ms | 45 B/frame, 0 collections | within budget |
+| Release, as CI runs it, after both fixes | 3–10 ms | n/a (release), 0 collections | within budget |
 
 The rendered frames are a little slower than the first measurement's (1.4–1.6 ms average against 1.2). This is the
 same greybox on a laptop, most likely on a different power plan; it is far inside the budget either way.
@@ -195,10 +244,17 @@ same greybox on a laptop, most likely on a different power plan; it is far insid
 - **The target is decided** (2026-09-29): a GTX 1060-class card, for the widest reach. The development machine's card
   says nothing about the game's specs, so its runs stay "Above".
 - **Target hardware.** PRO-06 is met the day a tester's GTX 1060-class run passes the gate. None has been run yet.
-- **The painted rooms.** Real art brings sprite atlases, overdraw from the paper layers, and texture memory per room
-  bundle. The budgets for those (batches, texture MB per room, resident bundles) get set when a painted room exists
-  to measure.
+- **The painted rooms.** The art is drawn and shared between rooms now (above); what's still unmeasured is the
+  rendered side of it: overdraw from the paper layers and batches with real sheets, on a card. Those budgets get set
+  from a rendered run.
+- **The characters' sheets are uncompressed** (`CharacterTextureImporter`: so the ink line stays a line), 804 MB of
+  raw RGBA over the whole cast, and the shared bundle keeps a sheet resident once used. A session that meets the
+  whole cast would hold the lot. BC7 would quarter it with the line intact on PC; it waits for the hand pass, when
+  the sheets are final and the look can be judged against the compression.
 - **Fights.** The probe only walks. A boss fight, a full camp at night and the Blank's islands need their own
   samples; the probe's route can take a scripted list of rooms when those rooms are built.
-- **CI measures the CPU side only.** A self-hosted runner with a target card would let CI run the gate itself.
+- **CI measures the CPU side only.** A self-hosted runner with a target card would let CI run the gate itself. The
+  hosted runner's loads also run slower than this machine's (its first bundle took 850 ms there against the
+  regression's 125 ms here); if the fixed build still trips the transition budget there and nowhere else,
+  `tools/perf.ps1 -Advisory` is the switch.
 - **The card table** is rough, and needs a row for any card a tester brings that it doesn't know.

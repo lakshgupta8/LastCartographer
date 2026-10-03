@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using OWSBG.Core;
 using OWSBG.World;
 using UnityEngine;
@@ -114,6 +115,12 @@ namespace OWSBG.UI
             return true;
         }
 
+        // What the last refresh wrote, so a quiet refresh writes nothing: the strings it builds are the HUD's only
+        // garbage, and a quiet frame allocates nothing (PRG-24).
+        int _shownSeeds = int.MinValue;
+        string _shownCharter;
+        readonly List<int> _shownUses = new List<int>();
+
         public void Refresh()
         {
             if (!_built || _vitals == null) return;
@@ -133,20 +140,29 @@ namespace OWSBG.UI
                 _clarityFill.style.width = new Length(_clarity.Fraction * 100f, LengthUnit.Percent);
             }
 
-            _charter.text = _charters != null && _charters.Current != null ? _charters.Current.LocalName : "";
+            var charter = _charters != null && _charters.Current != null ? _charters.Current.LocalName : "";
+            if (!ReferenceEquals(charter, _shownCharter) && charter != _shownCharter) _charter.text = charter;
+            _shownCharter = charter;
 
             if (_belt != null)
             {
                 var e = _belt.Equipment;
                 SyncCount(_slots, e.SlotCount, MakeSlot);
+                while (_shownUses.Count < e.SlotCount) _shownUses.Add(int.MinValue);
                 for (int i = 0; i < e.SlotCount; i++)
                 {
                     var slot = _slots[i];
                     var s = e.Slots[i];
-                    var name = (Label)slot.Q("name");
-                    var uses = (Label)slot.Q("uses");
+                    var name = (Label)slot.userData;
+                    var uses = (Label)name.userData;
                     name.text = s.IsEmpty ? "—" : InstrumentInfo.Of(s.Kind).Name;
-                    uses.text = s.IsEmpty ? "" : s.UsesLeft < 0 ? (_belt.CooldownLeft(i) > 0f ? "…" : "∞") : s.UsesLeft.ToString();
+                    // The count's string is made when the count changes; a cooldown or the endless mark is a constant.
+                    int usesNow = s.IsEmpty ? -2 : s.UsesLeft < 0 ? (_belt.CooldownLeft(i) > 0f ? -3 : -4) : s.UsesLeft;
+                    if (usesNow != _shownUses[i])
+                    {
+                        _shownUses[i] = usesNow;
+                        uses.text = usesNow == -2 ? "" : usesNow == -3 ? "…" : usesNow == -4 ? "∞" : usesNow.ToString();
+                    }
                     bool sel = i == e.SelectedSlot;
                     slot.EnableInClassList("selected", sel);
                     InkTheme.SetBorder(slot, sel ? InkTheme.Ink : InkTheme.InkFaint, sel ? 2f : 1f);
@@ -154,7 +170,8 @@ namespace OWSBG.UI
                 }
             }
 
-            _seeds.text = "✿ " + Economy.Seeds(GameState.World);
+            int seeds = Economy.Seeds(GameState.World);
+            if (seeds != _shownSeeds) { _shownSeeds = seeds; _seeds.text = "✿ " + seeds; }
             InkTheme.Show(_death, _vitals.IsDead);
         }
 
@@ -205,6 +222,7 @@ namespace OWSBG.UI
             var uses = InkTheme.Text("uses", "", 16, InkTheme.Wash, FontStyle.Bold);
             uses.style.marginLeft = 8;
             e.Add(name); e.Add(uses);
+            e.userData = name; name.userData = uses;   // found once here, not queried every refresh
             return e;
         }
     }

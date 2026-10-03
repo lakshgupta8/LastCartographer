@@ -94,7 +94,17 @@ namespace OWSBG.Core
         }
 
         public static IReadOnlyList<Layer> Layers => _layers;
-        public static List<Layer> Of(Region r) => _layers.Where(l => l.Region == r).OrderBy(l => l.Index).ToList();
+        static readonly Dictionary<Region, List<Layer>> _of = new Dictionary<Region, List<Layer>>();
+        /// <summary>A region's layers in order. One list per region, kept: the driver asks every frame.</summary>
+        public static List<Layer> Of(Region r)
+        {
+            if (!_of.TryGetValue(r, out var list))
+            {
+                list = _layers.Where(l => l.Region == r).OrderBy(l => l.Index).ToList();
+                _of[r] = list;
+            }
+            return list;
+        }
         public static Layer Find(Region r, string name) => _layers.FirstOrDefault(l => l.Region == r && l.Name == name);
 
         /// <summary>

@@ -71,6 +71,8 @@ namespace OWSBG.Narrative
         public bool IsResolving => AudioSettings.dspTime < _resolvingUntil;
         public int BarsPlayed => Current == null ? 0 : Mathf.Max(0, (int)((AudioSettings.dspTime - _start) / Current.BarSeconds));
         public bool IsRendering(Score.Theme t) => t != null && _rendering.ContainsKey(t.Id);
+        /// <summary>A theme is still rendering on its thread (the probe waits for it: its garbage is the load's, not a quiet frame's).</summary>
+        public bool IsRenderingAny => _rendering.Count > 0;
         public bool IsReady(Score.Theme t) => t != null && _clips.ContainsKey(t.Id);
         public AudioSource Source(string stem) => _sources.TryGetValue(stem, out var s) ? s : null;
         public AudioLowPassFilter Filter(string stem) => _filters.TryGetValue(stem, out var f) ? f : null;
@@ -192,12 +194,16 @@ namespace OWSBG.Narrative
         }
 
         /// <summary>Rendered stems become clips on the main thread.</summary>
+        readonly List<string> _finished = new List<string>();
+
         void Finish()
         {
-            foreach (var id in _rendering.Keys.ToList())
+            if (_rendering.Count == 0) return;
+            _finished.Clear();   // the done ones, gathered first: a frame while a theme renders allocates nothing either
+            foreach (var kv in _rendering) if (kv.Value.IsCompleted) _finished.Add(kv.Key);
+            foreach (var id in _finished)
             {
                 var task = _rendering[id];
-                if (!task.IsCompleted) continue;
                 _rendering.Remove(id);
                 if (task.IsFaulted) { Debug.LogWarning("[OWSBG] the music could not render " + id + ": " + task.Exception?.GetBaseException().Message); continue; }
                 var clips = new Dictionary<string, AudioClip>();

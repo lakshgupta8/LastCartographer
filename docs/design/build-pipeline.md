@@ -16,7 +16,7 @@ point, used by the menu (**OWSBG → Build → Windows**), a headless editor and
    - The game reads the stamp as `BuildInfo` (Core), and the options page shows it at the bottom ("version 0.5.0 ·
      1a2b3c4"), so a bug report can quote it.
    - The checked-in file says `dev`, and the build puts it back afterwards however the build ends.
-3. **Builds the Addressables content.** Every room is a bundle (PRG-07); play mode doesn't need this, a player does.
+3. **Builds the Addressables content.** Every room is a bundle (PRG-07), and the art the rooms share is a second group packed by label (PRG-24); play mode doesn't need this, a player does.
 4. **Builds the player:** 64-bit Windows, Mono, from Build Settings' scenes (only Persistent; the rooms come from the
    bundles). The exe is `LastCartographer.exe`, a name with no spaces for Steam's launch options; the window title
    is still the product name.
@@ -181,6 +181,17 @@ The fourteenth run (2026-10-02): the ambience crossfade test (AUD-06), whose out
 found them gone at the halfway mark on the same runner. The clock measure is now one helper for every play
 fixture that needs it (`AudioClock`: measured once per run, a test steps aside past a quarter off real time), and
 that test uses it too.
+
+The fifteenth run (2026-10-03) reached the smoke job for the first time since the probe joined it, and the probe
+failed it: transitions of 97–850 ms and a collection in four quiet rooms. The first reading was that the hosted
+runner is not the target machine; the same build then failed the same way here (125–462 ms, collections in three
+rooms), and the cause was the art that had landed since the probe was last run: every room's bundle carried its own
+copies of the sheets, materials and shaders it used, and the audio drivers, the NPC animators and the HUD allocated
+on quiet frames. Both are fixed (`docs/design/performance.md`, "The art's cost"), the probe reports where a
+transition's time goes and who allocates, and it gates CI as before. The same run's play mode found two things the
+Brood's commit had left: its fire was a Shape in its kit while it cost a mask (now a Window, read as the 240 frames
+of a step), and the arena-room tests expected every kit in a planned room where the Brood stands in a built one
+(`ArenaRooms.SceneFor` now names the Iris Fields).
 
 The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
 `UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,

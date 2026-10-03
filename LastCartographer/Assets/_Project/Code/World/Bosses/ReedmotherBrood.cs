@@ -64,7 +64,8 @@ namespace OWSBG.World
         {
             yield return new BossAttack("Brood call", AttackKind.Shape, Read(broodTelegraphFrames), 0, PhasesOf(Attack.Brood, PatternFor));
             yield return new BossAttack("Thresh", AttackKind.Strike, Read(threshTelegraphFrames), threshDamage, PhasesOf(Attack.Thresh, PatternFor));
-            yield return new BossAttack("The fire", AttackKind.Shape, 0, fireDamage, 1 << 2);
+            // The fire is the last phase's long read: a step every four seconds toward the nest, and standing in it costs a mask.
+            yield return new BossAttack("The fire", AttackKind.Window, Mathf.RoundToInt(fireStepSeconds * 60f), fireDamage, 1 << 2);
         }
 
         readonly List<Reedling> _chicks = new List<Reedling>();

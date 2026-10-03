@@ -33,6 +33,8 @@ namespace OWSBG.Narrative
         /// six milliseconds, and the load's garbage then lands in the quiet sample.
         /// </summary>
         public float SettleSeconds { get; set; } = 0.5f;
+        /// <summary>The most a room waits for the score and the ambience to finish rendering before its sample.</summary>
+        public float RenderWaitSeconds { get; set; } = 30f;
         public float RoomTimeout { get; set; } = 60f;
         public bool QuitWhenDone { get; set; }
         public bool Attribute { get; set; }
@@ -100,6 +102,12 @@ namespace OWSBG.Narrative
                 int arrivedCollections = GC.CollectionCount(0);
                 float settleUntil = Time.realtimeSinceStartup + SettleSeconds;
                 for (int i = 0; i < SettleFrames || Time.realtimeSinceStartup < settleUntil; i++) yield return null;
+                // The region's score and ambience render on threads the first time a room asks for them, and their
+                // garbage is the load's, not a quiet frame's: a room settles until they are done too.
+                float renderUntil = Time.realtimeSinceStartup + RenderWaitSeconds;
+                while (Time.realtimeSinceStartup < renderUntil &&
+                       ((MusicDriver.Instance != null && MusicDriver.Instance.IsRenderingAny) || (AmbienceDriver.Instance != null && AmbienceDriver.Instance.IsRenderingAny)))
+                    yield return null;
                 var sample = new PerfReport.Room { room = here };
                 // The load's garbage is the transition's, not the quiet frame's: count what it cost, then clear it.
                 sample.loadCollections = GC.CollectionCount(0) - arrivedCollections;
@@ -120,10 +128,12 @@ namespace OWSBG.Narrative
                 rooms.Transition(next, SpawnFor(next, here));
                 yield return Wait(() => rooms.CurrentRoom == next && !rooms.IsTransitioning, RoomTimeout, r => ok = r);
                 if (!ok) { report.overBudget.Add(next + " never came in"); yield return Finish(report, 2); yield break; }
-                var t = new PerfReport.Transition { from = here, to = next, ms = rooms.LastTransitionMs };
+                var t = new PerfReport.Transition { from = here, to = next, ms = rooms.LastTransitionMs, detail = rooms.LastTransitionDetail };
                 report.transitions.Add(t);
-                Debug.Log("[OWSBG] perf: transition " + here + " → " + next + ": " + t.ms.ToString("0") + " ms");
+                Debug.Log("[OWSBG] perf: transition " + here + " → " + next + ": " + t.ms.ToString("0") + " ms" + (string.IsNullOrEmpty(t.detail) ? "" : " (" + t.detail + ")"));
             }
+
+            if (Attribute) yield return AttributeTheRest(rooms.CurrentRoom);
 
             foreach (var r in report.rooms)
             {
@@ -196,12 +206,14 @@ namespace OWSBG.Narrative
         {
             var gc = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
             if (!gc.Valid) { Debug.Log("[OWSBG] perf: attribution needs a development build"); gc.Dispose(); yield break; }
+            // The median of the frames, so a one-off (a type's OnDisable or OnEnable allocating once) doesn't read as every frame's.
             IEnumerator Measure(int frames, Action<double> result)
             {
                 yield return null;
-                double sum = 0;
-                for (int i = 0; i < frames; i++) { yield return null; sum += gc.LastValue; }
-                result(sum / frames);
+                var seen = new List<double>(frames);
+                for (int i = 0; i < frames; i++) { yield return null; seen.Add(gc.LastValue); }
+                seen.Sort();
+                result(seen.Count == 0 ? 0 : seen[seen.Count / 2]);
             }
             double baseline = 0;
             yield return Measure(180, r => baseline = r);
@@ -211,16 +223,69 @@ namespace OWSBG.Narrative
             var found = new List<(string name, double bytes)>();
             foreach (var g in groups)
             {
+                // Measured against the frames either side of it, not the baseline: what a frame allocates drifts as the
+                // room settles (the neighbours' preload finishing, a fade ending), and a drift would be laid at every type's door.
+                double before = 0, without = 0, after = 0;
+                yield return Measure(45, r => before = r);
                 foreach (var m in g) m.enabled = false;
-                double without = 0;
-                yield return Measure(90, r => without = r);
+                yield return Measure(60, r => without = r);
                 foreach (var m in g) if (m != null) m.enabled = true;
-                yield return null;
-                if (baseline - without >= 8) found.Add((g.Key.Name, baseline - without));
+                yield return Measure(45, r => after = r);
+                double saved = (before + after) * 0.5 - without;
+                if (saved >= 8) found.Add((g.Key.Name, saved));
             }
+            foreach (var g in groups) foreach (var m in g) if (m != null) m.enabled = false;
+            double rest = 0;
+            yield return Measure(90, r => rest = r);
+            foreach (var g in groups) foreach (var m in g) if (m != null) m.enabled = true;
+            yield return null;
             gc.Dispose();
             Debug.Log("[OWSBG] perf: " + room + " allocates " + baseline.ToString("0") + " B/frame; by script: " +
-                      (found.Count == 0 ? "none over 8 B" : string.Join(", ", found.OrderByDescending(f => f.bytes).Select(f => f.name + " " + f.bytes.ToString("0")))));
+                      (found.Count == 0 ? "none over 8 B" : string.Join(", ", found.OrderByDescending(f => f.bytes).Select(f => f.name + " " + f.bytes.ToString("0")))) +
+                      "; with every script of ours off: " + rest.ToString("0") + " B/frame (the engine's and the packages')");
+        }
+
+        /// <summary>
+        /// What a quiet frame allocates beyond the scripts' Updates (development builds): disabling a behaviour leaves
+        /// its coroutines running, so each of our types' coroutines are stopped in turn, then every script of ours is
+        /// switched off, and what still allocates is the engine's and the packages'. At the walk's end, where nothing
+        /// is measured after it.
+        /// </summary>
+        IEnumerator AttributeTheRest(string room)
+        {
+            var gc = ProfilerRecorder.StartNew(ProfilerCategory.Memory, "GC Allocated In Frame");
+            if (!gc.Valid) { gc.Dispose(); yield break; }
+            // The median of the frames, so a one-off (a type's OnDisable or OnEnable allocating once) doesn't read as every frame's.
+            IEnumerator Measure(int frames, Action<double> result)
+            {
+                yield return null;
+                var seen = new List<double>(frames);
+                for (int i = 0; i < frames; i++) { yield return null; seen.Add(gc.LastValue); }
+                seen.Sort();
+                result(seen.Count == 0 ? 0 : seen[seen.Count / 2]);
+            }
+            double baseline = 0;
+            yield return Measure(180, r => baseline = r);
+            var groups = FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Exclude, FindObjectsSortMode.None)
+                .Where(m => m != this && m.GetType().Namespace != null && m.GetType().Namespace.StartsWith("OWSBG"))
+                .GroupBy(m => m.GetType()).ToList();
+            var found = new List<(string name, double bytes)>();
+            double last = baseline;
+            foreach (var g in groups)
+            {
+                foreach (var m in g) if (m != null) m.StopAllCoroutines();
+                double without = 0;
+                yield return Measure(90, r => without = r);
+                if (last - without >= 8) found.Add((g.Key.Name, last - without));
+                last = Math.Min(last, without);
+            }
+            foreach (var g in groups) foreach (var m in g) if (m != null) m.enabled = false;
+            double rest = 0;
+            yield return Measure(90, r => rest = r);
+            gc.Dispose();
+            Debug.Log("[OWSBG] perf: " + room + " allocates " + baseline.ToString("0") + " B/frame at the walk's end; by coroutine: " +
+                      (found.Count == 0 ? "none over 8 B" : string.Join(", ", found.OrderByDescending(f => f.bytes).Select(f => f.name + " " + f.bytes.ToString("0")))) +
+                      "; with every script of ours off: " + rest.ToString("0") + " B/frame (the engine's and the packages')");
         }
 
         static long AllocatedBytes()

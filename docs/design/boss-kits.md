@@ -48,7 +48,7 @@ only time it can be struck. Never more than six chicks at once. Its reeds thresh
 |---|---|---|
 | 1 | Brood call, thresh | Jump the reeds; strike the open nest while the clutch is out, or Blot the clutch first |
 | 2 | Brood call, thresh, thresh | The same, faster |
-| 3 | Thresh, brood call, thresh; **the fire** (bible 6.2: the Guild's agents set the field alight) creeps in from the east edge toward the nest, a step every 4 s, four steps; standing in it costs a mask | **The choice.** Stamp the fire out (three down-strikes on it) and the Brood calms (`calm`), the beds stand and the Ferrymen's prices hold. Strike the nest down, or let the fire reach it, and the nest burns (`death`): `saltmarrow.iris_burned` is set and the Ferrymen's prices rise by half (`Economy.IrisBurned`) |
+| 3 | Thresh, brood call, thresh; **the fire** (bible 6.2: the Guild's agents set the field alight) creeps in from the east edge toward the nest, a step every 4 s, four steps (a Window to the tables, read as the 240 frames of a step); standing in it costs a mask | **The choice.** Stamp the fire out (three down-strikes on it) and the Brood calms (`calm`), the beds stand and the Ferrymen's prices hold. Strike the nest down, or let the fire reach it, and the nest burns (`death`): `saltmarrow.iris_burned` is set and the Ferrymen's prices rise by half (`Economy.IrisBurned`) |
 
 Either way the fight ends in a win: the arena's flag is set, and the Tether-hook (Economy's stock) is hers. The
 sheet's lines run "Ours. Ours. Ours." to "...ours?" over the phases.
@@ -258,7 +258,9 @@ fights that boss: `Arena_Emberdown_Hollow_4`, `Arena_Emberdown_Stair_3`, `Arena_
 `Arena_Verdance_Gate_2`, `Arena_Halden_Bastion_2`, `Arena_Windreach_Stones_3`, `Arena_Windreach_Star_2`,
 `Arena_Greyfold_Threshold_2`, `Arena_Greyfold_Cathedral_2`, `Arena_Blank_Capital_2`, `Arena_Blank_Capital_4`,
 `Arena_Halden_Observatory_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
-region's rooms are built, its arena moves into them and that generator entry retires.
+region's rooms are built, its arena moves into them and that generator entry retires. The Reedmother's Brood is the
+first kit to have that already: it stands in the Pale Iris Fields, a built room, so `ArenaRooms.SceneFor` names
+`Greybox_Saltmarrow_IrisFields` for it (the greybox scene its sheet's zone names) and builds no arena room.
 
 ## Tests
 
@@ -321,8 +323,9 @@ the grade; a retry mid-hold frees her and unseals the arena.
 
 The arena-room tests cover all twelve rooms.
 
-`ArenaRoomsTests` (PlayMode, 2 tests) check that each kit has a planned room in its sheet's zone. They also travel
-to every arena room in the real game and walk in to start each fight.
+`ArenaRoomsTests` (PlayMode, 2 tests) check that each kit has a planned room in its sheet's zone, or (the Brood) a
+built one. They also travel to every arena room in the real game, and to the Iris Fields, and walk in to start each
+fight.
 
 ## Open
 

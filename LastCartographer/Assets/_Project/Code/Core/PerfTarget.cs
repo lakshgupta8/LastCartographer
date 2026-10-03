@@ -31,6 +31,8 @@ namespace OWSBG.Core
         {
             public string from, to;
             public float ms;
+            /// <summary>Where the time went (RoomManager.LastTransitionDetail).</summary>
+            public string detail;
         }
 
         public string version, device, cpu, graphics, resolution;

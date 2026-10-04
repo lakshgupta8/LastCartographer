@@ -82,6 +82,10 @@ pattern shifts, and the sections about to heat glow orange 0.8 s before.
 
 34 health, 3 scraps, `boss.brann.defeated`.
 
+**Drawn** (ENV-12): each section is a `FurnaceGrate` (boss_parts.py): cool iron, its slots glowing as it warms,
+white with flames licking up past her feet when hot, sooted over in the dark. The drawing is the rule's own read:
+what burns is what is drawn burning.
+
 ## 6.6 The Choir, over Aldermere's square
 
 Three doves in a line at 2.6 units, one health between them (27). Only the doves can be struck; a hit on the Choir
@@ -172,7 +176,10 @@ times its startup, never under the tier's floor. The late Charters mirror as the
 | 2 | Combo, Wren's own Flourish (Crosshatch in front, Longstroke six units, or Blot round her), step | Whatever the Charter asks |
 | 3 | At a third she steps clear and Binds, once: 60 frames, then a third of her health back. Then Flourish, combo, step, combo | Deny the Bind: a hit while she binds stops it, staggers her, and the Bind is spent |
 
-38 health, 3 scraps, `boss.oriel.defeated`. **The stand-down:** she counts every mask Wren loses in the attempt.
+38 health, 3 scraps, `boss.oriel.defeated`. **The yard** stands its drill from the plateau's kit: a rack of practice
+lances with her slot empty, a slate with the morning's three strokes chalked on it (overhead, shove, sweep: the
+Charter's combo the way she reads it back), and the paces chalked along the flags' edge, every fourth numbered in a
+tally. **The stand-down:** she counts every mask Wren loses in the attempt.
 Beaten with none lost, she writes `halden.oriel.stood_down`. A retry starts the count again and gives her Bind back.
 
 **A rule changed with it.** `Licence` used to let Pell's report outrank Oriel. But she only fights once the report
@@ -384,8 +391,8 @@ fight.
   `windreach.hale.finished`.
 - **The Fallen Star's magnetism** is v1 as a hit rule (side strikes drift). It doesn't yet pull Wren or bend the
   quill's path.
-- **Oriel's arena** always holds her; gating it on `pell.report_sent` belongs with the Bastion's built room, like
-  the Choir's gate.
+- ~~Oriel's arena always holds her.~~ The Bastion's built room gates it on `pell.report_sent` (its recipe's arena
+  flag); without the report the yard is empty but for its drill.
 - **Voss's sheet has sections freeze mid-air and platforms lock.** v1 seals floor sections only; the Threshold's
   built room, with platforms to lock, can add them. His "shrinking island" is the floor's last two sections, not a
   platform yet. Halvard's third kit, fought before him at Threshold_1, is built (6.3 III above).

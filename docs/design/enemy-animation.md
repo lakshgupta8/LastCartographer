@@ -50,8 +50,9 @@ they carry. Packed as `Halvard`, `Brann`, `Oriel`, `Warden_B`, `Warden_C`; model
 
 Halvard's manifest carries `feetUnits` (−0.82: where his feet are from the cell's centre) because he is drawn on his
 collider's centre like every enemy but must also stand on the lighthouse floor as an NPC; `MakeSpriteQuad` uses it
-for the feet-at-origin placement, so one set of sheets serves the fight and the hunt. Brann and Oriel have no room
-yet (Emberdown's Furnace Stair and Halden's Bastion are unbuilt): the sheets and the clip names wait for them.
+for the feet-at-origin placement, so one set of sheets serves the fight and the hunt. Brann fights in the cold furnace
+(`Emberdown_Stair_3`) on its drawn grates, Oriel in the Bastion's drill-yard (`Halden_Bastion_2`) among its rack, its
+slate and its paces (boss-kits.md 6.5, 6.8).
 
 ## 2b. The highland's creatures (CMB-09, with ENV-03)
 
@@ -165,7 +166,8 @@ the enemy type's name.
 - The Lost Remnant is placed by the Greyfold's and the Blank's rooms now (ENV-08); the Blank's islands still use tinted NPC blocks.
 - Halvard's second and third kits are drawn (the cord lance's four clips, `CordLance` and `BridgeSpan` as parts,
   boss-animation.md §3); the built rooms wear the part sheets after the next bootstrap build.
-- Brann's phase-3 glow (his telegraphs are the brass) is a tint the arena will need to drive on the sheet.
+- ~~Brann's phase-3 glow.~~ His brass is driven on the sheet (`Brann.TintColor`, dim at rest and full on every
+  telegraph in the dark) and as a light (ENV-10).
 - The skimmer's rise is a second, flared render of the same bird; a tint on the sheet would do the same in
   one render once the shader takes a flare colour.
 - The Lamp-Keeper's beams are still the arena's quads; her lamp glass could light them.

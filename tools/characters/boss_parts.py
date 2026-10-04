@@ -447,6 +447,93 @@ def bridgespan_fall(b, i, n):
 BRIDGESPAN_CLIPS = [("idle", 12, 4, True, bridgespan_idle), ("fall", 12, 6, False, bridgespan_fall)]
 
 
+EMBER = (0.92, 0.50, 0.16)
+EMBER_HOT = (0.98, 0.78, 0.36)
+FLAME = (0.96, 0.42, 0.12)
+SOOT = (0.10, 0.09, 0.09)
+
+
+class FurnaceGrate(Rig):
+    """One of the cold furnace's six floor sections (6.5): an iron plate over a firebox, its slots along the front. The
+    plate's top is 0.35 above the cell's centre (the game stands the drawing that far under the floor), the firebox
+    in the cell below it, the flames in the cell above. Its states are props: the slots dark, glowing (two strengths,
+    so warming pulses) or white-hot; the flames; and the soot that covers it all in the dark."""
+    SLOTS = 7
+
+    def __init__(self):
+        super().__init__()
+        root = self.add("root")
+        body = self.add("body", root, (0, 0, 0.35))   # the walking surface
+        iron, light, ink = mat("iron", IRON), mat("iron_light", IRON_LIGHT), mat("ink", INK)
+        cool, glow, bright, hot = mat("slot", SOOT), mat("ember", EMBER), mat("ember_bright", lerp(EMBER, EMBER_HOT, 0.5)), mat("ember_hot", EMBER_HOT)
+        flame, soot = mat("flame", FLAME), mat("soot", SOOT)
+        cube("plate", (3.0, 0.6, 0.12), light, body, loc=(0, 0, -0.06))
+        cube("firebox", (2.9, 0.5, 0.62), iron, body, loc=(0, 0.02, -0.45))
+        cube("lip", (3.0, 0.62, 0.05), iron, body, loc=(0, 0, -0.14))
+        for k in range(4):
+            sphere("rivet%d" % k, 0.03, ink, body, loc=(-1.3 + 0.866 * k, -0.31, -0.06))
+        # the slots: one set of each state, shown by the clip
+        for state, m in (("cool", cool), ("glow", glow), ("bright", bright), ("hot", hot)):
+            g = self.add("slots_" + state, body)
+            for k in range(self.SLOTS):
+                cube("slot_%s%d" % (state, k), (0.22, 0.03, 0.05), m, g, loc=(-1.2 + 0.4 * k, -0.31, -0.06))
+                cube("vent_%s%d" % (state, k), (0.18, 0.03, 0.16), m, g, loc=(-1.2 + 0.4 * k, -0.27, -0.42))
+            self.prop("slots_" + state, g)
+        # the flames: five tongues off the plate, each with a heart
+        for k in range(5):
+            f = self.add("flame%d" % k, body, (-1.1 + 0.55 * k, -0.05, 0.0))
+            cone("flame%d_m" % k, 0.16, 0.01, 0.7, flame, f, loc=(0, 0, 0.35))
+            cone("flame%d_c" % k, 0.08, 0.01, 0.4, hot, f, loc=(0, -0.08, 0.2))
+            self.prop("flame%d" % k, f)
+        # a cool plate still sheds the odd fleck of ash
+        for k in range(2):
+            a = self.add("ash%d" % k, body, (-0.6 + 1.3 * k, -0.2, 0.05))
+            cube("ash%d_m" % k, (0.04, 0.02, 0.04), mat("ash", (0.55, 0.52, 0.50)), a)
+            self.prop("ash%d" % k, a)
+        s = self.add("soot", body)
+        cube("soot_plate", (2.94, 0.64, 0.1), soot, s, loc=(0, -0.01, -0.06))
+        cube("soot_box", (2.84, 0.54, 0.56), soot, s, loc=(0, 0.0, -0.45))
+        self.prop("soot", s)
+        self.snapshot()
+
+
+def grate_cool(g, i, n):
+    """Cool iron, safe: the slots dark, a fleck of ash lifting off the plate and settling."""
+    g.show("slots_cool")
+    for k in range(2):
+        g.show("ash%d" % k)
+        f = ((i + 2 * k) % n) / n
+        g.move("ash%d" % k, z=0.05 + 0.5 * math.sin(math.pi * f), x=0.12 * f)
+
+
+def grate_warming(g, i, n):
+    """About to heat: the slots glow and pulse, brighter every other frame."""
+    g.show("slots_bright" if i % 2 else "slots_glow")
+
+
+def grate_hot(g, i, n):
+    """Hot, a mask if she stands on it: the slots white, the flames licking up, each tongue its own height."""
+    g.show("slots_hot")
+    for k in range(5):
+        g.show("flame%d" % k)
+        h = 0.65 + 0.35 * math.sin(2 * math.pi * (i / n) + k * 1.7)
+        g.scale("flame%d" % k, 1.0, 1.0, h)
+        g.rot("flame%d" % k, y=6 * math.sin(2 * math.pi * (i / n) + k))
+
+
+def grate_dark(g, i, n):
+    """Phase 3, the furnace out: soot over everything, a last ember winking at one end."""
+    g.show("soot")
+    g.show("slots_cool")
+    if i == 0:
+        g.show("ash0")
+        g.move("ash0", z=0.08)
+
+
+FURNACEGRATE_CLIPS = [("idle", 12, 4, True, grate_cool), ("warming", 12, 4, True, grate_warming),
+                      ("hot", 12, 4, True, grate_hot), ("dark", 12, 2, True, grate_dark)]
+
+
 PARTS = [
     ("Rubble", 2.0, Rubble, RUBBLE_CLIPS, 3.0, INK),
     ("Surge", 2.0, Surge, SURGE_CLIPS, 3.0, INK),
@@ -462,6 +549,7 @@ PARTS = [
     ("InkPool", 1.6, InkPool, INKPOOL_CLIPS, 2.8, INK),
     ("CordLance", 2.0, CordLance, CORDLANCE_CLIPS, 2.6, INK),
     ("BridgeSpan", 3.0, BridgeSpan, BRIDGESPAN_CLIPS, 3.0, INK),
+    ("FurnaceGrate", 3.0, FurnaceGrate, FURNACEGRATE_CLIPS, 3.0, INK),
 ]
 
 

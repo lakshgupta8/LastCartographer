@@ -152,7 +152,7 @@ Props (`props.py`, region `Halden`): the shared furniture and the anchor-point i
 `Prop_Gravestone` (the orchard's, a crest cut in it, 1.5 × 2), `Prop_Wheel` (a mill wheel, 2.5 × 2.5), `Prop_Scaffold`
 (the seventh bridge's repair, 3 × 3), `Prop_Frame` (the frame of the Great Atlas: seven sockets, one stone, 3.5 × 4),
 `Prop_Slots` (the Vault's wall: seven niches, one empty, 5 × 2.5), `Prop_ExamDesk` (a desk with the same paper on it,
-2.5 × 1.25) and `Prop_Notice` (survey scheduled, pasted over itself, 1.5 × 2). A piece that turns (a branch, a rib, a
+2.5 × 1.25) and `Prop_Notice` (survey scheduled, pasted over itself, 1.5 × 2); the drill-yard's `Prop_DrillRack` (practice lances, her slot empty, 2.5 × 2.3), `Prop_ChalkBoard` (the three strokes chalked on a slate, 1.75 × 2) and `Prop_Paces` (the paces chalked on the flags' edge, stood in front of the floor's face, 8.5 × 0.35). A piece that turns (a branch, a rib, a
 spoke) is built at the origin and placed after (`rbox`): a box turned in place turns about the world origin.
 
 ### 2e. The Windreach kit (ENV-07)

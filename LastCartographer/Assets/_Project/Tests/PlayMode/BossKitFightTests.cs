@@ -269,6 +269,8 @@ namespace OWSBG.Tests
             yield return StartFight(b.SectionCentre(0));
             Assert.AreEqual(4, b.HotCount, "a third of the floor is cool");
             Assert.IsFalse(b.IsHot(0));
+            Assert.AreEqual("idle", b.SectionClip(0), "cool iron is drawn cool");
+            Assert.AreEqual("hot", b.SectionClip(1), "and hot iron hot");
             int masks = _vitals.Masks;
             yield return Fixed(20);
             Assert.AreEqual(masks, _vitals.Masks, "cool iron is safe");
@@ -282,8 +284,10 @@ namespace OWSBG.Tests
             yield return Until(() => Enumerable.Range(0, b.sections).Any(b.IsWarming), 4f, "the next hot sections to glow");
             int warming = Enumerable.Range(0, b.sections).First(b.IsWarming);
             Assert.IsFalse(b.IsHot(warming), "it glows before it burns");
+            Assert.AreEqual("warming", b.SectionClip(warming), "its drawing glows");
             yield return Until(() => b.Shifts == 1, 2f, "the shift");
             Assert.IsTrue(b.IsHot(warming), "then it burns");
+            Assert.AreEqual("hot", b.SectionClip(warming), "and its drawing burns");
             CollectionAssert.AreEqual(Brann.HotPattern(1, 1, b.sections), Enumerable.Range(0, b.sections).Select(b.IsHot).ToArray());
         }
 

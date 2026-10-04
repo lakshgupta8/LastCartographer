@@ -555,6 +555,66 @@ def prop_notice(rng, p):
     return 1.5, 2.0, 2.0
 
 
+CHALK = (0.94, 0.93, 0.88)
+SLATE = (0.30, 0.31, 0.33)
+
+
+def prop_drillrack(rng, p):
+    """Prop_DrillRack: the drill-yard's rack: two uprights and a rail, practice lances leaning in it, nibs blunted
+    with wrapped cloth; one slot empty (Oriel's)."""
+    wood, dark, shaft, cloth = p("wood", lerp(RUST, SILVER, 0.25)), p("dark", lerp(RUST, INK, 0.5)), p("shaft", lerp(RUST, PAPER, 0.35)), p("cloth", lerp(PAPER, SILVER, 0.3))
+    box("upright_l", -1.0, 0.8, 0.12, 1.6, wood, y=0.1)
+    box("upright_r", 1.0, 0.8, 0.12, 1.6, wood, y=0.1)
+    box("rail_top", 0.0, 1.45, 2.2, 0.1, dark, y=0.05)
+    box("rail_low", 0.0, 0.35, 2.2, 0.08, dark, y=0.05)
+    for i, x in enumerate((-0.7, -0.35, 0.35, 0.7)):   # the slot at the middle is hers, and empty
+        lean = rng.uniform(-0.08, 0.08)
+        ob = box("lance_%d" % i, x, 1.05, 0.05, 2.1, shaft, y=0.0)
+        ob.rotation_euler = (0, lean, 0)
+        blob("wrap_%d" % i, rng, x + lean * 1.05, 2.08, 0.07, 0.11, cloth, y=-0.02, n=8, wobble=0.2)
+    box("tag", 0.0, 1.62, 0.3, 0.16, p("paper", PAPER), y=-0.03)
+    line("tag_mark", -0.08, 1.62, 0.08, 1.62, 0.02, p("ink", INK), y=-0.05)
+    return 2.5, 2.3, 2.0
+
+
+def prop_chalkboard(rng, p):
+    """Prop_ChalkBoard: a slate on an easel with the morning's drill chalked on it: three figures, overhead, shove,
+    sweep, each with its feet and an arrow; the Charter's combo, the way the Captain reads it back."""
+    wood, slate, chalk = p("wood", lerp(RUST, INK, 0.3)), p("slate", SLATE), p("chalk", CHALK)
+    for x, lean in ((-0.55, 0.12), (0.55, -0.12)):
+        ob = box("leg_%s" % x, x, 0.9, 0.08, 1.9, wood, y=0.1)
+        ob.rotation_euler = (0, lean, 0)
+    box("tray", 0.0, 0.62, 1.4, 0.06, wood, y=-0.02)
+    box("slate", 0.0, 1.25, 1.5, 1.05, slate, y=0.0)
+    for k, (dx, dy) in enumerate(((0.0, 0.25), (0.25, 0.0), (0.2, -0.2))):   # overhead, shove, sweep: the stroke's way
+        cx = -0.48 + 0.48 * k
+        disc("head_%d" % k, cx, 1.55, 0.06, chalk, y=-0.28, n=10)
+        line("body_%d" % k, cx, 1.49, cx, 1.27, 0.045, chalk, y=-0.28)
+        line("foot_a_%d" % k, cx, 1.27, cx - 0.08, 1.12, 0.04, chalk, y=-0.28)
+        line("foot_b_%d" % k, cx, 1.27, cx + 0.1, 1.12, 0.04, chalk, y=-0.28)
+        line("lance_%d" % k, cx, 1.42, cx + 0.12 + dx * 0.4, 1.42 + dy * 0.6, 0.035, chalk, y=-0.28)
+        line("arrow_%d" % k, cx - 0.1, 0.98, cx + 0.12, 0.98, 0.035, chalk, y=-0.28)
+        line("arrow_h_%d" % k, cx + 0.12, 0.98, cx + 0.06, 1.02, 0.035, chalk, y=-0.28)
+    box("chalk_stub", 0.4, 0.67, 0.12, 0.05, chalk, y=-0.28)
+    return 1.75, 2.0, 2.0
+
+
+def prop_paces(rng, p):
+    """Prop_Paces: the yard's paces chalked along the edge of the flags, a tick a pace and every fourth numbered
+    (Halvard counts in fours); stood in front of the floor's face, so it reads from the side."""
+    chalk = p("chalk", CHALK)
+    for i in range(17):
+        x = -4.0 + 0.5 * i
+        h = 0.22 if i % 4 == 0 else 0.12
+        line("tick_%d" % i, x, 0.3, x + rng.uniform(-0.02, 0.02), 0.3 - h, 0.045, chalk, y=0.0)
+    for k in range(5):
+        x = -4.0 + 2.0 * k
+        for j in range(k + 1):   # a tally, not a figure: the yard was chalked by birds who count
+            line("tally_%d_%d" % (k, j), x + 0.08 + 0.05 * j, 0.06, x + 0.08 + 0.05 * j, 0.0, 0.035, chalk, y=0.0)
+    line("edge", -4.1, 0.3, 4.1, 0.3, 0.035, chalk, y=0.0)
+    return 8.5, 0.35, 2.0
+
+
 # ---------------------------------------------------------------- Windreach (ENV-07): the Steppe's own
 
 def prop_stone(rng, p):
@@ -1554,6 +1614,7 @@ PROPS = [
     ("Prop_Gravestone", prop_gravestone, "Halden"), ("Prop_Wheel", prop_wheel, "Halden"), ("Prop_Scaffold", prop_scaffold, "Halden"),
     ("Prop_Frame", prop_frame, "Halden"), ("Prop_Slots", prop_slots, "Halden"), ("Prop_ExamDesk", prop_examdesk, "Halden"),
     ("Prop_Notice", prop_notice, "Halden"),
+    ("Prop_DrillRack", prop_drillrack, "Halden"), ("Prop_ChalkBoard", prop_chalkboard, "Halden"), ("Prop_Paces", prop_paces, "Halden"),
     # Windreach (ENV-07): the shared furniture in the Steppe's palette, and the Steppe's own.
     ("Prop_Desk", prop_desk, "Windreach"), ("Prop_Ledger", prop_ledger, "Windreach"), ("Prop_Vantage", prop_vantage, "Windreach"),
     ("Prop_Lamp", prop_lamp, "Windreach"), ("Prop_LampGlow", prop_lampglow, "Windreach"), ("Prop_Seeds", prop_seeds, "Windreach"),

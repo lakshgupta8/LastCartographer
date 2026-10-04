@@ -73,6 +73,7 @@ and the rest falls back to idle.
 | WrenDrawing | her drawing | Wren's | Wren's own | the Archivist carries **Wren's** sheets under this name; her drawing stands with its feet on the floor, washed 0.5 and its line faded 0.6, and plays `idle`, `run` and `strike1` as it hunts her |
 | InkPool | the Survey's pools | 1.6 | idle | drops rise and fall |
 | CordLance | Halvard's second lance in flight (II, III) | 2.0 | fly | the cord ripples behind it; flipped when it comes back |
+| FurnaceGrate | one of the cold furnace's six floor sections (6.5) | 3.0 | idle, warming, hot, dark | stood 0.35 under the floor and in front of its face, the plate on the floor line, the firebox below; `idle` cool iron with a fleck of ash lifting, `warming` the slots glowing and pulsing, `hot` the slots white and five flames licking up past her feet, `dark` sooted over for phase 3; Brann plays each section's state (`Brann.SectionClip`), and keeps the flat quads when the sheet is missing |
 | BridgeSpan | a span of the Seven Bridges (II) | 3.0 | idle, fall | stood a unit under the floor, its deck on the floor line, grit trickling from under the rib at rest; `fall` when the count cuts it: it cracks, tips off its rib and drops out of the cell |
 | ChoirDove | the Choir's three | 2.4 | idle, ring, hurt, death | `ring` restarted when a dove's bell starts and sought by its progress; `idle` when it tolls or is stopped |
 

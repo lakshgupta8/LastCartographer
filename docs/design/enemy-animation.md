@@ -43,7 +43,7 @@ they carry. Packed as `Halvard`, `Brann`, `Oriel`, `Warden_B`, `Warden_C`; model
 
 | Warden | Bird, gear | Clips | What names them |
 |---|---|---|---|
-| Warden-Sergeant Halvard | a heron; a sergeant's sash, a plume, the long sighting-lance with count notches | idle, move, walk, talk, measure, telegraph, thrust, lunge, survey, call, count, recover, hurt, death | `Halvard.Clip`: Approach → move; the telegraph is `survey` (the lance planted) for a survey and `call` (raised high) for a count, else `telegraph`; Thrust, Lunge, Count, Recover. `death` is his withdrawal: he straightens, lowers the lance and steps back. In the lighthouse he is an NPC: `NpcAnimator` asks for idle, talk and walk |
+| Warden-Sergeant Halvard | a heron; a sergeant's sash, a plume, the long sighting-lance with count notches | idle, move, walk, talk, measure, telegraph, thrust, lunge, survey, call, count, aim, throw, cord, recall, recover, hurt, death | `Halvard.Clip`: Approach → move; the telegraph is `survey` (the lance planted) for a survey, `call` (raised high) for a count and `aim` (the second lance drawn back in the far wing) for the cord lance, else `telegraph`; Thrust, Lunge, Count, Recover; the throw is `throw` (24 fps, the lance leaving) then `cord` (looping, leaning back on it) while it is out, and `recall` hauls it home. The second lance is a prop drawn only in those clips, so the chapel never shows it. `death` is his withdrawal: he straightens, lowers the lance and steps back. In the lighthouse he is an NPC: `NpcAnimator` asks for idle, talk and walk |
 | Cinder Warden Brann | a crane in furnace-blackened brass, a red crown, twin lances (the far one rests behind the shoulder) | idle, move, telegraph, thrust, charge, crosscut, hold, recover, hurt, death | `Brann.Clip`: Charge, CrossCut (both lances sweeping), Hold (walking behind both, looping), the rest as Halvard |
 | Warden-Captain Oriel | an egret, white, a captain's cloak, a short quill-lance with a nib | idle, move, telegraph, strike1–3, flourish, step, bind, recover, hurt, death | `Oriel.Clip`: the mirrored combo's steps in turn (`strike1..3`), Flourish (she turns through a Longstroke), Step, Bind (kneeling, the quill planted, looping until denied) |
 | Warden B, Warden C | the patrols: B in a road-cloak with an iron gorget, C in a helm with a plume | the Warden's | the same `Warden` behaviour; `MakeHeldState` gives the anchored towns' patrols the three looks in turn |
@@ -163,8 +163,8 @@ the enemy type's name.
 ## 6. Open
 
 - The Lost Remnant is placed by the Greyfold's and the Blank's rooms now (ENV-08); the Blank's islands still use tinted NPC blocks.
-- Halvard's marks on the chapel floor are still dark blocks; his second kit (the thrown lance, the Seven Bridges)
-  and third (the Threshold) have no frames yet.
+- Halvard's second and third kits are drawn (the cord lance's four clips, `CordLance` and `BridgeSpan` as parts,
+  boss-animation.md §3); the built rooms wear the part sheets after the next bootstrap build.
 - Brann's phase-3 glow (his telegraphs are the brass) is a tint the arena will need to drive on the sheet.
 - The skimmer's rise is a second, flared render of the same bird; a tint on the sheet would do the same in
   one render once the shader takes a flare colour.

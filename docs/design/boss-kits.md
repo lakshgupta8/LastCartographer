@@ -3,7 +3,7 @@
 Twelve bosses from the boss sheets, built as greybox kits: the four mid-game fights (6.4 to 6.7, CMB-13), three
 late ones (6.8 to 6.10, CMB-14), Voss at the Threshold (6.11, CMB-15) and the four endgame fights (6.12 to 6.15,
 CMB-16). With the Lamp-Keeper and Halvard's first fight (built into their rooms), every boss sheet now has a kit
-except Reedmother's Brood (6.2, optional) and Halvard's second and third (CMB-12). Each kit keeps to the sheet's
+and Halvard's second and third hunts have theirs too (CMB-12, below). Each kit keeps to the sheet's
 arena, its three phases and its answers. The sheet owns the reason and the words; the kit owns the frame data.
 Telegraphs keep the tier's floor (11 frames at Tier II, 10 at Tier III, 8 at Tier IV), and no phase has more than
 four attacks. Health, slams and each tier's typical read are the tuning pass's (CMB-19, `tuning.md`); every kit
@@ -111,6 +111,53 @@ in the middle.
 | 3 | The roots tear free; it flies low (2.4 units) | Passes the width of the gate, heavy landings | Strike the belly: in the air only an up-strike lands |
 
 34 health, 2 scraps, `boss.gatekeeper.defeated`. The heavy landing is a slam (two masks, the shake, a 16-frame read). A retry puts it back on its plinth with its roots.
+
+## 6.3 Halvard's second and third hunts (CMB-12)
+
+`Halvard` is one component with three kits. The hunt is the sheet's tier (`halvard` I, `halvard_2` II, `halvard_3`
+III) or set outright (`Halvard.hunt`), and `Kit()` declares only that hunt's attacks. The first hunt is unchanged.
+`BossKits.Build` builds the two later ones for the test rigs (`BossKits.LaterHunts`, kept out of `Ids` because no
+arena room is generated for them); the game fights them in the built rooms that already hold them, `Halden_Bridges_4`
+on `act2.started` and `Greyfold_Threshold_1` on `threshold.halvard.spoken`.
+
+**The cord lance** is new to both. He aims (16 frames, the second lance drawn back in the far wing) and throws it
+level at lance height. It flies 14 units a second, to 7.5 units or the arena's edge, and hangs there for 6 frames.
+Then he hauls it back low, at 0.45 units: jump it. Going out it can be parried, which drops it and staggers him as a
+parried thrust does. Coming back it cannot. It is a `BossPart` that refuses the quill and wears `CordLance`, with a
+cord drawn from his hand to it.
+
+### II. The Seven Bridges
+
+The floor under the arena becomes six spans of bridge for the fight. The room's floor stands aside, and copies of
+its ends past the arena are kept so the doors still have ground. A survey marks spans instead of squares: hers in
+phase 1, and the next one along his facing in phase 2. The count **cuts** every marked span except his own, as long
+as more than the last span would be left. A cut span loses its collider and plays `BridgeSpan`'s `fall`, and she
+drops into the drop: Inkthread or Talonhold to recover, or the room's fall-and-return. Phase 3 opens by cutting all
+but three spans round her, with him on the far end of them.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Thrust, cord lance, lunge | Parry the lance going out, jump it coming back |
+| 2 | Survey (spans), cord lance, count (cuts), thrust | Stand off a marked span when he calls it, or be ready to recover |
+| 3 | The last span: cord lance, lunge, thrust, cord lance | No floor to spare: jump the recall, parry the throw |
+
+At zero he withdraws and "leaves the span standing": every span and the room's floor come back.
+
+### III. The Threshold
+
+Everything he has: both lances, the marks and the count, on the Threshold's edge with the Blank eating the arena from
+the west. Phase 2 makes the west quarter an `UntetheredZone` (white, nothing holds her there without Clarity), and
+phase 3 the west half. He keeps east of it, and so do his marks. **Halfway through he stops counting:** phase 3 has
+no survey and no count, its marks are wiped, and a count drawn from an empty board becomes a thrust.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Thrust, cord lance, survey, count | As the chapel's, and the bridges' lance |
+| 2 | Lunge, cord lance, survey, count; the west quarter white | Read the marks; keep out of the white or carry the Clarity |
+| 3 | Cord lance, thrust, lunge; the west half white, no more counting | Fight on half a floor |
+
+Health from the tuning table (`halvard_2`, `halvard_3`), Tier II's and Tier III's telegraph floors, every strike one
+mask. `HalvardHuntsTests` (play mode) builds both and fights them to these answers.
 
 ## 6.8 Warden-Captain Oriel, the Bastion's drill-yard
 
@@ -341,7 +388,7 @@ fight.
   the Choir's gate.
 - **Voss's sheet has sections freeze mid-air and platforms lock.** v1 seals floor sections only; the Threshold's
   built room, with platforms to lock, can add them. His "shrinking island" is the floor's last two sections, not a
-  platform yet. Halvard's third kit, fought before him at Threshold_1, is still CMB-12's.
+  platform yet. Halvard's third kit, fought before him at Threshold_1, is built (6.3 III above).
 - **The lantern-radius is a picture now (PRG-18, `clarity.md`).** While the Bells ring they hold the radius
   (`Lantern.Hold`), and the paper pass whitens the nave beyond it, keeping outlines at the edge of the eye. They let
   go when silenced or on a retry. Cutting the ropes by Inkthread is still open: the thread exists (CMB-18), but v1

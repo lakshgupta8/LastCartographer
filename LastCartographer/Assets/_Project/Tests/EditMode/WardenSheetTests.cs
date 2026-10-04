@@ -20,7 +20,7 @@ namespace OWSBG.Tests
 
         static readonly (string name, string[] clips)[] Family =
         {
-            ("Halvard", new[] { "idle", "move", "walk", "talk", "measure", "telegraph", "thrust", "lunge", "survey", "call", "count", "recover", "hurt", "death" }),
+            ("Halvard", new[] { "idle", "move", "walk", "talk", "measure", "telegraph", "thrust", "lunge", "survey", "call", "count", "aim", "throw", "cord", "recall", "recover", "hurt", "death" }),
             ("Brann", new[] { "idle", "move", "telegraph", "thrust", "charge", "crosscut", "hold", "recover", "hurt", "death" }),
             ("Oriel", new[] { "idle", "move", "telegraph", "strike1", "strike2", "strike3", "flourish", "step", "bind", "recover", "hurt", "death" }),
             ("Warden_B", new[] { "idle", "move", "measure", "telegraph", "thrust", "recover", "hurt", "death" }),
@@ -63,6 +63,8 @@ namespace OWSBG.Tests
             // The strikes are quick: 24 fps, as Wren's are.
             Assert.AreEqual(24, Load("Halvard").clips.First(c => c.name == "lunge").fps);
             Assert.AreEqual(24, Load("Halvard").clips.First(c => c.name == "count").fps);
+            Assert.AreEqual(24, Load("Halvard").clips.First(c => c.name == "throw").fps, "the cord lance leaves as fast as a thrust");
+            Assert.IsTrue(Load("Halvard").clips.First(c => c.name == "cord").loop, "he holds the cord while the lance is out");
             Assert.AreEqual(24, Load("Brann").clips.First(c => c.name == "crosscut").fps);
             Assert.AreEqual(24, Load("Oriel").clips.First(c => c.name == "strike1").fps);
             Assert.IsTrue(Load("Oriel").clips.First(c => c.name == "bind").loop, "the Bind holds until denied or done");

@@ -33,7 +33,9 @@ namespace OWSBG.World
         /// <summary>The bosses with a kit here, in the plan's order (CMB-13 to CMB-16).</summary>
         public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star", "voss",
                                                 "bells", "corras_drawing", "archivist", "complete_survey", "reedmother_brood" };
-        public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0;
+        /// <summary>Halvard's later hunts (CMB-12): kits here for the test rigs, fought in the built rooms that already hold them (the Seven Bridges, the Threshold).</summary>
+        public static readonly string[] LaterHunts = { "halvard_2", "halvard_3" };
+        public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0 || System.Array.IndexOf(LaterHunts, bossId) >= 0;
 
         public static BossKit Build(string bossId, Transform parent, Vector2 origin)
         {
@@ -108,6 +110,16 @@ namespace OWSBG.World
                     var h = MakeBoss<Hale>(parent, "Hale", new Vector2(maxX - 1.5f, floor + 0.9f), new Vector2(0.8f, 1.8f));
                     h.floorY = floor; h.arenaMinX = minX; h.arenaMaxX = maxX;
                     for (int i = 0; i < Hale.StoneCount; i++) h.stoneXs.Add(origin.x + 1f + i * 2f);
+                    kit.Boss = h;
+                    break;
+                }
+                case "halvard_2":
+                case "halvard_3":
+                {
+                    // Halvard's later hunts (CMB-12): the Seven Bridges' spans, the Threshold's white, both from the kit itself.
+                    var h = MakeBoss<Halvard>(parent, "Halvard", new Vector2(maxX - 2f, floor + 0.9f), new Vector2(0.8f, 1.8f));
+                    h.floorY = floor; h.arenaMinX = minX; h.arenaMaxX = maxX;
+                    h.hunt = bossId == "halvard_2" ? Halvard.Hunt.Bridges : Halvard.Hunt.Threshold;
                     kit.Boss = h;
                     break;
                 }
@@ -195,6 +207,8 @@ namespace OWSBG.World
             "archivist" => new Color(0.36f, 0.34f, 0.38f),
             "complete_survey" => new Color(0.92f, 0.90f, 0.84f),
             "reedmother_brood" => new Color(0.70f, 0.70f, 0.58f),
+            "halvard_2" => new Color(0.56f, 0.56f, 0.54f),
+            "halvard_3" => new Color(0.90f, 0.90f, 0.88f),
             _ => new Color(0.44f, 0.48f, 0.38f),
         };
 

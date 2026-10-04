@@ -55,6 +55,19 @@ class Halvard(Warden):
         lance.scale = (1, 1, 1.15)
         part(self, "lance_tip").location = (0, 0, 1.2)
         cube("count_notches", (0.02, 0.02, 0.5), brass, self.lance, loc=(0.02, 0, 0.5))
+        # The second lance on its cord (CMB-12, the Seven Bridges on): a shorter lance held in the far wing, the cord
+        # wound back to the gorget; drawn only in the clips that throw and recall it, so the chapel never shows it.
+        cord_rgb = mat("cord", (0.52, 0.40, 0.26))
+        cord_lance = self.add("cord_lance", self.body, (0.10, 0.22, 0.06), rot=(0, D(80), 0))
+        cone("cord_lance_m", 0.015, 0.011, 1.0, ink, cord_lance, loc=(0, 0, 0.3))
+        cone("cord_lance_tip", 0.02, 0.0, 0.12, brass, cord_lance, loc=(0, 0, 0.84))
+        cone("cord_lance_butt", 0.02, 0.02, 0.06, brass, cord_lance, loc=(0, 0, -0.18))
+        cone("cord_m", 0.008, 0.008, 0.9, cord_rgb, cord_lance, loc=(0, 0, -0.62))   # the cord, back along the shaft and past the butt
+        self.prop("cord_lance", cord_lance)
+        # The cord alone, running forward off the cell while the lance is out
+        cord_line = self.add("cord_line", self.body, (0.12, 0.2, 0.0))
+        cone("cord_line_m", 0.008, 0.008, 2.6, cord_rgb, cord_line, loc=(1.3, 0, 0), rot=(0, D(90), 0))
+        self.prop("cord_line", cord_line)
         self.snapshot()
 
 
@@ -124,6 +137,72 @@ def halvard_withdraw(w, i, n):
     w.move("hips", x=-0.15 * k)
 
 
+def halvard_aim(w, i, n):
+    """The throw's telegraph: the cord lance drawn back in the far wing, the body turned, the first lance dropped low."""
+    w.show("cord_lance")
+    k = min(1.0, (i + 1) / 3)
+    w.rot("cord_lance", y=-80 + 10 * k)
+    w.move("cord_lance", x=-0.25 * k, z=0.15 * k)
+    w.rot("body", y=-10 * k)
+    w.rot("lance", y=40 * k)
+    w.move("lance", z=-0.2 * k)
+    w.rot("neck", y=10 * k)
+    w.rot("wing", y=-30 * k)
+    w.legs(-12 * k, 10 * k)
+
+
+def halvard_throw(w, i, n):
+    """The release: the lance leaves level, the cord paying out; by the last frame only the cord is in the cell."""
+    k = i / (n - 1)
+    if k < 0.67:
+        w.show("cord_lance")
+        w.rot("cord_lance", y=-80 + 75 * min(1.0, k * 1.5))
+        w.move("cord_lance", x=-0.25 + 1.6 * k, z=0.15 - 0.05 * k)
+    else:
+        w.show("cord_line")
+    w.rot("body", y=-10 + 36 * k)
+    w.rot("lance", y=40 - 10 * k)
+    w.move("lance", z=-0.2)
+    w.rot("neck", y=10 + 14 * k)
+    w.rot("head", y=-6 * k)
+    w.rot("wing", y=-30 - 20 * k)
+    w.legs(-12 + 60 * k, 10 - 48 * k)
+    w.move("body", x=0.08 * k)
+
+
+def halvard_cord(w, i, n):
+    """The lance out: he holds the cord taut, leaning back on it, breathing."""
+    w.show("cord_line")
+    t = i / n
+    s = math.sin(2 * math.pi * t)
+    w.rot("body", y=14 + 2 * s)
+    w.rot("lance", y=30)
+    w.move("lance", z=-0.2)
+    w.rot("neck", y=16)
+    w.rot("wing", y=-55 + 4 * s)
+    w.legs(40, -36)
+    w.move("body", x=0.06, z=0.01 * s)
+
+
+def halvard_recall(w, i, n):
+    """The yank: he hauls the cord in, the body thrown back, and the lance is in his wing on the last frame."""
+    k = i / (n - 1)
+    if k < 0.99:
+        w.show("cord_line")
+    else:
+        w.show("cord_lance")
+        w.rot("cord_lance", y=-20)
+        w.move("cord_lance", x=0.1, z=-0.1)
+    w.rot("body", y=14 - 30 * k)
+    w.rot("lance", y=30 + 10 * k)
+    w.move("lance", z=-0.2)
+    w.rot("neck", y=16 - 22 * k)
+    w.rot("head", y=8 * k)
+    w.rot("wing", y=-55 + 90 * k)
+    w.legs(40 - 60 * k, -36 + 50 * k)
+    w.move("body", x=0.06 - 0.2 * k)
+
+
 HALVARD_CLIPS = [
     ("idle", 12, 4, True, warden_idle),
     ("move", 12, 8, True, warden_move),
@@ -136,6 +215,10 @@ HALVARD_CLIPS = [
     ("survey", 12, 4, False, halvard_survey),
     ("call", 12, 4, False, halvard_call),
     ("count", 24, 3, False, halvard_count),
+    ("aim", 12, 3, False, halvard_aim),
+    ("throw", 24, 4, False, halvard_throw),
+    ("cord", 12, 4, True, halvard_cord),
+    ("recall", 24, 3, False, halvard_recall),
     ("recover", 12, 3, False, warden_recover),
     ("hurt", 12, 2, False, warden_hurt),
     ("death", 12, 6, False, halvard_withdraw),

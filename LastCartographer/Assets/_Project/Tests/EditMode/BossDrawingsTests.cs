@@ -47,6 +47,8 @@ namespace OWSBG.Tests
             ("CrayonSmall", new[] { "idle" }),
             ("QuillHand", new[] { "idle", "draw" }),
             ("InkPool", new[] { "idle" }),
+            ("CordLance", new[] { "fly" }),
+            ("BridgeSpan", new[] { "idle", "fall" }),
         };
 
         static readonly (string name, string[] clips)[] Families =

@@ -72,6 +72,8 @@ and the rest falls back to idle.
 | QuillHand | the Archivist's hand | 1.2 | idle, draw | `draw` while his quill is on the page |
 | WrenDrawing | her drawing | Wren's | Wren's own | the Archivist carries **Wren's** sheets under this name; her drawing stands with its feet on the floor, washed 0.5 and its line faded 0.6, and plays `idle`, `run` and `strike1` as it hunts her |
 | InkPool | the Survey's pools | 1.6 | idle | drops rise and fall |
+| CordLance | Halvard's second lance in flight (II, III) | 2.0 | fly | the cord ripples behind it; flipped when it comes back |
+| BridgeSpan | a span of the Seven Bridges (II) | 3.0 | idle, fall | stood a unit under the floor, its deck on the floor line, grit trickling from under the rib at rest; `fall` when the count cuts it: it cracks, tips off its rib and drops out of the cell |
 | ChoirDove | the Choir's three | 2.4 | idle, ring, hurt, death | `ring` restarted when a dove's bell starts and sought by its progress; `idle` when it tolls or is stopped |
 
 ## 4. The families

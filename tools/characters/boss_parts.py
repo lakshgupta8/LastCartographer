@@ -365,6 +365,88 @@ INKPOOL_CLIPS = [("idle", 12, 4, True, pool_idle)]
 # ================================================================ all of them
 
 # name, cell, builder, clips, line thickness at 2x, ink colour
+# ---------------------------------------------------------------- Halvard's later hunts (CMB-12)
+
+CORD = (0.52, 0.40, 0.26)
+GRANITE = (0.58, 0.58, 0.55)
+GRANITE_DARK = (0.44, 0.44, 0.42)
+
+
+class CordLance(Rig):
+    """Halvard's second lance in flight, point forward along +X, the cord trailing behind it. 1.6 x 0.4."""
+    def __init__(self):
+        super().__init__()
+        root = self.add("root")
+        body = self.add("body", root)
+        ink, brass, cord = mat("ink", INK), mat("brass", BRASS), mat("cord", CORD)
+        cone("shaft", 0.015, 0.011, 1.1, ink, body, loc=(0.05, 0, 0), rot=(0, D(90), 0))
+        cone("tip", 0.0, 0.022, 0.14, brass, body, loc=(0.68, 0, 0), rot=(0, D(90), 0))
+        cone("butt", 0.022, 0.022, 0.07, brass, body, loc=(-0.52, 0, 0), rot=(0, D(90), 0))
+        for k in range(4):
+            self.add("cord%d" % k, body, (-0.6 - 0.12 * k, 0, 0))
+            cone("cord%d_m" % k, 0.008, 0.008, 0.13, cord, getattr(self, "cord%d" % k), rot=(0, D(90), 0))
+        self.snapshot()
+
+
+def cordlance_fly(c, i, n):
+    """The cord ripples behind the lance as it flies."""
+    for k in range(4):
+        c.move("cord%d" % k, z=0.03 * math.sin(math.pi * (k + i)))
+        c.rot("cord%d" % k, y=12 * math.cos(math.pi * (k + i)))
+
+
+CORDLANCE_CLIPS = [("fly", 12, 2, True, cordlance_fly)]
+
+
+class BridgeSpan(Rig):
+    """One span of the Seven Bridges: granite blocks on an arch rib, 3 wide. The walking surface is a unit above the
+    cell's centre (the game stands the drawing a unit under the floor), so the span has the cell's lower part to fall
+    out of; the balustrade stands behind her, 0.3 over the deck."""
+    def __init__(self):
+        super().__init__()
+        root = self.add("root")
+        body = self.add("body", root, (0, 0, 1.0))   # the walking surface
+        rib = self.add("rib", body)
+        granite, dark, ink = mat("granite", GRANITE), mat("granite_dark", GRANITE_DARK), mat("ink", INK)
+        for k in range(5):
+            cube("block%d" % k, (0.56, 0.6, 0.42), granite if k % 2 == 0 else dark, body, loc=(-1.2 + 0.6 * k, 0, -0.21))
+        cube("deck", (3.0, 0.6, 0.06), dark, body, loc=(0, 0, -0.03))
+        cube("rib_m", (2.9, 0.5, 0.18), dark, rib, loc=(0, 0, -0.52))
+        for k in range(3):
+            cube("rail%d" % k, (0.06, 0.06, 0.3), ink, body, loc=(-1.0 + 1.0 * k, 0.24, 0.15))
+        cube("rail_top", (2.2, 0.05, 0.05), ink, body, loc=(0, 0.24, 0.3))
+        for k in range(3):
+            crack = self.add("crack%d" % k, body, (-0.9 + 0.9 * k, -0.32, -0.2))
+            cube("crack%d_m" % k, (0.03, 0.02, 0.4), ink, crack, rot=(0, D(-20 + 20 * k), 0))
+            self.prop("crack%d" % k, crack)
+        # grit trickling from under the rib into the drop: the bridge is old, and it is high
+        for k in range(3):
+            g = self.add("grit%d" % k, body, (-0.8 + 0.8 * k, -0.1, -0.7))
+            cube("grit%d_m" % k, (0.05, 0.05, 0.05), dark, g, rot=(0, D(30 * k), 0))
+        self.snapshot()
+
+
+def bridgespan_idle(b, i, n):
+    """At rest: grit falling from under the rib, each grain a frame behind the last."""
+    for k in range(3):
+        f = ((i + k) % n) / n
+        b.move("grit%d" % k, z=-0.8 * f, x=0.04 * f)
+
+
+def bridgespan_fall(b, i, n):
+    """The count: the span cracks, tips off its rib and drops out of the cell."""
+    t = i / (n - 1)
+    for k in range(3):
+        b.show("crack%d" % k)
+    drop = smoothstep(max(0.0, (t - 0.3) / 0.7))
+    b.move("body", z=-3.2 * drop * drop, x=0.1 * drop)
+    b.rot("body", y=-14 * drop)
+    b.move("rib", z=-0.05 * min(1.0, t * 3))
+
+
+BRIDGESPAN_CLIPS = [("idle", 12, 4, True, bridgespan_idle), ("fall", 12, 6, False, bridgespan_fall)]
+
+
 PARTS = [
     ("Rubble", 2.0, Rubble, RUBBLE_CLIPS, 3.0, INK),
     ("Surge", 2.0, Surge, SURGE_CLIPS, 3.0, INK),
@@ -378,6 +460,8 @@ PARTS = [
     ("CrayonSmall", 1.6, crayon_small, CRAYONSMALL_CLIPS, 2.6, CRAYON_INK),
     ("QuillHand", 1.2, QuillHand, QUILLHAND_CLIPS, 2.6, OWL_INK),
     ("InkPool", 1.6, InkPool, INKPOOL_CLIPS, 2.8, INK),
+    ("CordLance", 2.0, CordLance, CORDLANCE_CLIPS, 2.6, INK),
+    ("BridgeSpan", 3.0, BridgeSpan, BRIDGESPAN_CLIPS, 3.0, INK),
 ]
 
 

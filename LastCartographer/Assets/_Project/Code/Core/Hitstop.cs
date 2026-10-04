@@ -15,6 +15,9 @@ namespace OWSBG.Core
         static float _releaseAt;
 
         public static bool Active => _runner != null && Time.unscaledTime < _releaseAt;
+        /// <summary>Real seconds game time has stood still for hitstop since the game began (not counting a pause). A fight that keeps
+        /// a beat adds what it missed, so its beat keeps the music's time through every hit (AUD-13).</summary>
+        public static double FrozenSeconds { get; private set; }
 
         public static void Request(int frames)
         {
@@ -42,7 +45,12 @@ namespace OWSBG.Core
             IEnumerator Run()
             {
                 Time.timeScale = 0f;
-                while (Time.unscaledTime < _releaseAt) yield return null;
+                while (Time.unscaledTime < _releaseAt)
+                {
+                    float before = Time.unscaledTime;
+                    yield return null;
+                    if (!Pause.Active) FrozenSeconds += Time.unscaledTime - before;
+                }
                 Time.timeScale = Pause.Active ? 0f : 1f;
                 _co = null;
             }

@@ -79,6 +79,13 @@ namespace OWSBG.Narrative
         /// <summary>A stem's level now (0..its design level), fading toward its target.</summary>
         public float Level(string stem) => _levels.TryGetValue(stem, out var l) ? l : 0f;
         public Boss Boss => _boss;
+        /// <summary>How far a beat-keeping theme may wander from its fight's beat before it is put back (AUD-13).</summary>
+        public const float ResyncSeconds = 0.05f;
+        /// <summary>The music's place against the fight's beat now, seconds (ahead is positive); 0 when no theme keeps a beat.</summary>
+        public float BeatDrift { get; private set; }
+        /// <summary>Times a beat-keeping theme has been put back on its fight's beat (after a pause, a stall).</summary>
+        public int Resyncs { get; private set; }
+        float _driftAvg;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
@@ -167,8 +174,9 @@ namespace OWSBG.Narrative
             var r = Mix.RegionOf(Room);
             if (_boss != null && _boss.IsFightActive)
             {
-                // Its own theme in this region (Halvard's count in three keys), else its own anywhere, else the region's motif fought in (the optionals').
-                var boss = Score.ThemeOfBoss(_boss.Family, r) ?? (r.HasValue ? Score.SharedThemeOf(r.Value) : null);
+                // Its theme for the phase it is in (the Survey's three inks), else its own in this region (Halvard's count in three keys),
+                // else its own anywhere, else the region's motif fought in (the optionals').
+                var boss = Score.ThemeOfBoss(_boss.Family, r, _boss.Phase) ?? (r.HasValue ? Score.SharedThemeOf(r.Value) : null);
                 if (boss != null) return boss;
             }
             return r.HasValue ? Score.ThemeOf(r.Value) : null;
@@ -239,6 +247,8 @@ namespace OWSBG.Narrative
             Current = t;
             var clips = _clips[t.Id];
             _start = at;
+            _driftAvg = 0f;
+            BeatDrift = 0f;
             _ramp = ramp;
             _lastBar = -1;
             foreach (var stem in t.Stems)
@@ -302,6 +312,7 @@ namespace OWSBG.Narrative
             int bar = BarsPlayed;
             if (bar != _lastBar) { _lastBar = bar; if (_pendingPhase > _phase) _phase = _pendingPhase; }
             bool begun = now >= _start;
+            if (begun) KeepBeat(now);
             if (_ramp != FadeSeconds && now > _start + _ramp) _ramp = FadeSeconds;    // the crossfade over, layers move at the short fade again
             float step = Time.unscaledDeltaTime / _ramp;
             foreach (var stem in Current.Stems)
@@ -313,6 +324,35 @@ namespace OWSBG.Narrative
                 src.volume = level * gain;
                 _filters[stem.Id].cutoffFrequency = cutoff;
             }
+        }
+
+        /// <summary>
+        /// A rhythm boss's theme keeps the fight's beat (AUD-13, audio-direction 4: the music is the timing aid a hearing
+        /// player gets). Where the loop should be is the fight's beats so far on the theme's beat; where it is, is the
+        /// DSP clock since it started. The two agree by construction until something stops one and not the other (a
+        /// pause, a stalled frame); a drift past <see cref="ResyncSeconds"/>, held over a few frames, puts every stem back
+        /// in its place at once. The first time is as the theme begins, under its fade-in, so it is never heard.
+        /// </summary>
+        void KeepBeat(double now)
+        {
+            if (!Current.KeepsBeat || !(_boss is IKeepsBeat kb) || Mathf.Abs(kb.BeatSeconds - Current.Beat) > 0.01f) { BeatDrift = 0f; _driftAvg = 0f; return; }
+            if (Time.timeScale <= 0f) return;   // paused or in a hit's freeze, the fight waits and the music plays on: it is put back once time moves again
+            double loop = Current.LoopSeconds, loopBeats = Current.LoopBars * Score.BeatsPerBar;
+            double beats = kb.BeatsInto + (Time.time - Time.fixedTime) / kb.BeatSeconds;   // between fixed steps
+            double want = (beats % loopBeats) * Current.Beat;
+            double at = (now - _start) % loop;
+            double drift = at - want;
+            if (drift > loop / 2) drift -= loop; else if (drift < -loop / 2) drift += loop;
+            BeatDrift = (float)drift;
+            _driftAvg = Mathf.Lerp(_driftAvg, (float)drift, 0.25f);
+            if (Mathf.Abs(_driftAvg) <= ResyncSeconds) return;
+            foreach (var src in _sources.Values)
+                if (src != null && src.clip != null) src.timeSamples = (int)(want * Score.SampleRate) % src.clip.samples;
+            _start = now - want;
+            _lastBar = BarsPlayed;
+            _driftAvg = 0f;
+            BeatDrift = 0f;
+            Resyncs++;
         }
     }
 }

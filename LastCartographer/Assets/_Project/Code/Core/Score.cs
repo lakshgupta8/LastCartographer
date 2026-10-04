@@ -14,7 +14,7 @@ namespace OWSBG.Core
     /// <c>MusicDriver</c> renders the stems into clips on a worker thread and plays them in step, and the exporter
     /// writes the same renders as WAV and MIDI for the composer to replace.
     /// </summary>
-    public static class Score
+    public static partial class Score
     {
         public const int SampleRate = RollCallSong.SampleRate;
         public const int BeatsPerBar = 4;
@@ -124,6 +124,7 @@ namespace OWSBG.Core
             ComposeRegions();
             ComposeBosses();
             ComposeBlank();
+            ComposeRhythm();
         }
 
         /// <summary>The instruments a region's theme may use: audio-direction 2's bands, as ids (the coast's with the drone and bell its theme leans on).</summary>
@@ -189,6 +190,10 @@ namespace OWSBG.Core
             public Ending Coda;
             /// <summary>Bars that sound, then bars of rest, per loop.</summary>
             public int Bars, RestBars;
+            /// <summary>A rhythm boss's theme (AUD-13): the driver keeps its loop on the fight's own beat, so the music is the timing aid.</summary>
+            public bool KeepsBeat;
+            /// <summary>The one boss phase it is for (the Complete Survey's three inks, each in its region's key and beat); 0 for every phase.</summary>
+            public int ForPhase;
             public List<Stem> Stems = new List<Stem>();
             public float Beat => AudioDirection.BeatOf(Region);
             public float BarSeconds => Beat * BeatsPerBar;
@@ -230,6 +235,20 @@ namespace OWSBG.Core
             var t = (region.HasValue ? _themes.FirstOrDefault(x => x.Boss == family && x.Region == region.Value) : null) ?? ThemeOfBoss(family);
             if (t != null) _bossThemeOf[(family, region)] = t;
             return t;
+        }
+
+        static readonly Dictionary<(string, int), Theme> _phaseTheme = new Dictionary<(string, int), Theme>();
+        /// <summary>A boss's theme for the phase it is in (the Complete Survey changes ink, key and beat with each, AUD-13), else
+        /// its theme in the region it is fought in. Kept once looked up, a miss included: the driver asks every frame.</summary>
+        public static Theme ThemeOfBoss(string family, Region? region, int phase)
+        {
+            if (family == null) return null;
+            if (!_phaseTheme.TryGetValue((family, phase), out var t))
+            {
+                t = phase > 0 ? _themes.FirstOrDefault(x => x.Boss == family && x.ForPhase == phase) : null;
+                _phaseTheme[(family, phase)] = t;
+            }
+            return t ?? ThemeOfBoss(family, region);
         }
 
         /// <summary>The bosses the shared motif serves: any whose family has no theme of its own.</summary>

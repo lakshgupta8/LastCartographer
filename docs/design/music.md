@@ -117,8 +117,8 @@ Each region's resolution (the answer on the fiddle over the drone, in its key) i
 brass, each in the key of the region he is fought in; the drone, drum, whistle and bell under Halvard's are the
 Guild's travelling band. **Every other boss fights to its region's motif** (`Score.SharedThemeOf`): the region's
 own theme with its rests gone, the bed, pulse and drive from the first telegraph, the lead in the second phase, the
-voices in the third. That covers the optionals (the Brood, the Choir, Hale, the Fallen Star) and, for now, the
-Collapse, the Gatekeeper, Oriel, the Bells, Corra's Drawing and the Complete Survey.
+voices in the third. That covers the optionals (the Choir, Hale, the Fallen Star) and, for now, the Gatekeeper,
+Oriel, the Bells and Corra's Drawing. The rhythm bosses and the Brood have their own since AUD-13 (section 3d).
 
 | Boss | Key, beat | Loop | Phase 1 | Phase 2 | Phase 3 |
 |---|---|---|---|---|---|
@@ -129,6 +129,27 @@ Collapse, the Gatekeeper, Oriel, the Bells, Corra's Drawing and the Complete Sur
 
 The resolution is rendered in every key a boss falls in, the Greyfold's and the Blank's too. `<<sing archivist>>`
 now sounds in Corvin's scene (`Capital_Corvin`), the roll-call pulled the other way, before the choice.
+
+## 3d. The rhythm bosses and the Brood (AUD-13)
+
+**The Collapse and the Complete Survey are scored to the beat the fight keeps** (audio-direction 4): the music is the
+timing aid a hearing player gets, and the lamps and the named ground are the one everyone gets. Each has a pulse on
+every beat and nothing between, and the chorus calls a name on the beat with its lift half a beat ahead, exactly as a
+bounds-walk calls (`Score.CallDegrees`). Their themes keep the fight's own clock (`Theme.KeepsBeat`, `IKeepsBeat`):
+the driver puts the loop where the fight's beats say it should be (`MusicDriver.KeepBeat`). The first time is as the
+theme begins, under its fade-in; after that only something that stops the fight and not the music (a pause, a
+stalled frame) moves them apart by more than 50 ms, and then every stem is put back at once. **Hitstop does not stop
+the chorus:** the two fights add back what a hit froze (`Hitstop.FrozenSeconds`), so their beats keep real time with
+the music through every blow.
+
+| Boss | Key, beat | Loop | Phase 1 | Phase 2 | Phase 3 |
+|---|---|---|---|---|---|
+| The Collapse (`collapse`) | G Mixolydian, 75: the beat the lamps are lit on | 4 bars: a bar is one round of the four lamps | frame drum on every beat, the round's first the strongest; the mine's hurdy-gurdy drone; the choir calling a name a beat for three rounds and the answer in the fourth | tuba walking under the surge; the anvil on two and four | the drone and the full chorus **leave**; the chorus comes back a voice fewer, the last beat of each round unsung (it puts the lamps out) |
+| The Complete Survey (`survey-tide`, `survey-ash`, `survey-afternoon`) | one theme a phase (`Theme.ForPhase`): D Dorian at 67, G Mixolydian at 75, C major at 100, the three inks' keys and beats | 5 bars: two verses of eight beats and a break of two | the ink's own drum, frame drum or harpsichord on every beat, softer in the break; its drone, hurdy-gurdy or strings; the chorus calling a name on each beat of a verse and singing the answer in the break, where it breathes; the region's own lead under it, so the ink is heard | (the next ink's theme) | (the next ink's theme) |
+| Reedmother's Brood (`brood`) | D Dorian, 67 | 8 bars | the tongue drum in quick pairs, their feet; the concertina's chant, three on the fifth every bar: "Ours. Ours. Ours." | the nest opens and the smoke comes: the drone, and the fiddle frantic over it | the chant **leaves**; it comes back asking, "...ours?", rising at its end; the psaltery's tremolo creeping up: the fire |
+
+`Score.ThemeOfBoss(family, region, phase)` picks the Survey's ink by phase; a boss with one theme keeps it in every
+phase. The resolution rings in the key of the theme playing when it falls: Halden's, for the Survey's last ink.
 
 ## 3c. The Blank and the endings (AUD-08)
 
@@ -197,6 +218,14 @@ arrangement.
   Hale, with no theme of her own, fights to Windreach's motif with its drive in and its flute waiting; an island
   plays the Blank, a coda takes over from it and outlasts any room until a new game. `EndingsRunnerTests`: the
   Fixed World's walk ends with its coda begun.
+- AUD-13: `RhythmScoreTests` (EditMode, 4): the Collapse's theme is at the fight's beat with a round of lamps a bar,
+  a pulse on every beat and nothing between, a name called on each beat with its lift ahead, the answer in the
+  fourth round and a voice fewer in phase 3; the Survey's three themes are their inks' keys and beats, whole verses
+  a loop, calling on the verse's beats and breathing in the break; the Brood's chant is one word three times a bar
+  and asks, rising, in the last phase; the phase lookup falls back to a boss's own theme. `RhythmMusicTests`
+  (PlayMode, 3): the Collapse's beat keeps real time through eight hitstops; its theme lands within a tenth of a
+  second of the fight's beat and is put back on it after a pause; the Survey's theme changes ink with its phase
+  and keeps the new beat.
 
 ## 7. Open
 
@@ -210,7 +239,7 @@ arrangement.
 - Windreach's "drum when the fire is lit" is its pulse, always soft: the camp's fire is no state yet.
 - **The codas loop.** The title holds for eight seconds and the game stops there (M4's credits); a coda that ends
   rather than loops wants that roll to end with.
-- **The rhythm bosses** (the Collapse, the Complete Survey) fight to their regions' motifs for now; the direction
-  wants them scored to the beat the fight keeps, which the shared theme is only by being at the region's beat.
-  The Gatekeeper, Oriel, the Bells and Corra's Drawing likewise wait for themes of their own.
+- **The rhythm bosses** are scored to their fights' beats since AUD-13 (section 3d). A resync after a pause is a jump
+  in the loop, heard as the paused snapshot lets go. The Gatekeeper, Oriel, the Bells and Corra's Drawing still wait
+  for themes of their own.
 - **Halvard's third fight** stops counting halfway; the theme does not know that yet.

@@ -13,7 +13,7 @@ namespace OWSBG.World
     /// Phase 3: it reaches for a lamp and puts it out unless it is struck while reaching; an out lamp's beat is lost.
     /// It never takes the last lamp. It does not hurt to touch: it is the mine, and the mine is everywhere.
     /// </summary>
-    public sealed class Collapse : Boss
+    public sealed class Collapse : Boss, IKeepsBeat
     {
         public enum Attack { None, Rubble, Surge, Reach }
         public enum Move { Wait, Telegraph, Fall, Surge }
@@ -50,6 +50,10 @@ namespace OWSBG.World
         /// <summary>Only the lit section, only for the lit part of the beat.</summary>
         public bool IsDrawn => IsFightActive && LitLamp >= 0 && _beatT < beatSeconds * litFraction;
         public float SectionWidth => (arenaMaxX - arenaMinX) / Mathf.Max(1, lampCount);
+        /// <summary>The chorus's beat, for the music to keep (AUD-13).</summary>
+        public float BeatSeconds => beatSeconds;
+        public double BeatsInto => Beat + Mathf.Clamp01(_beatT / Mathf.Max(0.01f, beatSeconds));
+        double _frozenSeen;
         public IReadOnlyList<BossPart> Rubble => _rubble;
         public BossPart Surge { get; private set; }
         public int ReachingFor => CurrentAttack == Attack.Reach && Current == Move.Telegraph ? _reachLamp : -1;
@@ -139,6 +143,7 @@ namespace OWSBG.World
             EnsureLamps();
             Beat = 0;
             _beatT = 0f;
+            _frozenSeen = Hitstop.FrozenSeconds;
             LightBeat();
             Current = Move.Wait;
             _wait = waitSeconds;
@@ -161,7 +166,13 @@ namespace OWSBG.World
 
         protected override void FixedUpdate()
         {
-            if (IsFightActive) AdvanceBeat(Time.fixedDeltaTime);   // the chorus does not stop for hurtstun
+            if (IsFightActive)
+            {
+                // The chorus does not stop for hurtstun, nor for hitstop: what a hit froze is sung on (AUD-13), so the beat keeps the music's time.
+                float owed = (float)(Hitstop.FrozenSeconds - _frozenSeen);
+                _frozenSeen = Hitstop.FrozenSeconds;
+                AdvanceBeat(Time.fixedDeltaTime + owed);
+            }
             base.FixedUpdate();
         }
 

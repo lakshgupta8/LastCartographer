@@ -172,6 +172,7 @@ anyone to come.
 | 1/2 | Emberdown.NineChimneys | **Talonhold.** The old way up. She goes first, sings the holds | "Talon, talon, breathe. Talon, talon, name. The chimney remembers who climbed it." #plant:5.6 | `emberdown.runa.climbed` (with the ability) |
 | 1/2 | Emberdown.Overlook | The Greyfold from the north | "We counted it. Wider by a wingspan a year. Then we stopped counting. Then Mother started." #plant:4.6 | `emberdown.overlook.seen` |
 | 1/2 | Emberdown.CinderBaths | **The debate.** Kettil and the surveyor argue in numbers; Runa sings the surveyor's numbers back as a roll-call and they stop being his | "Six hundred and twelve. He's right. Now sing them." | `emberdown.debate.heard` |
+| 2 | Saltmarrow.MerrowsEnd | **A fish village counted.** Asked at the bell (Act 2, `Bell_Runa_Named`: "Merrow's End. Nine songs, nobody counting"), she comes to the coast and stands by Dotha's stoop. Unwalked, she teaches the walk to a Wren who never learned it and leads it; held, she puts Merrow's End in the roll-call | "Forty-two, Wren. Forty-three, Dotha. Forty-four, the water, since it listens." | `emberdown.runa.asked_for_merrow`, `saltmarrow.runa.came`, `saltmarrow.runa.counted_merrow` (`Saltmarrow_MerrowsEnd_Runa`) |
 | 1/2 | Emberdown.Hollowvein | **The long roll-call down.** Decision: walk, or leave buried. If walked, she leads the chorus and the Collapse wakes (6.4) | Before: "Thirty-one names. We'll learn the rest walking." After: she counts thirty-one, and stops the song before the number | `emberdown.hollowvein.walked` / `.buried` |
 | 2 | Emberdown.RollCallBell | **Named.** Once Wren has held any place by a bounds-walk, Runa's roll-call has Wren's name in it, wherever Wren is | "Forty-two, Wren. She's not here. Doesn't matter. That's the point." | `runa.named_wren` |
 | 3 | Halden.Observatory | **The chorus** (true ending, 6.15). She leads the roll-call round the bounds of the Blank | The song with every name the player has met, in the order met; her voice is the one that is not a leitmotif but the leitmotif's source (AUD-02: sung, `docs/design/roll-call.md`) | `ending.chorus_led` |
@@ -355,7 +356,8 @@ Marrow: Lost. #echo:corvin
   Mirror Pool glimpses become lines.
 - ~~Teodor's tenth village: named here as his mother's; the bible does not say.~~ The bible says it now (story-bible.md §4,
   the Verdance, 2026-10-04).
-- Runa coming to Merrow's End in Act 2 (`emberdown.runa.asked_for_merrow`) is the "needs Emberdown" of bible 4.1's
-  hold option; the greybox lets the whale teach the walk instead. When Runa's scene exists, the whale should teach
-  the *song* and Runa the *walk*.
+- ~~Runa coming to Merrow's End in Act 2.~~ Written (2026-10-04, `Merrow_Runa`, §3). Decided with it: the whale keeps
+  teaching the walk on the coast (hearing it under the bridge, `BoundsWalks.IsLearned`), because the slice holds
+  Merrow's End that way and it is proven in play; Runa's visit is bible 4.1's "needs Emberdown" way for a Wren who
+  never heard the whale, and for everyone else it is the village counted in. The whale's song is her roll-call either way.
 - Sable's Act 2 voyage to Windreach by sea (world-map.md §6) would give her a fourth region; not written.

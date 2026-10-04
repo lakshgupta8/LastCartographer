@@ -53,4 +53,19 @@ title: Bell_Runa_Named
         <<flag holdfast.walk_learned 1>>
     <<endif>>
 <<endif>>
+// Act 2: a fish village with nine songs and nobody counting them. Asked, she comes to the coast (Merrow_Runa).
+<<if has_flag("act2.started") and has_flag("saltmarrow.dotha.songs") and not walked("Saltmarrow_B") and flag("saltmarrow.dotha.decided") != 2 and not has_flag("emberdown.runa.asked_for_merrow")>>
+    Runa: You've a look. Somebody somewhere isn't counted. Say it. #still #line:08b9a13
+    -> Merrow's End. Nine songs, nobody counting. #line:0d499a6
+        <<voice surveyor emberdown>>
+        Runa: A fish village. Nobody's counted a fish village. We'll walk it. After the bell; the bell comes first. #line:04cf0e9
+        <<flag emberdown.runa.asked_for_merrow 1>>
+    -> Come to the coast and see it. #line:04287ec
+        <<voice warden emberdown>>
+        Runa: Show me? I'll be singing it before you've finished pointing. After the bell. #line:0bf8a27
+        <<flag emberdown.runa.asked_for_merrow 1>>
+    -> ... #line:084196a
+        <<voice drift emberdown>>
+        Runa: Keep it, then. The count keeps too. Ask when you're ready. #still #line:0e92cdb
+<<endif>>
 ===

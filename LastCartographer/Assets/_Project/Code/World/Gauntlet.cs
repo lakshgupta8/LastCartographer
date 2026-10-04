@@ -56,6 +56,8 @@ namespace OWSBG.World
                 w.Numbers["$vellum_scraps"] = s + 1;
                 var plan = Gauntlets.Find(Id);
                 Captions.Show(Loc.F("caption.gauntlet_crossed", "{0}: crossed.", plan != null ? Gauntlets.NameOf(plan) : Id), 3f);
+                // The first scrap says what vellum is to her (flavour-text.md, the purses).
+                if (!w.Is(Flavour.SeenKey(Flavour.VellumScrap))) { w.Set(Flavour.SeenKey(Flavour.VellumScrap), true); Captions.Show(Flavour.ForCurrency(Flavour.VellumScrap), 4f); }
             }
             Done?.Invoke(this);
         }

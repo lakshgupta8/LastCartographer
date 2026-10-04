@@ -31,6 +31,8 @@ namespace OWSBG.Core
         /// <summary>The Sighting lens as Wren holds it after the Nine Stones (Hale's lens, windreach-arc).</summary>
         public static string HalesLens => T("instrument", "HalesLens");
         public static string ForKeystone(string home) => T("keystone", home);
+        /// <summary>The flag that a purse's line has been shown: once, the first time Wren picks its coin up (the caption).</summary>
+        public static string SeenKey(string currency) => Keys.Of("flavour.seen.", currency);
         public static string ForAbility(Ability a) => a == Ability.None ? "" : T("ability", a.ToString());
         public static string ForMemory(string id) => T("memory", id);
         public static string ForCurrency(string id) => T("currency", id);

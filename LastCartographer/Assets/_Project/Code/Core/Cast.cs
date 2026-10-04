@@ -112,7 +112,8 @@ namespace OWSBG.Core
             At("runa", Act1, "Emberdown.Overlook", "the Greyfold from the north (plant 4.6)", "Overlook_Runa", staged: true, writes: "emberdown.overlook.seen");
             At("runa", Act1, "Emberdown.CinderBaths", "the debate: she sings the surveyor's numbers back", "Baths_Runa_Debate", staged: true, writes: "emberdown.debate.heard");
             At("runa", Act1, "Emberdown.Hollowvein", "the long roll-call down, or leave it buried", "Hollowvein_Runa_Walk", staged: true, writes: "emberdown.hollowvein.walked / .buried");
-            At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place", "Bell_Runa_Named", staged: true, writes: "runa.named_wren");
+            At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place; asked to the coast", "Bell_Runa_Named", staged: true, writes: "runa.named_wren, emberdown.runa.asked_for_merrow");
+            At("runa", Act2, "Saltmarrow.MerrowsEnd", "comes to count a fish village: teaches and leads the walk, or puts Merrow's End in the roll-call", "Merrow_Runa", staged: true, writes: "saltmarrow.runa.came / .counted_merrow");
             At("runa", Act3, "Halden.Observatory", "the true ending's chorus: she leads the roll-call round the Blank", "Observatory_Runa_Chorus", staged: true, writes: "ending.chorus_led");
             At("runa", Epilogue, "Emberdown.KettilsRest", "the epilogue, by ending", "Epilogue_Runa", staged: true);
 

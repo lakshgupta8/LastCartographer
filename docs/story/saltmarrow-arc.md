@@ -56,6 +56,10 @@ The Tether-Widows (the tether-post; posts after the Lamp-Keeper; answered throug
   Sable stands at the bridge's edge (`NpcWhen` on the commission's state, gone once `saltmarrow.bone_bridge.rowed`),
   rows Wren under the bones, lets the whale sing (`<<sing whale>>`) and does not sing along: everyone knows the tune,
   nobody the words; "a miner would say names" is the plant for Runa's roll-call. `BoneBridgeSableTests` (PlayMode, 1).
+- **Runa at Merrow's End** (`Saltmarrow_MerrowsEnd_Runa`, Act 2; character-bibles.md §3): asked at the bell, she
+  stands by Dotha's stoop (`FlagPresence`: asked for, and not once the village was let go), teaches and leads the walk
+  for a Wren who never learned it, and once the village is held counts it into the roll-call: "Forty-three, Dotha."
+  `RunaAtMerrowsEndTests` (PlayMode, 2).
 
 ## 5. Open
 - Sable in the Blank at Aury's lighthouse (8.6) is NAR-14's (`Blank_Aury`).

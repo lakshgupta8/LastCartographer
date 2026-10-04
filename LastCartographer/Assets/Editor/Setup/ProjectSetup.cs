@@ -658,6 +658,9 @@ namespace OWSBG.Setup
             MakeProp(room, room.transform, "Stoop", new Vector2(-12.6f, 0f), 0.9f);    // Dotha's stoop, behind her (ENV-09)
             MakeProp(room, room.transform, "Tether", new Vector2(2.7f, 0f), 0.9f);     // the tether-post the vantage is named for
             MakeNpc(room, "Dotha_Greybox", new Vector2(-12f, 0f), "Merrow_Dotha", new Color(0.36f, 0.40f, 0.34f));
+            // Runa, asked at the bell in Act 2, comes to count the fish village (Merrow_Runa); not once it was let go.
+            MakeNpc(room, "Runa_Greybox", new Vector2(-9.2f, 0f), "Merrow_Runa", new Color(0.44f, 0.36f, 0.30f));
+            GateNpc(room, "Runa", "emberdown.runa.asked_for_merrow", "saltmarrow.dotha.decided", 2, 0);
             var dotha = MakeSchedule(room, "Dotha_Greybox");
             dotha.AddPost(DayPhase.Dawn, new Vector2(-12f, 0f), "", "on her stoop", 1);
             dotha.AddPost(DayPhase.Day, new Vector2(-12f, 0f), "", "on her stoop", 1);
@@ -2083,18 +2086,7 @@ namespace OWSBG.Setup
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
             foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
-            foreach (var g in r.NpcGates)
-            {
-                var npc = room.transform.Find(g.name + "_Greybox");
-                if (npc == null) { Debug.LogWarning("[OWSBG] " + r.Id + ": no NPC " + g.name + " to gate"); continue; }
-                var presence = npc.gameObject.AddComponent<FlagPresence>();
-                var pso = new SerializedObject(presence);
-                pso.FindProperty("_requires").stringValue = g.requires;
-                pso.FindProperty("_requiresValue").intValue = g.requiresValue;
-                pso.FindProperty("_hiddenWhen").stringValue = g.hiddenWhen ?? "";
-                pso.FindProperty("_hiddenValue").intValue = g.hiddenValue;
-                pso.ApplyModifiedPropertiesWithoutUndo();
-            }
+            foreach (var g in r.NpcGates) GateNpc(room, g.name, g.requires, g.hiddenWhen, g.hiddenValue, g.requiresValue);
             for (int i = 0; i < r.Folks.Count; i++) { var f = r.Folks[i]; MakeFolk(room, i, f.look, f.pos, f.activity, f.face, f.remnant); }
             for (int i = 0; i < r.Anchors.Count; i++) MakeAnchor(room, i, r.Anchors[i]);
             if (r.CampSiteIndex >= 0) MakeCampSite(room, r.CampSiteIndex);
@@ -2875,6 +2867,20 @@ namespace OWSBG.Setup
         // name without its _Greybox suffix), else an ink-tinted stand-in quad; a trigger, talkable with up. With
         // sheets it gets the sheet player, the animator and its colour state (rest state as given; the place's fate
         // and fade stage are read at run time).
+        /// <summary>An NPC made by <see cref="MakeNpc"/> stands only while the world says so (FlagPresence): a flag set (to a value, or any), until another reads a value.</summary>
+        static void GateNpc(Room room, string name, string requires, string hiddenWhen, int hiddenValue, int requiresValue)
+        {
+            var npc = room.transform.Find(name + "_Greybox");
+            if (npc == null) { Debug.LogWarning("[OWSBG] " + room.RoomId + ": no NPC " + name + " to gate"); return; }
+            var presence = npc.gameObject.AddComponent<FlagPresence>();
+            var pso = new SerializedObject(presence);
+            pso.FindProperty("_requires").stringValue = requires;
+            pso.FindProperty("_requiresValue").intValue = requiresValue;
+            pso.FindProperty("_hiddenWhen").stringValue = hiddenWhen ?? "";
+            pso.FindProperty("_hiddenValue").intValue = hiddenValue;
+            pso.ApplyModifiedPropertiesWithoutUndo();
+        }
+
         static void MakeNpc(Room room, string name, Vector2 pos, string startNode, Color tint, string character = null, NpcInkState ink = NpcInkState.Drawn)
         {
             var go = new GameObject(name) { layer = LayerMask.NameToLayer("Trigger") };

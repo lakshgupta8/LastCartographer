@@ -65,7 +65,10 @@ namespace OWSBG.World
             if (_taken) return;
             if (other.GetComponentInParent<WrenController>() == null) return;
             _taken = true;
-            Economy.AddSeeds(GameState.World, _count);
+            var w = GameState.World;
+            Economy.AddSeeds(w, _count);
+            // The first seed says what the coast's money is to her (flavour-text.md, the purses); the rest say nothing.
+            if (!w.Is(Flavour.SeenKey(Flavour.IrisSeed))) { w.Set(Flavour.SeenKey(Flavour.IrisSeed), true); Captions.Show(Flavour.ForCurrency(Flavour.IrisSeed), 4f); }
             Collected?.Invoke(this, _count);
             Destroy(gameObject);
         }

@@ -36,6 +36,8 @@ namespace OWSBG.Core
             { "Lorne", "Folk_Crane" },     // the Guild's surveyor at the baths
             { "Garrow", "Folk_Crane" },    // the old crane at the third fire, who failed the leap forty-one years ago
             { "Brask", "Folk_Chough" },    // the Hollowvein's miner, on his island
+            // the Ferrymen as a place (saltmarrow-arc.md): the rope-seller, the boy who counts, the widow at the post
+            { "Skua", "Folk_Gull" }, { "Dunlin", "Folk_Turnstone" }, { "Knot", "Folk_Puffin" },
         };
 
         /// <summary>Speakers with no face: things, places, the narrating Lantern, the islands' unnamed, and Marrow.</summary>

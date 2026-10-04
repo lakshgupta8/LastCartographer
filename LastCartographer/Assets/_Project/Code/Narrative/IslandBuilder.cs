@@ -33,6 +33,7 @@ namespace OWSBG.Narrative
 
         static Room Populate(Islands.Drift drift, string westScene, string eastScene)
         {
+            Islands.CurrentPlaceName = Islands.Spoken(drift.Name);   // what the generic script names (island_place())
             var room = RuntimeRooms.MakeRoom(drift.Scene);
             int seed = RuntimeRooms.Hash(drift.Scene);
 

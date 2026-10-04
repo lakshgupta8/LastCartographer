@@ -56,7 +56,7 @@ line, eight a choice, three choices, known tags, `#plant` with a bible section).
 over the limit across the Verdance, Emberdown and Saltmarrow files; all were cut.
 
 ## 6. Open
-- The rooms, and Aldermere's after-state (paper for attended, the Choir's scar for stopped).
-- The Choir's fight (CMB-13) and the Gatekeeper's (CMB-13): the sheets exist, the kits do not.
-- Keystones as a system: seven, where each is, and what holding them does (NAR-12, DES-12).
-- Teodor's epilogue (NAR-13).
+- ~~The rooms.~~ Built (ENV-07). Aldermere's after-state (paper for attended, the Choir's scar for stopped) is open.
+- ~~The Choir's fight and the Gatekeeper's.~~ Both kits stand (CMB-13), in runtime arena rooms.
+- ~~Keystones as a system.~~ `Keystones` (threshold.md §4).
+- ~~Teodor's epilogue.~~ `Epilogue_Teodor` (endings.md).

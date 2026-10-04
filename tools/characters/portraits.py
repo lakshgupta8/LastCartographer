@@ -163,6 +163,10 @@ SPEAKERS = [
     ("Lorne", "Folk_Crane", folk_as("Crane", **LORNE)),   # the Guild's surveyor at the baths, a crane (emberdown-arc.md)
     ("Garrow", "Folk_Crane", folk_as("Crane", **GARROW)), # the old crane at the third fire (windreach-arc.md)
     ("Brask", "Folk_Chough", folk("Chough")),       # the Hollowvein's miner on his island (blank-islands.md)
+    # the Ferrymen as a place (saltmarrow-arc.md): the rope-seller, the boy who counts the boats in, the widow at the post
+    ("Skua", "Folk_Gull", folk("Gull")),
+    ("Dunlin", "Folk_Turnstone", folk("Turnstone")),
+    ("Knot", "Folk_Puffin", folk("Puffin")),
 ]
 
 

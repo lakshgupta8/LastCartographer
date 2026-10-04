@@ -51,8 +51,7 @@ both.
   planned (Saltmarrow's Bone Bridge).
 
 ## 4. Open
-- The islands' rooms (PRG-20): one generated scene per released place, from `Islands.Present` and
-  `Islands.GenericPlaces`.
-- Generic islands speak one script. A place-aware line ("This was the Cinder Baths") needs the island's name
-  passed in as a Yarn variable, which the generator can set.
-- The Bone Bridge crossing with Sable (Act 1): when the room exists.
+- ~~The islands' rooms (PRG-20).~~ `IslandBuilder` makes each in a runtime scene.
+- ~~Generic islands speak one script with no place in it.~~ `island_place()` names the place the island was
+  (`Islands.CurrentPlaceName`, set by the builder): "This is the cinder baths. Was."
+- ~~The Bone Bridge crossing with Sable (Act 1).~~ Written (`Saltmarrow_Bridge_Sable`, saltmarrow-arc.md §4).

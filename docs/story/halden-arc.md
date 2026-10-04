@@ -71,5 +71,6 @@ rooms are released and Lowmarket is an island in the Blank (`Lowmarket`, the com
 - The rooms; the flyer-tower's climb; Oriel's fight (CMB-14) and Halvard's second kit (CMB-12).
 - Oriel's stand-down (`halden.oriel.stood_down`) is written by her fight (CMB-14, `docs/design/boss-kits.md`) when
   she is beaten without a mask lost; the fight stands in a runtime arena room until Bastion_2 is built.
-- Voice marks for the Saltmarrow, Emberdown and Verdance choices.
+- ~~Voice marks for the Saltmarrow, Emberdown and Verdance choices.~~ Every choice in every region is marked now,
+  and `VoiceMarksTests` holds it (2026-10-04); a choice that only jumps is marked where it lands, as here.
 - Pell at the act break (`Edge_Pell_Watch`, the Greyfold) and at the Threshold: NAR-11.

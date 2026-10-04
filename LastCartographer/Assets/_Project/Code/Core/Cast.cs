@@ -101,7 +101,7 @@ namespace OWSBG.Core
 
             Member("sable", "Sable", "cormorant", "the Ferrymen", "prices", "ends the conversation first", "\"I hope\"");
             At("sable", Act1, "Saltmarrow.Quay", "the quay: the Guild's haste, the board, the reed, the whale, the widow, the shop, Halvard, Aury", "Quay_Sable", staged: true, writes: "saltmarrow.sable.*, saltmarrow.bone_bridge.heard, saltmarrow.widow.decided");
-            At("sable", Act1, "Saltmarrow.BoneBridge", "the whale's step: she rows Wren under and does not sing along", "BoneBridge_Sable", writes: "saltmarrow.bone_bridge.rowed");
+            At("sable", Act1, "Saltmarrow.BoneBridge", "the whale's step: she rows Wren under and does not sing along", "BoneBridge_Sable", staged: true, writes: "saltmarrow.bone_bridge.rowed");
             At("sable", Act2, "Saltmarrow.LanternChain", "the tether to the third lighthouse; she rows it herself", "Chain_Sable_Tether", staged: true, writes: "sable.tether_sold, saltmarrow.tether");
             At("sable", Act3, "Blank.AurysLighthouse", "sits with Aury; talks prices; does not tell him", "Aury_Sable", staged: true, writes: "sable.aury_told, blank.aury.knows");
             At("sable", Epilogue, "Saltmarrow.Quay", "prices, by ending", "Epilogue_Sable", staged: true);

@@ -27,6 +27,13 @@ namespace OWSBG.Core
     public static class Islands
     {
         public const string GenericNode = "Island_Remnant";
+
+        /// <summary>The place the island being built or stood in was, as its Remnants say it (Yarn's island_place()); set by the builder.</summary>
+        public static string CurrentPlaceName { get; set; }
+
+        /// <summary>A place's name as a Remnant says it mid-sentence: "the Cinder Baths", not "The Cinder Baths"; "a place" when none is known.</summary>
+        public static string Spoken(string name) =>
+            string.IsNullOrEmpty(name) ? "a place" : name.StartsWith("The ") ? "the " + name.Substring(4) : name;
         /// <summary>The people of an anchored place whose seal was loosened (Offerings): half-remembered, the place itself still standing.</summary>
         public const string HalfNode = "Island_Half";
         /// <summary>Island rooms are scenes made at runtime (PRG-20), named for what they were.</summary>

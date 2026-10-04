@@ -63,4 +63,4 @@ Corvin's are written in NAR-12 and NAR-14.
   eating Halvard's arena is the boss's.
 - Marrow's name plate reads "…" until Wren names it (character-bibles.md §5); the Yarn speaker is `Marrow`, and the
   UI needs a display-name override.
-- Whether Hale, if he finished, stands among Voss's Wardens (a line for Halvard's scene).
+- ~~Whether Hale, if he finished, stands among Voss's Wardens.~~ Voss says it (`Threshold_Voss`, `windreach.hale.finished`).

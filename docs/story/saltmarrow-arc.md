@@ -39,8 +39,26 @@ Lantern Chain (the Guild, by proxy), The Bone Bridge (unsigned; the whale, Sable
 Harvest (a grower; prices follow), Dotha's Last Season (Merrow's End, what is left of it; posts after the shore),
 The Tether-Widows (the tether-post; posts after the Lamp-Keeper; answered through Sable).
 
-## 4. Open
-- Sable in the Blank at Aury's lighthouse (8.6) and the widow's own lines: she is only ever spoken for here.
-- The Ferrymen as a place: two more voices on the quay (a tether-seller, the boy who counts boats).
-- The Salt Chapel and the Bone Bridge scenes beyond the slice (DES-08 §3).
+## 4. The Ferrymen as a place, and the widow (2026-10-04)
+- **Knot**, the widow, speaks for herself at the tether-post (`Saltmarrow_Tether_Knot`, the Tetherline) once the
+  fourth lamp is lit. The rope is on her already; her husband went in forty paces on Skua's rope to mark the Chain
+  for the Guild, and the rope came back. Answer her there (he went forty paces: talked out, `saltmarrow.widow.decided` 1;
+  hold the other end, or say nothing: she goes, 2) or through Sable as before; the commission's flag is the same.
+  She stays at the post talked out, and is gone from it once she went in (`FlagPresence`, the recipe's `NpcWhen`).
+  Sable hears either way (`Quay_Sable_Widow_Met`) and gives her count after (`Quay_Sable_Count`, her bound memory).
+- **Skua** sells the rope everyone goes in on, by the stilt, and prices it by who holds the other end (Sable four
+  scraps, him six, nobody holding free). **Dunlin**, the boy at the east end, counts the boats in as Sable taught him
+  (forty-one, inside her eleven hundred and six) and will not count the other number; he knows her brother kept a
+  light. Both read the lamp, the widow and the quay's fate (`Saltmarrow_Quay_Ferrymen`). Looks from the library
+  (Gull, Turnstone, Puffin), faces in the portraits.
+- `WidowTests` (PlayMode, 3) answer her both ways, hear Sable after, and watch her come and go from the post.
+- **The Bone Bridge crossing** (`Saltmarrow_Bridge_Sable`, bible [F 3.4]): while the whale's commission is taken,
+  Sable stands at the bridge's edge (`NpcWhen` on the commission's state, gone once `saltmarrow.bone_bridge.rowed`),
+  rows Wren under the bones, lets the whale sing (`<<sing whale>>`) and does not sing along: everyone knows the tune,
+  nobody the words; "a miner would say names" is the plant for Runa's roll-call. `BoneBridgeSableTests` (PlayMode, 1).
+
+## 5. Open
+- Sable in the Blank at Aury's lighthouse (8.6) is NAR-14's (`Blank_Aury`).
+- The Salt Chapel scene beyond the slice (DES-08 §3): the room stands (ENV-05); Halvard's words there are the
+  lighthouse scene's. The Bone Bridge crossing is written (§4).
 - Localization keys (NAR-18): lines are still literal.

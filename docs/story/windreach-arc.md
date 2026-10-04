@@ -73,10 +73,11 @@ No [B]: Windreach is not left to fade by any choice here. What happens to it is 
 walking.
 
 ## 7. Open
-- The rooms; the leap as a set piece (a jump that must fall before Windmemory catches); Hale's duel (CMB-14) and the
-  Fallen Star (CMB-14).
+- ~~The rooms; the leap as a set piece; Hale's duel and the Fallen Star.~~ The rooms are built (ENV-07); the leap
+  is a plain jump at the Wind Gate (decided); both fights stand in runtime arena rooms (CMB-14).
 - The camp moving between sites is built (PRG-21, `docs/design/moving-camp.md`). It walks on at first light after each
   fire; the bedroll walks her with it; ashes say where it went; the post keeps the desk. `Camp_Idrenne` now says "We walk
   at first light" on the night of the first fire, instead of saying the camp had already gone.
-- What Hale's lens does (an Instrument, NAR-17), and what a Wren who kept his pages can do with them.
-- Whether Hale reappears at the Threshold among Voss's Wardens if he finished (NAR-11).
+- ~~What Hale's lens does.~~ An Instrument with its line (NAR-17); what a Wren who kept his pages can do with them is open.
+- ~~Whether Hale reappears at the Threshold.~~ Voss says where he is (`Threshold_Voss`: his survey on the desk if he
+  finished; home without his lens if not).

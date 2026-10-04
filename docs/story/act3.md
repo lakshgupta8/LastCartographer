@@ -75,7 +75,7 @@ The Act 3 tests hold Ilse's scene free of "Wren".
 `verdance.aldermere.decided`, `emberdown.hollowvein.decided`, and the five names.
 
 ## 8. Open
-- The rooms; Corra's Drawing and the Archivist (CMB-15).
-- Aury and Sable on his island (Act 3) and Aury in Act 2 by tether: NAR-14, with the other islands.
+- ~~The rooms; Corra's Drawing and the Archivist.~~ The Blank's rooms are built (ENV-08) and both kits stand (CMB-15).
+- ~~Aury and Sable on his island, and Aury in Act 2 by tether.~~ NAR-14 (`Blank_Aury`).
 - Naming Marrow at the Hollow (a typed name, or none); the name plate reads "…" until then.
 - The Observatory's keystone is taken at the frame (NAR-13).

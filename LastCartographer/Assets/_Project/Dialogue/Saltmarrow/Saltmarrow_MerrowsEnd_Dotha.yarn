@@ -13,10 +13,13 @@ title: Merrow_Dotha
 <<endif>>
 Dotha: Sit if you're sitting. Stand if you're Guild. #still #line:072a47b
 -> I'm sitting. #line:0147bb2
+    <<voice drift saltmarrow>>
     Dotha: Then you're not Guild. They don't. The wax, they say. Ruins the knees. #still #line:06f18dd
 -> Which are you? #line:0b30913
+    <<voice surveyor saltmarrow>>
     Dotha: The last. That's not a faction. #still #line:0efff47
 -> ... #line:0202b5c
+    <<voice drift saltmarrow>>
     Dotha: Quiet one. The water will like you. #still #line:0de4631
 <<if not has_flag("saltmarrow.dotha.met")>>
     Dotha: Merrow's End had eleven songs and forty roofs. Nine and one, now. Count them yourself. #line:04c6f53
@@ -37,18 +40,21 @@ title: Merrow_Dotha_Season
 <<endif>>
 Dotha: Then you decide what the map says about us. That's what the cowl's for. #line:01c480c
 -> Write it as it was. Sing the nine. #line:0728075
+    <<voice surveyor saltmarrow>>
     Dotha: As it was. Nobody's asked for that in forty years. #line:01dac57
     Dotha: Get your quill out, then. Slowly. Weather first. #line:0f1dc04
     <<bind dotha.nine_songs>>
     <<flag saltmarrow.dotha.remembered 1>>
     <<flag saltmarrow.dotha.decided 1>>
 -> Let it go. Keep the songs. #line:0f8d6e8
+    <<voice drift saltmarrow>>
     Dotha: Kind, I suppose. Kinder than the Guild manages. #line:0250b3c
     Dotha: I'll sing them to the water, then. It listens as well as anyone. #line:076b7cd
     <<sing dotha>>
     <<flag saltmarrow.dotha.decided 2>>
     <<fade Saltmarrow_B 2>>
 -> Walk it with me. All of it. <<if walk_known()>> #line:00f912a
+    <<voice warden saltmarrow>>
     Dotha: You heard the whale, then. That's the shape of it. Old as the bridge. #plant:3.4 #line:03707ab
     Dotha: Stand where I say, when I say it. That's all a village ever was. #line:0150a02
     <<walk merrows_end>>

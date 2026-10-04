@@ -59,8 +59,8 @@ or system writes fails the build.
   and on load. Before this, a learned ability was not in the save.
 
 ## 5. Open
-- The rooms: none of these scenes has its room built yet; the tests run them from the persistent scene.
-- The Kettil's Rest lesson walk and the Hollowvein walk as `BoundsWalk` objects (bounds-walk.md designs both;
-  Hollowvein's crosses four rooms).
-- Epilogue lines (`Epilogue_Runa`) wait for NAR-13.
+- ~~The rooms.~~ Built (ENV-07); the scenes stand in them.
+- ~~The Kettil's Rest lesson walk~~ stands (`kettils_rest`); the Hollowvein walk as a `BoundsWalk` across four rooms
+  is open (bounds-walk.md designs it).
+- ~~Epilogue lines.~~ `Epilogue_Runa` (endings.md).
 - Merrow's End's hold way: Runa coming to the coast in Act 2 (`emberdown.runa.asked_for_merrow`) is unwritten.

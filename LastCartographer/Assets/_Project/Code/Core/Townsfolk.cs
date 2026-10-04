@@ -82,6 +82,9 @@ namespace OWSBG.Core
             { "Tam", "Sparrow" },          // eleven identical years of notes
             { "Keeper", "Magpie" },        // the orchard's
             { "Innkeeper", "Nuthatch" },   // the one-night inn's, a Remnant
+            { "Skua", "Gull" },            // the Ferrymen's rope-seller on the quay
+            { "Dunlin", "Turnstone" },     // the boy who counts the boats in
+            { "Knot", "Puffin" },          // the widow at the tether-post
         };
 
         /// <summary>

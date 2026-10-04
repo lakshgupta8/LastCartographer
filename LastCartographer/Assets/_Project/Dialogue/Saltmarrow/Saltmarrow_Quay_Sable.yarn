@@ -19,10 +19,13 @@ Sable: Found your feet, then. The boardwalk charges by the plank. #line:04ec1af
 Sable: Word came up the coast before you did. The Guild's declared Isolde Marr dead. #plant:5.2 #line:0db64fa
 Sable: And a journeyman missing. Same day. They were quick about it. #plant:5.2 #line:0fe970e
 -> Quick isn't the same as sure. #line:0ce18a2
+    <<voice surveyor saltmarrow>>
     Sable: No. But it's cheaper. #line:0bd4754
 -> She isn't dead. #line:0de39ab
+    <<voice warden saltmarrow>>
     Sable: Nobody comes out. That's the price of going in. I don't set it. #line:03aadda
 -> ... #line:020eb6d
+    <<voice drift saltmarrow>>
     Sable: Quiet costs nothing. Keep it. #line:043c8aa
 Sable: You'll want the desk, the board, and the lamp up the chain. In that order. #line:04c5f18
 Sable: The lamp's not free either. Nothing that still remembers is. #plant:5.6 #line:0fdcd96
@@ -52,6 +55,8 @@ title: Quay_Sable_Again
 <<endif>>
 <<if commission_is("saltmarrow.tether_widows", "taken") and not has_flag("saltmarrow.widow.decided")>>
     <<jump Quay_Sable_Widow>>
+<<elseif has_flag("saltmarrow.widow.met") and not has_flag("saltmarrow.sable.widow_heard")>>
+    <<jump Quay_Sable_Widow_Met>>
 <<endif>>
 <<if surveyed("Saltmarrow_A/Reedmother")>>
     <<if not has_flag("saltmarrow.sable.reed")>>
@@ -61,11 +66,14 @@ title: Quay_Sable_Again
     <<if commission_is("saltmarrow.bone_bridge", "taken") and not has_flag("saltmarrow.bone_bridge.heard")>>
         Sable: Whale sang while you were up there. Under the bridge. You hear it? #still #line:02c3db4
         -> I heard it. It sounded like names. #line:0e2e1fb
+            <<voice surveyor saltmarrow>>
             Sable: Everyone says names. Nobody agrees whose. #plant:3.4 #line:03b9cd0
             <<flag saltmarrow.bone_bridge.heard 1>>
         -> I heard nothing. #line:0ff71b0
+            <<voice warden saltmarrow>>
             Sable: Then you weren't listening. Go again. It's bones; it'll wait. #still #line:0a39711
         -> ... #line:02316e4
+            <<voice drift saltmarrow>>
             Sable: That's how it starts. Listening for it. #still #line:08823bd
     <<endif>>
 <<else>>
@@ -83,17 +91,20 @@ title: Quay_Sable_Again
     <<endif>>
 <<endif>>
 -> What are you selling? #line:082f994
+    <<voice surveyor saltmarrow>>
     Sable: Tools. Ferrymen's prices. #still #line:0457a7c
     <<if has_flag("saltmarrow.iris_burned")>>
         Sable: Dearer than they were. Ask the ones who burned the fields. #still #line:0b3f86f
     <<endif>>
     <<shop Saltmarrow>>
 -> The third lighthouse. Who keeps it? <<if has_flag("boss.lamp_keeper.defeated") and not has_flag("saltmarrow.sable.aury")>> #line:02f3a83
+    <<voice warden saltmarrow>>
     Sable: Nobody. It faded. There's a tether to it on the post; price on the tag. #line:04e2f6a
     Sable: My brother kept it. Keeps it. He doesn't know the difference. #plant:4.1 #line:0b53921
     Sable: Don't tell him. That's not a price. That's a favour. #line:03f72ab
     <<flag saltmarrow.sable.aury 1>>
 -> Nothing today. #line:0b72e2a
+    <<voice drift saltmarrow>>
     Sable: Cheaper. #still #line:0d7eb7a
 ===
 
@@ -102,17 +113,39 @@ title: Quay_Sable_Widow
 Sable: The widow at the tether-post asked after you. First time she's asked after anyone. #line:0e14292
 Sable: She means to go in after him. Rope's already round her waist. I sold it to her. #line:02a58b5
 -> Talk her out of it. #line:011c394
+    <<voice surveyor saltmarrow>>
     Sable: I'll carry it. She won't listen. They never do, and then they do. #line:0bcf3ef
     <<flag saltmarrow.widow.decided 1>>
 -> Then somebody goes with her. Me. #line:00b4603
+    <<voice warden saltmarrow>>
     Sable: Then I hold the other end. I've held worse. #line:0d72818
     <<flag saltmarrow.widow.decided 2>>
 -> ... #line:0a60e5e
+    <<voice drift saltmarrow>>
     Sable: That's an answer too. She'll take it as the second one. #line:0c8179b
     <<flag saltmarrow.widow.decided 2>>
+<<jump Quay_Sable_Count>>
+===
+
+title: Quay_Sable_Widow_Met
+---
+// She was answered at the post herself (Tether_Knot); Sable heard, and gives the count all the same.
+Sable: You went to the post yourself. Nobody does that. They send me. #line:0857deb
+<<if flag("saltmarrow.widow.decided") == 1>>
+    Sable: She gave Skua his rope back. He didn't know what to charge. #line:0e4a225
+<<else>>
+    Sable: I held the other end. Forty paces, and the tide. I'm not saying what came up the rope. #line:070fb02
+<<endif>>
+<<jump Quay_Sable_Count>>
+===
+
+title: Quay_Sable_Count
+---
+// The number she gives away, once, after the widow is answered either way: her bound memory (flavour-text.md).
 Sable: You'll want something true for that page of yours. Here. It's free. #line:0032910
 Sable: Since the fall, eleven hundred and six boats have come back to this quay. I counted every one. #line:02cea24
 Sable: That's the number I give away. #line:07698e0
+<<flag saltmarrow.sable.widow_heard 1>>
 <<bind sable.boats_back>>
 ===
 

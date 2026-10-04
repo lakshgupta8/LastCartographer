@@ -348,12 +348,13 @@ Marrow: Lost. #echo:corvin
 - Pell's species (a jackdaw) and pronouns (they) are this bible's decisions; CHR-11's v1 model sheet draws the
   jackdaw (`docs/art/pell-turnaround.png`). It also chose species the bible left open: Isolde a curlew, Dotha an
   oystercatcher (`docs/design/npc-animation.md` §2); each is one line to change.
-- Marrow's four original words. The bible fixes the last as "a word nobody has said before" (9.2); the first
-  three, and the last itself, are NAR-13's.
+- ~~Marrow's four original words.~~ Written: the first three at the Hollow (act3.md §5), the last at the frame
+  ("Skywalk", "Look.", or none: endings.md).
 - The bible says Marrow gains "one original word per act" but Marrow only speaks in Act 3; §5 reads this as
   one per island plus the verdict. If the bible meant Marrow should appear earlier and speak, the prologue and
   Mirror Pool glimpses become lines.
-- Teodor's tenth village: named here as his mother's; the bible does not say. It should, or this is cut.
+- ~~Teodor's tenth village: named here as his mother's; the bible does not say.~~ The bible says it now (story-bible.md §4,
+  the Verdance, 2026-10-04).
 - Runa coming to Merrow's End in Act 2 (`emberdown.runa.asked_for_merrow`) is the "needs Emberdown" of bible 4.1's
   hold option; the greybox lets the whale teach the walk instead. When Runa's scene exists, the whale should teach
   the *song* and Runa the *walk*.

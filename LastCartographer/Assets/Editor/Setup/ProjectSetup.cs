@@ -594,6 +594,9 @@ namespace OWSBG.Setup
             MakeProp(room, room.transform, "Nets", new Vector2(-10.6f, 0f), 0.9f);
             MakeProp(room, room.transform, "Boat", new Vector2(-16.5f, 0f), 0.7f);
             MakeNpc(room, "Sable_Greybox", new Vector2(-9.5f, 0f), "Quay_Sable", new Color(0.16f, 0.18f, 0.22f));
+            // The Ferrymen as a place (NAR-04): Skua with his rope by the stilt, and Dunlin counting the boats in at the east end.
+            MakeNpc(room, "Skua_Greybox", new Vector2(2f, 0f), "Quay_Skua", new Color(0.30f, 0.30f, 0.32f));
+            MakeNpc(room, "Dunlin_Greybox", new Vector2(15.6f, 0f), "Quay_Dunlin", new Color(0.36f, 0.30f, 0.22f));
             var sable = MakeSchedule(room, "Sable_Greybox");
             sable.AddPost(DayPhase.Dawn, new Vector2(-9.5f, 0f), "", "mending nets", 1);
             sable.AddPost(DayPhase.Day, new Vector2(-9.5f, 0f), "", "mending nets", 1);
@@ -1215,6 +1218,7 @@ namespace OWSBG.Setup
             public string FloorTile = "Ground_Boardwalk", PlatTile = "Ground_Boardwalk";
             public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
             public readonly List<(string name, Vector2 pos, string node, Color tint, NpcInkState ink, string character)> Npcs = new List<(string, Vector2, string, Color, NpcInkState, string)>();
+            public readonly List<(string name, string requires, string hiddenWhen, int hiddenValue, int requiresValue)> NpcGates = new List<(string, string, string, int, int)>();
             // The crowd (CHR-12): generic birds from the townsfolk library, standing doing something, nobody to talk to.
             public readonly List<(string look, Vector2 pos, string activity, int face, bool remnant)> Folks = new List<(string, Vector2, string, int, bool)>();
             // The forest's (ENV-04): anchor-points the thread catches, and the roots a Gatekeeper holds by.
@@ -1344,6 +1348,8 @@ namespace OWSBG.Setup
             public RoomRecipe Wall(float x, float y, float h) { Ground.Add(("Wall_" + Ground.Count, new Vector2(x, y + h * 0.5f), new Vector2(1f, h))); return this; }
             /// <summary>Someone to talk to; drawn from the sheets of <paramref name="character"/> (the name, by default), else the tinted stand-in.</summary>
             public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f, string character = null) { Npcs.Add((name, new Vector2(x, y), node, tint, NpcInkState.Drawn, character)); return this; }
+            /// <summary>An NPC made by <see cref="Npc"/> stands only while the world says so (FlagPresence): once a flag is set, until another reads a value.</summary>
+            public RoomRecipe NpcWhen(string name, string requires, string hiddenWhen = null, int hiddenValue = 0, int requiresValue = 0) { NpcGates.Add((name, requires, hiddenWhen, hiddenValue, requiresValue)); return this; }
             /// <summary>Someone drawn with the ink removed (a Remnant: the one-night inn's keeper).</summary>
             public RoomRecipe Remnant(string name, float x, string node, Color tint) { Npcs.Add((name, new Vector2(x, 0f), node, tint, NpcInkState.Remnant, null)); return this; }
             /// <summary>One of the crowd (CHR-12): a look from the townsfolk library, what it stands doing ("watching the leap", "cheering"; its first word names the clip), which way it faces.</summary>
@@ -1406,6 +1412,8 @@ namespace OWSBG.Setup
                 new RoomRecipe("Saltmarrow_Tetherline")
                     .Floor(-20f, 20f).Plat(-8f, 3f, 2.5f).Plat(0f, 4f, 2.5f).Plat(8f, 3f, 2.5f)
                     .Skimmer(-8f, 5f).Skimmer(8f, 5f).Crab(0f).Folk("Gull", 14f, "", -1)   // one of the Ferrymen's crews, at the tether's end
+                    // The widow at the post (bible 8.1): there once the fourth lamp is lit, gone once she went in (Tether_Knot).
+                    .Npc("Knot", 5.2f, "Tether_Knot", new Color(0.30f, 0.28f, 0.30f)).NpcWhen("Knot", "boss.lamp_keeper.defeated", "saltmarrow.widow.decided", 2)
                     .Prop("Tether", -14f).Prop("Tether", -4f).Prop("Tether", 4f).Prop("Tether", 14f)
                     .West(Scene(B)).East(Scene("Saltmarrow_Ferry")),
                 new RoomRecipe("Saltmarrow_Ferry")
@@ -1458,6 +1466,9 @@ namespace OWSBG.Setup
                     .Paper("Far_Roosts", 8f, 2f, new Color(0.72f, 0.72f, 0.64f), 10f)
                     .Paper("Farther_Cliffs", 16f, 6f, new Color(0.82f, 0.80f, 0.72f), 16f)
                     .Crab(-15f).Smudge(10f)
+                    // Sable at the bridge's edge while the whale's commission is taken, until she has rowed Wren under (BoneBridge_Sable).
+                    .Npc("Sable", -5.6f, "BoneBridge_Sable", new Color(0.16f, 0.18f, 0.22f))
+                    .NpcWhen("Sable", Commissions.StateKey("saltmarrow.bone_bridge"), "saltmarrow.bone_bridge.rowed", 0, (int)CommissionState.Taken)
                     .West(Scene("Saltmarrow_Chapel")).East(Scene("Emberdown_Stair_1")),
             };
         }
@@ -2072,6 +2083,18 @@ namespace OWSBG.Setup
             foreach (var d in r.Desks) MakeDesk(room, d);
             if (r.LedgerAt.HasValue) MakeLedger(room, r.LedgerAt.Value.hub, r.LedgerAt.Value.pos);
             foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
+            foreach (var g in r.NpcGates)
+            {
+                var npc = room.transform.Find(g.name + "_Greybox");
+                if (npc == null) { Debug.LogWarning("[OWSBG] " + r.Id + ": no NPC " + g.name + " to gate"); continue; }
+                var presence = npc.gameObject.AddComponent<FlagPresence>();
+                var pso = new SerializedObject(presence);
+                pso.FindProperty("_requires").stringValue = g.requires;
+                pso.FindProperty("_requiresValue").intValue = g.requiresValue;
+                pso.FindProperty("_hiddenWhen").stringValue = g.hiddenWhen ?? "";
+                pso.FindProperty("_hiddenValue").intValue = g.hiddenValue;
+                pso.ApplyModifiedPropertiesWithoutUndo();
+            }
             for (int i = 0; i < r.Folks.Count; i++) { var f = r.Folks[i]; MakeFolk(room, i, f.look, f.pos, f.activity, f.face, f.remnant); }
             for (int i = 0; i < r.Anchors.Count; i++) MakeAnchor(room, i, r.Anchors[i]);
             if (r.CampSiteIndex >= 0) MakeCampSite(room, r.CampSiteIndex);

@@ -205,6 +205,10 @@ namespace OWSBG.Narrative
         [YarnFunction("has_flag")]
         public static bool HasFlag(string key) => GameState.World.Is(key);
 
+        /// <summary>The place the island Wren stands on was ("the Cinder Baths"), for the generic island scripts (blank-islands.md).</summary>
+        [YarnFunction("island_place")]
+        public static string IslandPlace() => Islands.Spoken(Islands.CurrentPlaceName);
+
         [YarnFunction("surveyed")]
         public static bool IsSurveyed(string vantageId) => GameState.World.IsSurveyed(vantageId);
 

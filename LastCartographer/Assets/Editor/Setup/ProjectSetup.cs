@@ -998,6 +998,13 @@ namespace OWSBG.Setup
             MakeEnemy<Smudge>(room, "Smudge_3", new Vector2(10f, 2.4f), new Vector2(1.1f, 1.1f));
             var smudges = new[] { room.transform.Find("Smudge_1").gameObject, room.transform.Find("Smudge_2").gameObject, room.transform.Find("Smudge_3").gameObject };
             foreach (var s in smudges) s.SetActive(false);   // dusk releases them
+            // Isolde fights beside her (NAR-03): the near ones while they are drawn, and the last one left to Wren.
+            var ally = room.transform.Find("Isolde").gameObject.AddComponent<IsoldeAlly>();
+            var allySo = new SerializedObject(ally);
+            var targets = allySo.FindProperty("_targets");
+            targets.arraySize = smudges.Length;
+            for (int i = 0; i < smudges.Length; i++) targets.GetArrayElementAtIndex(i).objectReferenceValue = smudges[i].GetComponent<Smudge>();
+            allySo.ApplyModifiedPropertiesWithoutUndo();
 
             // Nothing walks into the white until Isolde has.
             var wall = new GameObject("BlankWall") { layer = LayerMask.NameToLayer("Ground") };

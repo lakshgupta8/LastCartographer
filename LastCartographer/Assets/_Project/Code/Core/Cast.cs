@@ -126,6 +126,7 @@ namespace OWSBG.Core
             At("teodor", Act1, "Verdance.LanternGrove", "the vigil: eleven names, no choices", "Grove_Teodor_Vigil", staged: true, writes: "verdance.grove.vigil");
             At("teodor", Act1, "Verdance.SunkenLibrary", "Ansel's page: he will not turn it for you", "Library_Teodor_Ansel", staged: true, writes: "verdance.library.teodor_asked");
             At("teodor", Act1, "Verdance.Aldermere", "the last day: attend, or stop it", "Aldermere_Teodor", staged: true, writes: "verdance.aldermere.attended / .stopped");
+            At("teodor", Act1, "Verdance.Aldermere", "after the last day, attended: he sits at dusk with them in the ash field", "Aldermere_Ash_Teodor", staged: true, writes: "verdance.aldermere.ash_sat");
             At("teodor", Act2, "Verdance.QuietHouse", "the keystone: say why", "QuietHouse_Teodor_Keystone", staged: true, writes: "teodor.keystone_given / teodor.refused");
             At("teodor", Act3, "Halden.Observatory", "the Unwritten: he dissolves the keystones, naming their places", "Observatory_Teodor_Unwritten", staged: true, writes: "ending.unwritten");
             At("teodor", Epilogue, "Verdance.QuietHouse", "the epilogue, by ending", "Epilogue_Teodor", staged: true);

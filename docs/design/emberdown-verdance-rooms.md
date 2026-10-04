@@ -102,7 +102,7 @@ and below.
 | **Library_2** The reading room | SunkenLibrary | Brother Ansel on page 214 for thirty-eight years. Teodor will not turn it for you. | Page | — | Teodor | up → Library_1 |
 | **Aldermere_1** The lane | Aldermere | Aldermere on its last day: bunting, bread, a desk the inn keeps for travellers. | — | — | desk | W → House_3, E → Aldermere_2 |
 | **Aldermere_2** The square | Aldermere | The last evening. Attend it, or try to stop it and the Choir sings over the square (6.6). | Square | — | Teodor, arena: choir | W → Aldermere_1, E → Aldermere_3 |
-| **Aldermere_3** The ash field | Aldermere | Where the village is already paper; the canopy road starts over it by thread. | — | Cantor, smudge, pulp-wasp | — | W → Aldermere_2, E → Gate_1 [Inkthread] |
+| **Aldermere_3** The ash field | Aldermere | Where the village is already paper; the canopy road starts over it by thread. Attended, the village stands here as paper and Teodor sits with them. | — | Cantor, smudge, pulp-wasp | Teodor (attended) | W → Aldermere_2, E → Gate_1 [Inkthread] |
 | **Gate_1** The approach | OvergrownGate | A desk under the roots, then the gate's roots as anchors up the wall. | — | skimmer | desk | W → Aldermere_3 [Inkthread], E → Gate_2 |
 | **Gate_2** The Overgrown Gate | OvergrownGate | The Gatekeeper's arena (6.7); beyond it, the canopy road to the Paper Mills. | Gate | — | arena: gatekeeper | W → Gate_1, E → Mills_1 [Inkthread] |
 <!-- /table -->

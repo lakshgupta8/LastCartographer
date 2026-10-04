@@ -1222,6 +1222,8 @@ namespace OWSBG.Setup
             public readonly List<(string name, float z, float y, Color color, float height)> Papers = new List<(string, float, float, Color, float)>();
             public readonly List<(string name, Vector2 pos, string node, Color tint, NpcInkState ink, string character)> Npcs = new List<(string, Vector2, string, Color, NpcInkState, string)>();
             public readonly List<(string name, string requires, string hiddenWhen, int hiddenValue, int requiresValue)> NpcGates = new List<(string, string, string, int, int)>();
+            public readonly List<(string name, string requires, string hiddenWhen, int hiddenValue, int requiresValue)> ChildGates = new List<(string, string, string, int, int)>();
+            public readonly List<string> Visitors = new List<string>();
             // The crowd (CHR-12): generic birds from the townsfolk library, standing doing something, nobody to talk to.
             public readonly List<(string look, Vector2 pos, string activity, int face, bool remnant)> Folks = new List<(string, Vector2, string, int, bool)>();
             // The forest's (ENV-04): anchor-points the thread catches, and the roots a Gatekeeper holds by.
@@ -1354,6 +1356,10 @@ namespace OWSBG.Setup
             public RoomRecipe Npc(string name, float x, string node, Color tint, float y = 0f, string character = null) { Npcs.Add((name, new Vector2(x, y), node, tint, NpcInkState.Drawn, character)); return this; }
             /// <summary>An NPC made by <see cref="Npc"/> stands only while the world says so (FlagPresence): once a flag is set, until another reads a value.</summary>
             public RoomRecipe NpcWhen(string name, string requires, string hiddenWhen = null, int hiddenValue = 0, int requiresValue = 0) { NpcGates.Add((name, requires, hiddenWhen, hiddenValue, requiresValue)); return this; }
+            /// <summary>Any object the recipe made, by its name (a folk is "Folk_Jay_0"), stands only while the world says so (FlagPresence).</summary>
+            public RoomRecipe When(string child, string requires, string hiddenWhen = null, int hiddenValue = 0, int requiresValue = 0) { ChildGates.Add((child, requires, hiddenWhen, hiddenValue, requiresValue)); return this; }
+            /// <summary>An NPC who is not of this place: drawn in their own colours whatever the place's fate (NpcInk follows no place).</summary>
+            public RoomRecipe Visitor(string name) { Visitors.Add(name); return this; }
             /// <summary>Someone drawn with the ink removed (a Remnant: the one-night inn's keeper).</summary>
             public RoomRecipe Remnant(string name, float x, string node, Color tint) { Npcs.Add((name, new Vector2(x, 0f), node, tint, NpcInkState.Remnant, null)); return this; }
             /// <summary>One of the crowd (CHR-12): a look from the townsfolk library, what it stands doing ("watching the leap", "cheering"; its first word names the clip), which way it faces.</summary>
@@ -1605,6 +1611,8 @@ namespace OWSBG.Setup
             };
         }
 
+        const string AldermereAttended = "verdance.aldermere.attended";
+
         /// <summary>
         /// The Verdance's nineteen rooms (DES-09, ENV-04), on the forest's kit: flat and long and quiet. The road runs
         /// east into the trees, the House sits in the roots, and the region's two directions are down (the chapel, the
@@ -1692,16 +1700,26 @@ namespace OWSBG.Setup
                 new RoomRecipe("Verdance_Aldermere_1").Tiles("Ground_Lane", "Ground_Lane").VerdancePapers("Mid_Village")
                     .Floor(-20f, 20f).Plat(6f, 2.5f, 3f).Desk(-8f).Prop("Bunting", -14f).Prop("Bunting", 0f).Prop("Bunting", 14f)
                     .Folk("Jay", 2f, "", -1).Folk("Finch", -16f)   // the village, on its last day
+                    .When("Folk_Jay_0", "", AldermereAttended).When("Folk_Finch_1", "", AldermereAttended)   // attended: gone to the ash field
                     .West(V("House_3")).East(V("Aldermere_2")),
                 new RoomRecipe("Verdance_Aldermere_2").Tiles("Ground_Lane", "Ground_Lane").VerdancePapers("Mid_Village")
                     .Floor(-20f, 20f).Plat(-2f, 2.5f, 3f).Plat(4f, 4.5f, 3f).Plat(10f, 2.5f, 3f).Vantage("Square", -14f, 0f)
-                    .Npc("Teodor", -5f, "Aldermere_Teodor", teodor).Npc("Hollin", 8f, "Aldermere_Teodor", hollin).Prop("Bunting", -11f).Prop("Bunting", 13f)
+                    .Npc("Teodor", -5f, "Aldermere_Teodor", teodor).Npc("Hollin", 8f, "Aldermere_Hollin", hollin).Prop("Bunting", -11f).Prop("Bunting", 13f)
                     .Folk("Jay", -17f, "watching the last day").Folk("Woodpecker", 16f, "", -1)
+                    // After the last day (verdance-arc.md §1): Teodor leaves the square either way; attended, the village is in
+                    // the ash field; stopped, it is still here, with half a song.
+                    .NpcWhen("Teodor", "", "verdance.aldermere.decided").NpcWhen("Hollin", "", AldermereAttended)
+                    .When("Folk_Jay_0", "", AldermereAttended).When("Folk_Woodpecker_1", "", AldermereAttended)
                     .Arena(typeof(Choir), "choir", 4f, new Vector2(1f, 1f), -8f, 16f, Ability.None, "verdance.aldermere.stopped")   // only if Wren tries to stop the last day
                     .West(V("Aldermere_1")).East(V("Aldermere_3")),
                 new RoomRecipe("Verdance_Aldermere_3").Tiles("Ground_Lane", "Ground_Root").VerdancePapers("Mid_Ash")
                     .Floor(-20f, 4f).Plat(10f, 4f, 3f).Floor(16f, 20f).Anchor(7f, 5.5f).Anchor(14f, 8f)   // the canopy road starts over the field by thread
                     .Cantor(-6f).Smudge(-13f).Wasp(5f, 5f).Prop("Bunting", -16f).Prop("Bunting", -3f)
+                    // Attended: "Look for the ash field. We will be in it." The village as paper under its bunting, and Teodor
+                    // sitting with them in his own colours (a visitor's ink follows no place).
+                    .Folk("Jay", -18f, "", 1, 0f, true).Folk("Finch", -15f, "", -1, 0f, true).Folk("Woodpecker", -1f, "", -1, 0f, true)
+                    .When("Folk_Jay_0", AldermereAttended).When("Folk_Finch_1", AldermereAttended).When("Folk_Woodpecker_2", AldermereAttended)
+                    .Npc("Teodor", -11f, "Aldermere_Ash_Teodor", teodor).NpcWhen("Teodor", AldermereAttended).Visitor("Teodor")
                     .West(V("Aldermere_2")).East(V("Gate_1")),
                 // ---- the Overgrown Gate: a gate for flyers ----
                 new RoomRecipe("Verdance_Gate_1").Tiles("Ground_Flag", "Ground_Root").VerdancePapers("Mid_Gate")
@@ -2112,6 +2130,8 @@ namespace OWSBG.Setup
             foreach (var n in r.Npcs) MakeNpc(room, n.name + "_Greybox", n.pos, n.node, n.tint, n.character, n.ink);
             foreach (var g in r.NpcGates) GateNpc(room, g.name, g.requires, g.hiddenWhen, g.hiddenValue, g.requiresValue);
             for (int i = 0; i < r.Folks.Count; i++) { var f = r.Folks[i]; MakeFolk(room, i, f.look, f.pos, f.activity, f.face, f.remnant); }
+            foreach (var g in r.ChildGates) GateChild(room, g.name, g.requires, g.hiddenWhen, g.hiddenValue, g.requiresValue);
+            foreach (var v in r.Visitors) MakeVisitor(room, v);
             for (int i = 0; i < r.Anchors.Count; i++) MakeAnchor(room, i, r.Anchors[i]);
             if (r.CampSiteIndex >= 0) MakeCampSite(room, r.CampSiteIndex);
             for (int i = 0; i < r.Grasses.Count; i++) { var g = r.Grasses[i]; MakeGrass(room, i, g.x0, g.x1, g.n, g.tall, g.z, g.y); }
@@ -2900,9 +2920,23 @@ namespace OWSBG.Setup
         // and fade stage are read at run time).
         /// <summary>An NPC made by <see cref="MakeNpc"/> stands only while the world says so (FlagPresence): a flag set (to a value, or any), until another reads a value.</summary>
         static void GateNpc(Room room, string name, string requires, string hiddenWhen, int hiddenValue, int requiresValue)
+            => GateChild(room, name + "_Greybox", requires, hiddenWhen, hiddenValue, requiresValue);
+
+        /// <summary>An NPC whose colours do not follow the room's place: Teodor among Aldermere's paper.</summary>
+        static void MakeVisitor(Room room, string name)
         {
             var npc = room.transform.Find(name + "_Greybox");
-            if (npc == null) { Debug.LogWarning("[OWSBG] " + room.RoomId + ": no NPC " + name + " to gate"); return; }
+            var ink = npc != null ? npc.GetComponent<NpcInk>() : null;
+            if (ink == null) { Debug.LogWarning("[OWSBG] " + room.RoomId + ": no drawn NPC " + name + " to make a visitor"); return; }
+            var so = new SerializedObject(ink);
+            so.FindProperty("_followPlace").boolValue = false;
+            so.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        static void GateChild(Room room, string child, string requires, string hiddenWhen, int hiddenValue, int requiresValue)
+        {
+            var npc = room.transform.Find(child);
+            if (npc == null) { Debug.LogWarning("[OWSBG] " + room.RoomId + ": no " + child + " to gate"); return; }
             var presence = npc.gameObject.AddComponent<FlagPresence>();
             var pso = new SerializedObject(presence);
             pso.FindProperty("_requires").stringValue = requires;

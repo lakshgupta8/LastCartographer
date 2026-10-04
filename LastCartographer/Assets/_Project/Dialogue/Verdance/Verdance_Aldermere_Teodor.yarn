@@ -1,6 +1,9 @@
 // What the Ash Remembers [B] (bible 4.3, 8.3): Aldermere asked the Unwriters to let it go. Wren arrives on its last
 // day. Attend it to the end, or try to stop it and the Choir sings over the square (boss 6.6).
 // Aldermere_2, the square. Mayor Hollin, a thrush, speaks for the village; Teodor stands at the edge.
+// After (verdance-arc.md §1): Teodor leaves the square either way. Attended, the lane and the square are empty and
+// the village stands as paper in the ash field (Aldermere_3), where Teodor sits with them (Aldermere_Ash_Teodor).
+// Stopped, the Choir answered, Aldermere is still here with half a song (Aldermere_Hollin).
 
 title: Aldermere_Teodor
 ---
@@ -9,8 +12,7 @@ title: Aldermere_Teodor
     <<stop>>
 <<endif>>
 <<if has_flag("verdance.aldermere.stopped")>>
-    Hollin: You are the one who stopped it. Thank you, I suppose. We are still here. We are still here. #still #face:grave #line:085ae22
-    <<stop>>
+    <<jump Aldermere_Hollin>>
 <<endif>>
 Hollin: Welcome to Aldermere. There is bread. There is always bread on the last day. #face:bright #line:067ff9b
 Hollin: We voted. Every hand. The Guild wanted four hundred crowns a street, and then we would be the same forever. #line:0dc835b
@@ -52,4 +54,50 @@ Hollin: Please. Put the quill down. We voted. #face:wary #line:07e3080
     Teodor: Then you must answer the Choir. I am sorry. It is the one thing I am sorry for today. #face:grave #line:070896b
 <<flag verdance.aldermere.stopped 1>>
 <<flag verdance.aldermere.decided 2>>
+===
+
+title: Aldermere_Hollin
+---
+<<if has_flag("verdance.aldermere.stopped")>>
+    <<if has_flag("boss.choir.defeated") and not has_flag("verdance.aldermere.after_heard")>>
+        Hollin: The bells stopped halfway. They have never stopped halfway. Nobody knows how the song ends now. #face:grave #line:0eff68e
+        Hollin: The bread went stale. We had not baked for a tomorrow. We are baking. #line:08594d0
+        Hollin: Every hand voted, and here we all are. I had forgotten what an ordinary morning weighs. #face:grave #line:0059fe4
+        <<flag verdance.aldermere.after_heard 1>>
+        -> Vote again, then. #line:09f6fb7
+            <<voice warden verdance>>
+            Hollin: We will. Every hand. And you will not be asked to stand in the square for it. #face:wary #line:05a73cb
+        -> What do you need? #line:05204a4
+            <<voice surveyor verdance>>
+            Hollin: Flour, and the rest of the song. Teodor will not sing it. He says it is not his. #line:03a9127
+        -> ... #line:087f06a
+            <<voice drift verdance>>
+            Hollin: Yes. That is the sound the square makes now. Half a bell. #face:grave #line:059a099
+        <<stop>>
+    <<endif>>
+    Hollin: You are the one who stopped it. Thank you, I suppose. We are still here. We are still here. #still #face:grave #line:085ae22
+    <<stop>>
+<<endif>>
+<<jump Aldermere_Teodor>>
+===
+
+title: Aldermere_Ash_Teodor
+---
+<<if not has_flag("verdance.aldermere.ash_sat")>>
+    Teodor: Cartographer. Sit, if you like. I come at dusk. They are at the bread now. #line:0b452c5
+    Teodor: Hollin cuts it too thick. She always does. Nobody says so. It is a festival. #face:bright #line:0e589c5
+    Teodor: I do not see them, you understand. I know where they stand. That is enough to sit by. #line:061cc4f
+    <<flag verdance.aldermere.ash_sat 1>>
+    -> I'll sit with you. #line:0830aee
+        <<voice drift verdance>>
+        Teodor: Thank you. It is a quiet festival from here. It is still a festival. #face:bright #line:0ee0f08
+    -> Do they know you come? #line:0faa2be
+        <<voice surveyor verdance>>
+        Teodor: I asked them once, to be sure. Hollin said bread. I took it as yes. #face:bright #line:0df3a71
+    -> You could have kept them. #line:051f91c
+        <<voice warden verdance>>
+        Teodor: I could have. They asked me not to. I asked them three times, and made sure. #face:grave #line:009a8a7
+    <<stop>>
+<<endif>>
+Teodor: The bunting is still up. Nobody will take it down. Nobody needs to. #still #line:0d2a40c
 ===

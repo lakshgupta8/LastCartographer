@@ -13,7 +13,9 @@ every scene names its room. Files live in `Assets/_Project/Dialogue/Verdance/`.
 | Inkthread | Chapel_2 | `RootChapel_Teodor_Thread`: the solvent-line drawn the other way. Only after the House | `verdance.teodor.thread`, `<<grant Inkthread>>` |
 | The vigil | Grove_2 | `Grove_Teodor_Vigil`: eleven villages in the present tense. No choices | `verdance.grove.vigil` |
 | The library | Library_1–2 | `Library_Teodor_Ansel` (he will not turn it); `Library_Ansel` → `Library_Ansel_Turn` | `verdance.library.page_turned`, `.decided` (1 turned, 2 left) |
-| The last day | Aldermere_2 | `Aldermere_Teodor` → `Aldermere_Attend` or `Aldermere_Stop` (then the Choir, 6.6) | attended: `<<release>>` the three rooms, `.decided` = 1; stopped: `.decided` = 2 |
+| The last day | Aldermere_2 | `Aldermere_Teodor` (Teodor) or `Aldermere_Hollin` (Hollin) → `Aldermere_Attend` or `Aldermere_Stop` (then the Choir, 6.6) | attended: `<<release>>` the three rooms, `.decided` = 1; stopped: `.decided` = 2 |
+| After, attended | Aldermere_1–3 | The lane and the square stand empty; the village is paper in the ash field under its bunting (released, so its people are Remnants), and Teodor sits with them at dusk in his own colours (`Aldermere_Ash_Teodor`): "Hollin cuts it too thick. She always does." | `verdance.aldermere.ash_sat` |
+| After, stopped | Aldermere_2 | Teodor has gone. With the Choir answered, Hollin (`Aldermere_Hollin`): the bells stopped halfway and nobody knows how the song ends; the bread went stale; they will vote again. Then "We are still here." | `verdance.aldermere.after_heard` |
 | The keystone | House_2 (Act 2) | `QuietHouse_Teodor_Keystone`: "Why do I let places go?" | `teodor.keystone_given` + `keystone.quiet_house`, or `teodor.refused` |
 | The gate | Gate_2 | `Gate_Inscription`; after the Gatekeeper (6.7) and a survey, `Gate_Inn`: the road for one night | `verdance.gate.inn_visited` |
 
@@ -56,7 +58,8 @@ line, eight a choice, three choices, known tags, `#plant` with a bible section).
 over the limit across the Verdance, Emberdown and Saltmarrow files; all were cut.
 
 ## 6. Open
-- ~~The rooms.~~ Built (ENV-07). Aldermere's after-state (paper for attended, the Choir's scar for stopped) is open.
+- ~~The rooms.~~ Built (ENV-07). ~~Aldermere's after-state.~~ Written and standing (§1): paper in the ash field for
+  attended, half a song for stopped. The Choir's scar on the square as a drawing is art's (no piece yet).
 - ~~The Choir's fight and the Gatekeeper's.~~ Both kits stand (CMB-13), in runtime arena rooms.
 - ~~Keystones as a system.~~ `Keystones` (threshold.md §4).
 - ~~Teodor's epilogue.~~ `Epilogue_Teodor` (endings.md).

@@ -227,7 +227,7 @@ namespace OWSBG.Core
             R("Verdance_Aldermere_2", "Verdance.Aldermere", "The square", "The last evening. Attend it, or try to stop it and the Choir sings over the square (6.6).", "Square", "", new[] { "teodor" }, false, "choir", null)
                 .West("Verdance_Aldermere_1", Ability.None)
                 .East("Verdance_Aldermere_3", Ability.None);
-            R("Verdance_Aldermere_3", "Verdance.Aldermere", "The ash field", "Where the village is already paper; the canopy road starts over it by thread.", null, "Cantor, smudge, pulp-wasp", new string[0], false, null, null)
+            R("Verdance_Aldermere_3", "Verdance.Aldermere", "The ash field", "Where the village is already paper; the canopy road starts over it by thread. Attended, the village stands here as paper and Teodor sits with them.", null, "Cantor, smudge, pulp-wasp", new[] { "teodor" }, false, null, null)
                 .West("Verdance_Aldermere_2", Ability.None)
                 .East("Verdance_Gate_1", Ability.Inkthread);
             R("Verdance_Gate_1", "Verdance.OvergrownGate", "The approach", "A desk under the roots, then the gate's roots as anchors up the wall.", null, "skimmer", new string[0], true, null, null)

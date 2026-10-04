@@ -15,7 +15,7 @@ namespace OWSBG.Core
     /// here is a recording: the cues are made by <see cref="InkSounds"/>' tools and a few more, and registered into its
     /// table so the bank, the tests and the exporter treat them like hers.
     /// </summary>
-    public static class EnemySounds
+    public static partial class EnemySounds
     {
         const int SampleRate = InkSounds.SampleRate;
 
@@ -36,8 +36,13 @@ namespace OWSBG.Core
             public IReadOnlyDictionary<string, string> Moves = Empty;
             /// <summary>Clip → cue looped while the clip runs.</summary>
             public IReadOnlyDictionary<string, string> Loops = Empty;
+            /// <summary>A boss's count → cue, played each time the count goes up (a bell tolled, a rope cut, a limb redrawn):
+            /// the moments that are no clip of the body's. The name is a public int the boss keeps.</summary>
+            public IReadOnlyDictionary<string, string> Events = Empty;
+            /// <summary>A death of its own (the Star's fall, the Bells' last hum), or null for the material's.</summary>
+            public string OwnDeath;
             public string Hurt => CueOf(Material, "hurt");
-            public string Death => CueOf(Material, "death");
+            public string Death => OwnDeath ?? CueOf(Material, "death");
             /// <summary>Every cue the voice can play.</summary>
             public IEnumerable<string> Cues
             {
@@ -47,6 +52,7 @@ namespace OWSBG.Core
                     if (Blocked != null) yield return Blocked;
                     foreach (var c in Moves.Values) yield return c;
                     foreach (var c in Loops.Values) yield return c;
+                    foreach (var c in Events.Values) yield return c;
                 }
             }
         }
@@ -71,8 +77,10 @@ namespace OWSBG.Core
             return d;
         }
 
-        static void Family(string family, Material m, string what, string blocked = null, Dictionary<string, string> moves = null, Dictionary<string, string> loops = null, string[] blockedIn = null) =>
-            _voices[family] = new Voice { Family = family, Material = m, What = what, Blocked = blocked, BlockedClips = blockedIn, Moves = moves ?? Empty, Loops = loops ?? Empty };
+        static void Family(string family, Material m, string what, string blocked = null, Dictionary<string, string> moves = null, Dictionary<string, string> loops = null, string[] blockedIn = null,
+                           Dictionary<string, string> events = null, string death = null) =>
+            _voices[family] = new Voice { Family = family, Material = m, What = what, Blocked = blocked, BlockedClips = blockedIn, Moves = moves ?? Empty, Loops = loops ?? Empty,
+                                          Events = events ?? Empty, OwnDeath = death };
 
         static EnemySounds()
         {
@@ -107,14 +115,8 @@ namespace OWSBG.Core
                 blockedIn: new[] { "breach", "idle" });   // under the grass a strike meets nothing
             Family("Reedling", Material.Fluff, "a half-drawn chick: quick steps, two taps of the bill before it lunges, and a peep",
                 moves: Map("peck", "reedling_peck", "lunge", "reedling_peep", "move", "reedling_scurry"));
-            // ---- the bosses: their tells carry the fight; here is only what they are made of (their own voices are open) ----
-            foreach (var b in new[] { "Halvard", "Brann", "Oriel", "Gatekeeper", "LampKeeper" }) Family(b, Material.Brass, "a Warden, or a thing of the Guild's: brass");
-            foreach (var b in new[] { "Choir", "HalfCathedralBells" }) Family(b, Material.Bell, "bells");
-            foreach (var b in new[] { "Hale", "Collapse" }) Family(b, Material.Earth, "stone and earth");
-            Family("FallenStar", Material.Ember, "a thing that burns");
-            foreach (var b in new[] { "Archivist", "CorrasDrawing", "CompleteSurvey" }) Family(b, Material.Graphite, "a drawing that draws");
-            Family("Voss", Material.Paper, "the Unwriter: dry paper");
-            Family("ReedmotherBrood", Material.Wing, "a great bird: wings");
+            // ---- the bosses (AUD-15): their own voices, EnemySoundsBosses.cs ----
+            Bosses();
         }
 
         /// <summary>Put every cue the voices name into <see cref="InkSounds"/>' table. Called once, by its static constructor.</summary>
@@ -179,6 +181,7 @@ namespace OWSBG.Core
             One("reedling_peck", "two taps of the bill", ReedlingPeck, 0.6f, move: true);
             One("reedling_peep", "a peep", ReedlingPeep, 0.7f, move: true);
             One("reedling_scurry", "quick small steps", ReedlingScurry, 0.3f, move: true);
+            RegisterBosses();
             foreach (var v in _voices.Values)
                 foreach (var c in v.Cues)
                     if (!InkSounds.Has(c)) throw new InvalidOperationException(v.Family + " names a cue that does not exist: " + c);

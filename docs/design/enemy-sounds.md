@@ -1,4 +1,4 @@
-# The Enemies' Voices (AUD-10, v1)
+# The Enemies' Voices (AUD-10, AUD-15, v1)
 
 Everything that fights her is a drawing, and version one makes each of them sound like what it is drawn as: a shell
 is a hard tick, a wing is air, a smudge is wet ink, a Cantor is a handbell, a Warden is brass, a Remnant is dry
@@ -29,13 +29,7 @@ target) is wet ink.
 | Sketch | graphite | silence (the fill left out) | fill → `sketch_fill`, fast hatching; lunge → `sketch_lunge`, a dry drag | — |
 | Tussock | earth | `shell_block`, only while it is up (breach, idle) | heave → `tussock_heave`; breach → `tussock_breach`, grit bursting; burrow → `tussock_burrow`, grit falling | ridge → `tussock_ridge`, a rumble |
 | Reedling | fluff | — | move → `reedling_scurry`; peck → `reedling_peck`, two taps; lunge → `reedling_peep` | — |
-| Halvard, Brann, Oriel, the Gatekeeper, the Lamp-Keeper | brass | — | (their tells carry the fight) | — |
-| The Choir, the Half-Cathedral Bells | bell | — | — | — |
-| Hale, the Collapse | earth | — | — | — |
-| The Fallen Star | ember | — | — | — |
-| The Archivist, Corra's Drawing, the Complete Survey | graphite | — | — | — |
-| Voss | paper | — | — | — |
-| The Reedmother's Brood | wing | — | — | — |
+| The bosses | (section 2a) | — | (section 2a) | (section 2a) |
 
 **The materials** (`<material>_hurt`, `<material>_death`): a shell ticks and cracks (two ticks and grit running
 out); a wing puffs and falls as a flutter slowing; ink smears wet and short (shorter than her own smudge, so it is
@@ -70,6 +64,40 @@ rank) or, if everything sounding matters more, is the one dropped (`InkSoundBank
 deaths rank as enemy hits, their moves and loops as world one-shots; the loops are the voices' own sources and do
 not count against the 24.
 
+## 2a. The bosses' own voices (AUD-15)
+
+**A boss is heard doing what it does, never reading.** A move's cue sits on the clip of the move itself (the sweep,
+the slam, the stomp), never on a clip the fight telegraphs with: the read already has its sound, the tell, and a
+second sound there would say something the telegraph does not show (audio-direction 4). So the Gatekeeper's sweep
+grinds along the floor after the sweep's tell, not with it. A **loop** is the body going on (stone wings, iron feet, a
+pen writing a Bind) and may run through a read, as the Gatekeeper's wingbeats run through the pass it reads with.
+What is no clip of the body's is an **event** (`Voice.Events`): a count the boss already keeps (`Rings`, `Cuts`,
+`Shifts`, `LimbsRedrawn`), heard each time it goes up, so nothing in the fights changed to be heard. An event's cue
+may have a phase's own take, `<cue>_p<phase>` (`EnemySounds.PhaseCue`): the great bell is `bells_toll_p3`. Three die
+their own way (`Voice.OwnDeath`).
+
+| Boss | Material | Moves (clip → cue) | Loops | Events (count → cue) | Death |
+|---|---|---|---|---|---|
+| The Lamp-Keeper | wing (a gannet; was brass) | dive → `lamp_dive`, air torn; grounded → `lamp_grounded`, a thud and the lamp's glass rattling; return → `lamp_return`, three wingbeats climbing | beam → `lamp_beam`, the lamp humming, its glass singing | — | the wing's |
+| Halvard | brass | measure, thrust (the Warden's); lunge → `halvard_lunge`; count → `halvard_count`, three brass clicks ("Three paces. I measured them."); throw → `halvard_throw`, the cord paying out; recall → `halvard_recall`, reeled home with a clink | — | — | brass |
+| Cinder Warden Brann | brass | thrust (the Warden's); charge → `brann_charge`, iron feet on the grates; crosscut → `brann_crosscut`, two lances crossing with a ring | hold → `brann_hold`, the furnace roaring through his brass | `Shifts` → `brann_shift`, the grates clanking as the heat moves | brass |
+| Warden-Captain Oriel | brass | strike1–3 → `oriel_strike`, a clean cut and chalk; flourish → `oriel_flourish`, one long sweep; step → `oriel_step`, a scuff | bind → `oriel_bind`, a pen writing fast | `BindsDenied` → `oriel_denied`, the nib snapping | brass |
+| The Gatekeeper | earth (stone; was brass) | rise → `gate_rise`, roots creaking; sweep → `gate_sweep`, a stone wing grinding; pass → `gate_pass`; land → `gate_land`, the gate shaken | fly, pass → `gate_fly`, stone wingbeats | — | earth |
+| The Choir | bell | — | — | `Tolls` → `cantor_toll`; `Cancelled` → `bell_choke`, a bell stopped by a strike | bell |
+| The Half-Cathedral Bells | bell | — | — | `Rings` → `bells_toll`, a tower bell in D (`NaveBellHz`, 294 Hz, two octaves under the Cantor's), and in phase 3 `bells_toll_p3`, the great bell an octave under; `Cuts` → `bells_cut`, the rope's snap and the bell swinging to rest | `bells_death`, the last hum let go |
+| Surveyor Hale | earth | quill → `hale_quill`; count → `hale_count`, stones knocked | — | — | earth |
+| The Collapse | earth | shake → `collapse_fall`, rubble from the roof (its shake is the fall, not a read) | — | — | earth |
+| The Fallen Star | ember | slam → `star_slam`, iron ringing the ground | walk → `star_walk`, iron feet; burn → `star_burn` | — | `star_fall`: iron striking the ground, a long hiss, the metal ticking as it cools |
+| Guildmaster Voss | paper | thrust (the Warden's); lunge → `halvard_lunge`; guard → `voss_guard`, the compass-rose shield ringing deep | — | — | paper |
+| Corra's Drawing | graphite | swipe → `corra_swipe`, a crayon dragged hard; stomp, stomp_outline → `corra_stomp`; swipe_outline → `corra_line`, a thin pencil line | move, move_outline → `corra_scribble` | `LimbsRedrawn` → `corra_redraw`; `SmallStruck` → `corra_small`, drawn back quick | graphite |
+| The Archivist | graphite | swoop → `archivist_swoop`, an owl: almost nothing | draw → `archivist_draw`, a quill's long strokes | — | graphite |
+| The Complete Survey | graphite | — (the chorus is its voice; the music keeps its beat) | — | — | graphite |
+| The Reedmother's Brood | wing | thresh → `brood_thresh`, reeds thrashing; open → `brood_open`, reeds parting | burn → `ember_crackle` | — | wing |
+
+**The Bells' score strikes no bell** (music.md §3e), and here is why it need not: the bells are heard in the nave
+itself, a toll as each ring lands and takes the light, after the ring's chime has read it. A cut rope is heard twice,
+its snap and the bell's last ping (the material's hurt, as the cut is the blow).
+
 ## 3. The pipeline
 
 ```
@@ -93,14 +121,23 @@ crossfaded onto their heads); the wasp's hum is a whole number of cycles a secon
   pogo; the wasp hums while it lives and not after; a Cantor's ring is a window and its toll a bell; thirty strokes
   keep to 24 and a tell is always heard, while nothing lower gets in among 24 tells; a sound stands where its enemy
   is, half as loud a screen out and not played three screens out.
+- AUD-15: `BossSoundsTests` (EditMode, 2): every boss is heard doing something but the Survey, and no move sits on a
+  clip that boss reads with; every event names a count the boss keeps, played as a world one-shot; a boss's own death
+  is still an enemy death; its cues are its own but for the Warden's lance and lens, the Cantor's toll and the embers.
+  The Gatekeeper is stone and the Lamp-Keeper a wing; the toll is strongest at D, the great bell an octave under and
+  longer, the last hum longer still; a choked bell is shorter than a struck one; the heavy things (a stone landing,
+  an iron slam, the Star's fall, the roof's rubble) are low and a pencil line has nothing low. `BossVoiceTests`
+  (PlayMode, 3): the Bells toll after the ring's chime and toll the great bell in phase 3; Brann's floor clanks as the
+  heat shifts; the Gatekeeper is silent through the sweep's read but for its tell and grinds after it.
 - `InkSoundsTests` and `WrenSoundsTests` take the new cues in: a loop's join is no bigger a step than any inside it,
   and the target under her strike now answers in its own voice.
 
 ## 5. Open
 
 - **They are sketches.** A band-passed tick is a shell by suggestion; the sound designer's recordings are the point.
-- **The bosses' own voices.** They are only their materials here: Brann's furnace, the Star's fall, the Bells'
-  ropes, Corra's pencil want cues on their clips as the plain enemies have (`EnemySounds.Family(...)` takes them).
+- **Bosses' parts** (the Gatekeeper's stone feathers falling and pogoed, the Collapse's rubble striking, the Star's
+  walls of iron) are their own objects, not the boss's clips, and are silent but for their tells.
+- **The Complete Survey** has no voice of its own beyond the chorus; its ink pools are silent when struck but for the hit.
 - **Projectiles** (the wasp's pellet in flight and landing) and the eraser the Cantor's toll drags are silent.
 - **Steps on the beat.** A Warden's walk and a crab's scuttle are loops, not footfalls on the clip's frames.
 - **Captions** for the enemies' tells wait on the captions setting (DES-14), as Wren's do.

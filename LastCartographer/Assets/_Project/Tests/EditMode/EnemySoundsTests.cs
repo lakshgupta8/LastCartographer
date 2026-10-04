@@ -43,7 +43,8 @@ namespace OWSBG.Tests
                 foreach (var m in v.Moves.Values) { Assert.AreEqual(AudioDirection.Voice.World, InkSounds.Of(m).Voice, m + " is a world one-shot"); Assert.IsFalse(InkSounds.Of(m).Loop, m + " is played once"); }
                 foreach (var l in v.Loops.Values) { Assert.AreEqual(AudioDirection.Voice.World, InkSounds.Of(l).Voice); Assert.IsTrue(InkSounds.Of(l).Loop, l + " loops"); }
                 Assert.AreEqual(EnemySounds.CueOf(v.Material, "hurt"), v.Hurt);
-                Assert.AreEqual(EnemySounds.CueOf(v.Material, "death"), v.Death);
+                Assert.AreEqual(v.OwnDeath ?? EnemySounds.CueOf(v.Material, "death"), v.Death, "the material's death, unless it dies its own way (AUD-15)");
+                foreach (var e in v.Events.Values) { Assert.AreEqual(AudioDirection.Voice.World, InkSounds.Of(e).Voice, e + " is a world one-shot"); Assert.IsFalse(InkSounds.Of(e).Loop, e + " is played once"); }
             }
             // The moves are named by the clips the animator asks for.
             Assert.AreEqual("crab_hop", EnemySounds.MoveCue("MarshCrab", "hop"));
@@ -114,7 +115,8 @@ namespace OWSBG.Tests
                 Assert.LessOrEqual(Math.Abs(s[0] - s[s.Length - 1]), inside + 0.01f, c.Id + " meets itself");
                 Assert.That(InkSounds.Of(c.Id).Gain, Is.LessThanOrEqualTo(0.5f), c.Id + ": a loop sits under the room, not on it");
             }
-            Assert.AreEqual(6, InkSounds.Cues.Count(c => c.Loop && c.Kind == InkSounds.Kind.Enemy), "the scuttle, the drift, the crackle, the flutter, the hum, the rumble");
+            Assert.AreEqual(14, InkSounds.Cues.Count(c => c.Loop && c.Kind == InkSounds.Kind.Enemy), "the scuttle, the drift, the crackle, the flutter, the hum, the rumble; and the bosses' "
+                + "lamp, furnace, Bind, stone wings, iron feet, burning, crayon and quill (AUD-15)");
         }
 
         [Test]

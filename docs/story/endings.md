@@ -52,7 +52,8 @@ the Unwritten. The Rest walks from Halden straight to the Hollow.
 
 **Wren's last line** (bible 2.3: her voices "decide the last line of the epilogue"): the last page of her atlas, by
 her most-used voice. Surveyor: "everything I saw, drawn true." Warden: "everyone I could, carried out." Drift: "left
-blank. On purpose."
+blank. On purpose." Every choice in every region counts toward it (`VoiceMarksTests`, 2026-10-04), except the frame's
+own three: the ending is read after the tally, not a vote in it.
 
 ## 4. Voss (bible 9.5)
 `Observatory_Voss`, after any ending. If he said her name at the Return (`voss.changed`): a note in his exact hand,
@@ -60,8 +61,8 @@ under the small drawing: "Gone in to find her. Hold nothing for me. A. V." If no
 that was not there before, a grey heron in brass facing the Greyfold. Nobody remembers commissioning it.
 
 ## 5. Open
-- Sable's tether (`sable.tether_sold`) and Aury's stone (`keystone.aury`) are NAR-14's. Until then the Fixed World is
-  one stone short in play (the logic is tested with flags), and Sable is allied only through the walk.
-- The Complete Survey's fight (CMB-15) and the epilogue walk's runner (PRG-23).
+- ~~Sable's tether and Aury's stone are NAR-14's.~~ Written (`Saltmarrow_Chain_Sable`, `Blank_Aury`); the Fixed World's
+  seventh stone is Isolde's (§2).
+- ~~The Complete Survey's fight and the epilogue walk's runner.~~ Both stand (CMB-15, PRG-23).
 - Marrow's naming at the Hollow; "it" to "they" as Wren's choice.
 - DES-12: the full matrix, with every ending proven reachable from a new game on `WorldGraph` and these flags.

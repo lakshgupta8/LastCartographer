@@ -17,6 +17,11 @@ What happens when Wren's masks run out, and what it costs. Runtime: `PlayerRespa
    lost, only out of reach: the ink remembers. The stake is that doors, birds and keystones that ask for a memory
    cannot be answered while it lies in the smudge, and the desk's bind cannot offer it.
 
+### 1a. A gap with nothing under it
+A fall past a room's bottom is not a death (`FallCatch`, under every built room, `gates.md` §4): a mask, never the
+last, and back to the last ground she stood on in that room. Nothing drops. The gauntlets' hazards work the same way
+(combat doc §9) and sit above the catch, as do a Down exit, the shallows and the white.
+
 ## 2. Why it is shaped like this
 Silksong's shade run, with narrative currency instead of money. Losing a bound memory for good would break the
 scenes that ask for it later (bible §10), so the cost is distance and danger, not loss. The smudge is a real
@@ -39,4 +44,4 @@ room rebuilds the smudge.
 - A journal line for what the smudge holds, and the atlas marking its room.
 - Whether a smudge left for a whole act should drift toward the region's hub (a kindness) or into the Blank (a
   story: a memory that faded because nobody went back for it, recovered on its island in Act 3).
-- Gauntlet deaths (combat doc §9) cost a mask and return to solid ground; they do not drop.
+- Gauntlet deaths (combat doc §9) and falls past a room's bottom (§1a) cost a mask and return to solid ground; they do not drop.

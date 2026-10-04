@@ -40,6 +40,10 @@ namespace OWSBG.World
         [SerializeField] List<Behaviour> _pauseWhileWalking = new List<Behaviour>();
         [SerializeField] string _completeFlag;
         [SerializeField] int _completeFlagValue = 1;
+        [Tooltip("A walk that goes down through rooms (BoundsWalks.Relay): its id, and which leg this room's verses are. Empty for a walk in one room.")]
+        [SerializeField] string _relayId = "";
+        [SerializeField] int _leg;
+        BoundsWalks.Relay _relay;
 
         public enum Phase { Idle, Pending, Walking, Done }
         public Phase State { get; private set; }
@@ -58,12 +62,24 @@ namespace OWSBG.World
         /// <summary>0..1 through the current beat.</summary>
         public float BeatProgress => State == Phase.Walking ? Mathf.Clamp01(_t / _secondsPerBeat) : 0f;
         public bool IsWalking => State == Phase.Walking;
+        /// <summary>The walk this room's verses are one leg of, or null for a walk in one room.</summary>
+        public BoundsWalks.Relay Relay => _relay ??= BoundsWalks.FindRelay(_relayId);
+        public int Leg => _leg;
+        /// <summary>The verse being walked, counted across a relay's rooms: what the strip shows and how many sing.</summary>
+        public int WholeVerse => Relay != null ? _leg + VerseIndex : VerseIndex;
+        /// <summary>How many verses the whole walk has, across a relay's rooms.</summary>
+        public int WholeVerses => Relay != null ? Relay.Legs.Length : _verses.Count;
+
+        /// <summary>Make this room's walk one leg of a walk through rooms.</summary>
+        public void SetRelay(string relayId, int leg) { _relayId = relayId ?? ""; _leg = leg; _relay = null; }
 
         public static BoundsWalk Current { get; private set; }
         public static event Action<BoundsWalk> Started;
         public static event Action<BoundsWalk, Bound> NameCalled;
         public static event Action<BoundsWalk, Bound, bool> BeatLanded;
         public static event Action<BoundsWalk> VerseRestarted;
+        /// <summary>A verse's last beat has landed and the verse stands: the chorus answers (the roll-call's answer, AUD-02).</summary>
+        public static event Action<BoundsWalk, int> VerseDone;
         public static event Action<BoundsWalk> Completed;
 
         static readonly Dictionary<string, BoundsWalk> Registry = new Dictionary<string, BoundsWalk>();
@@ -130,6 +146,8 @@ namespace OWSBG.World
 
         void Update()
         {
+            // A leg of a walk through rooms is taken up when Wren comes in and it is this leg's turn.
+            if (State == Phase.Idle && Relay != null && BoundsWalks.IsLegDue(GameState.World, _relay, _leg)) Begin();
             if (State == Phase.Pending)
             {
                 if (_wren == null) _wren = FindFirstObjectByType<WrenController>();
@@ -182,6 +200,7 @@ namespace OWSBG.World
             {
                 BeatIndex = 0;
                 Misses = 0;
+                VerseDone?.Invoke(this, VerseIndex);
                 VerseIndex++;
                 if (VerseIndex >= _verses.Count) { Finish(); return; }
                 Captions.Show(Loc.F("caption.rollcall", "The roll-call: {0}", VerseTitle(VerseIndex) ?? Loc.T("caption.rollcall.next", "next verse")), 2.5f);
@@ -195,12 +214,27 @@ namespace OWSBG.World
             SetPaused(false);
             TintAll(CalledTint);
             var w = GameState.World;
+            if (Relay != null)
+            {
+                // One leg: the chorus goes on down; the last leg walks the whole.
+                if (!BoundsWalks.WalkLeg(w, _relay, _leg)) { State = Phase.Idle; Captions.Show(LegCaption(w), 3.5f); if (Current == this) Current = null; Completed?.Invoke(this); return; }
+                if (!string.IsNullOrEmpty(_completeFlag)) w.Set(_completeFlag, _completeFlagValue);
+                Captions.Show(Loc.F("caption.walked", "Walked. {0} is held.", Loc.T("walk." + _relay.Id + ".name", _relay.Name)), 4f);
+                if (Current == this) Current = null;
+                Completed?.Invoke(this);
+                return;
+            }
             BoundsWalks.Complete(w, PlaceId);
             if (!string.IsNullOrEmpty(_completeFlag)) w.Set(_completeFlag, _completeFlagValue);
             Captions.Show(Loc.F("caption.walked", "Walked. {0} is held.", Atlas.PlaceName(PlaceId)), 4f);
             if (Current == this) Current = null;
             Completed?.Invoke(this);
         }
+
+        /// <summary>What the chorus says between rooms: the next verse is below, or what wakes there.</summary>
+        string LegCaption(WorldState w) => w.Is(_relay.WakeFlag) && BoundsWalks.LegsWalked(w, _relay) == _relay.Legs.Length - 1
+            ? Loc.T("caption.walk.wakes", "The last verse is below. Something down there is waking.")
+            : Loc.T("caption.walk.down", "Down. The next verse is below.");
 
         void SetPaused(bool paused)
         {

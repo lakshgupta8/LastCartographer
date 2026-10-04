@@ -5,21 +5,24 @@
 title: Gate_Brek
 ---
 <<if not has_flag("windreach.leap.done")>>
-    Brek: Don't look at me. I'm not on the stones. I'm near them. #still #line:0b7beb4
+    Brek: Don't look at me. I'm not on the stones. I'm near them. #still #face:wary #line:0b7beb4
     <<stop>>
 <<endif>>
 <<if offered("gate_brek")>>
-    Brek: I'm on her fire's stone. Next spring, I jump. She says spring comes when it comes. #still #line:0adb0d9
+    Brek: I'm on her fire's stone. Next spring, I jump. She says spring comes when it comes. #still #face:bright #line:0adb0d9
     <<stop>>
 <<endif>>
-Brek: You jumped. The air knew you. It doesn't know me. I asked it. #still #line:028a2c5
-Brek: Idrenne says you stand on a place, not a dare. I haven't got a place. #still #line:08b8cc1
+Brek: You jumped. The air knew you. It doesn't know me. I asked it. #still #face:grave #line:028a2c5
+Brek: Idrenne says you stand on a place, not a dare. I haven't got a place. #still #face:grave #line:08b8cc1
 -> Idrenne's. Her fire, the year they said no. <<if can_offer("gate_brek", "idrenne.standing_place")>> #line:005136c
+    <<voice surveyor windreach>>
     <<offer gate_brek idrenne.standing_place>>
-    Brek: Her fire. Where she was standing. I can stand on that. #line:045e0d1
-    Brek: Not today. But look. I'm on the stone. Sing, somebody. Ha. I sound like her. #line:05ae6ca
+    Brek: Her fire. Where she was standing. I can stand on that. #face:bright #line:045e0d1
+    Brek: Not today. But look. I'm on the stone. Sing, somebody. Ha. I sound like her. #face:bright #line:05ae6ca
 -> Find your own. #line:063d5a7
-    Brek: That's what she says. Then she laughs. I don't know why that helps. #still #line:02ea62e
+    <<voice warden windreach>>
+    Brek: That's what she says. Then she laughs. I don't know why that helps. #still #face:asking #line:02ea62e
 -> ... #line:0709381
+    <<voice drift windreach>>
     Brek: You stood like that on the lip. Quiet. Then you went. #still #line:0b6a637
 ===

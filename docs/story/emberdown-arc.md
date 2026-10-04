@@ -18,7 +18,8 @@ belongs to. Files live in `Assets/_Project/Dialogue/Emberdown/`.
 | The debate | Baths_2 | `Baths_Kettil_Debate` → `Baths_Runa_Debate`: six hundred and twelve, in numbers and in names | `emberdown.debate.heard`, `.sided` (1 Lorne's numbers, 2 Merrow's End, 3 both right) |
 | The boards | Rest_2 | `Rest_Kettil_Hollowvein`: once the baths have argued and she knows the walk | `emberdown.hollowvein_opened` (the map's gate) |
 | The Long Roll-Call | Rest_3 | `Hollowvein_Runa_Walk`: Runa asks, the first time. Walk it down, or leave it buried | `.chosen` and `<<walk hollowvein>>`, or `.buried` and `.decided` = 2 |
-| The bottom | Hollow_4 | The Collapse (6.4); `Hollowvein_Runa_After`: "Thirty-one." She says the number | `.walked`, `.decided` = 1 |
+| The descent | Hollow_1–3 | The walk taken up room by room; Runa ahead in the room whose verse is due (`Hollowvein_Runa_Down`): Aske's beam first, the lamps that were theirs, the water Nell kept the tally out of | `walk.hollowvein.legs` |
+| The bottom | Hollow_4 | The Collapse (6.4), the fourth verse, awake once the three are walked; then `Hollowvein_Runa_After`: "Thirty-one." She says the number | `.walked`, `.decided` = 1 |
 | The Overlook | Overlook_2 | `Overlook_Runa`: the white, counted from outside | `emberdown.overlook.seen` |
 | Named | Bell_2 (Act 2) | `Bell_Runa_Named`: once Wren has held a place by walking it, "Forty-two, Wren" | `runa.named_wren` |
 
@@ -59,8 +60,8 @@ or system writes fails the build.
   and on load. Before this, a learned ability was not in the save.
 
 ## 5. Open
-- The rooms: none of these scenes has its room built yet; the tests run them from the persistent scene.
-- The Kettil's Rest lesson walk and the Hollowvein walk as `BoundsWalk` objects (bounds-walk.md designs both;
-  Hollowvein's crosses four rooms).
-- Epilogue lines (`Epilogue_Runa`) wait for NAR-13.
-- Merrow's End's hold way: Runa coming to the coast in Act 2 (`emberdown.runa.asked_for_merrow`) is unwritten.
+- ~~The rooms.~~ Built (ENV-07); the scenes stand in them.
+- ~~The Kettil's Rest lesson walk~~ stands (`kettils_rest`); ~~the Hollowvein walk across four rooms~~ is walked
+  (`BoundsWalks.Relay`, bounds-walk.md §2).
+- ~~Epilogue lines.~~ `Epilogue_Runa` (endings.md).
+- ~~Merrow's End's hold way.~~ Runa comes to the coast in Act 2 (`Saltmarrow_MerrowsEnd_Runa`).

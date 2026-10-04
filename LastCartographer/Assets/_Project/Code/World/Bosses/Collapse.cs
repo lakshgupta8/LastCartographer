@@ -13,7 +13,7 @@ namespace OWSBG.World
     /// Phase 3: it reaches for a lamp and puts it out unless it is struck while reaching; an out lamp's beat is lost.
     /// It never takes the last lamp. It does not hurt to touch: it is the mine, and the mine is everywhere.
     /// </summary>
-    public sealed class Collapse : Boss
+    public sealed class Collapse : Boss, IKeepsBeat
     {
         public enum Attack { None, Rubble, Surge, Reach }
         public enum Move { Wait, Telegraph, Fall, Surge }
@@ -40,6 +40,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Wait;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Rubble => AttackKind.Slam, Attack.Reach => AttackKind.Window, _ => AttackKind.Strike };
         /// <summary>Beats since the fight began.</summary>
         public int Beat { get; private set; }
         /// <summary>The lamp lit on this beat, or -1 when the beat is lost (the lamp is out or under rubble).</summary>
@@ -48,6 +50,10 @@ namespace OWSBG.World
         /// <summary>Only the lit section, only for the lit part of the beat.</summary>
         public bool IsDrawn => IsFightActive && LitLamp >= 0 && _beatT < beatSeconds * litFraction;
         public float SectionWidth => (arenaMaxX - arenaMinX) / Mathf.Max(1, lampCount);
+        /// <summary>The chorus's beat, for the music to keep (AUD-13).</summary>
+        public float BeatSeconds => beatSeconds;
+        public double BeatsInto => Beat + Mathf.Clamp01(_beatT / Mathf.Max(0.01f, beatSeconds));
+        double _frozenSeen;
         public IReadOnlyList<BossPart> Rubble => _rubble;
         public BossPart Surge { get; private set; }
         public int ReachingFor => CurrentAttack == Attack.Reach && Current == Move.Telegraph ? _reachLamp : -1;
@@ -84,6 +90,18 @@ namespace OWSBG.World
         protected override bool ContactHurts => false;
         protected override bool AcceptsHit(in HitInfo hit) => IsDrawn;
 
+        public override IEnumerable<string> PartSkinNames { get { yield return "ChorusLamp"; yield return "Rubble"; yield return "Surge"; } }
+        /// <summary>The sheet clip for its move (CHR-09): the dust rising, the drop, the surge and the reach.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Telegraph => CurrentAttack == Attack.Reach ? "reach" : CurrentAttack == Attack.Surge ? "surge" : "rumble",
+            Move.Fall => "shake",
+            Move.Surge => "surge",
+            _ => "idle",
+        };
+        /// <summary>The reach is sought by its window: the arm is at the lamp as it closes.</summary>
+        public override float ClipProgress => ReachingFor >= 0 && _telegraphStarted && !IsDying && HurtstunLeft == 0 ? TelegraphProgress(reachFrames) : -1f;
+
         protected override void Start()
         {
             base.Start();
@@ -95,9 +113,14 @@ namespace OWSBG.World
             if (_out.Length != lampCount) _out = new bool[lampCount];
             if (_lamps.Count == lampCount) return;
             for (int i = 0; i < lampCount; i++)
-                _lamps.Add(BossPart.Prop("Lamp_" + i, transform.parent, new Vector2(SectionCentre(i), floorY + lampHeight), new Vector2(0.5f, 0.7f), LampMaterial(false), 0.5f));
+            {
+                var lamp = BossPart.Prop("Lamp_" + i, transform.parent, new Vector2(SectionCentre(i), floorY + lampHeight), new Vector2(0.5f, 0.7f), LampMaterial(false), 0.5f);
+                SkinProp(lamp, "ChorusLamp", "dark");
+                _lamps.Add(lamp);
+            }
         }
 
+        public const float LampIntensity = 2.4f;
         public float SectionCentre(int i) => arenaMinX + (i + 0.5f) * SectionWidth;
         public int SectionOf(float x) => Mathf.Clamp(Mathf.FloorToInt((x - arenaMinX) / SectionWidth), 0, lampCount - 1);
         public bool IsLampOut(int i) => i >= 0 && i < _out.Length && _out[i];
@@ -120,6 +143,7 @@ namespace OWSBG.World
             EnsureLamps();
             Beat = 0;
             _beatT = 0f;
+            _frozenSeen = Hitstop.FrozenSeconds;
             LightBeat();
             Current = Move.Wait;
             _wait = waitSeconds;
@@ -142,7 +166,13 @@ namespace OWSBG.World
 
         protected override void FixedUpdate()
         {
-            if (IsFightActive) AdvanceBeat(Time.fixedDeltaTime);   // the chorus does not stop for hurtstun
+            if (IsFightActive)
+            {
+                // The chorus does not stop for hurtstun, nor for hitstop: what a hit froze is sung on (AUD-13), so the beat keeps the music's time.
+                float owed = (float)(Hitstop.FrozenSeconds - _frozenSeen);
+                _frozenSeen = Hitstop.FrozenSeconds;
+                AdvanceBeat(Time.fixedDeltaTime + owed);
+            }
             base.FixedUpdate();
         }
 
@@ -172,7 +202,14 @@ namespace OWSBG.World
         void RefreshLamps()
         {
             for (int i = 0; i < _lamps.Count; i++)
-                if (_lamps[i] != null) _lamps[i].GetComponent<MeshRenderer>().sharedMaterial = LampMaterial(i == LitLamp && !IsLampOut(i));
+            {
+                bool lit = i == LitLamp && !IsLampOut(i);
+                BossPart.Show(_lamps[i], lit ? "lit" : "dark", LampMaterial(lit));
+            }
+            // The lit lamp as light (ENV-10): the one section drawn is the one section lit.
+            Glow(new Color(1f, 0.80f, 0.42f), 8f);
+            bool anyLit = LitLamp >= 0 && LitLamp < _lamps.Count && !IsLampOut(LitLamp);
+            SetGlow(anyLit ? LampIntensity : 0f, anyLit ? _lamps[LitLamp].position : (Vector3?)null);
         }
 
         static Material LampMaterial(bool lit) => lit ? InkMaterials.Lit("Collapse_Lamp_Lit", new Color(0.98f, 0.80f, 0.42f)) : InkMaterials.Lit("Collapse_Lamp_Dark", new Color(0.22f, 0.20f, 0.18f));
@@ -291,6 +328,7 @@ namespace OWSBG.World
                 RubbleBroken++;
                 return true;
             };
+            Skin(block, "Rubble");
             _rubble.Add(block);
         }
 
@@ -309,6 +347,12 @@ namespace OWSBG.World
                 ClearSurge();
                 return true;
             };
+            if (Skin(s, "Surge", "move") && _surgeDir < 0)
+            {
+                var sc = s.Visual.localScale;   // drawn going east; flip it westward
+                sc.x = -sc.x;
+                s.Visual.localScale = sc;
+            }
             Surge = s;
         }
 

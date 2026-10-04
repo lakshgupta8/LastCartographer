@@ -32,8 +32,10 @@ namespace OWSBG.World
 
         /// <summary>The bosses with a kit here, in the plan's order (CMB-13 to CMB-16).</summary>
         public static readonly string[] Ids = { "collapse", "brann", "choir", "gatekeeper", "oriel", "hale", "fallen_star", "voss",
-                                                "bells", "corras_drawing", "archivist", "complete_survey" };
-        public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0;
+                                                "bells", "corras_drawing", "archivist", "complete_survey", "reedmother_brood" };
+        /// <summary>Halvard's later hunts (CMB-12): kits here for the test rigs, fought in the built rooms that already hold them (the Seven Bridges, the Threshold).</summary>
+        public static readonly string[] LaterHunts = { "halvard_2", "halvard_3" };
+        public static bool Has(string bossId) => System.Array.IndexOf(Ids, bossId) >= 0 || System.Array.IndexOf(LaterHunts, bossId) >= 0;
 
         public static BossKit Build(string bossId, Transform parent, Vector2 origin)
         {
@@ -111,6 +113,16 @@ namespace OWSBG.World
                     kit.Boss = h;
                     break;
                 }
+                case "halvard_2":
+                case "halvard_3":
+                {
+                    // Halvard's later hunts (CMB-12): the Seven Bridges' spans, the Threshold's white, both from the kit itself.
+                    var h = MakeBoss<Halvard>(parent, "Halvard", new Vector2(maxX - 2f, floor + 0.9f), new Vector2(0.8f, 1.8f));
+                    h.floorY = floor; h.arenaMinX = minX; h.arenaMaxX = maxX;
+                    h.hunt = bossId == "halvard_2" ? Halvard.Hunt.Bridges : Halvard.Hunt.Threshold;
+                    kit.Boss = h;
+                    break;
+                }
                 case "voss":
                 {
                     var v = MakeBoss<Voss>(parent, "Voss", new Vector2(maxX - 3f, floor + 1.1f), new Vector2(0.9f, 2.2f));
@@ -156,6 +168,15 @@ namespace OWSBG.World
                     kit.Boss = st;
                     break;
                 }
+                case "reedmother_brood":
+                {
+                    // The nest in the beds; its clutches are copies of a dormant reedling.
+                    var n = MakeBoss<ReedmotherBrood>(parent, "ReedmotherBrood", new Vector2(mid, floor + 1.3f), new Vector2(3f, 2.6f));
+                    n.floorY = floor; n.arenaMinX = minX; n.arenaMaxX = maxX;
+                    n.chickTemplate = ReedmotherBrood.MakeChickTemplate(parent, new Vector2(mid, floor + 0.35f));
+                    kit.Boss = n;
+                    break;
+                }
             }
 
             kit.Boss.ApplySheet(sheet);
@@ -185,6 +206,9 @@ namespace OWSBG.World
             "corras_drawing" => new Color(0.97f, 0.96f, 0.94f),
             "archivist" => new Color(0.36f, 0.34f, 0.38f),
             "complete_survey" => new Color(0.92f, 0.90f, 0.84f),
+            "reedmother_brood" => new Color(0.70f, 0.70f, 0.58f),
+            "halvard_2" => new Color(0.56f, 0.56f, 0.54f),
+            "halvard_3" => new Color(0.90f, 0.90f, 0.88f),
             _ => new Color(0.44f, 0.48f, 0.38f),
         };
 

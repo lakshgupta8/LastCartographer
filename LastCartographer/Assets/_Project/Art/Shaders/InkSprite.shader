@@ -15,6 +15,11 @@ Shader "OWSBG/InkSprite"
         _ShadowTint ("Shadow Tint", Color) = (0.62, 0.62, 0.72, 1)
         _GrainScale ("Grain Scale", Float) = 40
         _GrainStrength ("Grain Strength", Range(0, 1)) = 0.12
+        _WorldUV ("World-space UV (0 off, 1 on)", Float) = 0
+        _Shadows ("Receive Shadows (0 off, 1 on)", Float) = 1
+        _Lighting ("Light Influence", Range(0, 1)) = 1
+        _Wash ("Wash (fills toward paper, the line kept)", Range(0, 1)) = 0
+        _LineFade ("Line Fade (the line toward grey)", Range(0, 1)) = 0
     }
 
     SubShader
@@ -44,7 +49,23 @@ Shader "OWSBG/InkSprite"
             half4 _ShadowTint;
             float _GrainScale;
             half _GrainStrength;
+            half _WorldUV;
+            half _Shadows;
+            half _Lighting;
+            half _Wash;
+            half _LineFade;
         CBUFFER_END
+
+        // Colour states (CHR-11): a person's fills wash toward paper while the line stays; a Remnant's line goes
+        // grey too (art-direction 4: the same shapes with the ink removed). The line is what is darker than a wash.
+        half3 ColourState(half3 rgb)
+        {
+            half lum = dot(rgb, half3(0.299h, 0.587h, 0.114h));
+            half onLine = saturate((0.16h - lum) / 0.10h);   // 1 on the ink line, 0 on a wash
+            half fillK = 0.85h * _Wash;
+            half lineK = min(0.6h, 0.35h * _Wash + 0.55h * _LineFade);
+            return lerp(rgb, _PaperColor.rgb, lerp(fillK, lineK, onLine));
+        }
 
         // Effective cutoff rises as ink leaves, so thin lines vanish first.
         half InkCutoff() { return lerp(0.92h, _Cutoff, _Ink); }
@@ -54,6 +75,16 @@ Shader "OWSBG/InkSprite"
             p = frac(p * float2(123.34, 456.21));
             p += dot(p, p + 45.32);
             return frac(p.x * p.y);
+        }
+
+        // A backdrop strip maps once across its quad; a ground block tiles in world space by face (ENV-01):
+        // front and back in the play plane, the top along it, the ends across it, so planks run on across
+        // blocks and a platform's top reads under the camera's tilt. _BaseMap_ST.xy is 1 / tile size in units.
+        float2 InkUV(float2 uv, float3 positionWS, float3 normalWS)
+        {
+            float3 n = abs(normalWS);
+            float2 p = n.y > max(n.x, n.z) ? positionWS.xz : (n.x > n.z ? positionWS.zy : positionWS.xy);
+            return lerp(TRANSFORM_TEX(uv, _BaseMap), p * _BaseMap_ST.xy + _BaseMap_ST.zw, _WorldUV);
         }
         ENDHLSL
 
@@ -69,6 +100,8 @@ Shader "OWSBG/InkSprite"
             #pragma fragment Frag
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile_fragment _ _SHADOWS_SOFT
+            #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
+            #pragma multi_compile _ _CLUSTER_LIGHT_LOOP
             #pragma multi_compile_fog
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -96,7 +129,7 @@ Shader "OWSBG/InkSprite"
                 OUT.positionCS = pos.positionCS;
                 OUT.positionWS = pos.positionWS;
                 OUT.normalWS = TransformObjectToWorldNormal(IN.normalOS);
-                OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.uv = InkUV(IN.uv, pos.positionWS, OUT.normalWS);
                 OUT.fogFactor = ComputeFogFactor(pos.positionCS.z);
                 return OUT;
             }
@@ -105,6 +138,7 @@ Shader "OWSBG/InkSprite"
             {
                 half4 tex = SAMPLE_TEXTURE2D(_BaseMap, sampler_BaseMap, IN.uv) * _BaseColor;
                 clip(tex.a - InkCutoff());
+                tex.rgb = ColourState(tex.rgb);
 
                 // A sprite quad lights as if it faced the camera; flip for back faces so Cull Off works.
                 half3 n = normalize(IN.normalWS) * (isFront ? 1.0h : -1.0h);
@@ -112,9 +146,27 @@ Shader "OWSBG/InkSprite"
                 float4 shadowCoord = TransformWorldToShadowCoord(IN.positionWS);
                 Light mainLight = GetMainLight(shadowCoord);
                 half ndl = saturate(dot(n, mainLight.direction));
-                half lit = step(_ShadowStep, ndl * mainLight.shadowAttenuation);
+                half lit = step(_ShadowStep, ndl * lerp(1.0h, mainLight.shadowAttenuation, _Shadows));
                 half3 ambient = SampleSH(n);
                 half3 light = lerp(_ShadowTint.rgb, half3(1, 1, 1), lit) * mainLight.color + ambient * 0.5h;
+
+                // The lamps (ENV-10): every other light is a pool on the paper round it, stepped in two like the
+                // sun's ramp so it reads as wash and not as shading. No facing: a lantern lights the paper, not a form.
+            #if defined(_ADDITIONAL_LIGHTS)
+                InputData inputData = (InputData)0;
+                inputData.positionWS = IN.positionWS;
+                inputData.normalWS = n;
+                inputData.normalizedScreenSpaceUV = GetNormalizedScreenSpaceUV(IN.positionCS);
+                half3 lamps = 0;
+                uint lampCount = GetAdditionalLightsCount();
+                LIGHT_LOOP_BEGIN(lampCount)
+                    Light lamp = GetAdditionalLight(lightIndex, IN.positionWS, half4(1, 1, 1, 1));
+                    half a = saturate(lamp.distanceAttenuation * lamp.shadowAttenuation);
+                    half pool = a > 0.45h ? 1.0h : a > 0.12h ? 0.5h : 0.0h;
+                    lamps += lamp.color * pool;
+                LIGHT_LOOP_END
+                light += lamps;
+            #endif
 
                 // Ink state: desaturate and wash toward paper as ink leaves.
                 half gray = dot(tex.rgb, half3(0.299h, 0.587h, 0.114h));
@@ -125,7 +177,7 @@ Shader "OWSBG/InkSprite"
                 half grain = Hash21(floor(IN.positionWS.xy * _GrainScale)) - 0.5h;
                 col += grain * _GrainStrength * (1.0h - 0.6h * _Ink);
 
-                col *= light;
+                col *= lerp(half3(1, 1, 1), light, _Lighting);   // a drawing keeps its wash; _Lighting says how much the lamps tell
                 col = MixFog(col, IN.fogFactor);
                 return half4(col, 1);
             }
@@ -170,7 +222,7 @@ Shader "OWSBG/InkSprite"
                 positionCS.z = max(positionCS.z, UNITY_NEAR_CLIP_VALUE);
             #endif
                 OUT.positionCS = positionCS;
-                OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.uv = InkUV(IN.uv, positionWS, normalWS);
                 return OUT;
             }
 
@@ -194,14 +246,14 @@ Shader "OWSBG/InkSprite"
             #pragma vertex DepthVert
             #pragma fragment DepthFrag
 
-            struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
+            struct Attributes { float4 positionOS : POSITION; float3 normalOS : NORMAL; float2 uv : TEXCOORD0; };
             struct Varyings { float4 positionCS : SV_POSITION; float2 uv : TEXCOORD0; };
 
             Varyings DepthVert(Attributes IN)
             {
                 Varyings OUT;
                 OUT.positionCS = TransformObjectToHClip(IN.positionOS.xyz);
-                OUT.uv = TRANSFORM_TEX(IN.uv, _BaseMap);
+                OUT.uv = InkUV(IN.uv, TransformObjectToWorld(IN.positionOS.xyz), TransformObjectToWorldNormal(IN.normalOS));
                 return OUT;
             }
 

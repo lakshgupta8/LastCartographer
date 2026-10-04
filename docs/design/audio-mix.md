@@ -117,8 +117,14 @@ Nothing plays yet; there are no clips.
 
 ## Open
 
-- **Clips.** Everything above shapes silence until AUD-03 to AUD-08 land. The first real test of the numbers is
-  the Saltmarrow theme under the Lamp-Keeper's fight (AUD-04).
+- **Clips.** The roll-call (AUD-02) is the first sound through it: `RollCallSinger` plays its own sources at the
+  Dialogue bus's gain; Wren's sounds and the tells (AUD-03) ride the Sfx bus's through `InkSoundBank`; the coast's
+  theme and the Lamp-Keeper's (AUD-04) ride the Music bus's gain and cutoff through `MusicDriver`'s stem sources
+  (the driver's own Music source stays free); every region's ambience layers (AUD-05) ride the Ambience bus's gain
+  and cutoff through `AmbienceDriver`'s layer sources, the stage's filter and the layer dropout agreeing on the same
+  reading of the place. The enemies' voices (AUD-10) ride the Sfx bus too, through the bank's 24 ranked sources and
+  each `EnemyVoice`'s own loop source. The world's sounds and the pages' (AUD-11) follow: the world on the Sfx bus, the pages on
+  the Ui bus, which the Paused snapshot keeps whole, so the options page is heard while the room is silent.
 - **A mixer asset.** If the DSP wants more than a low-pass (reverb in the Half-Cathedral, the Blank's reversal),
   an `AudioMixer` asset with these buses can take the gains as decibels from `Mix.ToDb`; the snapshots and ducks
   stay in code.
@@ -126,4 +132,4 @@ Nothing plays yet; there are no clips.
   white paper) can ask for it by clarity when that room is built.
 - **The desk and the atlas.** Neither page stops the world, so they take no snapshot. Whether the desk wants the
   room dulled the way pausing does is a feel question for the first external round.
-- **Per-room ambience layers** (the camp at night, the Choir's room) are AUD-05's, on the Ambience bus.
+- **Per-room ambience layers** (the camp at night, the Choir's room) are still open (`ambience.md` §5).

@@ -202,12 +202,13 @@ one ends with nothing to choose, and the world is byte for byte what it was.
 
 ## 7. Open
 
-- **The coast's pieces are placed; the rest wait for their rooms.** `PlacementSetup` (OWSBG → Place the Coast's
-  Readables) puts the five read pieces in built Saltmarrow rooms as a trigger with an `NpcTalker` on the node, plus a
-  parchment-coloured block to find it by. `PlacementTests` stands Wren at each one and checks up reads it. The art
-  (ENV-06) swaps the block for the prop. Pieces in planned rooms are placed when the rooms are built.
-- **The fledgling loop is data, not animation.** CHR-14 reads `Dressing.At` for the room's place and Wren's
-  abilities.
+- **Every piece is placed and drawn** (ENV-06, `docs/design/environment-props.md`). `PlacementSetup` (OWSBG → Place the
+  Coast's Readables, run by every build) puts each read piece in its room as a trigger with an `NpcTalker` on the node and
+  the piece's kit drawing under it; the seen pieces are their rooms' recipes'. A piece that changes with its place
+  carries a second drawing and a `DressingProp` swaps it on the same flag or fate its scene branches on. `PlacementTests`
+  stands Wren at each one and checks up reads it. Only the four birds who ask are still blocks.
+- **The fledglings leap** (CHR-14, `docs/design/fledglings.md`): `FledglingLoop` in each loop's room reads `Dressing.At`
+  for its place and Wren's kit and leaps six drawn chicks in turn.
 - **An anchored place freezes at zero,** not at whatever the fledglings had reached when it was anchored. Recording
   that would need the ability count at the seal. Zero reads as the Stillness and is simpler; revisit if a player
   notices.

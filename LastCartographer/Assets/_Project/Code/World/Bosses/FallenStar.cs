@@ -38,6 +38,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Walk => AttackKind.Shape, Attack.Slam => AttackKind.Slam, Attack.Walls => AttackKind.Shape, _ => AttackKind.Strike };
         public bool IsBurning => IsFightActive && Phase >= 3;
         public BossPart Fist { get; private set; }
         public IReadOnlyList<GameObject> Walls => _walls;
@@ -73,6 +75,17 @@ namespace OWSBG.World
 
         /// <summary>Iron everywhere but the seam on top: only a strike from above lands.</summary>
         protected override bool AcceptsHit(in HitInfo hit) => IsDownStrike(hit);
+
+        public override IEnumerable<string> PartSkinNames { get { yield return "StarFist"; } }
+        /// <summary>The sheet clip for its move (CHR-10): the fist raised and brought down, the iron drawn up, and burning.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Walk => "walk",
+            Move.Telegraph => CurrentAttack == Attack.Walls ? "raise" : CurrentAttack == Attack.Slam ? "telegraph" : "walk",
+            Move.Slam => "slam",
+            Move.Recover => "recover",
+            _ => IsBurning ? "burn" : "idle",
+        };
         protected override void OnHitBlocked(in HitInfo hit) { base.OnHitBlocked(hit); StrikesDrifted++; }
 
         /// <summary>Tests and tooling: begin a specific attack now.</summary>
@@ -105,6 +118,16 @@ namespace OWSBG.World
         }
 
         protected override void OnDefeated() { ClearAll(); }
+
+        protected override void FixedUpdate()
+        {
+            base.FixedUpdate();
+            // The burning as light (ENV-10): the cracks glow in the drawing, and the room takes the ember light off it.
+            Glow(new Color(1f, 0.45f, 0.15f), 9f);
+            SetGlow(IsBurning && !IsDead ? BurnIntensity : 0f);
+        }
+
+        public const float BurnIntensity = 3.2f;
 
         void FaceWren()
         {
@@ -223,6 +246,7 @@ namespace OWSBG.World
         {
             ClearFist();
             Fist = BossPart.Make("Fist", transform.parent, centre, fistSize, InkMaterials.Lit("Star_Iron", new Color(0.26f, 0.24f, 0.26f)));
+            Skin(Fist, "StarFist");
             Fist.OnHit = hit => IsDownStrike(hit);   // pogo the slam
             _fistLeft = fistFrames;
         }

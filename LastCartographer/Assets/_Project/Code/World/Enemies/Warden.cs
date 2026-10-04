@@ -24,6 +24,8 @@ namespace OWSBG.World
         [SerializeField] int _measureFrames = 40;
         [SerializeField] float _measureCooldown = 4f;
         [SerializeField] LayerMask _groundMask;
+        /// <summary>A flag that stands this Warden down (the Threshold's line on Halvard's word, `act2.halvard_third`): lance down, no hunt, no count; he stands where he is.</summary>
+        [SerializeField] string _standDownFlag = "";
 
         public enum Move { Patrol, Measure, Telegraph, Thrust, Recover }
         public Move State { get; private set; }
@@ -31,11 +33,16 @@ namespace OWSBG.World
         public int Measures { get; private set; }
         public bool IsTelegraphing => State == Move.Telegraph;
         public bool IsMeasuring => State == Move.Measure;
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip
+            : State == Move.Measure ? "measure" : State == Move.Telegraph ? "telegraph" : State == Move.Thrust ? "thrust" : State == Move.Recover ? "recover" : base.Clip;
         public int Dir => Facing;
         /// <summary>Struck by her: this Warden hunts her whatever her papers say.</summary>
         public bool Provoked { get; private set; }
         /// <summary>Whether he lowers the lance at her: the Guild's stance, or his own grievance.</summary>
-        public bool Hostile => Provoked || Licence.WardensHostile(GameState.World);
+        public bool Hostile => Provoked || (!IsStoodDown && Licence.WardensHostile(GameState.World));
+        public string StandDownFlag { get => _standDownFlag; set => _standDownFlag = value ?? ""; }
+        /// <summary>Stood down by his own order's word: not the Guild's stance (<see cref="Licence.StoodDownFlag"/>), this line's. Struck, he still answers.</summary>
+        public bool IsStoodDown => !string.IsNullOrEmpty(_standDownFlag) && GameState.World.Is(_standDownFlag);
 
         static string MeasureCaption => Loc.T("caption.warden_measures", "The Warden measures the cowl and looks away.");
         static bool _captioned;
@@ -71,6 +78,13 @@ namespace OWSBG.World
             switch (State)
             {
                 case Move.Patrol:
+                    if (IsStoodDown && !Provoked)
+                    {
+                        // Lances down: he stands, turns to watch her go by, and counts nobody.
+                        Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
+                        if (Wren != null && Mathf.Abs(Wren.Position.x - transform.position.x) < _lanceRange * 2f) Face(Wren.Position.x >= transform.position.x ? 1 : -1);
+                        break;
+                    }
                     if (!GroundAhead(0.1f, 0.6f, _groundMask) || WallAhead(0.1f, _groundMask)) Face(-Facing);
                     if (Wren != null && _cooldown <= 0f)
                     {
@@ -80,7 +94,7 @@ namespace OWSBG.World
                             Face(to.x >= 0f ? 1 : -1);
                             Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
                             _frames = 0;
-                            if (Hostile) State = Move.Telegraph;
+                            if (Hostile) { State = Move.Telegraph; Tell(AttackKind.Strike); }
                             else
                             {
                                 State = Move.Measure;
@@ -95,7 +109,7 @@ namespace OWSBG.World
 
                 case Move.Measure:
                     Body.linearVelocity = new Vector2(0f, Body.linearVelocity.y);
-                    if (Hostile) { State = Move.Telegraph; _frames = 0; return; }   // struck mid-measure, or the count came in
+                    if (Hostile) { State = Move.Telegraph; _frames = 0; Tell(AttackKind.Strike); return; }   // struck mid-measure, or the count came in
                     if (++_frames >= _measureFrames) { State = Move.Patrol; _cooldown = _measureCooldown; }
                     break;
 
@@ -136,7 +150,7 @@ namespace OWSBG.World
         protected override void Update()
         {
             base.Update();
-            if (Visual == null || IsDying) return;
+            if (Visual == null || IsDying || HasSheets) return;
             // The lance: lean into the telegraph, stretch on the thrust, a small tilt for the measuring (on the sprite; Face owns its sign).
             float lean = State == Move.Telegraph ? 0.85f : State == Move.Thrust ? 1.5f : State == Move.Measure ? 0.94f : 1f;
             var s = Visual.transform.localScale;

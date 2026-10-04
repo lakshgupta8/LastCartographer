@@ -188,6 +188,8 @@ namespace OWSBG.Tests
 
             Assert.AreEqual(Region.Saltmarrow, Mix.RegionOf("Greybox_Saltmarrow_A"));
             Assert.AreEqual(Region.Blank, Mix.RegionOf("Greybox_Blank_Island1"));
+            Assert.AreEqual(Region.Blank, Mix.RegionOf("Island_Merrow"), "the Blank's islands are runtime rooms (AUD-08)");
+            Assert.AreEqual(Region.Halden, Mix.RegionOf("Epilogue_Halden_JourneymansHall"), "the epilogue's stand-ins are named for their zones");
             Assert.AreEqual(Region.Greyfold, Mix.RegionOf("Greybox_Greyfold_Edge"));
             Assert.IsNull(Mix.RegionOf("Persistent"));
             Assert.IsNull(Mix.RegionOf(null));

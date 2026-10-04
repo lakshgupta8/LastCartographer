@@ -7,7 +7,7 @@ namespace OWSBG.UI
     /// <summary>
     /// The paper-and-ink palette and element helpers for the atlas UI (art direction 5, ENV-11).
     /// Everything is built in code with explicit fonts so it works with or without a theme asset;
-    /// the hand-drawn frames and the ink font replace these when the UI art lands.
+    /// the drawn paper, glyphs and fonts (ENV-11) come through <see cref="InkArt"/> and leave this look wherever a piece is missing.
     /// Two palettes: the warm one, and high-contrast ink (DES-14) where every text colour reads at 7:1 or better on the
     /// paper and the faint rules are drawn firmly. The colours follow <see cref="Options.HighContrast"/>, and
     /// <see cref="Recolour"/> moves what is already drawn from one palette to the other.
@@ -95,19 +95,38 @@ namespace OWSBG.UI
             return 0.2126f * Lin(c.r) + 0.7152f * Lin(c.g) + 0.0722f * Lin(c.b);
         }
 
-        static Font _font;
-        public static Font Font
+        static Font _fallback;
+        static Font Fallback
         {
             get
             {
-                if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                return _font;
+                if (_fallback == null) _fallback = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                return _fallback;
             }
         }
 
-        public static void ApplyFont(VisualElement e)
+        /// <summary>The body face (ENV-11): a humanist sans, Alegreya Sans, with the engine's own as a stand-in.</summary>
+        public static Font Font => InkArt.BodyFont != null ? InkArt.BodyFont : Fallback;
+        /// <summary>The title face: a hand-cut serif, IM Fell English (art-direction 6), or the body face.</summary>
+        public static Font TitleFont => InkArt.TitleFont != null ? InkArt.TitleFont : Font;
+
+        public static void ApplyFont(VisualElement e) => ApplyFont(e, FontStyle.Normal);
+
+        /// <summary>
+        /// The body face in a style: the real italic or bold cut when it is packed (the style is then left Normal, so
+        /// nothing is slanted or thickened twice), else the base face with the style synthesised.
+        /// </summary>
+        public static void ApplyFont(VisualElement e, FontStyle style)
         {
-            var f = Font;
+            Font f = style == FontStyle.Italic ? InkArt.BodyItalic : style == FontStyle.Bold ? InkArt.BodyBold : null;
+            e.style.unityFontStyleAndWeight = f != null ? FontStyle.Normal : style;
+            if (f == null) f = Font;
+            if (f != null) e.style.unityFontDefinition = new StyleFontDefinition(f);
+        }
+
+        public static void ApplyTitleFont(VisualElement e)
+        {
+            var f = TitleFont;
             if (f != null) e.style.unityFontDefinition = new StyleFontDefinition(f);
         }
 
@@ -120,16 +139,71 @@ namespace OWSBG.UI
             return e;
         }
 
-        /// <summary>A paper panel: warm ground, thin ink rule, soft corners.</summary>
-        public static VisualElement Panel(string name)
+        /// <summary>A paper panel: the drawn page (ENV-11), or warm ground, a thin ink rule and soft corners.</summary>
+        public static VisualElement Panel(string name) => Panel(name, InkArt.Paper.Page);
+
+        /// <summary>A panel on a kind of paper.</summary>
+        public static VisualElement Panel(string name, InkArt.Paper kind)
         {
             var e = new VisualElement { name = name };
-            e.style.backgroundColor = Paper;
-            SetBorder(e, Ink, 2f);
-            SetRadius(e, 6f);
-            SetPadding(e, 18f, 24f);
+            InkArt.Paperize(e, kind);
             ApplyFont(e);
             return e;
+        }
+
+        /// <summary>The atlas: two pages on a spine.</summary>
+        public static VisualElement Spread(string name) => Panel(name, InkArt.Paper.Spread);
+
+        /// <summary>Make an existing element a strip of paper: a caption, a toast, the roll-call.</summary>
+        public static void Strip(VisualElement e) => InkArt.Paperize(e, InkArt.Paper.Strip);
+
+        /// <summary>The square a portrait sits in.</summary>
+        public static void PortraitFrame(VisualElement e) => InkArt.Paperize(e, InkArt.Paper.Portrait);
+
+        /// <summary>
+        /// The row marker: the drawn quill nib (ENV-11) pointing at the chosen row, or the glyph in text. Named
+        /// "marker" and 26 wide either way; <paramref name="on"/> shows it. A view that moves it later toggles its
+        /// visibility.
+        /// </summary>
+        public static VisualElement Marker(bool on)
+        {
+            var tex = InkArt.Tex("UI_Marker");
+            if (tex != null)
+            {
+                var g = InkArt.Glyph("marker", tex, 20f);
+                g.style.width = 26;
+                g.style.visibility = on ? Visibility.Visible : Visibility.Hidden;
+                return g;
+            }
+            var l = Text("marker", on ? "▸" : "", 22, Wash);
+            l.style.width = 26;
+            return l;
+        }
+
+        /// <summary>A small drawing before a row's words (a Charter's cowl, an Instrument); nothing when it is not drawn.</summary>
+        public static VisualElement Icon(string name, Texture2D tex, float height, float marginRight = 8f)
+        {
+            if (tex == null) return null;
+            var g = InkArt.Glyph(name, tex, height);
+            g.style.marginRight = marginRight;
+            return g;
+        }
+
+        /// <summary>A title in the hand-cut serif.</summary>
+        public static Label TitleText(string name, string text, float size, Color color, FontStyle style = FontStyle.Normal)
+        {
+            var l = Text(name, text, size, color);
+            l.style.unityFontStyleAndWeight = style;
+            ApplyTitleFont(l);
+            return l;
+        }
+
+        /// <summary>A fixed title in the player's language, in the serif.</summary>
+        public static Label Title(string name, string key, string english, float size, Color color, FontStyle style = FontStyle.Normal)
+        {
+            var l = TitleText(name, "", size, color, style);
+            Relabel(l, () => Loc.T(key, english));
+            return l;
         }
 
         public static Label Text(string name, string text, float size, Color color, FontStyle style = FontStyle.Normal)
@@ -137,11 +211,10 @@ namespace OWSBG.UI
             var l = new Label(text) { name = name, pickingMode = PickingMode.Ignore };
             l.style.fontSize = size;
             l.style.color = color;
-            l.style.unityFontStyleAndWeight = style;
             l.style.whiteSpace = WhiteSpace.Normal;
             l.style.marginBottom = 0; l.style.marginTop = 0; l.style.marginLeft = 0; l.style.marginRight = 0;
             l.style.paddingBottom = 0; l.style.paddingTop = 0; l.style.paddingLeft = 0; l.style.paddingRight = 0;
-            ApplyFont(l);
+            ApplyFont(l, style);
             return l;
         }
 

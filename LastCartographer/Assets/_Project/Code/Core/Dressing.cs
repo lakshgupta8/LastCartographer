@@ -17,6 +17,41 @@ namespace OWSBG.Core
         Trace,
     }
 
+    /// <summary>
+    /// What changes a piece with its place (ENV-06): a flag set (the walk down Hollowvein), or the place's fate among
+    /// some (Merrow's End held or anchored, Aldermere released, Lowmarket anchored). The Yarn scene branches on the
+    /// same thing; <c>DressingProp</c> shows the piece's second drawing while it is met.
+    /// </summary>
+    [Serializable]
+    public struct DressingChange
+    {
+        /// <summary>A flag that, set, changes the piece; or null.</summary>
+        public string Flag;
+        /// <summary>A place whose fate changes the piece; or null.</summary>
+        public string Place;
+        /// <summary>The fates that change it, lower-case and |-separated ("held|anchored").</summary>
+        public string Fates;
+
+        public bool IsEmpty => string.IsNullOrEmpty(Flag) && string.IsNullOrEmpty(Place);
+
+        public static DressingChange OnFlag(string flag) => new DressingChange { Flag = flag };
+        public static DressingChange OnFate(string place, params PlaceFate[] fates)
+            => new DressingChange { Place = place, Fates = string.Join("|", fates.Select(Places.Describe)) };
+
+        /// <summary>Whether the world has changed the piece.</summary>
+        public bool IsMet(WorldState w)
+        {
+            if (w == null) return false;
+            if (!string.IsNullOrEmpty(Flag) && w.Is(Flag)) return true;
+            if (string.IsNullOrEmpty(Place)) return false;
+            var fate = Places.Describe(Places.FateOf(w, Place));
+            foreach (var f in (Fates ?? "").Split('|')) if (f == fate) return true;
+            return false;
+        }
+
+        public override string ToString() => IsEmpty ? "never" : Flag != null ? "flag " + Flag : Place + " " + Fates;
+    }
+
     /// <summary>One piece of the environmental pass: where it stands, what it is, and, if it can be read, the Yarn scene that reads it.</summary>
     public sealed class DressingPiece
     {
@@ -32,6 +67,12 @@ namespace OWSBG.Core
         public string Plant;
         /// <summary>How it changes with the place's fate or fade, or null if it never does.</summary>
         public string Changes;
+        /// <summary>The kit drawing that stands for it (ENV-06): "Prop_&lt;Prop&gt;" in its region's kit. Every piece has one.</summary>
+        public string Prop;
+        /// <summary>The drawing shown once <see cref="Change"/> is met, or null for a piece that never changes.</summary>
+        public string PropAfter;
+        /// <summary>What swaps <see cref="Prop"/> for <see cref="PropAfter"/>; empty for a piece that never changes.</summary>
+        public DressingChange Change;
         public bool Readable => Node != null;
         public Region Region => Dressing.RegionOfRoom(Room);
     }
@@ -51,6 +92,8 @@ namespace OWSBG.Core
         public static DressingPiece Find(string id) => _all.Find(p => p.Id == id);
         public static IEnumerable<DressingPiece> In(Region r) => _all.Where(p => p.Region == r);
         public static IEnumerable<DressingPiece> InRoom(string room) => _all.Where(p => p.Room == room);
+        /// <summary>The piece a Yarn scene reads, or null.</summary>
+        public static DressingPiece ByNode(string node) => node == null ? null : _all.Find(p => p.Node == node);
 
         /// <summary>The region a room id belongs to: its prefix ("Halden_Hall_3" is Halden's).</summary>
         public static Region RegionOfRoom(string room)
@@ -61,6 +104,61 @@ namespace OWSBG.Core
 
         static void P(string room, DressingKind kind, string id, string node, string plant, string brief, string changes = null)
             => _all.Add(new DressingPiece { Id = id, Room = room, Kind = kind, Node = node, Plant = plant, Brief = brief, Changes = changes });
+
+        /// <summary>The drawings (ENV-06): what stands for a piece, and what stands for it once its place has changed.</summary>
+        static void Draw(string id, string prop, string after = null, DressingChange change = default)
+        {
+            var piece = Find(id) ?? throw new ArgumentException("no piece " + id);
+            piece.Prop = prop; piece.PropAfter = after; piece.Change = change;
+        }
+
+        const string Walked = "emberdown.hollowvein.walked";
+
+        static void Drawings()
+        {
+            Draw("shore.tetherposts", "TetherPosts");
+            Draw("quay.price_board", "PriceBoard");
+            Draw("stilts.ladders", "Ladders");
+            Draw("merrow.lintels", "Lintels", "Lintels_Chalk", DressingChange.OnFate("Saltmarrow_B", PlaceFate.Held, PlaceFate.Anchored));
+            Draw("ferry.boats", "Moorings");
+            Draw("chain.log", "Log");
+            Draw("chain.faded_keeper", "Keeper");
+            Draw("chapel.tapestry", "Tapestry");
+            Draw("rest.lintel", "Lintel");
+            Draw("rest.tally_wall", "TallyWall");
+            Draw("pithead.cups", "Cups", "Cups_Up", DressingChange.OnFlag(Walked));
+            Draw("chimneys.foot", "ChimneyFoot");
+            Draw("hollow.lamps", "HookLamps", "HookLamps_Lit", DressingChange.OnFlag(Walked));
+            Draw("hollow.bottom", "Bottom", "Bottom_Swept", DressingChange.OnFlag(Walked));
+            Draw("road.milestone", "Milestone");
+            Draw("cloister.tapestry", "WoolMap", "WoolMap_Open", DressingChange.OnFate("Verdance_Aldermere_2", PlaceFate.Released));
+            Draw("library.dust", "Dust");
+            Draw("library.lectern", "Lectern");
+            Draw("aldermere.bunting", "Bunting");
+            Draw("gate.ledge", "Ledge");
+            Draw("bridges.toll_board", "TollBoard");
+            Draw("mills.sheets", "Sheets");
+            Draw("hall.roll", "Roll");
+            Draw("hall.order", "Order");
+            Draw("hall.exam_papers", "ExamDesk");
+            Draw("orchard.leaves", "Leaves");
+            Draw("lowmarket.notice", "Notice", "Notice_Complete", DressingChange.OnFate("Halden_Lowmarket_2", PlaceFate.Anchored));
+            Draw("bridges.seventh", "Scaffold");
+            Draw("bastion.plaque", "Plaque");
+            Draw("office.drawing", "Drawing");
+            Draw("stones.notches", "Stone");
+            Draw("camp.wagon_cloth", "Wagon");
+            Draw("river.boats", "Hull");
+            Draw("gate.lip", "LipStone");
+            Draw("edgecamp.beam", "Beam");
+            Draw("edgecamp.tethers", "CutTether");
+            Draw("road.mileposts", "Milepost");
+            Draw("road.footprints", "Footprints");
+            Draw("threshold.old_tether", "OldTether");
+            Draw("capital.nameplate", "Door");
+            Draw("capital.crayon_floor", "Crayon");
+            Draw("hollow.doorframe", "Doorframe");
+        }
 
         static Dressing()
         {
@@ -167,6 +265,7 @@ namespace OWSBG.Core
                 "Corra's room: a white floor drawn over in crayon, the same tall heron again and again, each with a compass, none with a face.");
             P("Blank_Hollow_2", DressingKind.Inscription, "hollow.doorframe", "Hollow_Doorframe", null,
                 "Height marks knifed into the doorframe of Ilse's house, stopping at six years.");
+            Drawings();
         }
 
         // ---- the fledgling loops -------------------------------------------------------------------------------------
@@ -187,6 +286,8 @@ namespace OWSBG.Core
             public bool AnchoredFromTheStart;
             /// <summary>Faded birds (the Greyfold's outlines, the Remnant's chicks): a fade doesn't thin them, it made them.</summary>
             public bool Faded;
+            /// <summary>The drawing (CHR-14): the species' sheets are Art/Characters/Fledgling_&lt;Look&gt;.</summary>
+            public string Look;
         }
 
         /// <summary>What a loop shows now.</summary>
@@ -209,20 +310,20 @@ namespace OWSBG.Core
 
         public static readonly FledglingLoop[] Loops =
         {
-            new FledglingLoop { Region = Region.Saltmarrow, Room = "Saltmarrow_Stilts", Perch = "the top stilt-roost's ledge, into the shallows",
+            new FledglingLoop { Region = Region.Saltmarrow, Look = "Gull", Room = "Saltmarrow_Stilts", Perch = "the top stilt-roost's ledge, into the shallows",
                 Brief = "Six young gulls and terns off the highest roost, splashing down in the shallows; a grandmother with bound wings watches from the ladder." },
-            new FledglingLoop { Region = Region.Emberdown, Room = "Emberdown_Rest_1", Perch = "the cliff roosts over the gate, into the ash",
+            new FledglingLoop { Region = Region.Emberdown, Look = "Grouse", Room = "Emberdown_Rest_1", Perch = "the cliff roosts over the gate, into the ash",
                 Brief = "Young grouse off the roost doors into drifts of ash, counted aloud by whoever is nearest." },
-            new FledglingLoop { Region = Region.Verdance, Room = "Verdance_Grove_3", Perch = "a canopy branch, into the moss far below",
+            new FledglingLoop { Region = Region.Verdance, Look = "Dove", Room = "Verdance_Grove_3", Perch = "a canopy branch, into the moss far below",
                 Brief = "Young doves between the high branches, falling into moss so deep they bounce; nobody sings, nobody stops them." },
-            new FledglingLoop { Region = Region.Halden, Room = "Halden_Bridges_2", Perch = "a bridge parapet, onto a net strung under it",
+            new FledglingLoop { Region = Region.Halden, Look = "Pigeon", Room = "Halden_Bridges_2", Perch = "a bridge parapet, onto a net strung under it",
                 Brief = "Young pigeons off the toll bridge's parapet into a Crown net: the same leap from the same stone, every afternoon.",
                 AnchoredFromTheStart = true },
-            new FledglingLoop { Region = Region.Windreach, Room = "Windreach_Camp_1", Perch = "the wagon roofs, into the long grass",
+            new FledglingLoop { Region = Region.Windreach, Look = "Crane", Room = "Windreach_Camp_1", Perch = "the wagon roofs, into the long grass",
                 Brief = "Young cranes off the walking-wagons' roofs into the grass, practising for the Gate, and the clan cheering every landing." },
-            new FledglingLoop { Region = Region.Greyfold, Room = "Greyfold_Cathedral_2", Perch = "the Half-Cathedral's broken tower, into the white",
+            new FledglingLoop { Region = Region.Greyfold, Look = "Outline", Room = "Greyfold_Cathedral_2", Perch = "the Half-Cathedral's broken tower, into the white",
                 Brief = "Grey outlines of young birds leaping from the tower, seen only at the edge of the eye; gone when looked at.", Faded = true },
-            new FledglingLoop { Region = Region.Blank, Room = "Blank_Hollow_2", Perch = "Thessaly Hollow's roofs, onto the drift",
+            new FledglingLoop { Region = Region.Blank, Look = "Grey", Room = "Blank_Hollow_2", Perch = "Thessaly Hollow's roofs, onto the drift",
                 Brief = "The Remnant's grey chicks off the village roofs; they glide as the living ones do. The Blank remembers.", Faded = true },
         };
 

@@ -31,7 +31,8 @@ The day, where people stand in it, and what an anchored town does with both. Run
 | night | 0.62–1.00 | 5.7 min | cool, darker (`_OWSBG_Night`), easing before dawn |
 
 The tints are two globals read by the paper-grain pass after the held grade; `DayCycle` eases them over 1.5 s
-so `<<clock>>` and room changes never pop.
+so `<<clock>>` and room changes never pop. The region's sun follows them too (ENV-10, lighting.md §2): night
+dims it to a third and cools it, dusk warms it; the white and anchored Halden have no hour and keep their light.
 
 ## 3. Story hooks
 ```yarn
@@ -53,6 +54,9 @@ Code: `DayClock.Advance / SetPhase / Sleep / Lock / TimeIn / PhaseIn`, `NpcSched
 - **Dotha** (room B): dawn and day at her stoop; dusk singing to the water by the tether-post ("Not now. The
   water's listening." `#still`); night asleep ("Ask me in the light." `#still`).
 - The atlas page prints `Day 3 · dusk`, and `(held at this hour)` inside an anchored place.
+- A post's activity string names the clip a drawn NPC shows there by its first word (`npc-animation.md` §3, CHR-11):
+  Sable's "mending nets", "reading the ledger" and "asleep under the stilts" have clips; Dotha's "singing to the
+  water" and "asleep" do; "on her stoop" idles. Rename an activity and its clip is lost silently.
 
 ## 6. Open
 - Routes across rooms (an NPC whose dusk post is next door) and platforms: NavMesh or authored paths (the
@@ -60,4 +64,5 @@ Code: `DayClock.Advance / SetPhase / Sleep / Lock / TimeIn / PhaseIn`, `NpcSched
 - Shops and **stock that never varies** in anchored towns (DES-05).
 - What sleeping does to commissions (expiry, DES-06 §open). What it does to the Windreach camp is settled: a new
   day walks it on once its fire is had (PRG-21, `moving-camp.md`).
-- Looping props and the locked sky in real art (ENV-09).
+- The locked sky in real art. The hubs' furniture is drawn (ENV-09, `paper-kit.md` §2a); looping props (a net that
+  sways, a lamp that gutters) would be sheets like the cast's.

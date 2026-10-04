@@ -354,9 +354,9 @@ namespace OWSBG.Core
             {
                 Id = "saltmarrow.tether_widows", Title = "The Tether-Widows", Hub = "Saltmarrow", Poster = "The tether-post",
                 Brief = "One of the widows means to go in after her husband. The others would rather she did not. Nobody has asked her.",
-                Journal = "Now the lamp is lit she waits at the tether-post. Sable carries word. Talk her out of it, or go with her.",
+                Journal = "Now the lamp is lit she waits at the tether-post. Answer her there, or through Sable. Talk her out of it, or go with her.",
                 Aftermath = "Whichever way it went, the tether-post has one fewer rope on it.",
-                Steps = new[] { CommissionStep.Flag("saltmarrow.widow.decided", "Answer the widow, through Sable") },
+                Steps = new[] { CommissionStep.Flag("saltmarrow.widow.decided", "Answer the widow, at the post or through Sable") },
                 RewardScraps = 2, PostAfterFlag = "boss.lamp_keeper.defeated",
             },
         };

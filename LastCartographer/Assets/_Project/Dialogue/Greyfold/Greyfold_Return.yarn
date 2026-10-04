@@ -6,28 +6,28 @@
 title: Return_Voss
 ---
 <<if not has_flag("act3.started")>>
-    Voss: Journeyman. The line holds. Go and rest. #still #line:0b90868
+    Voss: Journeyman. The line holds. Go and rest. #still #face:wary #line:0b90868
     <<stop>>
 <<endif>>
 <<if has_flag("return.voss.met")>>
     <<if has_flag("voss.changed")>>
         Threshold: His tethers, dropped at the line. His footprints go in. #still #line:05ef102
     <<else>>
-        Voss: The line holds, journeyman. It will hold after you. #still #line:096eb01
+        Voss: The line holds, journeyman. It will hold after you. #still #face:grave #line:096eb01
     <<endif>>
     <<stop>>
 <<endif>>
-Voss: Journeyman. You came back out. So it can be done. #line:0f925fa
+Voss: Journeyman. You came back out. So it can be done. #face:grave #line:0f925fa
 <<if has_flag("corra.memory_carried")>>
     Threshold: She holds out the small drawing. A heron, crayon-lined, the right size. #line:03d6408
     Voss: ... #line:0a33fc8
-    Voss: Corra. #line:07eca93
-    Voss: She drew me the right size. When did I— she drew me the right size. #line:06f9d0f
+    Voss: Corra. #face:grave #line:07eca93
+    Voss: She drew me the right size. When did I— she drew me the right size. #face:grave #line:06f9d0f
     Voss: I am going in. Today. Hold the line for me, journeyman. Somebody should. #line:0fb7645
     <<flag voss.changed 1>>
 <<else>>
-    Voss: We will not. Somebody must hold the line. #line:0eed512
-    Voss: Go and do what you came to do. We will be here. We are always here. #line:0e70fd9
+    Voss: We will not. Somebody must hold the line. #face:wary #line:0eed512
+    Voss: Go and do what you came to do. We will be here. We are always here. #face:grave #line:0e70fd9
 <<endif>>
 <<flag return.voss.met 1>>
 ===

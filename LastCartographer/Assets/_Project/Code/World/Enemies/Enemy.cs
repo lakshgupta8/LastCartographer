@@ -46,9 +46,16 @@ namespace OWSBG.World
         public bool IsSlowed => SlowLeft > 0f;
         public float SlowFactor { get; set; } = 0.35f;
         public event Action<Enemy, HitInfo> WasHit;
+        /// <summary>A strike turned away (a shell, an undrawn smudge, a cloud the quill passes through): its voice may say so (AUD-10).</summary>
+        public event Action<Enemy> HitBlocked;
         public event Action<Enemy> Died;
         /// <summary>Every enemy death in the game (commission counters, later stats).</summary>
         public static event Action<Enemy> AnyDied;
+        /// <summary>A telegraph's first frame, with the attack's kind: the tell is played from it (AUD-03).</summary>
+        public static event Action<Enemy, AttackKind> Telegraphed;
+
+        /// <summary>Announce a telegraph starting; the sound bank plays the kind's tell.</summary>
+        protected void Tell(AttackKind kind) => Telegraphed?.Invoke(this, kind);
         /// <summary>Roster name used by counters ("kill.MarshCrab"); the type name unless overridden.</summary>
         public virtual string Family => GetType().Name;
 
@@ -78,6 +85,7 @@ namespace OWSBG.World
             if (Tuning.TryEnemy(Family, out var tune)) { _maxHealth = tune.Health; _contactDamage = tune.Contact; }
             Health = _maxHealth;
             if (_playerMask.value == 0) _playerMask = LayerMask.GetMask("Player");
+            if (GetComponent<EnemyVoice>() == null) gameObject.AddComponent<EnemyVoice>();   // every drawing has a voice (AUD-10)
         }
 
         protected virtual void Start()
@@ -91,7 +99,14 @@ namespace OWSBG.World
             {
                 _deathT += Time.fixedDeltaTime;
                 float k = Mathf.Clamp01(_deathT / _deathSeconds);
-                transform.localScale = _baseScale * (1f - k);
+                if (HasSheets && Visual != null)
+                {
+                    // a drawing dies as its ink leaves
+                    Visual.GetPropertyBlock(_mpb);
+                    _mpb.SetFloat(InkId, 1f - k);
+                    Visual.SetPropertyBlock(_mpb);
+                }
+                else transform.localScale = _baseScale * (1f - k);
                 if (k >= 1f)
                 {
                     if (DestroyOnDeath) Destroy(gameObject);
@@ -147,6 +162,28 @@ namespace OWSBG.World
         protected virtual bool DestroyOnDeath => true;
         public bool IsDying => _deathT >= 0f;
 
+        // ---- drawn from sheets (CHR-06, docs/design/enemy-animation.md)
+        InkSheetPlayer _sheets;
+        bool _sheetsChecked;
+        /// <summary>An InkSheetPlayer draws this enemy: the placeholder's tints and stretches stand down.</summary>
+        public bool HasSheets
+        {
+            get
+            {
+                if (!_sheetsChecked) { _sheets = GetComponent<InkSheetPlayer>(); _sheetsChecked = true; }
+                return _sheets != null;
+            }
+        }
+        /// <summary>The death fade's length; the animator sets it to the death clip's.</summary>
+        public float DeathSeconds { get => _deathSeconds; set => _deathSeconds = Mathf.Max(0.05f, value); }
+        /// <summary>The clip the animator shows: death, hurt, then moving or still; families add their moves.</summary>
+        public virtual string Clip => IsDying ? "death" : HurtstunLeft > 0 ? "hurt"
+            : Body != null && Body.linearVelocity.sqrMagnitude > 0.04f ? "move" : "idle";
+        /// <summary>How far through the clip, for moves that follow their own frames; below 0 runs on the clock.</summary>
+        public virtual float ClipProgress => -1f;
+        static readonly int InkId = Shader.PropertyToID("_Ink");
+        static readonly Color SheetFlash = new Color(1.8f, 1.7f, 1.4f);
+
         /// <summary>Tooling and tests: resize the health pool and refill it.</summary>
         public void SetMaxHealth(int max) { _maxHealth = Mathf.Max(1, max); Health = _maxHealth; }
 
@@ -181,7 +218,7 @@ namespace OWSBG.World
         public bool TakeHit(in HitInfo hit)
         {
             if (IsDead || _deathT >= 0f) return false;
-            if (!AcceptsHit(hit)) { OnHitBlocked(hit); return false; }
+            if (!AcceptsHit(hit)) { OnHitBlocked(hit); HitBlocked?.Invoke(this); return false; }
             Health = Mathf.Max(0, Health - hit.Damage);
             Mix.Note(Mix.Duck.Impact);   // the mix makes room for the impact (AUD-09)
             if (hit.Drain > 0f)
@@ -267,9 +304,9 @@ namespace OWSBG.World
         {
             if (Visual == null) return;
             Visual.GetPropertyBlock(_mpb);
-            var tint = Color.Lerp(new Color(0.55f, 0.55f, 0.55f), TintColor(), Colour);
+            var tint = Color.Lerp(new Color(0.55f, 0.55f, 0.55f), HasSheets ? Color.white : TintColor(), Colour);
             if (IsMarked) tint = Color.Lerp(tint, new Color(0.95f, 0.62f, 0.15f), 0.5f + 0.3f * Mathf.Sin(Time.time * 12f));
-            _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? FlashColor : tint);
+            _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? (HasSheets ? SheetFlash : FlashColor) : tint);
             Visual.SetPropertyBlock(_mpb);
         }
 

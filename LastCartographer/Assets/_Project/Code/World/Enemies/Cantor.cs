@@ -31,6 +31,8 @@ namespace OWSBG.World
         public int Tolls { get; private set; }
         public bool IsRinging => State == Move.Ring;
         public float RingProgress => State == Move.Ring ? Mathf.Clamp01((float)_frames / Mathf.Max(1, _ringFrames)) : 0f;
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : State == Move.Ring ? "ring" : State == Move.Recover ? "recover" : base.Clip;
+        public override float ClipProgress => State == Move.Ring && !IsDying && HurtstunLeft == 0 ? RingProgress : -1f;
         /// <summary>The place the bell erases: set in the scene, else the room the Cantor lives in.</summary>
         public string PlaceId
         {
@@ -80,6 +82,7 @@ namespace OWSBG.World
                             State = Move.Ring;
                             _frames = 0;
                             Body.linearVelocity = Vector2.zero;
+                            Tell(AttackKind.Window);   // the ring is the opening to strike into (AUD-10)
                         }
                     }
                     break;
@@ -126,6 +129,9 @@ namespace OWSBG.World
             var place = PlaceId;
             if (Atlas.Erase(GameState.World, place))
                 Captions.Show(Loc.F("caption.erased", "Erased: {0}. Draw it again.", Atlas.PlaceName(place)), 4f);
+            // The erasure (ENV-12): an eraser dragged across the page, three sweeps out from the bell.
+            for (int k = -1; k <= 1; k++)
+                InkFx.Spawn("eraser", (Vector2)transform.position + new Vector2(k * 2.6f, 0.4f - 0.6f * Mathf.Abs(k)), 0f, 1.4f);
             Tolled?.Invoke(this, place);
         }
 
@@ -141,7 +147,7 @@ namespace OWSBG.World
         protected override void Update()
         {
             base.Update();
-            if (Visual == null || IsDying) return;
+            if (Visual == null || IsDying || HasSheets) return;
             // The bell rises through the ring: the sprite stretches upward, then drops back on the toll.
             float rise = State == Move.Ring ? 1f + 0.4f * RingProgress : State == Move.Recover ? 0.9f : 1f;
             var s = Visual.transform.localScale;

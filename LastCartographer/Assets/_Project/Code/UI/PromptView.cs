@@ -46,6 +46,7 @@ namespace OWSBG.UI
             _pending = text;
             _left = Options.CaptionSeconds(seconds);
             if (_built) { _label.text = text; InkTheme.Show(_label, true); }
+            UiSounds.Toast();
         }
 
         void Update()
@@ -82,10 +83,7 @@ namespace OWSBG.UI
             _label.style.left = new Length(50, LengthUnit.Percent);
             _label.style.translate = new Translate(new Length(-50, LengthUnit.Percent), 0);
             _label.style.bottom = new Length(24, LengthUnit.Percent);
-            _label.style.backgroundColor = InkTheme.Paper;
-            InkTheme.SetPadding(_label, 8f, 18f);
-            InkTheme.SetRadius(_label, 6f);
-            InkTheme.SetBorder(_label, InkTheme.InkFaint, 1f);
+            InkTheme.Strip(_label);
             InkTheme.Show(_label, false);
             ui.Caption.Add(_label);
             _built = true;

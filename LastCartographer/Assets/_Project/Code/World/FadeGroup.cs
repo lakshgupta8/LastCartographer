@@ -41,6 +41,9 @@ namespace OWSBG.World
         public float TargetInk => FadeStages.InkFor(Stage);
         public bool IsAnimating => Mathf.Abs(Ink - TargetInk) > 0.001f;
 
+        /// <summary>Drop layers whose renderer is gone (a replaced placement, ENV-06). Returns how many.</summary>
+        public int RemoveMissing() => _layers.RemoveAll(l => l.Renderer == null);
+
         public Layer AddLayer(Renderer r, int dropoutStage = FadeStages.Max)
         {
             var l = new Layer { Renderer = r, DropoutStage = dropoutStage };

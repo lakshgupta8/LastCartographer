@@ -1,35 +1,40 @@
 // What the Ash Remembers [B] (bible 4.3, 8.3): Aldermere asked the Unwriters to let it go. Wren arrives on its last
 // day. Attend it to the end, or try to stop it and the Choir sings over the square (boss 6.6).
 // Aldermere_2, the square. Mayor Hollin, a thrush, speaks for the village; Teodor stands at the edge.
+// After (verdance-arc.md §1): Teodor leaves the square either way. Attended, the lane and the square are empty and
+// the village stands as paper in the ash field (Aldermere_3), where Teodor sits with them (Aldermere_Ash_Teodor).
+// Stopped, the Choir answered, Aldermere is still here with half a song (Aldermere_Hollin).
 
 title: Aldermere_Teodor
 ---
 <<if has_flag("verdance.aldermere.attended")>>
-    Teodor: The square is paper now. They are in the Blank, cartographer. They asked for that. They are well. #still #line:03bf87a
+    Teodor: The square is paper now. They are in the Blank, cartographer. They asked for that. They are well. #still #face:grave #line:03bf87a
     <<stop>>
 <<endif>>
 <<if has_flag("verdance.aldermere.stopped")>>
-    Hollin: You are the one who stopped it. Thank you, I suppose. We are still here. We are still here. #still #line:085ae22
-    <<stop>>
+    <<jump Aldermere_Hollin>>
 <<endif>>
-Hollin: Welcome to Aldermere. There is bread. There is always bread on the last day. #line:067ff9b
+Hollin: Welcome to Aldermere. There is bread. There is always bread on the last day. #face:bright #line:067ff9b
 Hollin: We voted. Every hand. The Guild wanted four hundred crowns a street, and then we would be the same forever. #line:0dc835b
-Hollin: We would rather be remembered than kept. The brothers were kind enough to ask us twice. #line:0af2746
-Teodor: Three times. I asked three times. I made sure. #line:01bb513
+Hollin: We would rather be remembered than kept. The brothers were kind enough to ask us twice. #face:bright #line:0af2746
+Teodor: Three times. I asked three times. I made sure. #face:grave #line:01bb513
 -> Then I'll stay to the end. #line:0927bd2
+    <<voice drift verdance>>
     <<jump Aldermere_Attend>>
 -> I won't let you fade. #line:0bdd5a3
+    <<voice warden verdance>>
     <<jump Aldermere_Stop>>
 -> Who will remember you? #line:03aa299
-    Hollin: You will. That is why we are glad you came. A visitor is the best kind of memory. #line:01796f6
+    <<voice surveyor verdance>>
+    Hollin: You will. That is why we are glad you came. A visitor is the best kind of memory. #face:bright #line:01796f6
     <<jump Aldermere_Attend>>
 ===
 
 title: Aldermere_Attend
 ---
 Hollin: Stay by the bread. The bells start at dusk. It does not hurt. Brother Teodor has done this before. #line:098c7b0
-Teodor: The kindest thing you will see, cartographer. I am glad it is you watching. #line:027960b
-Hollin: When you pass again, do not look for us. Look for the ash field. We will be in it. #line:095ba84
+Teodor: The kindest thing you will see, cartographer. I am glad it is you watching. #face:bright #line:027960b
+Hollin: When you pass again, do not look for us. Look for the ash field. We will be in it. #face:grave #line:095ba84
 <<release Verdance_Aldermere_1>>
 <<release Verdance_Aldermere_2>>
 <<release Verdance_Aldermere_3>>
@@ -39,12 +44,60 @@ Hollin: When you pass again, do not look for us. Look for the ash field. We will
 
 title: Aldermere_Stop
 ---
-Teodor: Ah. May I say a thing you will not like? They did not ask you. #line:056adf3
-Hollin: Please. Put the quill down. We voted. #line:07e3080
+Teodor: Ah. May I say a thing you will not like? They did not ask you. #face:wary #line:056adf3
+Hollin: Please. Put the quill down. We voted. #face:wary #line:07e3080
 -> Put the bells down, then. #line:086ca69
-    Teodor: The Choir will not. They sing what was asked of them. I will neither stop them nor help them. #line:0aedf36
+    <<voice warden verdance>>
+    Teodor: The Choir will not. They sing what was asked of them. I will neither stop them nor help them. #face:grave #line:0aedf36
 -> ... #line:035eb61
-    Teodor: Then you must answer the Choir. I am sorry. It is the one thing I am sorry for today. #line:070896b
+    <<voice drift verdance>>
+    Teodor: Then you must answer the Choir. I am sorry. It is the one thing I am sorry for today. #face:grave #line:070896b
 <<flag verdance.aldermere.stopped 1>>
 <<flag verdance.aldermere.decided 2>>
+===
+
+title: Aldermere_Hollin
+---
+<<if has_flag("verdance.aldermere.stopped")>>
+    <<if has_flag("boss.choir.defeated") and not has_flag("verdance.aldermere.after_heard")>>
+        Hollin: The bells stopped halfway. They have never stopped halfway. Nobody knows how the song ends now. #face:grave #line:0eff68e
+        Hollin: The bread went stale. We had not baked for a tomorrow. We are baking. #line:08594d0
+        Hollin: Every hand voted, and here we all are. I had forgotten what an ordinary morning weighs. #face:grave #line:0059fe4
+        <<flag verdance.aldermere.after_heard 1>>
+        -> Vote again, then. #line:09f6fb7
+            <<voice warden verdance>>
+            Hollin: We will. Every hand. And you will not be asked to stand in the square for it. #face:wary #line:05a73cb
+        -> What do you need? #line:05204a4
+            <<voice surveyor verdance>>
+            Hollin: Flour, and the rest of the song. Teodor will not sing it. He says it is not his. #line:03a9127
+        -> ... #line:087f06a
+            <<voice drift verdance>>
+            Hollin: Yes. That is the sound the square makes now. Half a bell. #face:grave #line:059a099
+        <<stop>>
+    <<endif>>
+    Hollin: You are the one who stopped it. Thank you, I suppose. We are still here. We are still here. #still #face:grave #line:085ae22
+    <<stop>>
+<<endif>>
+<<jump Aldermere_Teodor>>
+===
+
+title: Aldermere_Ash_Teodor
+---
+<<if not has_flag("verdance.aldermere.ash_sat")>>
+    Teodor: Cartographer. Sit, if you like. I come at dusk. They are at the bread now. #line:0b452c5
+    Teodor: Hollin cuts it too thick. She always does. Nobody says so. It is a festival. #face:bright #line:0e589c5
+    Teodor: I do not see them, you understand. I know where they stand. That is enough to sit by. #line:061cc4f
+    <<flag verdance.aldermere.ash_sat 1>>
+    -> I'll sit with you. #line:0830aee
+        <<voice drift verdance>>
+        Teodor: Thank you. It is a quiet festival from here. It is still a festival. #face:bright #line:0ee0f08
+    -> Do they know you come? #line:0faa2be
+        <<voice surveyor verdance>>
+        Teodor: I asked them once, to be sure. Hollin said bread. I took it as yes. #face:bright #line:0df3a71
+    -> You could have kept them. #line:051f91c
+        <<voice warden verdance>>
+        Teodor: I could have. They asked me not to. I asked them three times, and made sure. #face:grave #line:009a8a7
+    <<stop>>
+<<endif>>
+Teodor: The bunting is still up. Nobody will take it down. Nobody needs to. #still #line:0d2a40c
 ===

@@ -14,7 +14,7 @@ namespace OWSBG.Core
     public static class YarnAudit
     {
         /// <summary>Commands that leave nothing behind: a visit that only runs these can be had again.</summary>
-        public static readonly HashSet<string> NeutralCommands = new HashSet<string> { "voice", "shop", "tutorial", "survey_hint", "wait" };
+        public static readonly HashSet<string> NeutralCommands = new HashSet<string> { "voice", "shop", "tutorial", "survey_hint", "wait", "sing" };
 
         public sealed class YLine
         {

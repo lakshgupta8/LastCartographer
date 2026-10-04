@@ -42,6 +42,7 @@ namespace OWSBG.UI
             Row = 0;
             IsOpen = true;
             Refresh();
+            UiSounds.Open();
         }
 
         public void Close()
@@ -50,6 +51,7 @@ namespace OWSBG.UI
             IsOpen = false;
             if (_wren != null) _wren.Frozen = _wasFrozen;
             if (_built) InkTheme.Show(_panel, false);
+            UiSounds.Close();
         }
 
         /// <summary>Take a posted row or turn in a fulfilled one. False when the row cannot move.</summary>
@@ -66,12 +68,14 @@ namespace OWSBG.UI
                 default: ok = false; break;
             }
             Refresh();
-            return ok;
+            return UiSounds.Did(ok);   // the ledger's own tick or stamp sounds from the world
         }
 
         public void SetRow(int row)
         {
-            Row = _entries.Count == 0 ? 0 : Mathf.Clamp(row, 0, _entries.Count - 1);
+            int to = _entries.Count == 0 ? 0 : Mathf.Clamp(row, 0, _entries.Count - 1);
+            if (to != Row) UiSounds.Move();
+            Row = to;
             Refresh();
         }
 
@@ -105,7 +109,7 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 860;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Text("title", Loc.T("ledger.title", "Commissions"), 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.TitleText("title", Loc.T("ledger.title", "Commissions"), 34, InkTheme.Wash);
             _title.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 17, InkTheme.Ink);
@@ -193,8 +197,7 @@ namespace OWSBG.UI
             InkTheme.SetPadding(row, 6f, 10f);
             InkTheme.SetRadius(row, 4f);
             row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
-            var marker = InkTheme.Text("marker", sel ? "▸" : "", 22, InkTheme.Wash);
-            marker.style.width = 26;
+            var marker = InkTheme.Marker(sel);
             bool dim = state == CommissionState.Closed || state == CommissionState.Failed;
             var title = InkTheme.Text("title", Commissions.TitleOf(def), 22, dim ? InkTheme.Dim : InkTheme.Ink);
             title.style.flexGrow = 1;

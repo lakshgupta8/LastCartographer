@@ -36,6 +36,9 @@ Ability gates in order: **Wingbeat → (Talonhold or Inkthread) → the Plateau 
 Policy: only Wingbeat gaps are soft. Nothing that changes the story's order (the Plateau, the Edge, Windreach,
 the Threshold) can be skipped by movement. Every way is two-way; a gate applies in both directions.
 
+The built rooms read these (`docs/design/gates.md`): every transition carries its way's gate from the plans and this
+map (`Gates.Between`), a shut way has a bar in it, a soft gap never does.
+
 ## 3. The regions
 
 Rooms are targets for DES-08 through DES-11; vantages are the atlas's marks (48 in scope).
@@ -121,7 +124,10 @@ full-playthrough matrix (PRO-05) will ask; both should be built on it.
 - ~~The seventh keystone.~~ Settled in NAR-13 (`docs/story/endings.md` §2): the seventh is the stone Isolde stole
   from the Vault's sixth slot (5.2) and still carries in Thessaly Hollow. Seven homes: Aury, Hollowvein, the Quiet
   House, Windreach, Isolde, Corvin, and the Observatory's own, which never leaves the frame.
-- Whether Windreach should also open from the Bone Bridge by sea (the Ferrymen) for a fourth Act 2 order.
+- ~~Whether Windreach should also open from the Bone Bridge by sea.~~ By sea, yes, from the quay rather than the
+  bridge: in Act 2 Sable rows Wren to the Dry River and back (`Boat`, `<<row>>`, character-bibles.md §2). It is a ride
+  like the camp's walk, not a way on the map, so the graph, the gates and the road's hours are unchanged; it gives
+  Act 2 a fourth way into Windreach that does not pass Lowmarket.
 - ~~The reward for a noticed sequence break.~~ Noticed (`SequenceBreaks`, `BreakWatcher`): a zone she stands in
   that no hard way could have brought her to, only a soft gap, gets one line ("Nobody comes this way on foot…"),
   a scrap of vellum and a flag (`break.noticed.<zone>`), once each. The zone's people say so once, in their first

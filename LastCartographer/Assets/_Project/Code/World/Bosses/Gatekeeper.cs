@@ -41,6 +41,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Land => AttackKind.Slam, _ => AttackKind.Strike };
         public IReadOnlyList<TetherAnchor> Roots => _roots;
         public bool RootsTorn => IsFightActive && Phase >= 3;
         public bool IsAloft => IsFightActive && Phase >= 2;
@@ -83,6 +85,19 @@ namespace OWSBG.World
 
         /// <summary>Stone on top, open underneath: once it flies, only the belly.</summary>
         protected override bool AcceptsHit(in HitInfo hit) => Phase < 3 || IsUpStrike(hit);
+
+        public override IEnumerable<string> PartSkinNames { get { yield return "Feather"; } }
+        /// <summary>The sheet clip for its move (CHR-10): on the plinth, hanging from the roots, or flying, badly.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Rise => "rise",
+            Move.Telegraph => CurrentAttack == Attack.Feathers ? "shake" : CurrentAttack == Attack.Sweep ? "telegraph" : "fly",
+            Move.Sweep => "sweep",
+            Move.Pass => "pass",
+            Move.Land => "land",
+            Move.Recover => RootsTorn ? "fly" : "recover",
+            _ => RootsTorn ? "fly" : IsAloft ? "perch" : "idle",
+        };
 
         protected override void Start()
         {
@@ -314,6 +329,7 @@ namespace OWSBG.World
                     Destroy(f.gameObject);
                     return true;
                 };
+                Skin(f, "Feather");
                 _feathers.Add(f);
             }
             ClearShadows();

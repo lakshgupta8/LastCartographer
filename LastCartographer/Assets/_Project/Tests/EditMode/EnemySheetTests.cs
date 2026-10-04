@@ -1,0 +1,153 @@
+using System.IO;
+using System.Linq;
+using NUnit.Framework;
+using UnityEditor;
+using UnityEngine;
+
+namespace OWSBG.Tests
+{
+    /// <summary>
+    /// The coast's creatures (CHR-06, docs/design/enemy-animation.md): each of the six enemies and the Lamp-Keeper
+    /// has its sheets packed at the game's density with the clips its family's moves ask for, a model sheet in the
+    /// docs, its material resting on the idle strip, and the rooms carry the animator.
+    /// </summary>
+    public class EnemySheetTests
+    {
+        const string Art = "Assets/_Project/Art/Characters/";
+        const string Materials = "Assets/_Project/Art/Materials/";
+        const string Scenes = "Assets/_Project/Scenes/Greybox/";
+
+        // creature, its material, the clips its Enemy.Clip can name
+        static readonly (string name, string mat, string[] clips)[] Creatures =
+        {
+            ("MarshCrab", "M_Enemy_MarshCrab", new[] { "idle", "move", "hop", "hurt", "death" }),
+            ("ReedSkimmer", "M_Enemy_ReedSkimmer", new[] { "idle", "move", "rise", "dive", "hurt", "death" }),
+            ("Smudge", "M_Enemy_Smudge", new[] { "idle", "move", "hurt", "death" }),
+            ("Cantor", "M_Enemy_Cantor", new[] { "idle", "move", "ring", "recover", "hurt", "death" }),
+            ("Warden", "M_Enemy_Warden", new[] { "idle", "move", "measure", "telegraph", "thrust", "recover", "hurt", "death" }),
+            ("LostRemnant", null, new[] { "idle", "move", "hurt", "death" }),
+            ("LampKeeper", "M_Boss_LampKeeper", new[] { "idle", "telegraph", "beam", "dive", "grounded", "return", "hurt", "death" }),
+            // Emberdown's (CMB-09, enemy-animation.md 2b)
+            ("CaveBat", "M_Enemy_CaveBat", new[] { "idle", "unfurl", "swoop", "move", "hurt", "death" }),
+            ("Salamander", "M_Enemy_Salamander", new[] { "idle", "move", "flare", "rush", "cool", "hurt", "death" }),
+            // The roster's later families (CMB-09, enemy-animation.md 2d)
+            ("Mothcloud", "M_Enemy_Mothcloud", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
+            ("Pulpwasp", "M_Enemy_Pulpwasp", new[] { "idle", "move", "spit", "hurt", "death" }),
+            ("Sketch", "M_Enemy_Sketch", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
+            ("Tussock", "M_Enemy_Tussock", new[] { "idle", "ridge", "heave", "breach", "burrow", "hurt", "death" }),
+            ("Reedling", "M_Enemy_Reedling", new[] { "idle", "move", "peck", "lunge", "hurt", "death" }),
+            // and their regions' looks (2e)
+            ("Mothcloud_Ash", "M_Enemy_Mothcloud_Ash", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
+            ("Mothcloud_Dust", "M_Enemy_Mothcloud_Dust", new[] { "idle", "move", "flare", "dart", "gather", "hurt", "death" }),
+            ("Pulpwasp_Cinder", "M_Enemy_Pulpwasp_Cinder", new[] { "idle", "move", "spit", "hurt", "death" }),
+            ("Pulpwasp_Gall", "M_Enemy_Pulpwasp_Gall", new[] { "idle", "move", "spit", "hurt", "death" }),
+            ("Sketch_Chalk", "M_Enemy_Sketch_Chalk", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
+            ("Sketch_Thin", "M_Enemy_Sketch_Thin", new[] { "idle", "move", "fill", "lunge", "hurt", "death" }),
+        };
+
+        static string MetaGuid(string assetPath) => System.Text.RegularExpressions.Regex.Match(File.ReadAllText(Path.GetFullPath(assetPath + ".meta")), @"guid: ([0-9a-f]+)").Groups[1].Value;
+        static int Uses(string scene, string guid) => File.ReadAllText(Path.GetFullPath(Scenes + scene + ".unity")).Split(new[] { guid }, System.StringSplitOptions.None).Length - 1;
+
+        /// <summary>The roster's later families wear their regions (enemy-animation.md 2e): the look's material rests on its own idle strip, and the rooms the plans place them in carry that look.</summary>
+        [Test]
+        public void TheRostersLooksWearTheirRegions()
+        {
+            var ink = Shader.Find("OWSBG/InkSprite");
+            foreach (var look in new[] { "Mothcloud_Ash", "Mothcloud_Dust", "Pulpwasp_Cinder", "Pulpwasp_Gall", "Sketch_Chalk", "Sketch_Thin" })
+            {
+                var m = AssetDatabase.LoadAssetAtPath<Material>(Materials + "M_Enemy_" + look + ".mat");
+                Assert.IsNotNull(m, look + "'s material");
+                Assert.AreEqual(ink, m.shader, look);
+                Assert.AreEqual(look + "_idle", m.GetTexture("_BaseMap")?.name, look + " rests on its own idle strip");
+                var family = look.Split('_')[0];
+                Assert.AreEqual(Load(family).cellUnits, Load(look).cellUnits, look + " keeps the family's cell");
+                CollectionAssert.AreEquivalent(Load(family).clips.Select(c => c.name), Load(look).clips.Select(c => c.name), look + " has the family's clips");
+            }
+            Assert.GreaterOrEqual(Uses("Greybox_Greyfold_Cathedral_2", MetaGuid(Materials + "M_Enemy_Mothcloud_Ash.mat")), 1, "ash-moths in the nave");
+            Assert.GreaterOrEqual(Uses("Greybox_Windreach_River_2", MetaGuid(Materials + "M_Enemy_Mothcloud_Dust.mat")), 1, "dust-moths over the riverbed");
+            Assert.GreaterOrEqual(Uses("Greybox_Verdance_Grove_4", MetaGuid(Materials + "M_Enemy_Mothcloud.mat")), 2, "the Lantern Grove's are lantern-moths");
+            Assert.GreaterOrEqual(Uses("Greybox_Emberdown_Chimneys_4", MetaGuid(Materials + "M_Enemy_Pulpwasp_Cinder.mat")), 1, "a cinder-wasp over the flues");
+            Assert.GreaterOrEqual(Uses("Greybox_Verdance_Road_2", MetaGuid(Materials + "M_Enemy_Pulpwasp_Gall.mat")), 1, "a gall-wasp on the old road");
+            Assert.GreaterOrEqual(Uses("Greybox_Halden_Mills_2", MetaGuid(Materials + "M_Enemy_Pulpwasp.mat")), 2, "the mills' are pulp-wasps");
+            Assert.GreaterOrEqual(Uses("Greybox_Blank_Capital_1", MetaGuid(Materials + "M_Enemy_Sketch_Chalk.mat")), 1, "a chalk Sketch in the capital");
+            Assert.GreaterOrEqual(Uses("Greybox_Halden_Lowmarket_1", MetaGuid(Materials + "M_Enemy_Sketch_Thin.mat")), 1, "Lowmarket's thin one");
+            Assert.GreaterOrEqual(Uses("Greybox_Greyfold_Road_1", MetaGuid(Materials + "M_Enemy_Sketch.mat")), 1, "the road's is the Sketch itself");
+        }
+
+        [System.Serializable] class Manifest { public string character; public int ppu, cell; public float cellUnits; public Entry[] clips; }
+        [System.Serializable] class Entry { public string name, file; public int fps, frames; public bool loop; }
+
+        static Manifest Load(string name) => JsonUtility.FromJson<Manifest>(File.ReadAllText(Path.GetFullPath(Art + name + "/" + name.ToLowerInvariant() + ".json")));
+
+        static (int w, int h) PngSize(string path)
+        {
+            using var fs = File.OpenRead(path);
+            var b = new byte[24];
+            Assert.AreEqual(24, fs.Read(b, 0, 24));
+            return ((b[16] << 24) | (b[17] << 16) | (b[18] << 8) | b[19], (b[20] << 24) | (b[21] << 16) | (b[22] << 8) | b[23]);
+        }
+
+        [Test]
+        public void EveryCreatureHasItsClipsPackedAtTheGamesDensity()
+        {
+            foreach (var (name, _, clips) in Creatures)
+            {
+                var m = Load(name);
+                Assert.AreEqual(name, m.character);
+                Assert.AreEqual(96, m.ppu, name + " at 96 px per unit");
+                Assert.AreEqual(Mathf.RoundToInt(m.cellUnits * 96f), m.cell, name + "'s cell is its units at the density");
+                CollectionAssert.IsSubsetOf(clips, m.clips.Select(c => c.name), name + " has every clip its moves name");
+                foreach (var c in m.clips)
+                {
+                    var path = Path.GetFullPath(Art + name + "/" + c.file);
+                    Assert.IsTrue(File.Exists(path), c.file);
+                    var (w, h) = PngSize(path);
+                    Assert.AreEqual(c.frames * m.cell, w, name + " " + c.name + " is a strip of its frames");
+                    Assert.AreEqual(m.cell, h, name + " " + c.name + " is one frame tall");
+                    Assert.Greater(c.frames, 1, name + " " + c.name + " moves");
+                    Assert.IsTrue(c.fps == 12 || c.fps == 24, name + " " + c.name + " at a drawn rate");
+                }
+                Assert.IsFalse(m.clips.First(c => c.name == "death").loop, name + " dies once");
+                Assert.IsFalse(m.clips.First(c => c.name == "hurt").loop, name + " is hurt once");
+                Assert.IsTrue(m.clips.First(c => c.name == "idle").loop, name + " idles");
+                Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/" + name.ToLowerInvariant() + "-turnaround.png")), name + "'s model sheet");
+            }
+        }
+
+        [Test]
+        public void TheFamiliesKeepTheirSilhouettesSizes()
+        {
+            // Wardens are tall (a lance's reach); the Lamp-Keeper opens her shutters wide; the rest are rounds.
+            Assert.GreaterOrEqual(Load("Warden").cellUnits, 2.5f);
+            Assert.GreaterOrEqual(Load("LampKeeper").cellUnits, 3f);
+            Assert.LessOrEqual(Load("MarshCrab").cellUnits, 1.6f);
+            Assert.LessOrEqual(Load("ReedSkimmer").cellUnits, 1.6f);
+            Assert.LessOrEqual(Load("CaveBat").cellUnits, 1.6f, "the highland's fauna are rounds too");
+            Assert.LessOrEqual(Load("Salamander").cellUnits, 1.6f);
+            Assert.AreEqual(3, Load("CaveBat").clips.First(c => c.name == "unfurl").frames, "the unfurl opens through three frames, sought by the telegraph's progress");
+            Assert.AreEqual(3, Load("Salamander").clips.First(c => c.name == "flare").frames, "the flare stands the embers up through three, likewise");
+            var ring = Load("Cantor").clips.First(c => c.name == "ring");
+            Assert.AreEqual(6, ring.frames, "the bell rises through six frames, sought by the ring's progress");
+        }
+
+        [Test]
+        public void TheRoomsDrawTheirEnemiesFromTheSheets()
+        {
+            var ink = Shader.Find("OWSBG/InkSprite");
+            foreach (var (name, matName, _) in Creatures)
+            {
+                if (matName == null) continue;   // the Remnant is not placed by the greybox yet
+                var mat = AssetDatabase.LoadAssetAtPath<Material>(Materials + matName + ".mat");
+                Assert.IsNotNull(mat, matName);
+                Assert.AreEqual(ink, mat.shader, matName);
+                Assert.AreEqual(name + "_idle", mat.GetTexture("_BaseMap")?.name, matName + " rests on the idle strip");
+            }
+            var animator = AssetDatabase.AssetPathToGUID("Assets/_Project/Code/World/EnemyAnimator.cs");
+            int Uses(string scene) => File.ReadAllText(Path.GetFullPath(Scenes + scene + ".unity")).Split(new[] { animator }, System.StringSplitOptions.None).Length - 1;
+            Assert.GreaterOrEqual(Uses("Greybox_Saltmarrow_A"), 3, "the quay's crab, skimmer and smudge are drawn");
+            Assert.GreaterOrEqual(Uses("Greybox_Saltmarrow_B"), 1, "Merrow's End's Cantor is drawn");
+            Assert.GreaterOrEqual(Uses("Greybox_Saltmarrow_Lighthouse"), 1, "the Lamp-Keeper is drawn");
+            Assert.GreaterOrEqual(Uses("Greybox_Emberdown_Stair_1"), 3, "the foot of the stair's bat and two salamanders are drawn");
+        }
+    }
+}

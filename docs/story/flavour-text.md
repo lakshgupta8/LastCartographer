@@ -190,6 +190,6 @@ is. The code is `Flavour` (Core); the keys are "flavour.<kind>.<id>", harvested 
   `GivenMemoriesTests` checks them.
 - **Zones with no rooms yet** have their notes ready. The atlas shows them once those places are on its page.
 - **Quill upgrades** (DES-10) and **Charter silhouettes** (CHR-05) will want lines when they exist.
-- **Item pickups:** the hidden vellum caches and seed caches say nothing when found. A caption with the purse's line
-  may be enough.
+- ~~**Item pickups.**~~ The first iris seed and the first vellum scrap each show their purse's line as a caption, once
+  (`Flavour.ForCurrency`, `Flavour.SeenKey`; `IrisSeed`, `Gauntlet.Finish`); the rest say nothing.
 - **The environmental plants** (NAR-15) are room dressing, not text, and aren't in this pass.

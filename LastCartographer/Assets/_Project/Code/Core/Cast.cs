@@ -101,7 +101,8 @@ namespace OWSBG.Core
 
             Member("sable", "Sable", "cormorant", "the Ferrymen", "prices", "ends the conversation first", "\"I hope\"");
             At("sable", Act1, "Saltmarrow.Quay", "the quay: the Guild's haste, the board, the reed, the whale, the widow, the shop, Halvard, Aury", "Quay_Sable", staged: true, writes: "saltmarrow.sable.*, saltmarrow.bone_bridge.heard, saltmarrow.widow.decided");
-            At("sable", Act1, "Saltmarrow.BoneBridge", "the whale's step: she rows Wren under and does not sing along", "BoneBridge_Sable", writes: "saltmarrow.bone_bridge.rowed");
+            At("sable", Act1, "Saltmarrow.BoneBridge", "the whale's step: she rows Wren under and does not sing along", "BoneBridge_Sable", staged: true, writes: "saltmarrow.bone_bridge.rowed");
+            At("sable", Act2, "Windreach.DryRiver", "rowed north from the quay: the Ferrymen's hulls on their sides; she counts the boats that never came back, aloud", "River_Sable", staged: true, writes: "sable.hulls_counted, sable.boat_at");
             At("sable", Act2, "Saltmarrow.LanternChain", "the tether to the third lighthouse; she rows it herself", "Chain_Sable_Tether", staged: true, writes: "sable.tether_sold, saltmarrow.tether");
             At("sable", Act3, "Blank.AurysLighthouse", "sits with Aury; talks prices; does not tell him", "Aury_Sable", staged: true, writes: "sable.aury_told, blank.aury.knows");
             At("sable", Epilogue, "Saltmarrow.Quay", "prices, by ending", "Epilogue_Sable", staged: true);
@@ -112,7 +113,10 @@ namespace OWSBG.Core
             At("runa", Act1, "Emberdown.Overlook", "the Greyfold from the north (plant 4.6)", "Overlook_Runa", staged: true, writes: "emberdown.overlook.seen");
             At("runa", Act1, "Emberdown.CinderBaths", "the debate: she sings the surveyor's numbers back", "Baths_Runa_Debate", staged: true, writes: "emberdown.debate.heard");
             At("runa", Act1, "Emberdown.Hollowvein", "the long roll-call down, or leave it buried", "Hollowvein_Runa_Walk", staged: true, writes: "emberdown.hollowvein.walked / .buried");
-            At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place", "Bell_Runa_Named", staged: true, writes: "runa.named_wren");
+            At("runa", Act1, "Emberdown.Hollowvein", "down the long roll-call ahead of Wren, a line in each room for the verse below", "Hollowvein_Runa_Down", staged: true);
+            At("runa", Act1, "Emberdown.Hollowvein", "at the bottom, walked: thirty-one came up, and the stone that hums is Wren's", "Hollowvein_Runa_After", staged: true, writes: "emberdown.hollowvein.walked, keystone.hollowvein");
+            At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place; asked to the coast", "Bell_Runa_Named", staged: true, writes: "runa.named_wren, emberdown.runa.asked_for_merrow");
+            At("runa", Act2, "Saltmarrow.MerrowsEnd", "comes to count a fish village: teaches and leads the walk, or puts Merrow's End in the roll-call", "Merrow_Runa", staged: true, writes: "saltmarrow.runa.came / .counted_merrow");
             At("runa", Act3, "Halden.Observatory", "the true ending's chorus: she leads the roll-call round the Blank", "Observatory_Runa_Chorus", staged: true, writes: "ending.chorus_led");
             At("runa", Epilogue, "Emberdown.KettilsRest", "the epilogue, by ending", "Epilogue_Runa", staged: true);
 
@@ -122,6 +126,7 @@ namespace OWSBG.Core
             At("teodor", Act1, "Verdance.LanternGrove", "the vigil: eleven names, no choices", "Grove_Teodor_Vigil", staged: true, writes: "verdance.grove.vigil");
             At("teodor", Act1, "Verdance.SunkenLibrary", "Ansel's page: he will not turn it for you", "Library_Teodor_Ansel", staged: true, writes: "verdance.library.teodor_asked");
             At("teodor", Act1, "Verdance.Aldermere", "the last day: attend, or stop it", "Aldermere_Teodor", staged: true, writes: "verdance.aldermere.attended / .stopped");
+            At("teodor", Act1, "Verdance.Aldermere", "after the last day, attended: he sits at dusk with them in the ash field", "Aldermere_Ash_Teodor", staged: true, writes: "verdance.aldermere.ash_sat");
             At("teodor", Act2, "Verdance.QuietHouse", "the keystone: say why", "QuietHouse_Teodor_Keystone", staged: true, writes: "teodor.keystone_given / teodor.refused");
             At("teodor", Act3, "Halden.Observatory", "the Unwritten: he dissolves the keystones, naming their places", "Observatory_Teodor_Unwritten", staged: true, writes: "ending.unwritten");
             At("teodor", Epilogue, "Verdance.QuietHouse", "the epilogue, by ending", "Epilogue_Teodor", staged: true);
@@ -143,6 +148,7 @@ namespace OWSBG.Core
 
             Member("halvard", "Warden-Sergeant Halvard", "heron", "Meridian Guild", "paces and counts", "enters silence as a plea", "her first name");
             At("halvard", Act1, "Saltmarrow.LanternChain", "the first hunt: three paces, the count, unlicensed (staged in the fourth lighthouse; the bible's Salt Chapel)", "Lighthouse_Halvard_Hunt", staged: true, writes: "act1.halvard_met, act1.unlicensed");
+            At("halvard", Act1, "Saltmarrow.SaltChapel", "after the first hunt: he withdraws by the altar, and says it is withdrawing", "Chapel_Halvard_After", staged: true, writes: "saltmarrow.chapel.halvard_spoke");
             At("halvard", Act2, "Halden.SevenBridges", "the second hunt, new kit", "Bridges_Halvard_Hunt", staged: true, writes: "act2.halvard_second");
             At("halvard", Act2, "Greyfold.Threshold", "the third, beside Voss", "Threshold_Halvard", staged: true, writes: "act2.halvard_third");
 

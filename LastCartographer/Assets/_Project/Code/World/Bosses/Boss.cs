@@ -113,6 +113,7 @@ namespace OWSBG.World
             Body.gravityScale = 0f;
             CaptureStart();
             ApplyTunedHealth();
+            if (Bodiless && Visual != null) Visual.enabled = false;
         }
 
         /// <summary>Health from the tuning table (CMB-19) when the boss stands on a sheet the table knows.</summary>
@@ -141,6 +142,58 @@ namespace OWSBG.World
             _phaseLines = sheet.Lines;
             ApplyTunedHealth();
         }
+
+        // ---- the drawings of a fight's pieces (CHR-10, docs/design/boss-animation.md) ------------------------------------
+
+        /// <summary>Sheets for one kind of piece the fight makes at run time (a dove, a rope, the fist), by the name the kit asks for.</summary>
+        [Serializable]
+        public sealed class PartSkin
+        {
+            public string Name;
+            public float CellUnits = 2f;
+            public List<SheetClip> Clips = new List<SheetClip>();
+        }
+
+        [SerializeField] List<PartSkin> _partSkins = new List<PartSkin>();
+
+        /// <summary>The part sheets this kit can wear (Art/Characters/[name]/); the setup loads the ones that exist.</summary>
+        public virtual IEnumerable<string> PartSkinNames { get { yield break; } }
+        /// <summary>The body is not the drawing (the Choir is its doves): its sprite stays hidden.</summary>
+        protected virtual bool Bodiless => false;
+        public IReadOnlyList<PartSkin> PartSkins => _partSkins;
+
+        /// <summary>Editor setup and tests: carry a skin for the parts named <paramref name="name"/>.</summary>
+        public void AddPartSkin(string name, float cellUnits, IEnumerable<SheetClip> clips)
+        {
+            _partSkins.RemoveAll(s => s.Name == name);
+            _partSkins.Add(new PartSkin { Name = name, CellUnits = cellUnits, Clips = new List<SheetClip>(clips) });
+        }
+
+        public PartSkin FindSkin(string name)
+        {
+            foreach (var s in _partSkins) if (s.Name == name && s.Clips != null && s.Clips.Count > 0) return s;
+            return null;
+        }
+
+        /// <summary>Dress a part in a skin by name when the kit carries it; without it the part keeps its block.</summary>
+        protected bool Skin(BossPart part, string skin, string clip = "idle", bool bottomAtFloor = false, float floorY = 0f, float wash = 0f, float lineFade = 0f)
+        {
+            var s = FindSkin(skin);
+            if (s == null || part == null) return false;
+            part.Dress(s.Clips, s.CellUnits, clip, bottomAtFloor, floorY, wash, lineFade);
+            return part.IsDressed;
+        }
+
+        /// <summary>Dress a plain prop (a lamp, a stone) the same way; its state is then a clip through <see cref="BossPart.Show"/>.</summary>
+        protected bool SkinProp(Transform prop, string skin, string clip = "idle")
+        {
+            var s = FindSkin(skin);
+            if (s == null || prop == null) return false;
+            return BossPart.DressProp(prop, s.Clips, s.CellUnits, clip) != null;
+        }
+
+        /// <summary>How far through a telegraph being played, 0..1, for a clip sought by it.</summary>
+        protected float TelegraphProgress(int frames) => TelegraphLeft <= 0 ? 1f : 1f - Mathf.Clamp01((float)TelegraphLeft / Mathf.Max(1, Read(frames)));
 
         public enum Contact { None, Landed, Parried }
         readonly Collider2D[] _wrenOverlaps = new Collider2D[4];
@@ -183,6 +236,39 @@ namespace OWSBG.World
         public static bool IsDownStrike(in HitInfo hit) => hit.Direction.y < -0.5f;
         public static bool IsUpStrike(in HitInfo hit) => hit.Direction.y > 0.5f;
 
+        // ---- a fight's light (ENV-10, docs/design/lighting.md) ------------------------------------------------------------
+
+        Light _glow;
+
+        /// <summary>The boss's own light, made the first time it is asked for: a point light, no shadows, off until SetGlow.</summary>
+        public Light GlowLight { get { return _glow; } }
+
+        protected Light Glow(Color colour, float range)
+        {
+            if (_glow != null) return _glow;
+            var go = new GameObject("Glow");
+            go.transform.SetParent(transform, false);
+            go.transform.localPosition = new Vector3(0f, 0f, -0.9f);
+            _glow = go.AddComponent<Light>();
+            _glow.type = LightType.Point;
+            _glow.color = colour;
+            _glow.range = range;
+            _glow.shadows = LightShadows.None;
+            _glow.intensity = 0f;
+            _glow.enabled = false;
+            return _glow;
+        }
+
+        /// <summary>How bright the boss's light is now (0 puts it out), and where it sits in the world if not on the body.</summary>
+        protected void SetGlow(float intensity, Vector3? worldPosition = null)
+        {
+            if (_glow == null) return;
+            bool on = intensity > 0.001f;
+            if (_glow.enabled != on) _glow.enabled = on;
+            _glow.intensity = intensity;
+            if (worldPosition.HasValue) _glow.transform.position = worldPosition.Value + new Vector3(0f, 0f, -0.9f);
+        }
+
         /// <summary>Called by the arena when the doors close.</summary>
         public void BeginFight()
         {
@@ -216,12 +302,16 @@ namespace OWSBG.World
         }
 
         /// <summary>Subclasses call this from Tick each frame; returns true once the wind-up has finished.</summary>
+        /// <summary>The kind of the attack being telegraphed, for its tell; bosses with slams, windows or shapes say which.</summary>
+        protected virtual AttackKind TelegraphKind => AttackKind.Strike;
+
         protected bool Telegraph(ref bool started, int frames)
         {
             if (!started)
             {
                 started = true;
                 TelegraphLeft = Mathf.Max(frames, MinTelegraphFrames);
+                Tell(TelegraphKind);
                 return false;
             }
             if (TelegraphLeft > 0) { TelegraphLeft--; return TelegraphLeft == 0; }

@@ -7,16 +7,16 @@ title: Bridges_Halvard_Hunt
 <<if has_flag("boss.halvard_2.defeated")>>
     <<stop>>
 <<endif>>
-Halvard: Journeyman. Four paces, now. I said I'd measured you. #line:0864e50
-Halvard: The bridge is Guild property. So is the fall. I've a new lance for it. #line:0cdba4d
+Halvard: Journeyman. Four paces, now. I said I'd measured you. #face:wary #line:0864e50
+Halvard: The bridge is Guild property. So is the fall. I've a new lance for it. #face:wary #line:0cdba4d
 -> Still counting, Sergeant? #line:00ef235
-    Halvard: Always. Twice now. There is no third book. #line:01f3bd3
+    Halvard: Always. Twice now. There is no third book. #face:wary #line:01f3bd3
     <<voice surveyor halden>>
 -> Stand aside. I'm going to the Hall. #line:02a503c
-    Halvard: Through me, then. The Hall can wait on the count. #line:02f7b22
+    Halvard: Through me, then. The Hall can wait on the count. #face:wary #line:02f7b22
     <<voice warden halden>>
 -> ... #line:00561df
-    Halvard: Entered as a plea. Again. You've a talent for it. #line:07c7489
+    Halvard: Entered as a plea. Again. You've a talent for it. #face:wary #line:07c7489
     <<voice drift halden>>
 <<flag act2.halvard_second 1>>
 ===
@@ -28,33 +28,39 @@ title: Bridges_Family
     <<stop>>
 <<endif>>
 Arden: Under repair. Keep to the left. #line:035ee99
-Arden: We are paid to stand here. My grandmother stood here, and her son. Now us. #line:09c56bb
+Arden: We are paid to stand here. My grandmother stood here, and her son. Now us. #face:grave #line:09c56bb
 Arden: The Bridge Office says the stone is weak. If we step off, it might fall. Nobody has tested it. #line:03e176d
 -> Has anyone looked at the stone? #line:0a1e7ed
-    Arden: Looked? It's under repair. You don't look at a thing under repair. You wait. #line:04b19f1
+    <<voice surveyor halden>>
+    Arden: Looked? It's under repair. You don't look at a thing under repair. You wait. #face:wary #line:04b19f1
 -> Step off. I'll catch you if it goes. #line:0c9f88b
+    <<voice warden halden>>
     Arden: And lose the wage? Forty years of wage? No. Thank you. Kindly meant. #line:09ab359
 -> ... #line:013aee3
-    Arden: Aye. It's peaceful, standing. You'd be surprised. #line:035b2e4
+    <<voice drift halden>>
+    Arden: Aye. It's peaceful, standing. You'd be surprised. #face:bright #line:035b2e4
 <<flag halden.bridge.family_met 1>>
 ===
 
 title: Hall_Tam
 ---
 <<if has_flag("halden.exam.notes_read")>>
-    Tam: Next spring. I feel good about next spring. #still #line:0380e47
+    Tam: Next spring. I feel good about next spring. #still #face:bright #line:0380e47
     <<stop>>
 <<endif>>
 Tam: Wren! You're back. Are you sitting it? Next spring. I'm sitting it next spring. #line:05d8ac8
-Tam: I've got my notes. Eleven books. I start a fresh one each year, to be safe. #line:051e24c
-Tam: Look. The same, see? Every year I get it right. I just need to sit it. #plant:5.1 #line:0dff415
+Tam: I've got my notes. Eleven books. I start a fresh one each year, to be safe. #face:bright #line:051e24c
+Tam: Look. The same, see? Every year I get it right. I just need to sit it. #plant:5.1 #face:bright #line:0dff415
 -> These are identical, Tam. Every page. #line:09ef247
-    Tam: Well, the answers don't change. That's what makes them answers. #line:0316da8
+    <<voice warden halden>>
+    Tam: Well, the answers don't change. That's what makes them answers. #face:bright #line:0316da8
 -> When did you start revising? #line:0f49341
-    Tam: Last autumn. Just last autumn. Time goes quickly in the Hall. #line:033f3c2
+    <<voice surveyor halden>>
+    Tam: Last autumn. Just last autumn. Time goes quickly in the Hall. #face:bright #line:033f3c2
 -> ... #line:0b1cd76
-    Tam: You look tired. Revising? Me too. Always. #line:0eeec60
-Tam: Take a page. For luck. It's all correct. It's the same page anyway. #line:028165e
+    <<voice drift halden>>
+    Tam: You look tired. Revising? Me too. Always. #face:bright #line:0eeec60
+Tam: Take a page. For luck. It's all correct. It's the same page anyway. #face:bright #line:028165e
 <<bind tam.next_spring>>
 <<flag halden.exam.notes_read 1>>
 ===

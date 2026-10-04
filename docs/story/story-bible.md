@@ -169,6 +169,7 @@ Aurenne is one connected space. Each region is a large interlinked area with sub
 - **Sub-zones:** the Root Chapel; the Lantern Grove; the Sunken Library (an anchored library where one monk has read the same page for 38 years); the Old Road; the Overgrown Gate; **Aldermere** (a village the Unwriters un-anchored because its people asked; the player arrives on its last day).
 - **Ability:** **Inkthread**, taught by Teodor: the Unwriters' solvent-lines, reversed.
 - **Keystone:** Teodor has it. He gives it up only if Wren can honestly say why he did what he did (a dialogue check on choices made in Aldermere, not a stat).
+- **The tenth village:** the one Teodor un-anchored himself was his own. His mother, held still at seventy for four years, asked him to, and he has never been sure she meant it. He does not say which of the eleven it was; Brother Ansel was its schoolmaster (character-bibles.md §4).
 - **Regional decision:** Aldermere: attend the last day, or try to stop it (boss 6.6, the Choir).
 
 ### 4.4 Halden Reach (the Plateau)

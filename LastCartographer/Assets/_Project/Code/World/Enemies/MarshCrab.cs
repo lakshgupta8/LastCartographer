@@ -25,6 +25,7 @@ namespace OWSBG.World
         }
 
         protected override bool AcceptsHit(in HitInfo hit) => hit.Direction.y < -0.5f;
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : !_grounded ? "hop" : base.Clip;
 
         protected override void Tick(float dt)
         {
@@ -43,6 +44,7 @@ namespace OWSBG.World
                         Face(toWren.x >= 0f ? 1 : -1);
                         Body.linearVelocity = new Vector2(Facing * _walkSpeed * 1.5f, _hopVelocity);
                         _hopT = 0f;
+                        Tell(AttackKind.Strike);   // the hop is its telegraph (AUD-10)
                         return;
                     }
                 }

@@ -10,41 +10,43 @@
 title: Capital_Corra
 ---
 <<if not has_flag("boss.corras_drawing.defeated")>>
-    Corra: That's my father. He's coming. Don't. #still #line:08a4c92
+    Corra: That's my father. He's coming. Don't. #still #face:wary #line:08a4c92
     <<stop>>
 <<endif>>
 <<if has_flag("corra.decided")>>
     <<if has_flag("corra.memory_carried")>>
-        Corra: Did you give it him yet? He'll say it's the wrong size. It isn't. #still #line:099d12f
+        Corra: Did you give it him yet? He'll say it's the wrong size. It isn't. #still #face:asking #line:099d12f
     <<else>>
-        Corra: I'm drawing him again. Smaller this time. So he fits through the door. #still #line:0161951
+        Corra: I'm drawing him again. Smaller this time. So he fits through the door. #still #face:grave #line:0161951
     <<endif>>
     <<stop>>
 <<endif>>
-Corra: I drew him bigger. He was bigger. #line:0448105
-Corra: He's the Guildmaster now. I know. I drew that too. He doesn't come in. #reveal:5.5 #line:0ad196d
+Corra: I drew him bigger. He was bigger. #face:grave #line:0448105
+Corra: He's the Guildmaster now. I know. I drew that too. He doesn't come in. #reveal:5.5 #face:grave #line:0ad196d
 Corra: Is that him? Behind you? Is he here? #line:06fb921
 -> Let me carry this to him. #line:08db476
     <<voice warden blank>>
     <<jump Capital_Corra_Carry>>
 -> What's his name? #line:0241c5d
-    Corra: Papa. And Aurelian, when he's in trouble. #callback:5.5 #line:0f51ea1
-    Corra: Will you take him this? It's a small one. The big one's for keeping people out. #line:0770867
+    Corra: Papa. And Aurelian, when he's in trouble. #callback:5.5 #face:bright #line:0f51ea1
+    Corra: Will you take him this? It's a small one. The big one's for keeping people out. #face:asking #line:0770867
     <<voice surveyor blank>>
     -> Yes. I'll take it. #line:01f46c1
+        <<voice warden blank>>
         <<jump Capital_Corra_Carry>>
     -> Not yet. #line:0b95001
-        Corra: Then I'll keep drawing. I've got lots of paper. It's all paper here. #line:0d80cef
+        <<voice surveyor blank>>
+        Corra: Then I'll keep drawing. I've got lots of paper. It's all paper here. #face:grave #line:0d80cef
 -> ... #line:011f622
-    Corra: You're like him. He doesn't talk either. #line:002d1ac
+    Corra: You're like him. He doesn't talk either. #face:grave #line:002d1ac
     <<voice drift blank>>
 <<flag corra.decided 1>>
 ===
 
 title: Capital_Corra_Carry
 ---
-Corra: Here. The small one. It's the right size. #line:067d85a
-Corra: Tell him I kept drawing. Tell him the crayon ran out and I did it in outline. #line:0c957c3
+Corra: Here. The small one. It's the right size. #face:bright #line:067d85a
+Corra: Tell him I kept drawing. Tell him the crayon ran out and I did it in outline. #face:grave #line:0c957c3
 <<flag corra.memory_carried 1>>
 <<flag corra.decided 1>>
 ===
@@ -55,20 +57,21 @@ title: Capital_Corvin
     <<jump Capital_Corvin_After>>
 <<endif>>
 <<if has_flag("capital.corvin.spoken")>>
-    Corvin: When I— sit. The chair is still there. It will be there after, too. #still #line:0e8a184
+    Corvin: When I— sit. The chair is still there. It will be there after, too. #still #face:grave #line:0e8a184
     <<stop>>
 <<endif>>
-Corvin: When I— granddaughter. Sit. I have drawn you a chair. #reveal:5.4 #line:07b2ab1
-Corvin: The night it broke, I walked in looking for my wife and my daughter. #line:06de41d
-Corvin: I held on so hard the Hollow went under with me. Ilse's village. Yours. #line:0a77e3e
+Corvin: When I— granddaughter. Sit. I have drawn you a chair. #reveal:5.4 #face:bright #line:07b2ab1
+Corvin: The night it broke, I walked in looking for my wife and my daughter. #face:grave #line:06de41d
+Corvin: I held on so hard the Hollow went under with me. Ilse's village. Yours. #face:grave #line:0a77e3e
 Corvin: Halloway. It's yours. Isolde gave it to you so you could come and ask me for it. #line:0c38a1c
 Corvin: And the sky. When I— the sky was in the Atlas, like everything else. #line:0699ef1
-Corvin: When it broke, you forgot it. Nobody lost their wings. They lost the memory of them. #reveal:5.6 #line:0e26bc8
+Corvin: When it broke, you forgot it. Nobody lost their wings. They lost the memory of them. #reveal:5.6 #face:grave #line:0e26bc8
 Corvin: It comes back through you. Both worlds. That is why the old flight finds you, piece by piece. #line:0332b7b
-Corvin: Seven stones and the Atlas is whole. Nothing fades. The sky stays held, safe, for everyone. #line:03f700f
-Corvin: Or give them back, and hope. I have hoped for forty-one years. It is overrated. #line:002f4f7
+Corvin: Seven stones and the Atlas is whole. Nothing fades. The sky stays held, safe, for everyone. #face:bright #line:03f700f
+<<sing archivist>>
+Corvin: Or give them back, and hope. I have hoped for forty-one years. It is overrated. #face:wary #line:002f4f7
 -> Finish the Survey with you. #line:08aafef
-    Corvin: Good. Good. Bring them to the frame. I will show you where each one sits. #line:0ca2ce4
+    Corvin: Good. Good. Bring them to the frame. I will show you where each one sits. #face:bright #line:0ca2ce4
     <<flag corvin.stance 1>>
     <<voice warden blank>>
 -> Give them back. All of them. #line:0336357
@@ -82,49 +85,61 @@ Corvin: Or give them back, and hope. I have hoped for forty-one years. It is ove
 
 title: Capital_Corvin_Argue
 ---
-Corvin: Give them back? When I— Ilse fades. Do you want your mother to fade? #line:0b8c8bc
+Corvin: Give them back? When I— Ilse fades. Do you want your mother to fade? #face:wary #line:0b8c8bc
 -> She let me go. She'd let this go. <<if has_flag("blank.ilse.heard")>> #line:0d8b46d
-    Corvin: She would. She did. She let me go too, and I didn't let her. #line:038963d
+    <<voice drift blank>>
+    Corvin: She would. She did. She let me go too, and I didn't let her. #face:grave #line:038963d
     <<flag corvin.argued_ilse 1>>
 -> She's already faded. #line:0e0457b
-    Corvin: So she has. And you'd leave her so. Hm. #line:0a06c58
+    <<voice surveyor blank>>
+    Corvin: So she has. And you'd leave her so. Hm. #face:wary #line:0a06c58
 -> ... #line:08057ab
-    Corvin: Silence is not an answer, granddaughter. It is a chair. #line:0da24ce
-Corvin: The Hollow went under because I held. And you would have me hold nothing? #line:0c46286
+    <<voice drift blank>>
+    Corvin: Silence is not an answer, granddaughter. It is a chair. #face:wary #line:0da24ce
+Corvin: The Hollow went under because I held. And you would have me hold nothing? #face:wary #line:0c46286
 -> You held alone. That pulled it under. #line:090f081
-    Corvin: Alone. When I— yes. There was nobody else walking it. Nobody singing. #line:02351f4
+    <<voice surveyor blank>>
+    Corvin: Alone. When I— yes. There was nobody else walking it. Nobody singing. #face:grave #line:02351f4
     <<flag corvin.argued_alone 1>>
 -> Then hold everything. #line:0da2c70
-    Corvin: That is my argument, not yours. Try again, later. #line:0a70fb1
+    <<voice warden blank>>
+    Corvin: That is my argument, not yours. Try again, later. #face:wary #line:0a70fb1
 -> You couldn't have known. #line:01d9273
-    Corvin: Don't. Somebody has to have done it. It was me. #line:024d82f
-Corvin: And the sky? Break the frame and it scatters. Nobody holds it whole again. #line:0a2c2cb
+    <<voice drift blank>>
+    Corvin: Don't. Somebody has to have done it. It was me. #face:grave #line:024d82f
+Corvin: And the sky? Break the frame and it scatters. Nobody holds it whole again. #face:wary #line:0a2c2cb
 -> It came back to me. Not the Atlas. <<if has_flag("windreach.leap.done")>> #line:0b64759
-    Corvin: At the Wind Gate. I heard. The whole Steppe heard. Forty years, and then you. #line:0702f18
+    <<voice surveyor blank>>
+    Corvin: At the Wind Gate. I heard. The whole Steppe heard. Forty years, and then you. #face:bright #line:0702f18
     <<flag corvin.argued_sky 1>>
 -> Then let it scatter. #line:078b10b
-    Corvin: You say it so lightly. You've flown. #line:08b986f
+    <<voice drift blank>>
+    Corvin: You say it so lightly. You've flown. #face:wary #line:08b986f
 -> ... #line:0036742
-    Corvin: Hm. #line:0040d49
+    <<voice drift blank>>
+    Corvin: Hm. #face:wary #line:0040d49
 <<if has_flag("corvin.argued_ilse") and has_flag("corvin.argued_alone") and has_flag("corvin.argued_sky")>>
-    Corvin: When I— you are young, and you might be right. I am old. Show me. #line:0e7f2a9
+    Corvin: When I— you are young, and you might be right. I am old. Show me. #face:grave #line:0e7f2a9
     <<flag corvin.stance 2>>
 <<elseif can_offer("archivist", "isolde.first_sight")>>
-    Corvin: No. You are young, and you are wrong. When I— you carry something of hers. #line:0f48caf
-    Corvin: The first time she saw you. Give it to me. Let me see what she saw. #line:096f7c4
+    Corvin: No. You are young, and you are wrong. When I— you carry something of hers. #face:wary #line:0f48caf
+    Corvin: The first time she saw you. Give it to me. Let me see what she saw. #face:asking #line:096f7c4
     -> Take it. Look at me. Only at me. #line:0ffdbc1
+        <<voice warden blank>>
         <<offer archivist isolde.first_sight>>
-        Corvin: When I— a child at the edge of the white. Looking straight at her. Oh. #line:00a8376
-        Corvin: You are young, and you might be right. I am old. Show me. #line:0993981
+        Corvin: When I— a child at the edge of the white. Looking straight at her. Oh. #face:grave #line:00a8376
+        Corvin: You are young, and you might be right. I am old. Show me. #face:grave #line:0993981
         <<flag corvin.stance 2>>
     -> It's mine. She gave it to me. #line:0000fce
-        Corvin: Then keep it. Somebody should. No. Sit. I love you. #line:0c1d882
+        <<voice surveyor blank>>
+        Corvin: Then keep it. Somebody should. No. Sit. I love you. #face:grave #line:0c1d882
         <<flag corvin.stance 3>>
     -> ... #line:0326d66
-        Corvin: Silence, and you keep it. The chair, then. Sit. #line:0c5839a
+        <<voice drift blank>>
+        Corvin: Silence, and you keep it. The chair, then. Sit. #face:grave #line:0c5839a
         <<flag corvin.stance 3>>
 <<else>>
-    Corvin: No. You are young, and you are wrong, and I love you. Sit. #line:023f34e
+    Corvin: No. You are young, and you are wrong, and I love you. Sit. #face:grave #line:023f34e
     <<flag corvin.stance 3>>
 <<endif>>
 <<flag capital.corvin.spoken 1>>
@@ -133,30 +148,33 @@ Corvin: And the sky? Break the frame and it scatters. Nobody holds it whole agai
 title: Capital_Corvin_After
 ---
 <<if has_flag("capital.corvin.after")>>
-    Corvin: Back? The chair is still here. Go on, then. Say it. #line:0c6c275
+    Corvin: Back? The chair is still here. Go on, then. Say it. #face:asking #line:0c6c275
     -> Let's finish your Survey. <<if flag("corvin.stance") != 1>> #line:030323d
-        Corvin: Good. Good. Bring them to the frame. #line:033ad88
+        <<voice warden blank>>
+        Corvin: Good. Good. Bring them to the frame. #face:bright #line:033ad88
         <<flag corvin.stance 1>>
     -> Hear me out again. <<if flag("corvin.stance") != 2>> #line:0115589
+        <<voice surveyor blank>>
         <<jump Capital_Corvin_Argue>>
     -> I'll sit. I'll draw with you. <<if ending_open("rest")>> #line:06da95d
+        <<voice drift blank>>
         <<jump Ending_Rest>>
     <<stop>>
 <<endif>>
-Corvin: Then draw it better than I did. Go on. #line:06cc429
+Corvin: Then draw it better than I did. Go on. #face:grave #line:06cc429
 <<if keystones() == 0>>
     Corvin: You carry none. Nobody's stones at all. Then there is a third way. #line:0030486
-    Corvin: Stay. Sit in the chair. Draw with me. Nobody will hold you to anything. #line:059ef79
+    Corvin: Stay. Sit in the chair. Draw with me. Nobody will hold you to anything. #face:bright #line:059ef79
     <<flag ending.rest_offered 1>>
     -> Keep your stone. I'll think. #line:0c1bb4a
-        Corvin: Thinking is allowed. The chair is good for it. #line:0ccf293
+        Corvin: Thinking is allowed. The chair is good for it. #face:bright #line:0ccf293
         <<voice drift blank>>
     -> Give it to me. #line:0607af7
-        Corvin: The seventh. Heavier than it looks. They all are. #line:0008744
+        Corvin: The seventh. Heavier than it looks. They all are. #face:grave #line:0008744
         <<flag keystone.archivist 1>>
         <<voice warden blank>>
 <<else>>
-    Corvin: The seventh. Take it. Whatever you mean to do with it. Heavier than it looks. #line:0ff5881
+    Corvin: The seventh. Take it. Whatever you mean to do with it. Heavier than it looks. #face:grave #line:0ff5881
     <<flag keystone.archivist 1>>
 <<endif>>
 <<flag capital.corvin.after 1>>
@@ -165,10 +183,10 @@ Corvin: Then draw it better than I did. Go on. #line:06cc429
 title: Ending_Rest
 ---
 // The Cartographer's Rest (bible 9.4, secret): zero anchors, zero stones, and the chair. Isolde goes free in trade.
-Corvin: Sit. The chair is yours. I drew it before you were born. #line:0d95fe4
+Corvin: Sit. The chair is yours. I drew it before you were born. #face:bright #line:0d95fe4
 Corvin: Isolde can go. I'll have the white let go of her. That's the trade, if you like. #line:0228c30
 Mirror: She sits in the mirror-Observatory and draws. Corvin draws beside her. #line:0c76c01
-Corvin: When I— no. Nothing. Draw. #line:0490017
+Corvin: When I— no. Nothing. Draw. #face:grave #line:0490017
 <<flag ending.chosen 4>>
 <<flag ending.rest 1>>
 <<epilogue>>
@@ -184,9 +202,9 @@ title: Capital_Marrow_Word
     Lantern: The grey chick looks up at the mirror-dome and says nothing. #still #line:0b6c82b
     <<stop>>
 <<endif>>
-Corvin: When I— I held it. I held all of it. Nothing was lost. #line:0dcf39b
+Corvin: When I— I held it. I held all of it. Nothing was lost. #face:wary #line:0dcf39b
 Marrow: Nothing was lost. #echo:corvin #line:0842c49
-Corvin: You see? Even the child. #line:0e95dac
+Corvin: You see? Even the child. #face:bright #line:0e95dac
 Marrow: Lost. #echo:corvin #line:0c28f3f
 Marrow: Up. #line:0c4d954
 <<flag marrow.words 2>>

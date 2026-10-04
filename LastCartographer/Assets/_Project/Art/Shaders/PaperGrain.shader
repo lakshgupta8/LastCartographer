@@ -43,6 +43,7 @@ Shader "OWSBG/FullScreen/PaperGrain"
             float _OWSBG_Lantern;          // global: how much the room is drawn round her lantern (ClarityMeter)
             float4 _OWSBG_LanternCentre;   // global: her centre (viewport x, y), the radius in viewport heights, the aspect
             float _OWSBG_Contrast;         // global: 1 when the player draws in high-contrast ink (Options, DES-14)
+            float4 _OWSBG_RegionTint;      // global: the region's paper tint (rgb) and how much of it (w) (RegionLighting, ENV-10)
 
             half Luma(half3 c) { return dot(c, half3(0.299h, 0.587h, 0.114h)); }
 
@@ -104,6 +105,7 @@ Shader "OWSBG/FullScreen/PaperGrain"
                 half amount = _Strength * (0.35h + 0.65h * lum) * (1.0h - 0.85h * contrast);   // grain is noise: little of it in high contrast
                 col.rgb += grain * amount + fibre * _Fibre * lum * (1.0h - contrast);
                 col.rgb = lerp(col.rgb, col.rgb * _PaperTint.rgb, _TintAmount);
+                col.rgb = lerp(col.rgb, col.rgb * _OWSBG_RegionTint.rgb, saturate(_OWSBG_RegionTint.w));   // the region's light on the paper (ENV-10)
                 // Anchored: the colour grade locks. Desaturate a third and cast toward brass-blue.
                 half3 locked = lerp(lum.xxx, col.rgb, 0.65h) * half3(0.93h, 0.97h, 1.05h);
                 col.rgb = lerp(col.rgb, locked, saturate(_OWSBG_Held));

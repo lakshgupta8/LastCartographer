@@ -59,7 +59,9 @@ Corvin's are written in NAR-12 and NAR-14.
 - **Marrow**: echo only (`#echo:wren`), her chosen words, including silence.
 
 ## 6. Open
-- Both fights (CMB-14); the Threshold rooms; the Blank eating Halvard's arena.
+- Both fights (CMB-14) stand in the built Threshold rooms (ENV-08), each waiting on its speech's flag. The Blank
+  eats Halvard's arena a quarter at phase 2 and half at phase 3, and he stops counting in phase 3 (CMB-12,
+  boss-kits.md 6.3 III).
 - Marrow's name plate reads "…" until Wren names it (character-bibles.md §5); the Yarn speaker is `Marrow`, and the
   UI needs a display-name override.
-- Whether Hale, if he finished, stands among Voss's Wardens (a line for Halvard's scene).
+- ~~Whether Hale, if he finished, stands among Voss's Wardens.~~ Voss says it (`Threshold_Voss`, `windreach.hale.finished`).

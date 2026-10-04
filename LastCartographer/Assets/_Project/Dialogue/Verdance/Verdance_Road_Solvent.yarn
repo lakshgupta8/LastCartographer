@@ -6,26 +6,29 @@ title: Road_Solvent
 ---
 <<if has_flag("verdance.solvent.decided")>>
     <<if flag("verdance.solvent.decided") == 1>>
-        Tobin: The wheel's still. Mother is glad. I am getting used to it. That is the same thing, some days. #still #line:0fa8a35
+        Tobin: The wheel's still. Mother is glad. I am getting used to it. That is the same thing, some days. #still #face:grave #line:0fa8a35
     <<elseif flag("verdance.solvent.decided") == 2>>
-        Tobin: Still turning. Still the same flour. Mother will not speak to me. The wheel does. #still #line:0a9f6cd
+        Tobin: Still turning. Still the same flour. Mother will not speak to me. The wheel does. #still #face:grave #line:0a9f6cd
     <<else>>
-        Tobin: We are still talking about it. Mother and I. First time in years. The wheel can wait. #still #line:0fd481c
+        Tobin: We are still talking about it. Mother and I. First time in years. The wheel can wait. #still #face:bright #line:0fd481c
     <<endif>>
     <<stop>>
 <<endif>>
-Wend: Stand clear, Guild. The mill is being let go. The ledger says it asked. #line:0ecff77
-Tobin: I never asked! Nobody asked me! The wheel turns. It has turned the same for thirty years. That is fine! #line:0ddec3d
-Wend: Your mother asked. She signed for the house. The house is the mill. #line:0e7dcbc
+Wend: Stand clear, Guild. The mill is being let go. The ledger says it asked. #face:wary #line:0ecff77
+Tobin: I never asked! Nobody asked me! The wheel turns. It has turned the same for thirty years. That is fine! #face:wary #line:0ddec3d
+Wend: Your mother asked. She signed for the house. The house is the mill. #face:wary #line:0e7dcbc
 -> Let them do it. #line:0743860
+    <<voice drift verdance>>
     Wend: Thank you. It is a small bell. It will not take long. #line:03ffb77
-    Tobin: Mother. Mother, what did you do. #line:0348de3
+    Tobin: Mother. Mother, what did you do. #face:grave #line:0348de3
     <<flag verdance.solvent.decided 1>>
 -> Stop. He didn't ask. #line:0d3ed7e
-    Wend: Then we are finished here. We do not let go what anyone still holds. Mark that, Guild. #line:059f9e1
+    <<voice warden verdance>>
+    Wend: Then we are finished here. We do not let go what anyone still holds. Mark that, Guild. #face:wary #line:059f9e1
     <<flag verdance.solvent.decided 2>>
 -> Ask his mother. With him there. #line:0ca0d87
-    Wend: That is not how the ledger works. #line:08da8e7
-    Tobin: It is how a family works. Mother? Come down. Please. #line:0703d9e
+    <<voice surveyor verdance>>
+    Wend: That is not how the ledger works. #face:wary #line:08da8e7
+    Tobin: It is how a family works. Mother? Come down. Please. #face:asking #line:0703d9e
     <<flag verdance.solvent.decided 3>>
 ===

@@ -5,7 +5,9 @@ returns Wren to the last solid ground for a mask, never a full death. Six gauntl
 Blank. The Blank's traversal is the drift between islands and Clarity (PRG-18), not a course.
 
 The data is `Gauntlets` (Core). The greybox is `GauntletKits` (World), which builds each one to a recipe. The rooms
-are `GauntletRooms` (Narrative), built at runtime as scenes named `Gauntlet_<id>` until each region is built.
+are `GauntletRooms` (Narrative), built at runtime as scenes named `Gauntlet_<id>` until each region is built; the
+updrafts' is the first in its built room (ENV-07, `Windreach_Gate_2`): the course is the room's own lip, grass and
+ledge, with the `Gauntlet`, the hazard and the goal added by the recipe (`Gauntlet(id, ...)`).
 Crossing one writes `gauntlet.<id>.done` and pays one vellum scrap, the first time only.
 
 | Gauntlet | Region, room | Built around | The course |
@@ -73,5 +75,6 @@ The gauntlets needed the two movement abilities the controller didn't have yet.
   vents) is next. The numbers test proves they need Talonhold, not that the vents leave a way up.
 - **Thread aim.** The thread goes to the nearest anchor ahead. Aiming with the stick, and a reticle, come with the
   controls art; DES-14 v1 (`accessibility.md`) remaps the Thread button but doesn't aim it.
-- **Real rooms.** Each gauntlet moves into its region's built room; the Lantern Chain's lamp posts could join the
-  built chain now, between the second and third lighthouses.
+- **Real rooms.** The updrafts (ENV-07) and the Road That Stops (ENV-08: `Greyfold_Road_1`, four cobbles her lantern
+  draws over the white, the road's end as the goal) are in their built rooms; the Lantern Chain's lamp posts could join
+  the built chain now, between the second and third lighthouses.

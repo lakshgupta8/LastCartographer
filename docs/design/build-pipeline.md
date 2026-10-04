@@ -16,7 +16,7 @@ point, used by the menu (**OWSBG → Build → Windows**), a headless editor and
    - The game reads the stamp as `BuildInfo` (Core), and the options page shows it at the bottom ("version 0.5.0 ·
      1a2b3c4"), so a bug report can quote it.
    - The checked-in file says `dev`, and the build puts it back afterwards however the build ends.
-3. **Builds the Addressables content.** Every room is a bundle (PRG-07); play mode doesn't need this, a player does.
+3. **Builds the Addressables content.** Every room is a bundle (PRG-07), and the art the rooms share is a second group packed by label (PRG-24); play mode doesn't need this, a player does.
 4. **Builds the player:** 64-bit Windows, Mono, from Build Settings' scenes (only Persistent; the rooms come from the
    bundles). The exe is `LastCartographer.exe`, a name with no spaces for Steam's launch options; the window title
    is still the product name.
@@ -153,6 +153,46 @@ part is the capture itself (a forced render into a texture, two read-backs and a
 each there. The test now times its first capture and reports itself ignored, with the seconds and the device,
 past ten seconds; here a capture takes well under one and the whole test 4 s.
 
+The eleventh run (2026-10-02, after the first pass of every plan row): play mode failed on the same test, in a
+new way. It wrote the first picture inside the ten-second guard and still ran into the three-minute timeout, 292
+seconds in all, so the slow part there is now past the first capture (or before it, in the scene's load: the guard
+timed only the capture). The test now keeps a clock over every step (the scene, each picture) and steps aside past
+sixty seconds in all, naming each step's seconds and the graphics device, so the runner's report says where the
+time went rather than only that it ran out. A `Null` graphics device (`-nographics`) steps aside at once. Here the
+whole test takes two seconds.
+
+The twelfth run (2026-10-02): three play-mode tests that had never run on the runner, all measuring hardware it
+lacks. `LookTests` measures the foreground blur against a sharp render of the Quay's reeds: here a pen edge crosses
+in 0.4 px and the blur spreads it to 4; the runner's software rasteriser draws the sharp edge 2.6 px wide and the
+blurred one 3.3, so the measure has nothing to stand on. The test now steps aside when the sharp render's edge is
+two pixels or wider, naming both widths and the device; the paper-grain check, which does not depend on it, runs
+first. Two of `MusicDriverTests` (AUD-04) measure the stems' timing on the DSP clock: with no audio device the
+runner mixes to nothing and its clock ran ahead of real time (the boss test's bar-line wait ended at once, the test
+took 1.4 s against 4.2 here; stems scheduled on one sample read 3072 samples apart; the resolution's seconds passed
+in a frame). The fixture now measures the DSP clock against the wall clock once, half a second, and those two tests
+step aside when it is off by more than a quarter, naming the rate. The other five, which check levels and buses, still run.
+
+The thirteenth run (2026-10-02): the region handover test, which waits on the coast's bar line, failed the same
+way (its scheduled start was behind a DSP clock reading 232,486 s, two and a half days, twenty minutes into the
+job). It and the boss-layer test, the other two that wait on bar lines or a resolution, now step aside on the same
+measure; the three that check levels and buses still run there.
+
+The fourteenth run (2026-10-02): the ambience crossfade test (AUD-06), whose outgoing layers fade on the DSP clock,
+found them gone at the halfway mark on the same runner. The clock measure is now one helper for every play
+fixture that needs it (`AudioClock`: measured once per run, a test steps aside past a quarter off real time), and
+that test uses it too.
+
+The fifteenth run (2026-10-03) reached the smoke job for the first time since the probe joined it, and the probe
+failed it: transitions of 97–850 ms and a collection in four quiet rooms. The first reading was that the hosted
+runner is not the target machine; the same build then failed the same way here (125–462 ms, collections in three
+rooms), and the cause was the art that had landed since the probe was last run: every room's bundle carried its own
+copies of the sheets, materials and shaders it used, and the audio drivers, the NPC animators and the HUD allocated
+on quiet frames. Both are fixed (`docs/design/performance.md`, "The art's cost"), the probe reports where a
+transition's time goes and who allocates, and it gates CI as before. The same run's play mode found two things the
+Brood's commit had left: its fire was a Shape in its kit while it cost a mask (now a Window, read as the 240 frames
+of a step), and the arena-room tests expected every kit in a planned room where the Brood stands in a built one
+(`ArenaRooms.SceneFor` now names the Iris Fields).
+
 The seventh run: both test jobs green. The Windows build failed at once: `unity-builder@v4` demands
 `UNITY_LICENSE` or `UNITY_SERIAL` before it starts. v6 is a thin wrapper round the same CLI the test runner uses,
 which signs in with the account, so the build job now uses v6. It also passes `-buildOutput` to the folder the
@@ -173,7 +213,8 @@ one error), and `BuildPipelineTests` holds it to the CLI's two patterns. Both te
 - **Two warnings to tidy:** a duplicate `System.Runtime.CompilerServices.Unsafe.dll` (Collections' test copy and
   Yarn Spinner's analyser copy; Unity picks the newer on both machines), and GitHub's notice that the v4 actions
   target Node 20.
-- **Play mode takes about twenty-five minutes on CI**, against nine here; the UI screenshots don't run there.
+- **Play mode takes about twenty-five minutes on CI**, against nine here; the UI screenshots, the blur's measure
+  and the music's four timing tests step aside there (no GPU, no audio device), with their reasons in the report.
 - **No Steamworks SDK in the game** (overlay, achievements, cloud saves) and no store assets; this row only
   packages and uploads. An app id and depot id come with the Steamworks partner account.
 - **Not yet in the pipeline:** code signing, a Mac or Linux build, and IL2CPP.

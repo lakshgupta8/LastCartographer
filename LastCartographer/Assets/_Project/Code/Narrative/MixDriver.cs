@@ -83,9 +83,8 @@ namespace OWSBG.Narrative
         /// <summary>The fade stage of the place the room draws, for the ambience's filter; 0 where nothing is known.</summary>
         public int StageOfRoom()
         {
-            string room = Room;
-            if (string.IsNullOrEmpty(room)) return 0;
-            string place = room.StartsWith(WorldGraph.GreyboxPrefix, System.StringComparison.Ordinal) ? room.Substring(WorldGraph.GreyboxPrefix.Length) : room;
+            string place = Mix.PlaceOf(Room);
+            if (string.IsNullOrEmpty(place)) return 0;
             try { return FadeStages.Get(GameState.World, place); } catch { return 0; }
         }
 

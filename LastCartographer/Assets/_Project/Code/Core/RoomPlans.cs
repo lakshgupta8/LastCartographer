@@ -150,7 +150,7 @@ namespace OWSBG.Core
             R("Emberdown_Chimneys_3", "Emberdown.NineChimneys", "The ninth chimney", "Nobody remembers building it. A Guild agent lives at the top (the Ninth Chimney commission).", "Ninth", "cave-bat", new string[0], true, null, null)
                 .Down("Emberdown_Chimneys_2", Ability.Talonhold)
                 .East("Emberdown_Chimneys_4", Ability.None);
-            R("Emberdown_Chimneys_4", "Emberdown.NineChimneys", "The flue road", "A tunnel of old flues east toward the baths; the heat rises through the floor.", null, "salamander ×2", new string[0], false, null, null)
+            R("Emberdown_Chimneys_4", "Emberdown.NineChimneys", "The flue road", "A tunnel of old flues east toward the baths; the heat rises through the floor.", null, "salamander ×2, pulp-wasp", new string[0], false, null, null)
                 .West("Emberdown_Chimneys_3", Ability.None)
                 .East("Emberdown_Baths_1", Ability.Talonhold);
             R("Emberdown_Baths_1", "Emberdown.CinderBaths", "The steam walk", "Boardwalks over hot pools; steam hides the next hold.", null, "salamander, smudge", new string[0], false, null, null)
@@ -168,21 +168,21 @@ namespace OWSBG.Core
             R("Emberdown_Overlook_2", "Emberdown.Overlook", "The overlook", "First sight of the Greyfold from outside: bigger than it looks. The road down to the Plateau's bridges.", "Overlook", "", new[] { "runa" }, true, null, null)
                 .West("Emberdown_Overlook_1", Ability.None)
                 .East("Halden_Bridges_1", Ability.Talonhold);
-            R("Emberdown_Hollow_1", "Emberdown.Hollowvein", "The adit", "Down from the pit-head behind the boards; the long roll-call starts at its first beam.", null, "", new[] { "runa" }, false, null, "hollowvein")
+            R("Emberdown_Hollow_1", "Emberdown.Hollowvein", "The adit", "Down from the pit-head behind the boards; the long roll-call starts at its first beam: the first verse.", null, "", new[] { "runa" }, false, null, "hollowvein")
                 .Up("Emberdown_Rest_3", Ability.Talonhold, "emberdown.hollowvein_opened")
                 .Down("Emberdown_Hollow_2", Ability.None);
-            R("Emberdown_Hollow_2", "Emberdown.Hollowvein", "The first gallery", "Lamps on the walls, one for each name; the walk's second and third verses.", "Gallery", "smudge ×2", new string[0], false, null, "hollowvein")
+            R("Emberdown_Hollow_2", "Emberdown.Hollowvein", "The first gallery", "Lamps on the walls, one for each name; the walk's second verse.", "Gallery", "smudge ×2", new[] { "runa" }, false, null, "hollowvein")
                 .Up("Emberdown_Hollow_1", Ability.None)
                 .Down("Emberdown_Hollow_3", Ability.None);
-            R("Emberdown_Hollow_3", "Emberdown.Hollowvein", "The flooded gallery", "Black water to the knee; a desk the miners left, still dry.", null, "smudge", new string[0], true, null, "hollowvein")
+            R("Emberdown_Hollow_3", "Emberdown.Hollowvein", "The flooded gallery", "Black water to the knee; a desk the miners left, still dry; the third verse.", null, "smudge", new[] { "runa" }, true, null, "hollowvein")
                 .Up("Emberdown_Hollow_2", Ability.None)
                 .Down("Emberdown_Hollow_4", Ability.None);
-            R("Emberdown_Hollow_4", "Emberdown.Hollowvein", "The bottom", "The collapse itself: the Collapse wakes on the fourth verse (6.4). The keystone is under it.", null, "", new string[0], false, "collapse", "hollowvein")
+            R("Emberdown_Hollow_4", "Emberdown.Hollowvein", "The bottom", "The collapse itself: the Collapse is the fourth verse, and wakes once the three above are walked (6.4). The keystone is under it.", null, "", new[] { "runa" }, false, "collapse", "hollowvein")
                 .Up("Emberdown_Hollow_3", Ability.None);
-            R("Verdance_Road_1", "Verdance.OldRoad", "The iris gap", "From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken.", null, "crab, skimmer", new string[0], false, null, null)
+            R("Verdance_Road_1", "Verdance.OldRoad", "The iris gap", "From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken.", null, "crab, skimmer, reedling ×3", new string[0], false, null, null)
                 .West("Saltmarrow.IrisFields", Ability.Wingbeat, null, true)
                 .East("Verdance_Road_2", Ability.None);
-            R("Verdance_Road_2", "Verdance.OldRoad", "The milestones", "Flying-age milestones, every one giving the distance to a place that is gone.", "Milestone", "smudge, crab", new string[0], false, null, null)
+            R("Verdance_Road_2", "Verdance.OldRoad", "The milestones", "Flying-age milestones, every one giving the distance to a place that is gone.", "Milestone", "smudge, crab, pulp-wasp", new string[0], false, null, null)
                 .West("Verdance_Road_1", Ability.None)
                 .East("Verdance_Road_3", Ability.None);
             R("Verdance_Road_3", "Verdance.OldRoad", "The first trees", "The trees begin: trunks eighty wingspans tall, light in shafts, near silence.", null, "Cantor", new string[0], false, null, null)
@@ -198,7 +198,7 @@ namespace OWSBG.Core
             R("Verdance_House_3", "Verdance.QuietHouse", "The east door", "The brothers' garden and the lane to Aldermere; ash on the path.", null, "", new string[0], false, null, null)
                 .West("Verdance_House_2", Ability.None)
                 .East("Verdance_Aldermere_1", Ability.None);
-            R("Verdance_Chapel_1", "Verdance.RootChapel", "The root stair", "Down through the roots; lanterns hung from them.", null, "smudge", new string[0], false, null, null)
+            R("Verdance_Chapel_1", "Verdance.RootChapel", "The root stair", "Down through the roots; lanterns hung from them.", null, "smudge, moths", new string[0], false, null, null)
                 .Up("Verdance_House_2", Ability.None)
                 .Down("Verdance_Chapel_2", Ability.None);
             R("Verdance_Chapel_2", "Verdance.RootChapel", "The root chapel", "Teodor teaches Inkthread: the solvent-line reversed. The grove is across a gap only a thread crosses.", "Chapel", "", new[] { "teodor" }, false, null, null)
@@ -210,10 +210,10 @@ namespace OWSBG.Core
             R("Verdance_Grove_2", "Verdance.LanternGrove", "The lanterns", "Eleven lanterns in a ring: the vigil with Teodor. No choices.", "Lanterns", "", new[] { "teodor" }, true, null, null)
                 .West("Verdance_Grove_1", Ability.None)
                 .Up("Verdance_Grove_3", Ability.None);
-            R("Verdance_Grove_3", "Verdance.LanternGrove", "The canopy", "Up into the canopy by thread; the forest floor out of sight below.", "Canopy", "Cantor, skimmer", new string[0], false, null, null)
+            R("Verdance_Grove_3", "Verdance.LanternGrove", "The canopy", "Up into the canopy by thread; the forest floor out of sight below.", "Canopy", "Cantor, skimmer, moths", new string[0], false, null, null)
                 .Down("Verdance_Grove_2", Ability.None)
                 .East("Verdance_Grove_4", Ability.None);
-            R("Verdance_Grove_4", "Verdance.LanternGrove", "The high lanterns", "The grove's crown; a thread line east drops to the library's roof.", null, "smudge", new string[0], false, null, null)
+            R("Verdance_Grove_4", "Verdance.LanternGrove", "The high lanterns", "The grove's crown; a thread line east drops to the library's roof.", null, "smudge, moths ×2", new string[0], false, null, null)
                 .West("Verdance_Grove_3", Ability.None)
                 .East("Verdance_Library_1", Ability.Inkthread);
             R("Verdance_Library_1", "Verdance.SunkenLibrary", "The reading stair", "Down into a library the forest floor swallowed; anchored, and it shows: the dust does not move.", null, "", new string[0], false, null, null)
@@ -227,7 +227,7 @@ namespace OWSBG.Core
             R("Verdance_Aldermere_2", "Verdance.Aldermere", "The square", "The last evening. Attend it, or try to stop it and the Choir sings over the square (6.6).", "Square", "", new[] { "teodor" }, false, "choir", null)
                 .West("Verdance_Aldermere_1", Ability.None)
                 .East("Verdance_Aldermere_3", Ability.None);
-            R("Verdance_Aldermere_3", "Verdance.Aldermere", "The ash field", "Where the village is already paper; the canopy road starts over it by thread.", null, "Cantor, smudge", new string[0], false, null, null)
+            R("Verdance_Aldermere_3", "Verdance.Aldermere", "The ash field", "Where the village is already paper; the canopy road starts over it by thread. Attended, the village stands here as paper and Teodor sits with them.", null, "Cantor, smudge, pulp-wasp", new[] { "teodor" }, false, null, null)
                 .West("Verdance_Aldermere_2", Ability.None)
                 .East("Verdance_Gate_1", Ability.Inkthread);
             R("Verdance_Gate_1", "Verdance.OvergrownGate", "The approach", "A desk under the roots, then the gate's roots as anchors up the wall.", null, "skimmer", new string[0], true, null, null)
@@ -249,17 +249,17 @@ namespace OWSBG.Core
             R("Halden_Bridges_4", "Halden.SevenBridges", "The last span", "Halvard's second hunt (6.3): he cuts the span section by section. The mills are below it.", null, "", new[] { "halvard" }, false, "halvard_2", null)
                 .West("Halden_Bridges_3", Ability.None)
                 .Down("Halden_Mills_2", Ability.None);
-            R("Halden_Mills_1", "Halden.PaperMills", "The mill race", "Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air.", null, "Warden, smudge", new string[0], false, null, null)
+            R("Halden_Mills_1", "Halden.PaperMills", "The mill race", "Where the canopy road from the Overgrown Gate comes down: a mill race, wheels, wet paper in the air.", null, "Warden, smudge, pulp-wasp", new string[0], false, null, null)
                 .West("Verdance_Gate_2", Ability.Inkthread)
                 .East("Halden_Mills_2", Ability.None);
-            R("Halden_Mills_2", "Halden.PaperMills", "The drying lofts", "Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead.", "Lofts", "smudge ×2", new string[0], false, null, null)
+            R("Halden_Mills_2", "Halden.PaperMills", "The drying lofts", "Sheets of new vellum hung to dry, rooms deep; the Seven Bridges are overhead.", "Lofts", "smudge ×2, pulp-wasp ×2", new string[0], false, null, null)
                 .Up("Halden_Bridges_4", Ability.None)
                 .West("Halden_Mills_1", Ability.None)
                 .East("Halden_Mills_3", Ability.None);
             R("Halden_Mills_3", "Halden.PaperMills", "The pulp yard", "The strike's picket line: the millworkers of Lowmarket have downed tools. The Hall steps are beyond.", null, "", new string[0], false, null, null)
                 .West("Halden_Mills_2", Ability.None)
                 .East("Halden_Hall_1", Ability.None);
-            R("Halden_Lowmarket_1", "Halden.Lowmarket", "The stair down", "Below the walls. The paint is thinner here, and so is everything else.", null, "smudge", new string[0], false, null, null)
+            R("Halden_Lowmarket_1", "Halden.Lowmarket", "The stair down", "Below the walls. The paint is thinner here, and so is everything else.", null, "smudge, Sketch", new string[0], false, null, null)
                 .Up("Halden_Bridges_2", Ability.None)
                 .East("Halden_Lowmarket_2", Ability.None);
             R("Halden_Lowmarket_2", "Halden.Lowmarket", "Lowmarket", "The district below the walls, fading; its notice board reads 'survey scheduled'. The strike hall, where the decision is made.", "Market", "", new string[0], true, null, null)
@@ -301,10 +301,10 @@ namespace OWSBG.Core
                 .West("Halden_Observatory_1", Ability.None);
             R("Halden_Vault_1", "Halden.Vault", "The Vault", "Seven slots, reached from the Guildmaster's window; one empty (Pell counts them, plant 5.2).", null, "", new[] { "pell" }, false, null, null)
                 .Up("Halden_Bastion_3", Ability.None, "halden.vault_opened");
-            R("Windreach_Stones_1", "Windreach.NineStones", "The south road's end", "Out of Lowmarket's south gate onto the Steppe: grass to the horizon, sky most of the screen. The first standing stone, lichen on its north face.", "Waymark", "Warden (out of uniform: Hale's escort)", new string[0], false, null, null)
+            R("Windreach_Stones_1", "Windreach.NineStones", "The south road's end", "Out of Lowmarket's south gate onto the Steppe: grass to the horizon, sky most of the screen. The first standing stone, lichen on its north face.", "Waymark", "Warden (out of uniform: Hale's escort), tussock", new string[0], false, null, null)
                 .West("Halden_Lowmarket_3", Ability.None, "act2.started")
                 .East("Windreach_Stones_2", Ability.None);
-            R("Windreach_Stones_2", "Windreach.NineStones", "The long walk", "Stones two to eight in the line the clans have walked since before the Guild; the stones are a map (the Nine Stones). Ink-swirl updrafts, too weak to ride yet.", "Fifth", "smudge ×2", new string[0], false, null, null)
+            R("Windreach_Stones_2", "Windreach.NineStones", "The long walk", "Stones two to eight in the line the clans have walked since before the Guild; the stones are a map (the Nine Stones). Ink-swirl updrafts, too weak to ride yet.", "Fifth", "smudge ×2, moths, tussock", new string[0], false, null, null)
                 .West("Windreach_Stones_1", Ability.None)
                 .East("Windreach_Stones_3", Ability.None);
             R("Windreach_Stones_3", "Windreach.NineStones", "The ninth stone", "Where the route turns north. Surveyor Hale at dusk, sighting the stones one by one (6.9, optional); the camp's wagons are just east.", null, "", new[] { "hale" }, false, "hale", null)
@@ -316,10 +316,10 @@ namespace OWSBG.Core
             R("Windreach_Camp_2", "Windreach.LongGrassCamp", "The fire ring", "The camp's first night (the Moving Camp). Idrenne tells where she was standing when she learned each thing. The camp moves on to the riverbed, then the high grass.", null, "", new[] { "idrenne" }, false, null, null)
                 .West("Windreach_Camp_1", Ability.None)
                 .East("Windreach_River_1", Ability.Wingbeat, null, true);
-            R("Windreach_River_1", "Windreach.DryRiver", "The far bank", "A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it).", null, "smudge", new string[0], false, null, null)
+            R("Windreach_River_1", "Windreach.DryRiver", "The far bank", "A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it).", null, "smudge, tussock", new string[0], false, null, null)
                 .West("Windreach_Camp_2", Ability.Wingbeat, null, true)
                 .East("Windreach_River_2", Ability.None);
-            R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried.", "Bed", "smudge ×2", new[] { "idrenne" }, false, null, null)
+            R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried. Sable berths here when she rows Wren north (Boat).", "Bed", "smudge ×2, moths", new[] { "idrenne", "sable" }, false, null, null)
                 .West("Windreach_River_1", Ability.None)
                 .East("Windreach_River_3", Ability.None);
             R("Windreach_River_3", "Windreach.DryRiver", "The cut bank", "The river's old cliff. The Wind Gate is at the top, and only Talonhold climbs it.", null, "smudge", new string[0], false, null, null)
@@ -352,19 +352,19 @@ namespace OWSBG.Core
             R("Greyfold_Edge", "Greyfold.HalfCathedral", "The Edge", "The prologue's room, built (the greybox `Greyfold_Edge`): Isolde's desk; survey, bind, seal; then she walks in. Act 1 ends here too.", "HalfCathedral", "", new[] { "isolde" }, true, null, null)
                 .West("Greyfold_EdgeCamp_2", Ability.None)
                 .East("Greyfold_Cathedral_2", Ability.None);
-            R("Greyfold_Cathedral_2", "Greyfold.HalfCathedral", "The nave", "Half a cathedral, white; the Road That Stops runs down its nave. Thirty steps in, a grey chick. With Clarity, the bells ring (6.12).", null, "lost Remnant ×2", new[] { "marrow" }, false, "bells", null)
+            R("Greyfold_Cathedral_2", "Greyfold.HalfCathedral", "The nave", "Half a cathedral, white; the Road That Stops runs down its nave. Thirty steps in, a grey chick. With Clarity, the bells ring (6.12).", null, "lost Remnant ×2, moths", new[] { "marrow" }, false, "bells", null)
                 .West("Greyfold_Edge", Ability.None)
                 .East("Greyfold_Road_1", Ability.None);
-            R("Greyfold_Road_1", "Greyfold.RoadThatStops", "The road in", "Cobbles that fade a stride at a time. Platforms are drawn only inside Wren's lantern-radius; outside it, outlines.", null, "smudge ×2", new string[0], false, null, null)
+            R("Greyfold_Road_1", "Greyfold.RoadThatStops", "The road in", "Cobbles that fade a stride at a time. Platforms are drawn only inside Wren's lantern-radius; outside it, outlines.", null, "smudge ×2, Sketch", new string[0], false, null, null)
                 .West("Greyfold_Cathedral_2", Ability.None)
                 .East("Greyfold_Road_2", Ability.None);
-            R("Greyfold_Road_2", "Greyfold.RoadThatStops", "The mileposts", "Mileposts for a road nobody finished, each one nearer to nothing.", "Milepost", "smudge, lost Remnant", new string[0], false, null, null)
+            R("Greyfold_Road_2", "Greyfold.RoadThatStops", "The mileposts", "Mileposts for a road nobody finished, each one nearer to nothing.", "Milepost", "smudge, lost Remnant, Sketch", new string[0], false, null, null)
                 .West("Greyfold_Road_1", Ability.None)
                 .East("Greyfold_Road_3", Ability.None);
             R("Greyfold_Road_3", "Greyfold.RoadThatStops", "Where it stops", "The road ends mid-stride. She steps off and stays herself: Clarity. Pell, sent to watch, sees her come back (the act break).", null, "", new[] { "pell" }, false, null, null)
                 .West("Greyfold_Road_2", Ability.None)
                 .East("Greyfold_Pool_1", Ability.Clarity);
-            R("Greyfold_Pool_1", "Greyfold.MirrorPool", "The white shore", "A beach of white paper; the glide from the Wind Gate lands here from above. Colour only in her radius.", null, "lost Remnant, smudge", new string[0], false, null, null)
+            R("Greyfold_Pool_1", "Greyfold.MirrorPool", "The white shore", "A beach of white paper; the glide from the Wind Gate lands here from above. Colour only in her radius.", null, "lost Remnant, smudge, Sketch", new string[0], false, null, null)
                 .Up("Windreach_Gate_2", Ability.Windmemory)
                 .West("Greyfold_Road_3", Ability.Clarity)
                 .East("Greyfold_Pool_2", Ability.None);
@@ -390,13 +390,13 @@ namespace OWSBG.Core
                 .West("Blank_Hollow_2", Ability.None)
                 .East("Blank_Capital_1", Ability.None)
                 .Down("Blank_Aury_2", Ability.Clarity, "act3.started");
-            R("Blank_Capital_1", "Blank.OldCapital", "The district's edge", "Streets of the old capital, half-drawn. A desk in the doorway of what was a Guild office.", null, "lost Remnant", new string[0], true, null, null)
+            R("Blank_Capital_1", "Blank.OldCapital", "The district's edge", "Streets of the old capital, half-drawn. A desk in the doorway of what was a Guild office.", null, "lost Remnant, Sketch", new string[0], true, null, null)
                 .West("Blank_Hollow_3", Ability.None)
                 .East("Blank_Capital_2", Ability.None);
             R("Blank_Capital_2", "Blank.OldCapital", "Corra's room", "A white room with a crayon floor. A child's drawing of her father, huge and wrong, keeps everyone out (6.13).", null, "", new[] { "corra" }, false, "corras_drawing", null)
                 .West("Blank_Capital_1", Ability.None)
                 .East("Blank_Capital_3", Ability.None);
-            R("Blank_Capital_3", "Blank.OldCapital", "The mirror streets", "The district open: the capital's streets reversed, the Observatory's mirror-half at their end. A desk on its steps.", null, "lost Remnant ×2", new string[0], true, null, null)
+            R("Blank_Capital_3", "Blank.OldCapital", "The mirror streets", "The district open: the capital's streets reversed, the Observatory's mirror-half at their end. A desk on its steps.", null, "lost Remnant ×2, Sketch", new string[0], true, null, null)
                 .West("Blank_Capital_2", Ability.None)
                 .East("Blank_Capital_4", Ability.None);
             R("Blank_Capital_4", "Blank.OldCapital", "The mirror-Observatory", "Corvin with the seventh keystone; he has drawn her a chair (reveals 5.4, 5.6). The choice laid out; the Archivist (6.14). Marrow echoes him.", null, "", new[] { "corvin", "marrow" }, false, "archivist", null)

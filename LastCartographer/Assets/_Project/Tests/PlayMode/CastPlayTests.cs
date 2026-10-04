@@ -62,8 +62,8 @@ namespace OWSBG.Tests
                 else { planned++; Assert.IsFalse(dialogue.NodeExists(a.Node), a.Node + " exists in the project but the cast data says it is not staged yet"); }
             }
             Assert.That(staged, Is.GreaterThanOrEqualTo(4));
-            // What is left unwritten has no stage yet: the Bone Bridge is neither built nor planned.
-            CollectionAssert.AreEquivalent(new[] { "BoneBridge_Sable" }, Cast.Appearances.Where(a => a.Node != null && !a.Staged).Select(a => a.Node),
+            // Every scene the cast data names is written and staged now (the Bone Bridge crossing was the last, 2026-10-04).
+            CollectionAssert.IsEmpty(Cast.Appearances.Where(a => a.Node != null && !a.Staged).Select(a => a.Node),
                 "every scene with a stage is written");
 
             // The staged talkers in the loaded hub start on the cast's nodes.

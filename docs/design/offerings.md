@@ -120,9 +120,12 @@ memory worth that exists. The kind is in the enum for it.
   anything. The Blank has no giver: Ilse's belongs to the Hollow's reveal (NAR-12) and should be written with it.
 - **No keystone asks** (decided 2026-09-29): every keystone stays as written.
 - **A half-island's room** is the generic Remnant island's, paler (`IslandBuilder`); its own dressing is PRG-20's.
-- **Placement.** Both askers stand in their rooms as greybox markers (ochre blocks, `PlacementSetup`): the gannet on
-  the faded light's rail, the door past the chapel's altar, beyond Halvard's arena. The door
-  doesn't open physically yet: its flag is for the door prop (ENV-06) to read.
+- **Placement.** The askers stand in their rooms by `PlacementSetup`: the gannet on the faded light's rail, the
+  traveller and Brek drawn from the townsfolk library on the trigger itself, the first two grey (CHR-12,
+  `townsfolk.md`; `Asker.Look`), Corvin's asker bodiless beside his own drawing, the door past the chapel's altar as its drawing (ENV-06,
+  `environment-props.md`): `Prop_ChapelDoor` shut, `Prop_ChapelDoor_Open` once `saltmarrow.chapel.door_open` is set,
+  swapped by a `DressingProp`; the ninth chimney's door the same on its flag. The door opens as a drawing, not as a
+  collider.
 - **A weakened anchor in the Blank.** Whether an anchored place with a loosened seal should appear in Act 3 as a
   half-island (its people half-remembered) is for the Blank generator (PRG-20).
 - **Held places and the walk.** A held place's walk might someday ask for a memory, not just a rhythm.

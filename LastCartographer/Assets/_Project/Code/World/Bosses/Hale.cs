@@ -40,6 +40,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Sight => AttackKind.Window, _ => AttackKind.Strike };
         public int Claimed { get { int n = 0; foreach (var o in _owner) if (o != Owner.None) n++; return n; } }
         public int HaleStones => Count(Owner.Hale);
         public int WrenStones => Count(Owner.Wren);
@@ -82,6 +84,21 @@ namespace OWSBG.World
         public Owner OwnerOf(int stone) => stone >= 0 && stone < _owner.Length ? _owner[stone] : Owner.None;
         int Count(Owner o) { int n = 0; foreach (var x in _owner) if (x == o) n++; return n; }
 
+        public override IEnumerable<string> PartSkinNames { get { yield return "Stone"; yield return "StoneStrike"; } }
+        /// <summary>The sheet clip for his move (CHR-10): the lens up for a sighting, the quill raised for the count.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Approach => "move",
+            Move.Telegraph => CurrentAttack == Attack.Sight ? "sight" : CurrentAttack == Attack.Call ? "call" : "telegraph",
+            Move.Quill => "quill",
+            Move.Call => "count",
+            Move.Recover => "recover",
+            _ => "idle",
+        };
+        /// <summary>The sighting is sought by its window: the lens is at his eye as the stone becomes his.</summary>
+        public override float ClipProgress => SightTarget >= 0 && _telegraphStarted && !IsDying && HurtstunLeft == 0 ? TelegraphProgress(sightFrames) : -1f;
+        static string StoneClip(Owner o) => o == Owner.Hale ? "hale" : o == Owner.Wren ? "wren" : "bare";
+
         protected override void Start()
         {
             base.Start();
@@ -93,7 +110,11 @@ namespace OWSBG.World
             if (_owner.Length != stoneXs.Count) _owner = new Owner[stoneXs.Count];
             if (_stones.Count == stoneXs.Count) return;
             for (int i = 0; i < stoneXs.Count; i++)
-                _stones.Add(BossPart.Prop("Stone_" + (i + 1), transform.parent, new Vector2(stoneXs[i], floorY + 0.6f), new Vector2(0.6f, 1.2f), StoneMaterial(Owner.None), 0.8f));
+            {
+                var stone = BossPart.Prop("Stone_" + (i + 1), transform.parent, new Vector2(stoneXs[i], floorY + 0.6f), new Vector2(0.6f, 1.2f), StoneMaterial(Owner.None), 0.8f);
+                SkinProp(stone, "Stone", "bare");
+                _stones.Add(stone);
+            }
         }
 
         static Material StoneMaterial(Owner o) => o switch
@@ -106,7 +127,7 @@ namespace OWSBG.World
         void SetOwner(int i, Owner o)
         {
             _owner[i] = o;
-            if (i < _stones.Count && _stones[i] != null) _stones[i].GetComponent<MeshRenderer>().sharedMaterial = StoneMaterial(o);
+            if (i < _stones.Count) BossPart.Show(_stones[i], StoneClip(o), StoneMaterial(o));
             if (Claimed >= PhaseTwoAt) AdvanceToPhase(2);
             if (Claimed >= PhaseThreeAt) AdvanceToPhase(3);
         }
@@ -138,7 +159,7 @@ namespace OWSBG.World
             _telegraphStarted = false;
             ClearPillars();
             for (int i = 0; i < _owner.Length; i++) _owner[i] = Owner.None;
-            for (int i = 0; i < _stones.Count; i++) if (_stones[i] != null) _stones[i].GetComponent<MeshRenderer>().sharedMaterial = StoneMaterial(Owner.None);
+            for (int i = 0; i < _stones.Count; i++) BossPart.Show(_stones[i], StoneClip(Owner.None), StoneMaterial(Owner.None));
         }
 
         protected override void OnPhaseStarted(int phase) { _patternIndex = 0; }
@@ -322,6 +343,7 @@ namespace OWSBG.World
                 var p = BossPart.Make("Strike_" + (i + 1), transform.parent, new Vector2(stoneXs[i], floorY + eruptHeight * 0.5f), new Vector2(stoneWidth, eruptHeight),
                     InkMaterials.Lit("Stone_Strike", new Color(0.96f, 0.84f, 0.50f)));
                 p.OnHit = hit => IsDownStrike(hit);   // pogo the stones' strikes
+                Skin(p, "StoneStrike", "erupt");
                 _pillars.Add(p);
             }
         }

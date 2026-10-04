@@ -6,45 +6,45 @@
 title: Fire_Idrenne
 ---
 <<if has_flag("windreach.fire.witnessed")>>
-    Idrenne: Warm your hands. It's only a fire now. It was only a fire before, too. #still #line:00249e3
+    Idrenne: Warm your hands. It's only a fire now. It was only a fire before, too. #still #face:bright #line:00249e3
     <<stop>>
 <<endif>>
 <<if not has_flag("windreach.camp.walked")>>
     Idrenne: Walk the three fires first. I'll say it once, to someone who's walked them. #still #line:0e2fffd
     <<stop>>
 <<endif>>
-Idrenne: You had a question. Isolde had the same one. Ask it. #line:058964b
+Idrenne: You had a question. Isolde had the same one. Ask it. #face:asking #line:058964b
 -> How do you hold a place? #line:0265fd2
     <<voice surveyor windreach>>
 -> How do I stop it fading? #line:0bd809b
     <<voice warden windreach>>
 -> Do places need holding at all? #line:02e71c6
     <<voice drift windreach>>
-Idrenne: I learned it here, at this fire, the year the Guild said no to us. #line:07f4168
-Idrenne: We asked to be anchored. We were poor. They said the Steppe wasn't worth a stone. #line:0c1f7e9
+Idrenne: I learned it here, at this fire, the year the Guild said no to us. #face:grave #line:07f4168
+Idrenne: We asked to be anchored. We were poor. They said the Steppe wasn't worth a stone. #face:grave #line:0c1f7e9
 Idrenne: So we made a philosophy of it afterwards. I'll not pretend otherwise. It works anyway. #plant:9.2 #line:0ffb455
 Idrenne: A place holds when it's lived in. Walked. Every name in it said out loud. #line:0604ff6
 Idrenne: One town can't do it alone. It takes everyone you've met, singing the same walk. #plant:9.2 #line:080a49a
 Idrenne: And the stones go back where they came from. You don't keep a place in a vault. #line:0c1e91b
 <<flag windreach.fire.witnessed 1>>
 <<if has_flag("windreach.hale.finished")>>
-    Idrenne: Your lens bird finished his sighting. The Steppe's on Guild paper now. We'll keep walking it. #line:087acb7
+    Idrenne: Your lens bird finished his sighting. The Steppe's on Guild paper now. We'll keep walking it. #face:grave #line:087acb7
 <<else>>
     Idrenne: Now. You carry a quill. Will you draw the Steppe? #line:0c3ecaf
     -> I'll draw it. For you, not them. #line:067d032
-        Idrenne: Paper goes where paper goes. I learned that at your Plateau's gate. Draw well. #line:08daa5a
+        Idrenne: Paper goes where paper goes. I learned that at your Plateau's gate. Draw well. #face:grave #line:08daa5a
         <<flag windreach.survey.decided 1>>
         <<voice surveyor windreach>>
     -> I'll leave it undrawn. #line:0095eb0
-        Idrenne: Then it's ours, and the grass's. Thank you. #line:0461d44
+        Idrenne: Then it's ours, and the grass's. Thank you. #face:bright #line:0461d44
         <<flag windreach.survey.decided 2>>
         <<voice warden windreach>>
     -> I'll walk it instead. Every year. <<if walk_known()>> #line:0978c7e
-        Idrenne: Ha. Then you're one of us, and it's held the old way. Come back hungry. #line:007dd0f
+        Idrenne: Ha. Then you're one of us, and it's held the old way. Come back hungry. #face:bright #line:007dd0f
         <<flag windreach.survey.decided 3>>
         <<voice drift windreach>>
 <<endif>>
-Idrenne: Oh. And this. Our cooking-stone. Your Guild would call it a keystone. #line:0685f52
+Idrenne: Oh. And this. Our cooking-stone. Your Guild would call it a keystone. #face:bright #line:0685f52
 Idrenne: Take it. We'll cook on a flat rock. No cost. I mean it. Ha! #line:0077ebb
 <<flag keystone.windreach 1>>
 <<flag windreach.star.woken 1>>
@@ -62,17 +62,17 @@ title: Star_Idrenne
 <<endif>>
 <<if has_flag("boss.fallen_star.defeated")>>
     <<if not has_flag("windreach.star.cold")>>
-        Idrenne: Ha. Told you. No cost. Well. One. #line:00d8c4f
-        Idrenne: The anvil's cold. The smiths will complain for a year. They like complaining. #line:0d7679e
+        Idrenne: Ha. Told you. No cost. Well. One. #face:bright #line:00d8c4f
+        Idrenne: The anvil's cold. The smiths will complain for a year. They like complaining. #face:bright #line:0d7679e
         <<flag windreach.star.cold 1>>
     <<else>>
-        Idrenne: Cold iron. The smiths found something new to complain about. Good for them. #still #line:0fcfb87
+        Idrenne: Cold iron. The smiths found something new to complain about. Good for them. #still #face:bright #line:0fcfb87
     <<endif>>
     <<stop>>
 <<endif>>
-Idrenne: There it is. The cost. Mind the iron. #still #line:07bf6d8
+Idrenne: There it is. The cost. Mind the iron. #still #face:wary #line:07bf6d8
 -> I'll put it back to sleep. #line:0883db4
-    Idrenne: Swing hard. It's been hit for forty years. It'll want to hit back. #still #line:0a64cef
+    Idrenne: Swing hard. It's been hit for forty years. It'll want to hit back. #still #face:wary #line:0a64cef
     <<voice warden windreach>>
 -> What does it want? #line:0092314
     Idrenne: A swing. Forty years our anvil. It's owed one. #still #line:0d0cab1

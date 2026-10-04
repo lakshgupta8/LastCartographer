@@ -32,6 +32,18 @@ namespace OWSBG.World
 
         public enum Phase { Idle, Startup, Active, Recovery }
         public Phase Current => _phase;
+        /// <summary>How far the swing is: 0 on its first startup frame, 1 on its last recovery frame (CHR-03 follows it).</summary>
+        public float Progress
+        {
+            get
+            {
+                if (_phase == Phase.Idle) return 0f;
+                float total = _startup + _active + _recovery;
+                float done = _phase == Phase.Startup ? 0f : _phase == Phase.Active ? _startup : _startup + _active;
+                float phase = _phase == Phase.Startup ? _startup : _phase == Phase.Active ? _active : _recovery;
+                return Mathf.Clamp01((done + (phase - _framesLeft)) / Mathf.Max(1f, total));
+            }
+        }
         public Vector2 Direction => _dir;
         public bool IsBusy => _phase != Phase.Idle;
         public event Action<Vector2> Swung;
@@ -54,7 +66,7 @@ namespace OWSBG.World
         }
 
         // Frame data of the swing in progress (a combo step for forward swings, the base fields otherwise).
-        float _reach, _thickness; int _active, _recovery, _damage; float _knockback = 1f; bool _pulls;
+        float _reach, _thickness; int _startup, _active, _recovery, _damage; float _knockback = 1f; bool _pulls;
         /// <summary>Colour each landed strike takes (the Remnant Charter); set by the Charter.</summary>
         public float Drain { get; set; }
 
@@ -104,7 +116,8 @@ namespace OWSBG.World
             else ComboIndex = 0;
             _comboWindowLeft = 0;
             _phase = Phase.Startup;
-            _framesLeft = Mathf.Max(1, startup);
+            _startup = Mathf.Max(1, startup);
+            _framesLeft = _startup;
             _hitThisSwing.Clear();
             Swung?.Invoke(_dir);
         }

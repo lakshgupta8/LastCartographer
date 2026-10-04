@@ -8,25 +8,25 @@
 title: Hollow_Ilse
 ---
 <<if has_flag("blank.ilse.heard")>>
-    Ilse: Go and see my father. Then come and sit with me, if there's time. #still #line:00e534c
+    Ilse: Go and see my father. Then come and sit with me, if there's time. #still #face:bright #line:00e534c
     <<stop>>
 <<endif>>
-Ilse: There you are. I saw you at the edge of the village before you saw me. #line:09cad43
-Ilse: You hold your head the same. Tilted, as if you're listening for something far off. #line:04cad9d
+Ilse: There you are. I saw you at the edge of the village before you saw me. #face:bright #line:09cad43
+Ilse: You hold your head the same. Tilted, as if you're listening for something far off. #face:bright #line:04cad9d
 Ilse: You were born here. After. When the Hollow was already like this. #reveal:5.3 #line:01a80d7
 Ilse: Children born in the white belong to both. You could see her. The woman with the lantern. #line:0517bd8
-Ilse: She carried you out. The crossing took everything you remembered. I let it. #line:0a7cae8
-Ilse: I let you go. It was the only thing I was ever sure of. #line:0a6ae91
+Ilse: She carried you out. The crossing took everything you remembered. I let it. #face:grave #line:0a7cae8
+Ilse: I let you go. It was the only thing I was ever sure of. #face:grave #line:0a6ae91
 -> You're my mother. #line:0babe80
-    Ilse: I was. I am. It's the same word here. #line:0d0d613
+    Ilse: I was. I am. It's the same word here. #face:grave #line:0d0d613
     <<voice surveyor blank>>
 -> Come out with me. #line:0b4c11f
-    Ilse: No. I let go of things. It's what I'm good at. #line:071d3c7
+    Ilse: No. I let go of things. It's what I'm good at. #face:grave #line:071d3c7
     <<voice warden blank>>
 -> ... #line:0b0133e
-    Ilse: You did that as a chick too. Looked, and said nothing. #line:06cbed0
+    Ilse: You did that as a chick too. Looked, and said nothing. #face:bright #line:06cbed0
     <<voice drift blank>>
-Ilse: My father holds this place. He held on too hard, once. Ask him what it cost. #plant:5.4 #line:06f0221
+Ilse: My father holds this place. He held on too hard, once. Ask him what it cost. #plant:5.4 #face:grave #line:06f0221
 Ilse: Take this. The Remnant's charter. Grey is a colour you can carry. #line:06c7b70
 <<charter Remnant>>
 <<flag blank.ilse.heard 1>>
@@ -40,31 +40,35 @@ title: Hollow_Isolde
     <<else>>
         Isolde: Still carrying his stone. The sixth slot's. Want it now? #still #line:08debfb
         -> I'll carry it. #line:0c9627b
-            Isolde: Heavier than it looks. Don't tell Teodor I said that. He'll say it first. #line:0187126
+            <<voice warden blank>>
+            Isolde: Heavier than it looks. Don't tell Teodor I said that. He'll say it first. #face:bright #line:0187126
             <<flag keystone.isolde 1>>
         -> Not yet. #line:0da1d1e
-            Isolde: Stubborn. Good. #still #line:0bd177c
+            <<voice surveyor blank>>
+            Isolde: Stubborn. Good. #still #face:bright #line:0bd177c
     <<endif>>
     <<stop>>
 <<endif>>
-Isolde: Journeyman. You crossed. Look at you. #line:02450ea
-Isolde: I can't leave. I tried. The white lets go of things that walked in whole. I didn't. #line:0a36a4a
-Isolde: Did you read it? The atlas? Then you know what I took, and who it's for. #line:0dce774
+Isolde: Journeyman. You crossed. Look at you. #face:bright #line:02450ea
+Isolde: I can't leave. I tried. The white lets go of things that walked in whole. I didn't. #face:grave #line:0a36a4a
+Isolde: Did you read it? The atlas? Then you know what I took, and who it's for. #face:asking #line:0dce774
 -> I read it. All of it. #line:04da2e7
-    Isolde: Good. Then you don't need me to explain. You never did. #line:0b14509
+    Isolde: Good. Then you don't need me to explain. You never did. #face:bright #line:0b14509
     <<voice surveyor blank>>
 -> I'm getting you out. #line:0429857
-    Isolde: No carrying. Finish what you came for. Then we'll see what's left to carry. #line:0f4ea8c
+    Isolde: No carrying. Finish what you came for. Then we'll see what's left to carry. #face:wary #line:0f4ea8c
     <<voice warden blank>>
 -> ... #line:04d451e
-    Isolde: That's mine. You stole that from me. Keep it. #line:00aff0d
+    Isolde: That's mine. You stole that from me. Keep it. #face:bright #line:00aff0d
     <<voice drift blank>>
-Isolde: And this. The sixth slot's stone. Corvin's. I never got it to him. #line:09fc704
+Isolde: And this. The sixth slot's stone. Corvin's. I never got it to him. #face:grave #line:09fc704
 -> I'll carry it. #line:0dd64c9
-    Isolde: Heavier than it looks. Don't tell Teodor I said that. He'll say it first. #line:06da2fe
+    <<voice warden blank>>
+    Isolde: Heavier than it looks. Don't tell Teodor I said that. He'll say it first. #face:bright #line:06da2fe
     <<flag keystone.isolde 1>>
 -> Keep it. Give it him yourself. #line:06ed433
-    Isolde: Stubborn. Good. I'll hold it, then. #line:003023d
+    <<voice drift blank>>
+    Isolde: Stubborn. Good. I'll hold it, then. #face:bright #line:003023d
 <<flag blank.isolde.found 1>>
 ===
 
@@ -77,7 +81,7 @@ title: Blank_Marrow_Follow
     <<stop>>
 <<endif>>
 <<if has_flag("blank.ilse.heard") and flag("marrow.words") < 1>>
-    Ilse: I let you go. It was the only thing I was ever sure of. #line:0e883ae
+    Ilse: I let you go. It was the only thing I was ever sure of. #face:grave #line:0e883ae
     Marrow: Let you go. #echo:ilse #line:00873a0
     Marrow: Wren. #line:019f062
     <<flag marrow.words 1>>

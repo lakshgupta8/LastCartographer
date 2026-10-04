@@ -36,6 +36,8 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Step => AttackKind.Shape, Attack.Bind => AttackKind.Shape, _ => AttackKind.Strike };
         /// <summary>The Charter she mirrors: Wren's, read as the fight begins.</summary>
         public CharterKind Mirror { get; private set; } = CharterKind.Surveyor;
         public IReadOnlyList<ComboStep> MirrorCombo => _combo;
@@ -44,6 +46,19 @@ namespace OWSBG.World
         public int StepIndex => CurrentAttack == Attack.Combo ? _step : -1;
         public bool IsBinding => Current == Move.Bind;
         public bool BindSpent { get; private set; }
+
+        /// <summary>The sheet clip for her move (CHR-07): the mirrored combo's steps are strike1..3 in turn.</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Approach => "move",
+            Move.Telegraph => "telegraph",
+            Move.Strike => "strike" + (_step % 3 + 1),
+            Move.Flourish => "flourish",
+            Move.Step => "step",
+            Move.Bind => "bind",
+            Move.Recover => "recover",
+            _ => "idle",
+        };
         /// <summary>What she will do next before her pattern resumes (the step and the Bind at a third).</summary>
         public IEnumerable<Attack> Queued => _queue;
         public int Combos { get; private set; }

@@ -15,7 +15,7 @@ namespace OWSBG.Core
         public const string NightKey = "windreach.camp.night";
         public const string SiteKey = "windreach.camp.site";
         public const string PostRoom = "Windreach_Camp_1";
-        /// <summary>Until Windreach is built (ENV-07), the camp's rooms are stood in for at runtime by scenes of this prefix.</summary>
+        /// <summary>The camp's rooms are stood in for at runtime by scenes of this prefix where the built room (ENV-07) is not in the catalogue.</summary>
         public const string StandInPrefix = "Camp_";
         public static string StandInScene(string room) => StandInPrefix + room;
         public static bool IsStandIn(string scene) => !string.IsNullOrEmpty(scene) && scene.StartsWith(StandInPrefix + "Windreach_");

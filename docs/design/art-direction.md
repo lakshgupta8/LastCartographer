@@ -20,10 +20,13 @@ Silksong is painted, gothic, high-contrast, saturated pools of colour in darknes
 - **Wren:** small, round, brown-grey with warm cream breast; ink-blue cowl with a brass compass-rose clasp; the needle-quill is nearly her own height. Read at a glance: dot body, long line.
 - **Silhouette families:** Wardens are tall vertical lines (herons, cranes); townsfolk are ovals; Cantors are teardrops with bells; Smudges are scribbles; Remnant are the same shapes with the ink removed (grey outline, no wash, paper showing through).
 - **Animation:** hand-drawn frame animation at 12 fps for characters (24 for Wren's attacks and dashes), authored in Aseprite or Krita at 2x target size, imported as sprite sheets. Bosses may use Unity 2D Animation bone rigs for large limbs with hand-drawn overlays for faces and feathers.
+  Version one draws Wren from a Blender model posed in script and rendered at 2x with the same Freestyle ink as the paper kits (`docs/design/wren-animation.md`, CHR-02/03); the sheets are the hand-off for the hand-drawn pass.
+  The coast's creatures (`enemy-animation.md`, CHR-06) and the returning cast (`npc-animation.md`, CHR-11) follow: townsfolk as one parametric oval with a spec per species, the Remnant grey and a place's fading applied by the shader at run time rather than drawn.
 - **Scale:** Wren is 1.2 units tall; a tile is 1 unit; sprite authored at 96 px per unit.
 
 ## 5. Environments
 - **Modular paper kits per region:** platforms, walls, and props as cut-paper layers with hand-inked edges. Assembled in Unity with ProBuilder greybox first, then swapped for art.
+  The pipeline that draws them, tested on the Quay, is `docs/design/paper-kit.md` (ENV-01): cut-out geometry rendered with Freestyle ink in headless Blender, on the ink shader.
 - **Paper grain** is a full-screen overlay that also modulates by `_Ink`; unpainted areas show more grain.
 - **Region palettes** (max five colours plus ink and paper):
 
@@ -37,6 +40,7 @@ Silksong is painted, gothic, high-contrast, saturated pools of colour in darknes
 | Greyfold / Blank | white | none | none | Wren's blue and lantern gold | ghost-grey |
 
 - **Lighting per region:** always art-directed time of day; no real-time clock.
+  Version one is `docs/design/lighting.md` (ENV-10): one row per region (sun, ambient, paper, post, lamp colour) blended as she crosses, the day dimming the regions that have an hour, and real lights where something burns.
 
 ## 6. UI
 - Everything is paper and ink. The map is Wren's atlas: a book that opens across the screen; unsurveyed areas are blank pages; surveying animates the pen drawing it.
@@ -45,6 +49,7 @@ Silksong is painted, gothic, high-contrast, saturated pools of colour in darknes
 
 ## 7. VFX
 - Ink is the VFX language: strikes leave brief ink splashes that soak into the paper; Flourishes are pen scribbles; Bind redraws Wren's outline; erasure (Cantor bells) rubs the image out with a visible eraser texture; the Blank's edge is wet paper.
+  Version one draws each as a one-shot sheet clip from geometry in Blender and spawns it through `InkFx` (`docs/design/ink-fx.md`, ENV-12); the strips are the hand-off for the hand-drawn pass.
 - Fledglings leap in the background of every region; after each ability Wren learns, they glide a little further. This is a hand-animated background loop, not a system.
 
 ## 8. Reference board (for the team, not for tracing)

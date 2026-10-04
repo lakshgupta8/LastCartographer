@@ -18,6 +18,8 @@ namespace OWSBG.World
         public bool IsSpent { get; private set; }
         /// <summary>Every projectile a strike has unwritten.</summary>
         public static event Action<EnemyProjectile> Erased;
+        /// <summary>Spent, on her, the ground or its time: where it lands sounds (AUD-11).</summary>
+        public static event Action<EnemyProjectile> Spent;
 
         Rigidbody2D _body;
         BoxCollider2D _box;
@@ -89,6 +91,7 @@ namespace OWSBG.World
         void Spend()
         {
             IsSpent = true;
+            Spent?.Invoke(this);
             Destroy(gameObject);
         }
     }

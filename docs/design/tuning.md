@@ -64,7 +64,7 @@ tier.
 | Boss | Tier | Access | Health (was) | Why that access |
 |---|---|---|---|---|
 | The Lamp-Keeper | I | Windowed | **24** (24) | Open only while grounded after a dive |
-| Reedmother's Brood | I | Windowed | 24 (—) | Not built: the nest opens between broods |
+| Reedmother's Brood | I | Windowed | **24** (24) | Open only while it calls a clutch; stamping the fire out ends it without a blow |
 | Halvard (chapel) | I | Open | **30** (30) | |
 | The Collapse | II | Windowed | **27** (28) | Drawn for 60% of a beat, in one section |
 | Cinder Warden Brann | II | Open | **34** (36) | |
@@ -98,6 +98,13 @@ the table knows. A test rig without a sheet keeps what it is given. `BossKits` n
 | Cantor | **4** (3) | 1 | Longstroke reaches it; a hit stops the ring |
 | Warden | **5** (3) | 1 | Parry: the 1 s stagger is a combo and change |
 | Lost Remnant | **5** (3) | 1 | The Blank's |
+| Cave-bat | 2 | 1 | Emberdown's fodder on the wing: struck as it swoops |
+| Salamander | 3 | 1 | Its back burns: pogo only |
+| Moth cloud | 3 | 1 | The quill passes through it: Blot it, then strike |
+| Pulp-wasp | 3 | 1 | Keeps the quill's reach away: Longstroke the line |
+| Sketch | 4 | 1 | An outline past her lantern-radius; drawn inside it, any hit |
+| Tussock | 3 | 1 | Shelled and under the grass: pogo it when it surfaces |
+| Reedling | 2 | 1 | One is fodder; the clutch of three is a swarm: Blot it |
 
 Before this pass every enemy in every scene was at the component's default: 3 health, 1 contact.
 

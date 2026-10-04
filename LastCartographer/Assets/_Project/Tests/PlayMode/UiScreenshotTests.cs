@@ -40,11 +40,35 @@ namespace OWSBG.Tests
         /// <summary>A capture slower than this is a software rasteriser: here one takes well under a second.</summary>
         const float SlowCaptureSeconds = 10f;
 
+        /// <summary>
+        /// The whole test's budget: here it takes about two seconds. Past this after any step the test steps aside and
+        /// says which step took what, so the runner's log tells where a machine without a GPU spends its minutes
+        /// (the default three-minute timeout of a test is checked between frames, and one capture in software can
+        /// hold a frame for over a minute).
+        /// </summary>
+        const float BudgetSeconds = 60f;
+
         static string OutDir => Path.Combine(Directory.GetParent(Application.dataPath).Parent.FullName, "logs");
 
         [UnityTest]
         public IEnumerator CaptureHudDialogueAndDeskPages()
         {
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null)
+                Assert.Ignore("no graphics device here (" + SystemInfo.graphicsDeviceName + "); the screenshots want a GPU");
+
+            // The clock: each step's seconds are kept for the message, and past the budget the test steps aside.
+            var times = new System.Text.StringBuilder();
+            float started = Time.realtimeSinceStartup, last = started;
+            float Step(string name)
+            {
+                float now = Time.realtimeSinceStartup, seconds = now - last;
+                times.Append(name).Append(' ').Append(seconds.ToString("0.0")).Append("s, ");
+                last = now;
+                if (now - started > BudgetSeconds)
+                    Assert.Ignore("over " + BudgetSeconds.ToString("0") + " s here (" + times + "on " + SystemInfo.graphicsDeviceName + "); the screenshots want a GPU");
+                return seconds;
+            }
+
             SceneManager.LoadScene(Bootstrap.PersistentSceneName, LoadSceneMode.Single);
             yield return null; yield return null;
             float t = 0f;
@@ -54,6 +78,7 @@ namespace OWSBG.Tests
             var ui = UiRoot.Instance;
             Assert.IsNotNull(ui, "UI root in the persistent scene");
             for (int i = 0; i < 40; i++) yield return new WaitForFixedUpdate();
+            Step("scene");
 
             const int w = 1280, h = 720;
             var uiRt = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32);
@@ -73,12 +98,11 @@ namespace OWSBG.Tests
             wren.GetComponent<Inkwell>().Add(4);
             wren.GetComponent<WrenVitals>().Damage(1);
             // The pictures are for a person to look at, drawn through the real pipeline and read back. On a machine
-            // with no GPU (CI's runners draw in software) one capture takes over a minute and five never finish in the
-            // test's three minutes (CI runs five and six: two pictures, then one). The first capture is the measure:
-            // well under a second here; past SlowCaptureSeconds, step aside and say so.
-            float captureStart = Time.realtimeSinceStartup;
+            // with no GPU (CI's runners draw in software) a capture can take over a minute and five never finish in the
+            // test's three minutes. The first capture is the measure: well under a second here; past
+            // SlowCaptureSeconds, step aside and say so. The budget above covers whatever else is slow there.
             yield return Capture(cam, camRt, uiRt, "ui-hud.png");
-            float captureSeconds = Time.realtimeSinceStartup - captureStart;
+            float captureSeconds = Step("hud");
             if (captureSeconds > SlowCaptureSeconds)
                 Assert.Ignore("one capture took " + captureSeconds.ToString("0.0") + " s here (" + SystemInfo.graphicsDeviceName + "); the screenshots want a GPU");
 
@@ -87,10 +111,12 @@ namespace OWSBG.Tests
             svc.StartNode("Quay_Sable");
             var view = ui.GetComponent<DialogueView>();
             for (int i = 0; i < 90 && !view.IsVisible; i++) yield return null;
+            Step("dialogue shown");
             yield return Capture(cam, camRt, uiRt, "ui-dialogue.png");
             svc.Stop();
             for (int i = 0; i < 30 && svc.IsRunning; i++) yield return null;
             Assert.IsFalse(view.IsVisible, "a stopped conversation leaves no page");
+            Step("dialogue");
 
             var menu = ui.GetComponent<DeskMenu>();
             menu.Open(wren);
@@ -98,6 +124,7 @@ namespace OWSBG.Tests
             menu.SetRow(2);
             yield return Capture(cam, camRt, uiRt, "ui-desk.png");
             menu.Close();
+            Step("desk");
 
             var ledger = Object.FindFirstObjectByType<CommissionLedger>();
             Assert.IsNotNull(ledger, "room A has the Saltmarrow ledger");
@@ -109,6 +136,7 @@ namespace OWSBG.Tests
             page.SetRow(1);
             yield return Capture(cam, camRt, uiRt, "ui-ledger.png");
             page.Close();
+            Step("ledger");
             // The atlas spread: stand at the desk so the travel list shows, with the lamp lit and the quay drawn.
             var world = OWSBG.Core.GameState.World;
             OWSBG.Core.Atlas.Survey(world, "Saltmarrow_A/Reedmother");
@@ -124,6 +152,8 @@ namespace OWSBG.Tests
             Assert.IsTrue(atlas.IsOpen && journal.IsOpen, "the journal opens on the atlas's right page");
             yield return Capture(cam, camRt, uiRt, "ui-atlas.png");
             atlas.Toggle();
+            Step("atlas");
+            Debug.Log("[OWSBG] ui screenshots: " + times + "on " + SystemInfo.graphicsDeviceName);
 
             Object.Destroy(uiRt); Object.Destroy(camRt);
             Assert.IsTrue(File.Exists(Path.Combine(OutDir, "ui-desk.png")));

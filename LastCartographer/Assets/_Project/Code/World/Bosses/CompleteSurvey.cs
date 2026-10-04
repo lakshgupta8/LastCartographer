@@ -13,7 +13,7 @@ namespace OWSBG.World
     /// each faster. Ink pools where the named ground was; strike a pool to wound the Atlas. Between verses the chorus
     /// breathes: two beats with nothing named, time to Bind.
     /// </summary>
-    public sealed class CompleteSurvey : Boss
+    public sealed class CompleteSurvey : Boss, IKeepsBeat
     {
         [Header("The Complete Survey")]
         public float floorY = 0f;
@@ -40,6 +40,10 @@ namespace OWSBG.World
         public float BeatLength => beatSeconds[Mathf.Clamp(Phase - 1, 0, beatSeconds.Length - 1)];
         /// <summary>How far the named ground walks each beat: one, two, three sections.</summary>
         public int Stride => Mathf.Clamp(Phase, 1, 3);
+        /// <summary>The ink's beat, for the music to keep (AUD-13).</summary>
+        public float BeatSeconds => BeatLength;
+        public double BeatsInto => Beat + Mathf.Clamp01(_beatT / Mathf.Max(0.01f, BeatLength));
+        double _frozenSeen;
         public bool IsFixing => _fixLeft > 0f;
         public IReadOnlyList<BossPart> Pools => _pools;
         public int Fixes { get; private set; }
@@ -66,6 +70,7 @@ namespace OWSBG.World
 
         protected override bool ContactHurts => false;
         protected override bool AcceptsHit(in HitInfo hit) => _routing;
+        public override IEnumerable<string> PartSkinNames { get { yield return "InkPool"; } }
 
         protected override void Start()
         {
@@ -89,6 +94,7 @@ namespace OWSBG.World
             EnsureTiles();
             Beat = 0;
             _beatT = 0f;
+            _frozenSeen = Hitstop.FrozenSeconds;
             Named = -1;
             NextNamed = 0;
             RefreshTiles();
@@ -112,7 +118,8 @@ namespace OWSBG.World
             {
                 float dt = Time.fixedDeltaTime;
                 if (_fixLeft > 0f) { _fixLeft -= dt; if (_fixLeft <= 0f) Release(); }
-                _beatT += dt;
+                _beatT += dt + (float)(Hitstop.FrozenSeconds - _frozenSeen);   // the chorus sings on through a hit's freeze (AUD-13)
+                _frozenSeen = Hitstop.FrozenSeconds;
                 if (_beatT >= BeatLength) { _beatT -= BeatLength; Land(); }
             }
             base.FixedUpdate();
@@ -136,6 +143,7 @@ namespace OWSBG.World
             {
                 int from = Named >= 0 ? Named : (NextNamed >= 0 ? NextNamed : 0);
                 NextNamed = Named >= 0 ? (from + Stride) % sections : from;
+                Tell(AttackKind.Window);   // the next ground named: the read starts (AUD-10)
             }
             RefreshTiles();
         }
@@ -169,6 +177,7 @@ namespace OWSBG.World
             }
             var pool = BossPart.Make("InkPool", transform.parent, new Vector2(SectionCentre(section), floorY + poolSize.y * 0.5f), poolSize, InkMaterials.Dark);
             pool.OnHit = hit => StrikePool(pool);
+            Skin(pool, "InkPool");
             _pools.Add(pool);
         }
 

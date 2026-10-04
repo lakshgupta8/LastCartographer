@@ -91,11 +91,18 @@ namespace OWSBG.World
         }
         float DashDistance => dashDistance * DashScale;
         public bool IsClinging => _clinging;
+        /// <summary>The Talonhold's hold is spent: she slides slowly down the wall (CHR-04 draws it).</summary>
+        public bool IsSliding => _clinging && _clingTimer >= clingSeconds;
+        /// <summary>Carried up by an updraft this moment (<see cref="Lift"/> within the last few steps).</summary>
+        public bool IsLifted => Time.fixedTime - _liftedAt <= 3f * Time.fixedDeltaTime + 1e-4f;
+        float _liftedAt = -10f;
         public int WallDirection => _wallDir;
         public bool IsInvulnerable => IsDashing && _dashElapsed >= dashInvulnStart && _dashElapsed <= dashInvulnEnd;
         public Vector2 Position => _rb != null ? _rb.position : (Vector2)transform.position;
 
         public event Action Jumped, Landed, Dashed, Pogoed, Threaded;
+        /// <summary>The push off a wall (after <see cref="Jumped"/>), and the thread's arrival at its anchor.</summary>
+        public event Action WallJumped, ThreadArrived;
         /// <summary>A thread thrown with no anchor in reach, or no ink for it.</summary>
         public event Action ThreadRefused;
 
@@ -179,6 +186,7 @@ namespace OWSBG.World
         /// <summary>Carried up (an updraft under Windmemory's wings): at least this rising speed, off the ground.</summary>
         public void Lift(float speed)
         {
+            _liftedAt = Time.fixedTime;
             if (_vel.y >= speed) return;
             _vel.y = speed;
             _grounded = false;
@@ -276,11 +284,13 @@ namespace OWSBG.World
                         _inputLock = wallJumpLockFrames;
                         _clinging = false;
                     }
+                    bool offWall = !canGroundJump;
                     _grounded = false;
                     _coyoteLeft = 0;
                     _jumpCutApplied = false;
                     _apexLeft = apexHangFrames;
                     Jumped?.Invoke();
+                    if (offWall) WallJumped?.Invoke();
                 }
 
                 // Toggled glide (DES-14): in the air, falling, where the press can't jump, it switches the glide.
@@ -387,11 +397,13 @@ namespace OWSBG.World
             _threadFramesLeft--;
             if (d.magnitude <= threadArrive || _threadFramesLeft <= 0 || _threadTo == null)
             {
+                bool arrived = d.magnitude <= threadArrive;
                 _threadFramesLeft = 0;
                 _vel = new Vector2(Mathf.Sign(d.x) * runSpeed * 0.6f, threadHop);
                 _dashCharges = 1 + ExtraAirDashes;
                 _jumpCutApplied = true;
                 _apexLeft = apexHangFrames;
+                if (arrived) ThreadArrived?.Invoke();
                 return;
             }
             _vel = d.normalized * threadSpeed;

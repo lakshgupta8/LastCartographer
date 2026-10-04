@@ -3,12 +3,17 @@ using UnityEngine;
 namespace OWSBG.World
 {
     /// <summary>
-    /// A temporary Inkthread point (tether-hook). Inkthread itself is a later movement ability
-    /// (CMB-04); until then this is a marker that the ability will look for by component.
+    /// An Inkthread point: a temporary one thrown as a tether-hook, which fades, or a permanent one the kit places
+    /// (ENV-04: the anchor-points in the Verdance's branches and the Gatekeeper's roots), which stays. The thread
+    /// (WrenController.TryThread) finds either by component.
     /// </summary>
     public sealed class TetherAnchor : MonoBehaviour
     {
+        [SerializeField] bool _permanent;
+
         public float LifeLeft { get; private set; }
+        /// <summary>A placed anchor-point: never fades, never pulses (its drawing is the kit's).</summary>
+        public bool Permanent { get => _permanent; set => _permanent = value; }
 
         public static TetherAnchor Spawn(Vector2 at, float seconds)
         {
@@ -25,6 +30,7 @@ namespace OWSBG.World
 
         void Update()
         {
+            if (_permanent) return;
             LifeLeft -= Time.deltaTime;
             if (LifeLeft <= 0f) Destroy(gameObject);
             else transform.localScale = Vector3.one * (0.3f + 0.05f * Mathf.Sin(Time.time * 6f));

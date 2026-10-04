@@ -59,6 +59,11 @@ namespace OWSBG.World
 
         protected override bool ContactHurts => false;
         protected override bool AcceptsHit(in HitInfo hit) => _routing;
+        /// <summary>The Choir is the song: the doves are the drawing (CHR-08).</summary>
+        protected override bool Bodiless => true;
+        public override IEnumerable<string> PartSkinNames { get { yield return "ChoirDove"; } }
+        /// <summary>How far a dove is through its ring, 0..1; its bell rises through the ring clip.</summary>
+        public float RingProgress(int dove) => IsRinging(dove) ? Mathf.Clamp01((float)_ring[dove] / Mathf.Max(1, RingFrames)) : 0f;
 
         protected override void Start()
         {
@@ -74,6 +79,7 @@ namespace OWSBG.World
                 int k = i;
                 var d = BossPart.Make("Dove_" + i, transform.parent, DoveHome(i), doveSize, DoveMaterial(false));
                 d.OnHit = hit => HitDove(k, hit);
+                Skin(d, "ChoirDove");
                 _doves.Add(d);
             }
         }
@@ -87,7 +93,9 @@ namespace OWSBG.World
         {
             if (!IsDoveActive(dove)) return;
             _ring[dove] = 0;
+            Tell(AttackKind.Window);   // a ring is a window: its chime as it starts (AUD-10)
             _doves[dove].SetMaterial(DoveMaterial(true));
+            _doves[dove].Play("ring", true);
         }
 
         bool HitDove(int i, HitInfo hit)
@@ -148,14 +156,18 @@ namespace OWSBG.World
         void Quiet(int i)
         {
             _ring[i] = -1;
-            if (i < _doves.Count && _doves[i] != null) _doves[i].SetMaterial(DoveMaterial(false));
+            if (i < _doves.Count && _doves[i] != null) { _doves[i].SetMaterial(DoveMaterial(false)); _doves[i].Play("idle"); }
         }
 
         protected override void Tick(float dt)
         {
             // Bob in the evening air.
             for (int i = 0; i < _doves.Count; i++)
-                if (IsDoveActive(i)) _doves[i].MoveTo(DoveHome(i) + Vector2.up * Mathf.Sin(Time.time * 2f + i) * 0.1f);
+            {
+                if (!IsDoveActive(i)) continue;
+                _doves[i].MoveTo(DoveHome(i) + Vector2.up * Mathf.Sin(Time.time * 2f + i) * 0.1f);
+                if (IsRinging(i)) _doves[i].Seek(RingProgress(i));   // the bell rises through the ring
+            }
 
             // The song: advance each bell; a finished ring tolls.
             for (int i = 0; i < DoveCount; i++)

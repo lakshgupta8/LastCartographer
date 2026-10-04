@@ -3,7 +3,7 @@
 Twelve bosses from the boss sheets, built as greybox kits: the four mid-game fights (6.4 to 6.7, CMB-13), three
 late ones (6.8 to 6.10, CMB-14), Voss at the Threshold (6.11, CMB-15) and the four endgame fights (6.12 to 6.15,
 CMB-16). With the Lamp-Keeper and Halvard's first fight (built into their rooms), every boss sheet now has a kit
-except Reedmother's Brood (6.2, optional) and Halvard's second and third (CMB-12). Each kit keeps to the sheet's
+and Halvard's second and third hunts have theirs too (CMB-12, below). Each kit keeps to the sheet's
 arena, its three phases and its answers. The sheet owns the reason and the words; the kit owns the frame data.
 Telegraphs keep the tier's floor (11 frames at Tier II, 10 at Tier III, 8 at Tier IV), and no phase has more than
 four attacks. Health, slams and each tier's typical read are the tuning pass's (CMB-19, `tuning.md`); every kit
@@ -11,6 +11,8 @@ declares its attacks (`Boss.Kit()`) and the tuning audit holds them to the rules
 
 Code: `Collapse`, `Brann`, `Choir`, `Gatekeeper`, `Oriel`, `Hale`, `FallenStar`, `Voss`, `HalfCathedralBells`,
 `CorrasDrawing`, `Archivist`, `CompleteSurvey` (World, `Code/World/Bosses/`), all on the `Boss` framework (CMB-10).
+Every kit is drawn now: the bodies and the pieces the fights make (`docs/design/boss-animation.md`, CHR-08 to
+CHR-10); Brann and Oriel are the Warden family's (`enemy-animation.md` §2a).
 `BossKits.Build(id, parent, origin)` builds any of the twelve arenas: an 18-unit floor between two doors, the arena
 zone, the props, and the boss with the name, tier, lines, reward and scraps from its sheet. The test rigs and the
 game's rooms use the same recipe.
@@ -32,6 +34,24 @@ game's rooms use the same recipe.
 - **The answers as hit rules.** `Boss.IsLongstroke(hit)` means the forward Flourish in the frame it strikes.
   `IsDownStrike` means the pogo and `IsUpStrike` means the belly. The kits use these three tests to ask for the
   sheet's answers.
+
+## 6.2 Reedmother's Brood, the Pale Iris Fields
+
+The coast's optional boss, tier I, in the fields' own room (`Saltmarrow_IrisFields`, between the beds, doors at
+−5 and 11) rather than a runtime arena room. The nest is closed to the quill. On its call (a Shape, 20 frames: the
+mouth opens) a clutch of three reedlings hops out of it (CMB-09, enemy-animation.md §2f: copies of a reedling the
+room keeps dormant, drawn from its sheets) and the nest stays open 1.6 s (1.3, 1.0 by phase): that window is the
+only time it can be struck. Never more than six chicks at once. Its reeds thresh the floor either side (a Strike,
+18 frames, 3.5 units each way, 1.1 high: a jump clears them).
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Brood call, thresh | Jump the reeds; strike the open nest while the clutch is out, or Blot the clutch first |
+| 2 | Brood call, thresh, thresh | The same, faster |
+| 3 | Thresh, brood call, thresh; **the fire** (bible 6.2: the Guild's agents set the field alight) creeps in from the east edge toward the nest, a step every 4 s, four steps (a Window to the tables, read as the 240 frames of a step); standing in it costs a mask | **The choice.** Stamp the fire out (three down-strikes on it) and the Brood calms (`calm`), the beds stand and the Ferrymen's prices hold. Strike the nest down, or let the fire reach it, and the nest burns (`death`): `saltmarrow.iris_burned` is set and the Ferrymen's prices rise by half (`Economy.IrisBurned`) |
+
+Either way the fight ends in a win: the arena's flag is set, and the Tether-hook (Economy's stock) is hers. The
+sheet's lines run "Ours. Ours. Ours." to "...ours?" over the phases.
 
 ## 6.4 The Collapse, at the bottom of Hollowvein
 
@@ -61,6 +81,10 @@ pattern shifts, and the sections about to heat glow orange 0.8 s before.
 | 3 | Dark: nothing burns | Hold, cross-cut, thrust, charge | Read the glow: his brass is dim (0.25) at rest and full (1.0) on every telegraph |
 
 34 health, 3 scraps, `boss.brann.defeated`.
+
+**Drawn** (ENV-12): each section is a `FurnaceGrate` (boss_parts.py): cool iron, its slots glowing as it warms,
+white with flames licking up past her feet when hot, sooted over in the dark. The drawing is the rule's own read:
+what burns is what is drawn burning.
 
 ## 6.6 The Choir, over Aldermere's square
 
@@ -92,6 +116,53 @@ in the middle.
 
 34 health, 2 scraps, `boss.gatekeeper.defeated`. The heavy landing is a slam (two masks, the shake, a 16-frame read). A retry puts it back on its plinth with its roots.
 
+## 6.3 Halvard's second and third hunts (CMB-12)
+
+`Halvard` is one component with three kits. The hunt is the sheet's tier (`halvard` I, `halvard_2` II, `halvard_3`
+III) or set outright (`Halvard.hunt`), and `Kit()` declares only that hunt's attacks. The first hunt is unchanged.
+`BossKits.Build` builds the two later ones for the test rigs (`BossKits.LaterHunts`, kept out of `Ids` because no
+arena room is generated for them); the game fights them in the built rooms that already hold them, `Halden_Bridges_4`
+on `act2.started` and `Greyfold_Threshold_1` on `threshold.halvard.spoken`.
+
+**The cord lance** is new to both. He aims (16 frames, the second lance drawn back in the far wing) and throws it
+level at lance height. It flies 14 units a second, to 7.5 units or the arena's edge, and hangs there for 6 frames.
+Then he hauls it back low, at 0.45 units: jump it. Going out it can be parried, which drops it and staggers him as a
+parried thrust does. Coming back it cannot. It is a `BossPart` that refuses the quill and wears `CordLance`, with a
+cord drawn from his hand to it.
+
+### II. The Seven Bridges
+
+The floor under the arena becomes six spans of bridge for the fight. The room's floor stands aside, and copies of
+its ends past the arena are kept so the doors still have ground. A survey marks spans instead of squares: hers in
+phase 1, and the next one along his facing in phase 2. The count **cuts** every marked span except his own, as long
+as more than the last span would be left. A cut span loses its collider and plays `BridgeSpan`'s `fall`, and she
+drops into the drop: Inkthread or Talonhold to recover, or the room's fall-and-return. Phase 3 opens by cutting all
+but three spans round her, with him on the far end of them.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Thrust, cord lance, lunge | Parry the lance going out, jump it coming back |
+| 2 | Survey (spans), cord lance, count (cuts), thrust | Stand off a marked span when he calls it, or be ready to recover |
+| 3 | The last span: cord lance, lunge, thrust, cord lance | No floor to spare: jump the recall, parry the throw |
+
+At zero he withdraws and "leaves the span standing": every span and the room's floor come back.
+
+### III. The Threshold
+
+Everything he has: both lances, the marks and the count, on the Threshold's edge with the Blank eating the arena from
+the west. Phase 2 makes the west quarter an `UntetheredZone` (white, nothing holds her there without Clarity), and
+phase 3 the west half. He keeps east of it, and so do his marks. **Halfway through he stops counting:** phase 3 has
+no survey and no count, its marks are wiped, and a count drawn from an empty board becomes a thrust.
+
+| Phase | Attacks | Answer |
+|---|---|---|
+| 1 | Thrust, cord lance, survey, count | As the chapel's, and the bridges' lance |
+| 2 | Lunge, cord lance, survey, count; the west quarter white | Read the marks; keep out of the white or carry the Clarity |
+| 3 | Cord lance, thrust, lunge; the west half white, no more counting | Fight on half a floor |
+
+Health from the tuning table (`halvard_2`, `halvard_3`), Tier II's and Tier III's telegraph floors, every strike one
+mask. `HalvardHuntsTests` (play mode) builds both and fights them to these answers.
+
 ## 6.8 Warden-Captain Oriel, the Bastion's drill-yard
 
 She has read Pell's report and fights to see whether it is accurate, so she mirrors Wren. When the fight begins she
@@ -105,7 +176,10 @@ times its startup, never under the tier's floor. The late Charters mirror as the
 | 2 | Combo, Wren's own Flourish (Crosshatch in front, Longstroke six units, or Blot round her), step | Whatever the Charter asks |
 | 3 | At a third she steps clear and Binds, once: 60 frames, then a third of her health back. Then Flourish, combo, step, combo | Deny the Bind: a hit while she binds stops it, staggers her, and the Bind is spent |
 
-38 health, 3 scraps, `boss.oriel.defeated`. **The stand-down:** she counts every mask Wren loses in the attempt.
+38 health, 3 scraps, `boss.oriel.defeated`. **The yard** stands its drill from the plateau's kit: a rack of practice
+lances with her slot empty, a slate with the morning's three strokes chalked on it (overhead, shove, sweep: the
+Charter's combo the way she reads it back), and the paces chalked along the flags' edge, every fourth numbered in a
+tally. **The stand-down:** she counts every mask Wren loses in the attempt.
 Beaten with none lost, she writes `halden.oriel.stood_down`. A retry starts the count again and gives her Bind back.
 
 **A rule changed with it.** `Licence` used to let Pell's report outrank Oriel. But she only fights once the report
@@ -238,7 +312,9 @@ fights that boss: `Arena_Emberdown_Hollow_4`, `Arena_Emberdown_Stair_3`, `Arena_
 `Arena_Verdance_Gate_2`, `Arena_Halden_Bastion_2`, `Arena_Windreach_Stones_3`, `Arena_Windreach_Star_2`,
 `Arena_Greyfold_Threshold_2`, `Arena_Greyfold_Cathedral_2`, `Arena_Blank_Capital_2`, `Arena_Blank_Capital_4`,
 `Arena_Halden_Observatory_2`. Each room has walls, paper layers, the kit, and a west spawn outside the doors. When a
-region's rooms are built, its arena moves into them and that generator entry retires.
+region's rooms are built, its arena moves into them and that generator entry retires. The Reedmother's Brood is the
+first kit to have that already: it stands in the Pale Iris Fields, a built room, so `ArenaRooms.SceneFor` names
+`Greybox_Saltmarrow_IrisFields` for it (the greybox scene its sheet's zone names) and builds no arena room.
 
 ## Tests
 
@@ -256,6 +332,12 @@ region's rooms are built, its arena moves into them and that generator entry ret
 - **The Gatekeeper:** the roots stand as anchors; the sweep and the feathers land; feathers pogo; it rises, tears
   its roots, and then takes only up-strikes; a pass crosses the gate; a retry restores it.
 - **Every kit:** each one defeated sets its flag, gives its sheet's scraps and opens its doors.
+
+`ReedmotherBroodTests` (PlayMode, 5 tests): the nest closed turns the quill and opens to call a clutch of three
+(tuned reedlings), open takes the strike, closes again, and never passes the brood's limit; the reeds thresh the
+floor either side within the tier's read; stamping the fire out calms the Brood, the beds stand, the prices hold and
+the hook is hers; the fire reaching the nest burns the field and the Ferrymen's board goes up by half; killing the
+open nest burns the field too, through all three lines.
 
 `LateBossKitFightTests` (PlayMode, 10 tests) do the same for the late three:
 
@@ -295,21 +377,25 @@ the grade; a retry mid-hold frees her and unseals the arena.
 
 The arena-room tests cover all twelve rooms.
 
-`ArenaRoomsTests` (PlayMode, 2 tests) check that each kit has a planned room in its sheet's zone. They also travel
-to every arena room in the real game and walk in to start each fight.
+`ArenaRoomsTests` (PlayMode, 2 tests) check that each kit has a planned room in its sheet's zone, or (the Brood) a
+built one. They also travel to every arena room in the real game, and to the Iris Fields, and walk in to start each
+fight.
 
 ## Open
 
+- **The calmed nest fades like a death.** The Brood's calm ending plays `calm`, but the base death fade still takes
+  the drawing's ink and hides it; the bible has the nest stand. A boss death that leaves the body belongs with the
+  framework. Its intro is the recipe arena's plain one, with no Timeline, like the other recipe bosses.
 - **Hale can't win the survey yet.** Nothing happens if he sights all nine; the bible's stake (nine stones and the
   Guild can anchor Windreach) belongs to the fight's outcome with the region's room, where it could write
   `windreach.hale.finished`.
 - **The Fallen Star's magnetism** is v1 as a hit rule (side strikes drift). It doesn't yet pull Wren or bend the
   quill's path.
-- **Oriel's arena** always holds her; gating it on `pell.report_sent` belongs with the Bastion's built room, like
-  the Choir's gate.
+- ~~Oriel's arena always holds her.~~ The Bastion's built room gates it on `pell.report_sent` (its recipe's arena
+  flag); without the report the yard is empty but for its drill.
 - **Voss's sheet has sections freeze mid-air and platforms lock.** v1 seals floor sections only; the Threshold's
   built room, with platforms to lock, can add them. His "shrinking island" is the floor's last two sections, not a
-  platform yet. Halvard's third kit, fought before him at Threshold_1, is still CMB-12's.
+  platform yet. Halvard's third kit, fought before him at Threshold_1, is built (6.3 III above).
 - **The lantern-radius is a picture now (PRG-18, `clarity.md`).** While the Bells ring they hold the radius
   (`Lantern.Hold`), and the paper pass whitens the nave beyond it, keeping outlines at the edge of the eye. They let
   go when silenced or on a retry. Cutting the ropes by Inkthread is still open: the thread exists (CMB-18), but v1
@@ -323,9 +409,9 @@ to every arena room in the real game and walk in to start each fight.
   the walk's, like the Collapse's. It fights only in the true ending; its room always holds it.
 - **Inkthread doesn't exist as a movement yet** (CMB-04). The Gatekeeper's phase 2 is reachable in the tests by
   placing Wren; in play it needs the thread. The roots are already the anchors the ability will look for.
-- **The Collapse keeps its own beat.** The bible's fight is the bounds-walk's last verse, so it should share the
-  walk's clock (`BoundsWalk`) and Runa's chorus. When the Hollowvein walk is staged into the room, the beat becomes
-  the walk's.
+- **The Collapse keeps its own beat.** The Hollowvein walk is staged (bounds-walk.md §2): the fight is its fourth
+  verse, wakes only once the three above are walked, and walks the whole when won. Its 0.8 s lamps are one
+  Hollowvein beat, a quarter of the walk's bound; sharing the chorus's voice in the fight is still open.
 - **The Choir fights only if Wren tries to stop Aldermere's last day.** The arena room always holds it; gating it
   on `verdance.aldermere.stopped` belongs with the region's built room.
 - **No intro cutscenes or arena cameras yet.** The arenas use the short intro wait; PRG-16 staging follows the

@@ -58,7 +58,7 @@ namespace OWSBG.UI
             if (_flash > 0f) _flash -= Time.deltaTime; else _name.style.color = InkTheme.Ink;
             var verse = walk.CurrentVerse;
             _line.text = (verse != null && !string.IsNullOrEmpty(verse.Title) ? walk.VerseTitle(walk.VerseIndex) + "  ·  " : "")
-                         + Loc.F("walk.progress", "verse {0} of {1}  ·  beat {2} of {3}", walk.VerseIndex + 1, walk.Verses.Count, walk.BeatIndex + 1, verse != null ? verse.Beats.Count : 0);
+                         + Loc.F("walk.progress", "verse {0} of {1}  ·  beat {2} of {3}", walk.WholeVerse + 1, walk.WholeVerses, walk.BeatIndex + 1, verse != null ? verse.Beats.Count : 0);
             _fill.style.width = new Length(walk.BeatProgress * 100f, LengthUnit.Percent);
             for (int i = 0; i < _marks.childCount; i++)
                 _marks[i].style.backgroundColor = i < walk.Misses ? InkTheme.Ochre : new Color(0f, 0f, 0f, 0f);
@@ -74,12 +74,9 @@ namespace OWSBG.UI
             _root.style.top = 36;
             _root.style.translate = new Translate(new Length(-50, LengthUnit.Percent), 0);
             _root.style.alignItems = Align.Center;
-            _root.style.backgroundColor = InkTheme.Paper;
-            InkTheme.SetPadding(_root, 10f, 26f);
-            InkTheme.SetRadius(_root, 6f);
-            InkTheme.SetBorder(_root, InkTheme.InkFaint, 1f);
+            InkTheme.Strip(_root);
             InkTheme.ApplyFont(_root);
-            _name = InkTheme.Text("walk-name", "", 30, InkTheme.Ink, FontStyle.Bold);
+            _name = InkTheme.TitleText("walk-name", "", 32, InkTheme.Ink);
             _line = InkTheme.Text("walk-line", "", 15, InkTheme.Dim);
             _line.style.marginTop = 2;
             _bar = new VisualElement { name = "walk-bar", pickingMode = PickingMode.Ignore };

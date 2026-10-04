@@ -22,7 +22,11 @@ namespace OWSBG.World
         public bool IsSurveyed => GameState.World.IsSurveyed(_vantageId);
         /// <summary>0..1 while holding; 0 when idle or done.</summary>
         public float Progress { get; private set; }
+        /// <summary>The vantage Wren is holding the survey at, if any (CHR-03: the survey pose).</summary>
+        public static VantagePoint Surveying { get; private set; }
         public event Action<VantagePoint> Surveyed;
+        /// <summary>Any vantage drawn, anywhere (the drawn sound, AUD-03).</summary>
+        public static event Action<VantagePoint> AnySurveyed;
 
         WrenController _wren;
         Inkwell _ink;
@@ -50,6 +54,7 @@ namespace OWSBG.World
             _wren = null;
             _ink = null;
             Progress = 0f;
+            if (Surveying == this) Surveying = null;
         }
 
         void FixedUpdate()
@@ -67,11 +72,13 @@ namespace OWSBG.World
             bool latched = _wren.Input != null && _wren.Input.SurveyHeld;
             if (IsSurveyed) { Progress = 0f; if (latched) Controls.Release(Hold.Survey); return; }
             bool holding = latched && _wren.IsGrounded;
-            if (!holding) { Progress = 0f; if (latched) Controls.Release(Hold.Survey); return; }
+            if (!holding) { Progress = 0f; if (Surveying == this) Surveying = null; if (latched) Controls.Release(Hold.Survey); return; }
+            Surveying = this;
             Progress = Mathf.Clamp01(Progress + dt / Mathf.Max(0.01f, _holdSeconds));
             if (Progress >= 1f)
             {
                 Progress = 0f;
+                if (Surveying == this) Surveying = null;
                 var w = GameState.World;
                 string place = Atlas.PlaceOf(_vantageId);
                 bool recovering = Atlas.IsErased(w, place);
@@ -79,6 +86,7 @@ namespace OWSBG.World
                 {
                     Captions.Show(recovering ? Loc.F("caption.drawn_again", "Drawn again: {0}", Atlas.PlaceName(place)) : Loc.F("caption.drawn", "Drawn: {0}", Atlas.VantageName(_vantageId)), 2.5f);
                     Surveyed?.Invoke(this);
+                    AnySurveyed?.Invoke(this);
                 }
                 Controls.Release(Hold.Survey);
             }

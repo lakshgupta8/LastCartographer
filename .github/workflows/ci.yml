@@ -154,7 +154,8 @@ jobs:
         shell: pwsh
         run: ./tools/smoke.ps1 -Exe build/LastCartographer.exe -Log smoke.log
       # The performance probe with no GPU (the hosted runners have none): it walks six rooms and fails the run on a
-      # transition over 100 ms or garbage on a quiet frame. Frame rate needs a card: PRO-06's gate reads testers' runs.
+      # transition over 100 ms or garbage on a quiet frame. It caught the art's cost the first time it ran here (the
+      # fifteenth run, docs/design/performance.md). Frame rate needs a card: PRO-06's gate reads testers' runs.
       - name: Walk six rooms and time the transitions (CPU side)
         shell: pwsh
         run: ./tools/perf.ps1 -Exe build/LastCartographer.exe -Batch -Out perf-ci.json -Log perf-ci.log

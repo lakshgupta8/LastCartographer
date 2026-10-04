@@ -11,7 +11,9 @@ namespace OWSBG.Narrative
     /// the Gatekeeper at the Overgrown Gate, Oriel in the Bastion's drill-yard, Hale at the Nine Stones, the Fallen Star
     /// in its anvil-crater, Voss at the Threshold, the Half-Cathedral's bells, Corra's room, the mirror-Observatory, and the
     /// Observatory's frame for the Complete Survey. Owns scenes named "Arena_&lt;planned room id&gt;"; the room is the greybox recipe
-    /// around the boss's kit, entered from the west. Replaced by the region's built rooms when they come.
+    /// around the boss's kit, entered from the west. Replaced by the region's built rooms when they come. A kit whose boss
+    /// stands in a built region's room already (the Reedmother's Brood in the Pale Iris Fields) has no arena room: its
+    /// scene is the greybox room its sheet's zone names.
     /// </summary>
     public static class ArenaRooms
     {
@@ -20,9 +22,20 @@ namespace OWSBG.Narrative
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Register() { if (!RoomManager.Generators.Contains(Build)) RoomManager.Generators.Add(Build); }
 
-        /// <summary>The planned room a boss is fought in (RoomPlans' Arena column).</summary>
+        /// <summary>The planned room a boss is fought in (RoomPlans' Arena column); null for a boss in a built room.</summary>
         public static RoomPlan RoomOf(string bossId) => RoomPlans.All.FirstOrDefault(r => r.Arena == bossId);
-        public static string SceneFor(string bossId) { var r = RoomOf(bossId); return r == null ? null : ScenePrefix + r.Id; }
+        /// <summary>A kit whose fight is in a built region's room (its sheet's zone names a greybox scene), not an arena room.</summary>
+        public static bool InBuiltRoom(string bossId) => RoomOf(bossId) == null && Bosses.Find(bossId) != null;
+        /// <summary>The greybox scene a zone id names: "Saltmarrow.IrisFields" is Greybox_Saltmarrow_IrisFields.</summary>
+        public static string BuiltScene(string zoneId) => string.IsNullOrEmpty(zoneId) ? null : "Greybox_" + zoneId.Replace('.', '_');
+        /// <summary>The scene a kit's boss is fought in: its arena room, or the built room its sheet's zone names.</summary>
+        public static string SceneFor(string bossId)
+        {
+            var r = RoomOf(bossId);
+            if (r != null) return ScenePrefix + r.Id;
+            var sheet = Bosses.Find(bossId);
+            return sheet == null ? null : BuiltScene(sheet.Zone);
+        }
         public static bool IsArenaScene(string scene) => !string.IsNullOrEmpty(scene) && scene.StartsWith(ScenePrefix);
 
         public static Room Build(string sceneName)

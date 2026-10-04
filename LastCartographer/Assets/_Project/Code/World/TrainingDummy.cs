@@ -21,11 +21,19 @@ namespace OWSBG.World
         float _flashUntil, _recoilT = -1f;
         static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
         static readonly Color RestColor = new Color(0.75f, 0.35f, 0.30f);
+        static readonly Color DrawnRest = Color.white, DrawnFlash = new Color(1.8f, 1.7f, 1.4f);
+        static readonly int InkId = Shader.PropertyToID("_Ink");
+        Color _rest = RestColor, _flash = Color.white;
+
+        /// <summary>The target is the kit's drawing (ENV-09), not the red block: it rests in its own colours.</summary>
+        public bool IsDrawn { get; private set; }
 
         void Awake()
         {
             _renderer = GetComponentInChildren<Renderer>();
             _mpb = new MaterialPropertyBlock();
+            IsDrawn = _renderer != null && _renderer.sharedMaterial != null && _renderer.sharedMaterial.HasProperty(InkId);
+            if (IsDrawn) { _rest = DrawnRest; _flash = DrawnFlash; }
             _restPosition = transform.position;
             _restScale = transform.localScale;
         }
@@ -57,7 +65,7 @@ namespace OWSBG.World
 
             if (_renderer == null) return;
             _renderer.GetPropertyBlock(_mpb);
-            _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? Color.white : RestColor);
+            _mpb.SetColor(BaseColorId, Time.time < _flashUntil ? _flash : _rest);
             _renderer.SetPropertyBlock(_mpb);
         }
     }

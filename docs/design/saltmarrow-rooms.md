@@ -38,6 +38,8 @@ Shore ── Quay (A) ── Stilts ── Boardwalk ── Merrow's End (B) ─
 | **Roots_2** | Reedmother's Roots | The Bole vantage on the floor, then a climb to a top exit. | Bole | skimmer, crab | W → Roots_1, up → Roots_3 |
 | **Roots_3** | Reedmother's Roots | Among the roots: a smudge in the dark, a skimmer in the light; the gap drops back down. | — | smudge, skimmer | down → Roots_2, E → Roots_4 |
 | **Roots_4** | Reedmother's Roots | The crown: three platforms up to the highest vantage on the coast; the view is the point. | Crown | crab, skimmer | W → Roots_3 |
+| **BoneBridge** (ENV-03) | Bone Bridge | The whale faded to its bones over the channel (`Paper_Mid_Bones`); a six-unit Wingbeat gap; the whale sings when its bones are drawn. The chapel opens east onto it under the altar's wall. | Whale | crab, smudge | W → Chapel, E → Emberdown Stair_1 |
+| **IrisFields** (ENV-04) | Pale Iris Fields | Irises to the horizon (`Paper_Mid_Irises`), the Reedmother's nest in the middle of them (the Brood, 6.2, its arena between the beds); seeds lying about; the road east to the Verdance's iris gap. Reedmother's crown opens east onto it. | Irises | crab, skimmer, reedling ×3 | W → Roots_4, E → Verdance Road_1 |
 | **Greyfold_Edge** (hand-built) | Half-Cathedral | The prologue. | HalfCathedral | 3 smudges | the white → A "Shore" |
 
 Vantages in the slice: 8 (Tideline, Reedmother, Tetherpost, Bole, Crown, FirstLamp, SecondLamp, Lamp).
@@ -52,18 +54,21 @@ Vantages in the slice: 8 (Tideline, Reedmother, Tetherpost, Bole, Crown, FirstLa
 - **Fade.** Every room has a `FadeGroup`; the place is the room. The faded third lighthouse uses the paler
   palette from the start.
 - **The look.** Three paper layers per room (mid reeds, far roosts, farther cliffs) and a foreground reed line
-  in hub rooms; the sea-fade is the Edge's white sheets mirrored to the west.
+  in hub rooms; the sea-fade is the Edge's white sheets mirrored to the west. Since ENV-02 the layers and the
+  ground come off the Saltmarrow paper kit (`docs/design/paper-kit.md`): planks on the coast, paler planks in
+  the faded third, the tide in the Boardwalk's gaps, salt stone under the lighthouse and the chapel.
 
 ## 3. The rest of the coast (after the slice)
 | Zone | Rooms | Notes |
 |---|---|---|
-| The Pale Iris Fields | 3 | East of Reedmother's Roots; iris seeds (DES-05); the iris gap to the Verdance (Wingbeat, soft). |
+| The Pale Iris Fields | 3 | East of Reedmother's Roots; iris seeds (DES-05); the iris gap to the Verdance (Wingbeat, soft). One room built (ENV-04, above). |
 | Lighthouses 5–7 | 3 | Beyond the fourth: the Salt Chapel road. |
 | The Salt Chapel | 2 more | The chapel's first room is built (the gap, the fight); a chapel of salt-eaten paper behind it. |
 | The Bone Bridge | 3 | The whale; the second step of the Bone Bridge commission; the climb to Emberdown. |
 
 ## 4. Open
-- Where the Ferrymen sell tethers (Sable, or the Ferry room's landing) once DES-05 prices them.
+- Where the Ferrymen sell tethers (Sable, or the Ferry room's landing) once DES-05 prices them. ENV-09 stands the
+  stall under the Quay's stilts, by Sable's night post; the Ferry has tether-posts and bound stakes, no boats.
 - Roots_4's reward beyond the view (a vellum scrap, a memory, the first Remnant?).
 - Real layouts on paper (ENV-02) will replace the recipes' platform arithmetic; the recipe keeps the exits,
   spawns, vantages and enemy answers, which is what the tests hold on to.

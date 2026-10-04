@@ -89,6 +89,7 @@ namespace OWSBG.Narrative
                 if (_holdSeconds > 0f) yield return new WaitForSeconds(_holdSeconds);
             }
 
+            if (MusicDriver.Instance != null) MusicDriver.Instance.BeginCoda(ending);   // the ending's coda crosses over as the screen goes white (AUD-08)
             yield return Fade(1f);
             w.Set(FinishedFlag, true);
             Captions.Show(Title, 8f);

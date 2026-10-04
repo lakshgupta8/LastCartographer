@@ -88,7 +88,7 @@ namespace OWSBG.Tests
         public void OnlyTheDriftIsUntetheredWallToWall()
         {
             Assert.IsNotNull(RoomPlans.Find(Clarity.DriftRoom), "the drift is a planned room");
-            Assert.AreEqual(Islands.DriftEntryScene, Clarity.DriftRoom, "the islands' drift begins there");
+            Assert.AreEqual(Islands.DriftEntryScene, WorldGraph.GreyboxPrefix + Clarity.DriftRoom, "the islands' drift begins there, in the built room (ENV-08)");
             foreach (var r in RoomPlans.All)
                 Assert.AreEqual(r.Id == Clarity.DriftRoom, Clarity.IsUntetheredRoom(r.Id), r.Id);
         }

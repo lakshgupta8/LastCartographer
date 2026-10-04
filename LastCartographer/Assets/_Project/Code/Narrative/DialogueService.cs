@@ -24,6 +24,7 @@ namespace OWSBG.Narrative
     ///   &lt;&lt;cutscene id&gt;&gt;          play a Cutscene and wait for it (PRG-16)
     ///   &lt;&lt;fade place stage&gt;&gt;     advance a place's fade stage 0-4 (PRG-14); anchored places ignore it
     ///   &lt;&lt;anchor place&gt;&gt; / &lt;&lt;hold place&gt;&gt; / &lt;&lt;release place&gt;&gt;   the regional decision, once and final (PRG-13)
+    ///   &lt;&lt;sing use&gt;&gt;            the roll-call in one of its uses: whale, runa, dotha, chorus, blank, archivist (AUD-02)
     /// Functions: flag(key), has_flag(key), surveyed(id), commission_state(id), commission_is(id, state).
     /// </summary>
     public sealed class DialogueService : MonoBehaviour
@@ -135,10 +136,21 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("shop", hub => Shops.Request(hub));
             runner.AddCommandHandler<string>("walk", id =>
             {
+                // A walk through rooms begins here and is taken up by its first room when Wren comes in (Hollowvein).
+                var relay = BoundsWalks.FindRelay(id);
+                if (relay != null)
+                {
+                    if (!BoundsWalks.BeginRelay(GameState.World, relay)) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: already walked");
+                    return;
+                }
                 var walk = BoundsWalk.Find(id);
                 if (walk == null || !walk.Begin()) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: no such walk here, or it is already walked");
             });
             runner.AddCommandHandler("epilogue", () => { EndingsRunner.Instance?.Begin(); });
+            runner.AddCommandHandler<string>("sing", use =>
+            {
+                if (RollCallSinger.Instance == null || !RollCallSinger.Instance.Sing(use)) Debug.LogWarning("[OWSBG] <<sing " + use + ">>: no such use of the roll-call");
+            });
             runner.AddCommandHandler<string, string>("voice", (kind, scope) =>
             {
                 if (Voices.TryParse(kind, out var v)) Voices.Record(GameState.World, v, scope);
@@ -163,6 +175,7 @@ namespace OWSBG.Narrative
                     Debug.LogWarning("[OWSBG] <<erase " + place + ">> refused: already erased or anchored");
             });
             runner.AddCommandHandler("camp", (Func<string, YarnTask>)CampAsync);
+            runner.AddCommandHandler("row", (Func<string, YarnTask>)RowAsync);
             runner.AddCommandHandler<string, string>("commission", (id, verb) =>
             {
                 if (!Commissions.Apply(GameState.World, id, verb))
@@ -185,6 +198,15 @@ namespace OWSBG.Narrative
             while (CampWalk.IsWalking) await YarnTask.Yield();
         }
 
+        /// <summary><c>&lt;&lt;row windreach&gt;&gt;</c> or <c>&lt;&lt;row quay&gt;&gt;</c>: Sable rows Wren to the other berth (<see cref="Boat"/>), and the line waits until there.</summary>
+        async YarnTask RowAsync(string destination)
+        {
+            if (!Boat.TryDestination(destination, out _, out _, out _)) { Debug.LogWarning("[OWSBG] <<row " + destination + ">>: only \"windreach\" or \"quay\""); return; }
+            StartCoroutine(BoatRow.Go(destination));
+            await YarnTask.Yield();
+            while (BoatRow.IsRowing) await YarnTask.Yield();
+        }
+
         static async YarnTask PlayCutsceneAsync(string id)
         {
             var cs = Cutscene.Find(id);
@@ -199,6 +221,10 @@ namespace OWSBG.Narrative
 
         [YarnFunction("has_flag")]
         public static bool HasFlag(string key) => GameState.World.Is(key);
+
+        /// <summary>The place the island Wren stands on was ("the Cinder Baths"), for the generic island scripts (blank-islands.md).</summary>
+        [YarnFunction("island_place")]
+        public static string IslandPlace() => Islands.Spoken(Islands.CurrentPlaceName);
 
         [YarnFunction("surveyed")]
         public static bool IsSurveyed(string vantageId) => GameState.World.IsSurveyed(vantageId);

@@ -4,9 +4,9 @@ using UnityEngine;
 namespace OWSBG.World
 {
     /// <summary>
-    /// Placeholder feedback for the quill until CHR-03/ENV-12 art lands: an ink slash quad in the
-    /// strike direction during the swing, and a burst of ink flecks on a landed hit.
-    /// Pure geometry (opaque ink-black quads) so it needs no transparent shader setup.
+    /// The quill's ink (ENV-12): a drawn slash along the swing, a splash where a hit lands, the Flourishes' scribbles,
+    /// all InkFx clips; where no effects are loaded (a scene without the persistent InkFx) the old geometry stands in:
+    /// an ink slash quad during the swing and a burst of ink flecks on a hit.
     /// </summary>
     [RequireComponent(typeof(QuillStrike))]
     public sealed class StrikeVisual : MonoBehaviour
@@ -57,16 +57,24 @@ namespace OWSBG.World
             return q.transform;
         }
 
+        static float Angle(Vector2 dir) => Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+
         void OnSwung(Vector2 dir)
         {
             _slashDir = dir;
+            _strike.GetHitbox(out var center, out _);
+            if (InkFx.Spawn("slash", center, Angle(dir), 0.9f) != null) return;
             _slashT = 0f;
             _slash.gameObject.SetActive(true);
         }
 
+        /// <summary>A Flourish's scribble (crosshatch, longstroke, blot) at a point in a direction; false when not loaded.</summary>
+        public bool Scribble(string clip, Vector2 at, Vector2 dir, float scale = 1f) => InkFx.Spawn(clip, at, Angle(dir), scale) != null;
+
         /// <summary>Flourishes: an ink burst at a point in a direction (use Vector2.zero for all round).</summary>
         public void Burst(Vector2 origin, Vector2 dir, int count, float speed = 9f)
         {
+            if (InkFx.Spawn("splash", origin, dir.sqrMagnitude > 0f ? Angle(dir) : Random.Range(0f, 360f), count >= 12 ? 1.3f : 0.9f) != null) return;
             for (int i = 0; i < count; i++)
             {
                 var t = _pool.Count > 0 ? _pool.Pop() : MakeQuad("Fleck");
@@ -87,6 +95,7 @@ namespace OWSBG.World
         {
             _strike.GetHitbox(out var center, out var size);
             var origin = center + _slashDir * (size.x > size.y ? size.x : size.y) * 0.35f;
+            if (InkFx.Spawn("splash", origin, Angle(_slashDir)) != null) return;
             for (int i = 0; i < _fleckCount; i++)
             {
                 var t = _pool.Count > 0 ? _pool.Pop() : MakeQuad("Fleck");

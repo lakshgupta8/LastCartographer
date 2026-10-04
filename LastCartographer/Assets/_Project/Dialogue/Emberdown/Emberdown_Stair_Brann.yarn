@@ -7,27 +7,33 @@ title: Stair_Brann
 <<if has_flag("boss.brann.defeated")>>
     <<stop>>
 <<endif>>
-Brann: Journeyman. You came up the stair. So will the anchoring crew, by dusk. #line:0f70b7c
-Brann: Kettil's Rest is scheduled. Fourteen streets. The survey is already written. I only need to seal it. #line:0cb8c0a
+Brann: Journeyman. You came up the stair. So will the anchoring crew, by dusk. #face:wary #line:0f70b7c
+Brann: Kettil's Rest is scheduled. Fourteen streets. The survey is already written. I only need to seal it. #face:wary #line:0cb8c0a
 -> They didn't ask for it. #line:0eb1bf4
-    Brann: Merrow's End didn't ask either. Ask it now what it wishes it had asked for. #line:03fd21b
+    <<voice warden emberdown>>
+    Brann: Merrow's End didn't ask either. Ask it now what it wishes it had asked for. #face:wary #line:03fd21b
 -> Let them hold it themselves. #line:05fa535
-    Brann: With a song. For how long? Until one voice goes? I have seen that happen. #line:00114c5
+    <<voice surveyor emberdown>>
+    Brann: With a song. For how long? Until one voice goes? I have seen that happen. #face:grave #line:00114c5
 -> ... #line:00e3ac2
-    Brann: I'll take that as a no. They all say no, at first. Then they thank us. Mostly. #line:01bdec6
-Brann: Stand aside, or stand in the furnace. It cools either way. #line:0225d9d
+    <<voice drift emberdown>>
+    Brann: I'll take that as a no. They all say no, at first. Then they thank us. Mostly. #face:wary #line:01bdec6
+Brann: Stand aside, or stand in the furnace. It cools either way. #face:wary #line:0225d9d
 <<flag emberdown.brann.met 1>>
 ===
 
 title: Stair_Rescue
 ---
-Hask: You pulled me off the landing. Nobody pulls anyone off the landing. The landing takes you. #line:008c7c0
-Hask: Stair crew counts nine. You made it nine again. Kettil will want your name. #line:092d5fd
+Hask: You pulled me off the landing. Nobody pulls anyone off the landing. The landing takes you. #face:bright #line:008c7c0
+Hask: Stair crew counts nine. You made it nine again. Kettil will want your name. #face:bright #line:092d5fd
 -> Wren. #line:0050c2b
-    Hask: Wren. I'll tell her. Nine and Wren. #line:0fae14a
+    <<voice surveyor emberdown>>
+    Hask: Wren. I'll tell her. Nine and Wren. #face:bright #line:0fae14a
 -> The landing's rotten. Someone should fix it. #line:09c8683
-    Hask: Someone should. The Guild said they'd send someone. That was before I hatched. #line:0114f9b
+    <<voice warden emberdown>>
+    Hask: Someone should. The Guild said they'd send someone. That was before I hatched. #face:wary #line:0114f9b
 -> ... #line:0bad013
+    <<voice drift emberdown>>
     Hask: Quiet. Aye. Nobody talks on the stair. Saves breath for the next step. #line:07662b9
 <<flag emberdown.rescue.done 1>>
 ===

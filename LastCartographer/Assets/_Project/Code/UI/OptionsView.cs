@@ -65,6 +65,7 @@ namespace OWSBG.UI
             Current = Page.Options;
             Row = 0;
             Refresh();
+            UiSounds.Open();
         }
 
         public void Close()
@@ -76,6 +77,7 @@ namespace OWSBG.UI
             _wren = null;
             Pause.End();
             if (_built) InkTheme.Show(_panel, false);
+            UiSounds.Close();
         }
 
         public void MoveRow(int delta)
@@ -83,6 +85,7 @@ namespace OWSBG.UI
             if (!IsOpen || IsListening) return;
             Row = (Row + delta + RowCount) % RowCount;
             Refresh();
+            if (RowCount > 1) UiSounds.Move();
         }
 
         /// <summary>Left (-1) or right (+1) on the current row.</summary>
@@ -93,6 +96,7 @@ namespace OWSBG.UI
             {
                 Column = Column == Controls.Device.Keyboard ? Controls.Device.Gamepad : Controls.Device.Keyboard;
                 Refresh();
+                UiSounds.Tick();
                 return;
             }
             switch ((Item)Row)
@@ -117,7 +121,18 @@ namespace OWSBG.UI
                 case Item.VolumeVoices: Options.Set(Options.Volume.Voices, Options.Get(Options.Volume.Voices) + dir * Options.VolumeStep); break;
             }
             Refresh();
+            // The tick carries the level on a volume row, so the ear reads the slider (AUD-11); the Sounds and Master rows are heard through it.
+            UiSounds.Tick(VolumeOf((Item)Row));
         }
+
+        static float VolumeOf(Item item) => item switch
+        {
+            Item.VolumeMaster => Options.Get(Options.Volume.Master),
+            Item.VolumeMusic => Options.Get(Options.Volume.Music),
+            Item.VolumeSound => Options.Get(Options.Volume.Sound),
+            Item.VolumeVoices => Options.Get(Options.Volume.Voices),
+            _ => -1f,
+        };
 
         /// <summary>Confirm on the current row: a switch flips, Controls opens its page, Resume closes, an action listens.</summary>
         public void Activate()
@@ -125,13 +140,14 @@ namespace OWSBG.UI
             if (!IsOpen || IsListening) return;
             if (Current == Page.Controls)
             {
-                if (Row == ResetRow) { Controls.ResetAll(Controls.Asset); Refresh(); return; }
+                if (Row == ResetRow) { Controls.ResetAll(Controls.Asset); Refresh(); UiSounds.Select(); return; }
                 Listen(Controls.Rebindable[Row], Column);
+                UiSounds.Select();
                 return;
             }
             switch ((Item)Row)
             {
-                case Item.Controls: Current = Page.Controls; Row = 0; Refresh(); break;
+                case Item.Controls: Current = Page.Controls; Row = 0; Refresh(); UiSounds.Select(); break;
                 case Item.Resume: Close(); break;
                 default: Adjust(+1); break;
             }
@@ -141,8 +157,8 @@ namespace OWSBG.UI
         public void Back()
         {
             if (!IsOpen) return;
-            if (IsListening) { CancelListen(); Refresh(); return; }
-            if (Current == Page.Controls) { Current = Page.Options; Row = (int)Item.Controls; Refresh(); return; }
+            if (IsListening) { CancelListen(); Refresh(); UiSounds.Back(); return; }
+            if (Current == Page.Controls) { Current = Page.Options; Row = (int)Item.Controls; Refresh(); UiSounds.Back(); return; }
             Close();
         }
 
@@ -204,7 +220,7 @@ namespace OWSBG.UI
             _panel.style.top = new Length(50, LengthUnit.Percent);
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 760;
-            _title = InkTheme.Text("title", "", 30, InkTheme.Ink, FontStyle.Bold);
+            _title = InkTheme.TitleText("title", "", 34, InkTheme.Ink);
             _title.style.marginBottom = 12;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _hint = InkTheme.Text("hint", "", 18, InkTheme.Dim, FontStyle.Italic);
@@ -314,8 +330,7 @@ namespace OWSBG.UI
             InkTheme.SetPadding(row, 6f, 10f);
             InkTheme.SetRadius(row, 4f);
             row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
-            var marker = InkTheme.Text("marker", sel ? "▸" : "", 22, InkTheme.Wash);
-            marker.style.width = 26;
+            var marker = InkTheme.Marker(sel);
             var l = InkTheme.Text("label", label, 22, InkTheme.Dim);
             l.style.width = 260;
             var v = InkTheme.Text("value", arrows && sel ? "◂  " + value + "  ▸" : value, 22, column == 0 ? InkTheme.Wash : InkTheme.Ink, column == 0 ? FontStyle.Bold : FontStyle.Normal);

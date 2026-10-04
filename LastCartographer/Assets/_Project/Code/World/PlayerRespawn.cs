@@ -21,6 +21,8 @@ namespace OWSBG.World
         public bool IsRespawning => _respawning;
         public event Action Respawned;
         public event Action WaxSealUsed;
+        /// <summary>The same, for anything that listens without a hand on the component (AUD-11: the sounds).</summary>
+        public static event Action AnyRespawned, AnyWaxSealUsed;
 
         void Start() { Bind(); }
 
@@ -64,6 +66,7 @@ namespace OWSBG.World
                 }
                 _wren.Teleport(sealPos);
                 WaxSealUsed?.Invoke();
+                AnyWaxSealUsed?.Invoke();
             }
             else if (RoomManager.Instance != null && !string.IsNullOrEmpty(room) && room != current)
             {
@@ -81,6 +84,7 @@ namespace OWSBG.World
             _wren.Frozen = false;
             _respawning = false;
             Respawned?.Invoke();
+            AnyRespawned?.Invoke();
         }
     }
 }

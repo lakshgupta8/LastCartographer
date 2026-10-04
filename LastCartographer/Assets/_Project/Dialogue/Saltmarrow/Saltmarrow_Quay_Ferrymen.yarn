@@ -1,0 +1,62 @@
+// The Ferrymen as a place (saltmarrow-arc.md §4): two more voices on the quay beside Sable's. Skua sells the rope
+// everyone goes in on, and prices it by who holds the other end; Dunlin counts the boats in, as Sable taught him,
+// and will not count the other number. State they read: the Lamp-Keeper, the widow (Tether_Knot), the quay's fate.
+
+title: Quay_Skua
+---
+<<if place_fate("Saltmarrow_A") == "anchored">>
+    Skua: Rope. Same rope, same price, same tide. Nobody's buying. #still #face:grave #line:0519c86
+    <<stop>>
+<<endif>>
+<<if not has_flag("saltmarrow.skua.talked")>>
+    Skua: Tether? You've the look of someone who wants one and won't pay. #face:wary #line:04f4cb6
+    Skua: Everyone who goes in from this quay goes in on my rope. The ones who come out, too. #line:063758c
+    <<flag saltmarrow.skua.talked 1>>
+<<elseif flag("saltmarrow.widow.decided") == 2>>
+    Skua: One fewer on the post. Rope's cheaper this week. Nobody's buying it. #still #face:grave #line:0864724
+<<elseif flag("saltmarrow.widow.decided") == 1>>
+    Skua: She handed the rope back. First one ever. I didn't know what to charge for that. #still #face:asking #line:0dd7b17
+<<elseif has_flag("boss.lamp_keeper.defeated")>>
+    Skua: Fourth lamp's lit. Rope sells when there's a light to walk toward. The Guild knows it. #still #line:08cb88a
+<<else>>
+    Skua: Nothing in, nothing out. Rope keeps. #still #line:000a549
+<<endif>>
+-> How much for a tether? #line:0d364b9
+    <<voice surveyor saltmarrow>>
+    Skua: Depends who holds the other end. Sable, four scraps. Me, six. Nobody holding, free. #still #line:0eb061a
+    Skua: The free ones don't come back for the change. #still #face:grave #line:09acef9
+-> The Guild buys from you? #line:0c6ad11
+    <<voice warden saltmarrow>>
+    Skua: The Guild buys from everyone and pays once. Their Wardens go in on Guild rope. It comes back empty. #still #face:wary #line:0d9e905
+-> ... #line:04a9abd
+    <<voice drift saltmarrow>>
+    Skua: Not buying. Thought not. Stand there, then. You keep the wind off the stall. #still #face:bright #line:08669fd
+===
+
+title: Quay_Dunlin
+---
+<<if place_fate("Saltmarrow_A") == "anchored">>
+    Dunlin: Forty-one. Forty-one. It stays forty-one. #still #face:grave #line:0f463d6
+    <<stop>>
+<<endif>>
+<<if not has_flag("saltmarrow.dunlin.talked")>>
+    Dunlin: Don't stand in the light. I'm counting. #face:wary #line:0340781
+    Dunlin: Boats. The ones that come in. Sable taught me: you count them in, you don't count them out. #line:071b418
+    Dunlin: Sable's is eleven hundred and six. Mine's forty-one. Hers has mine in it. #line:0cf4498
+    <<flag saltmarrow.dunlin.talked 1>>
+<<elseif has_flag("boss.lamp_keeper.defeated") and not has_flag("saltmarrow.dunlin.lamp")>>
+    Dunlin: Two came in by the new light last night. Two. Most in a night since I started. #face:bright #line:03a0a26
+    <<flag saltmarrow.dunlin.lamp 1>>
+<<else>>
+    Dunlin: Forty-one, and whatever today brings. Today hasn't brought anything yet. #still #face:grave #line:053c33f
+<<endif>>
+-> How many went out? #line:098897b
+    <<voice surveyor saltmarrow>>
+    Dunlin: That's not counting. That's waiting. Sable says the ones who count that stop counting the rest. #still #face:wary #line:0ceecad
+-> Who taught Sable? #line:03f1f06
+    <<voice warden saltmarrow>>
+    Dunlin: Her brother. He kept a light and counted ships in by it. She says it's the same job. #still #line:0b65648
+-> ... #line:0c2a0cc
+    <<voice drift saltmarrow>>
+    Dunlin: You can watch. Don't say numbers. You'll put me off. #still #face:wary #line:08c5142
+===

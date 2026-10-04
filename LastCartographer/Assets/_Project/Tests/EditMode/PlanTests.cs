@@ -49,7 +49,9 @@ namespace OWSBG.Tests
             Assert.AreNotEqual(Plan.Status.Todo, pro02.Status, "this row is in progress once the tracker exists");
             var spanning = doc.Rows.FirstOrDefault(r => r.Milestone != r.MilestoneEnd);
             Assert.IsNotNull(spanning, "some rows span milestones");
-            Assert.IsTrue(doc.Rows.Any(r => r.Status == Plan.Status.InProgress) && doc.Rows.Any(r => r.Status == Plan.Status.Todo));
+            // Since 2026-10-02 every row has a first version: the plan holds rows in progress and rows done, and none left todo.
+            Assert.IsTrue(doc.Rows.Any(r => r.Status == Plan.Status.InProgress) && doc.Rows.Any(r => r.Status == Plan.Status.Done));
+            Assert.IsFalse(doc.Rows.Any(r => r.Status == Plan.Status.Todo), "the first pass is complete; a new row starts in progress with its v1 note");
         }
 
         [Test]

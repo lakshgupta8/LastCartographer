@@ -149,6 +149,13 @@ namespace OWSBG.Core
             E("Cantor", 4);         // Longstroke reaches it; a hit stops the ring
             E("Warden", 5);         // parry: the 1 s stagger is a combo and change
             E("LostRemnant", 5);    // the Blank's
+            E("CaveBat", 2);        // Emberdown's fodder on the wing: struck as it swoops
+            E("Salamander", 3);     // its back burns: pogo only
+            E("Mothcloud", 3);      // the quill passes through a cloud: Blot it, then strike
+            E("Pulpwasp", 3);       // keeps the quill's reach away: Longstroke the line
+            E("Sketch", 4);         // an outline past her lantern-radius; drawn inside it
+            E("Tussock", 3);        // shelled and under the grass: pogo it when it surfaces
+            E("Reedling", 2);       // one is fodder; the clutch is a swarm: Blot it
         }
     }
 }

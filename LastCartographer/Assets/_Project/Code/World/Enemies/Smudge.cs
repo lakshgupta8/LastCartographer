@@ -69,6 +69,7 @@ namespace OWSBG.World
             {
                 Body.linearVelocity = to.normalized * _lungeSpeed;
                 _lungeT = _drawnSeconds;
+                Tell(AttackKind.Strike);   // the lunge, as it starts (AUD-10)
             }
             else if (_lungeT <= 0f)
             {
@@ -83,6 +84,7 @@ namespace OWSBG.World
         protected override void Update()
         {
             base.Update();
+            if (IsDying) return;   // the death fade owns the ink
             _ink = Mathf.MoveTowards(_ink, IsDrawn ? 1f : 0.05f, Time.deltaTime * _inkFadeSpeed);
             if (Visual == null) return;
             Visual.GetPropertyBlock(_inkBlock);

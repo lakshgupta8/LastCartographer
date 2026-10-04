@@ -55,7 +55,13 @@ hers either way.
   Never says "always" or "never" (`SteppeTests` holds every one of her lines to it). Calls Wren "map-bird".
 - **Hale** (godwit, Guild surveyor; added to the cast): professional courtesy, a colleague to her. Works alone and
   does not say "we", the opposite of Voss.
-- **Ossa** (a child) and **Brek** (old; failed the leap forty-one years ago) at the third fire.
+- **Sable** (Act 2, by boat from the quay; `River_Sable`, character-bibles.md §2): the hulls in the riverbed were the
+  Ferrymen's, rowed up the river when it had water. She reads the names on the bows and counts the eleven that never
+  came back. The clan sleeping in them is, to her, the right use ("Good. Somebody should.").
+- **Ossa** (a child) and **Garrow** (an old crane; failed the leap forty-one years ago) at the third fire.
+- **Brek** (a clan fledgling, a young crane) by the Gate's stones after Wren's leap: he has no place to stand on
+  and asks for one (`Gate_Brek`, offerings.md). Two birds, decided 2026-10-02: the old one who never flew is
+  Garrow, so the fledgling who will jump next spring keeps the name.
 
 ## 6. Commissions (the camp's ledger, `CommissionCatalog.Windreach()`)
 | Commission | Posts after | Steps | Reward |
@@ -70,10 +76,11 @@ No [B]: Windreach is not left to fade by any choice here. What happens to it is 
 walking.
 
 ## 7. Open
-- The rooms; the leap as a set piece (a jump that must fall before Windmemory catches); Hale's duel (CMB-14) and the
-  Fallen Star (CMB-14).
+- ~~The rooms; the leap as a set piece; Hale's duel and the Fallen Star.~~ The rooms are built (ENV-07); the leap
+  is a plain jump at the Wind Gate (decided); both fights stand in runtime arena rooms (CMB-14).
 - The camp moving between sites is built (PRG-21, `docs/design/moving-camp.md`). It walks on at first light after each
   fire; the bedroll walks her with it; ashes say where it went; the post keeps the desk. `Camp_Idrenne` now says "We walk
   at first light" on the night of the first fire, instead of saying the camp had already gone.
-- What Hale's lens does (an Instrument, NAR-17), and what a Wren who kept his pages can do with them.
-- Whether Hale reappears at the Threshold among Voss's Wardens if he finished (NAR-11).
+- ~~What Hale's lens does.~~ An Instrument with its line (NAR-17); what a Wren who kept his pages can do with them is open.
+- ~~Whether Hale reappears at the Threshold.~~ Voss says where he is (`Threshold_Voss`: his survey on the desk if he
+  finished; home without his lens if not).

@@ -38,8 +38,23 @@ namespace OWSBG.World
 
         public Move Current { get; private set; } = Move.Stand;
         public Attack CurrentAttack { get; private set; } = Attack.None;
+        /// <summary>The tell for the attack being telegraphed (AUD-03): its kind in the kit.</summary>
+        protected override AttackKind TelegraphKind => CurrentAttack switch { Attack.Hold => AttackKind.Window, _ => AttackKind.Strike };
         public bool IsDark => IsFightActive && Phase >= 3;
         public bool IsHolding => Current == Move.Hold;
+
+        /// <summary>The sheet clip for his move (CHR-07).</summary>
+        public override string Clip => IsDying || HurtstunLeft > 0 ? base.Clip : Current switch
+        {
+            Move.Approach => "move",
+            Move.Telegraph => "telegraph",
+            Move.Thrust => "thrust",
+            Move.Charge => "charge",
+            Move.CrossCut => "crosscut",
+            Move.Hold => "hold",
+            Move.Recover => "recover",
+            _ => "idle",
+        };
         /// <summary>0..1: how bright his brass is. In the dark it is the only telegraph.</summary>
         public float Glow => IsTelegraphing ? 1f : IsHolding ? 0.6f : 0.25f;
         public int Thrusts { get; private set; }
@@ -58,6 +73,15 @@ namespace OWSBG.World
         public static IReadOnlyList<Attack> PatternFor(int phase) => phase >= 3 ? Phase3 : phase >= 2 ? Phase2 : Phase1;
 
         /// <summary>The kit as the tuning tables read it (CMB-19, docs/design/tuning.md).</summary>
+        /// <summary>The floor's sections drawn (boss_parts.py FurnaceGrate): cool iron, warming, hot, and sooted in the dark.</summary>
+        public override IEnumerable<string> PartSkinNames { get { yield return "FurnaceGrate"; } }
+        /// <summary>How far under the floor the grate's drawing stands: its plate's top is this far above the cell's centre.</summary>
+        public const float GrateTop = 0.35f;
+        /// <summary>The grate's depth: just in front of the floor's face (a recipe's ground is two deep), so its flames lick up past her feet.</summary>
+        public const float FloorFront = -1.05f;
+        /// <summary>Whether the sections wear the drawing, not the flat quads.</summary>
+        public bool FloorDrawn { get; private set; }
+
         public override IEnumerable<BossAttack> Kit()
         {
             yield return new BossAttack("Thrust", AttackKind.Strike, Read(thrustTelegraphFrames), lanceDamage, PhasesOf(Attack.Thrust, PatternFor));
@@ -93,9 +117,26 @@ namespace OWSBG.World
         {
             if (_hot.Length != sections) { _hot = new bool[sections]; _next = new bool[sections]; }
             if (_tiles.Count == sections) return;
+            var skin = FindSkin("FurnaceGrate");
+            FloorDrawn = skin != null;
             for (int i = 0; i < sections; i++)
-                _tiles.Add(BossPart.Prop("Furnace_" + i, transform.parent, new Vector2(SectionCentre(i), floorY + 0.04f), new Vector2(SectionWidth * 0.96f, 0.1f), TileMaterial(false, false), 0f));
+            {
+                if (!FloorDrawn)
+                {
+                    _tiles.Add(BossPart.Prop("Furnace_" + i, transform.parent, new Vector2(SectionCentre(i), floorY + 0.04f), new Vector2(SectionWidth * 0.96f, 0.1f), TileMaterial(false, false), 0f));
+                    continue;
+                }
+                // Drawn, the grate's plate is level with the floor and its firebox stands in front of the floor's face.
+                var prop = BossPart.Prop("Furnace_" + i, transform.parent, new Vector2(SectionCentre(i), floorY - GrateTop), new Vector2(SectionWidth, 1f), TileMaterial(false, false), FloorFront);
+                SkinProp(prop, "FurnaceGrate", "idle");
+                var sc = prop.localScale;
+                prop.localScale = new Vector3(sc.x * SectionWidth / Mathf.Max(0.1f, skin.CellUnits), sc.y, sc.z);
+                _tiles.Add(prop);
+            }
         }
+
+        /// <summary>The clip a section shows: sooted in the dark, else hot, warming, or cool iron.</summary>
+        public string SectionClip(int i) => IsDark ? "dark" : IsHot(i) ? "hot" : IsWarming(i) ? "warming" : "idle";
 
         /// <summary>Which sections are hot at shift <paramref name="k"/> of <paramref name="phase"/>: a third cool, then half, then none hot.</summary>
         public static bool[] HotPattern(int phase, int k, int sections)
@@ -164,7 +205,7 @@ namespace OWSBG.World
         void RefreshTiles()
         {
             for (int i = 0; i < _tiles.Count; i++)
-                if (_tiles[i] != null) _tiles[i].GetComponent<MeshRenderer>().sharedMaterial = IsDark ? TileMaterial(false, false, true) : TileMaterial(IsHot(i), IsWarming(i));
+                BossPart.Show(_tiles[i], SectionClip(i), IsDark ? TileMaterial(false, false, true) : TileMaterial(IsHot(i), IsWarming(i)));
         }
 
         static Material TileMaterial(bool hot, bool warming, bool dark = false)
@@ -183,7 +224,13 @@ namespace OWSBG.World
                 Burn();
             }
             base.FixedUpdate();
+            // His brass as light (ENV-10): in the dark it is the only telegraph, so it is the only light.
+            Glow(new Color(1f, 0.55f, 0.22f), 7f);
+            SetGlow(IsFightActive && !IsDead ? GlowIntensity : 0f);
         }
+
+        /// <summary>The light his brass gives now: a quarter at rest, all of it as he telegraphs.</summary>
+        public float GlowIntensity => 0.4f + 2.6f * Glow;
 
         void AdvanceFloor(float dt)
         {

@@ -43,10 +43,26 @@ namespace OWSBG.World
         public bool UsesAddressables => _useAddressables;
         /// <summary>How long the last room took, from the request to Wren standing in it (PRG-24's budget is 100 ms).</summary>
         public float LastTransitionMs { get; private set; }
+        /// <summary>
+        /// Where the last transition's time went: finding the room's bundle, loading its assets, activating the scene
+        /// (its Awakes and OnEnables), placing Wren, and unloading the old room (with the new one's first frame, its
+        /// Starts); and the managed bytes the whole of it allocated. For the probe's log (PRG-24).
+        /// </summary>
+        public string LastTransitionDetail { get; private set; }
         /// <summary>A room came in, and how long it took (ms).</summary>
         public static event Action<string, float> Transitioned;
         /// <summary>True when the room came in through Addressables (as opposed to Build Settings or adoption).</summary>
         public bool IsAddressable(string scene) => !string.IsNullOrEmpty(scene) && _scenes.ContainsKey(scene);
+        /// <summary>A room the catalogue can load (a built scene), or one already loaded; asked synchronously, so only once Addressables has its locators.</summary>
+        public bool IsBuilt(string scene)
+        {
+            if (string.IsNullOrEmpty(scene)) return false;
+            if (_scenes.ContainsKey(scene)) return true;
+            if (!_useAddressables) return false;
+            foreach (var locator in Addressables.ResourceLocators)
+                if (locator.Locate(scene, typeof(SceneInstance), out var locations) && locations.Count > 0) return true;
+            return false;
+        }
         /// <summary>Neighbour rooms whose bundles are being kept resident.</summary>
         public IReadOnlyCollection<string> PreloadedNeighbours => _preloads.Keys;
         public bool IsPreloading { get; private set; }
@@ -82,6 +98,13 @@ namespace OWSBG.World
             if (existing != null)
             {
                 Adopt(existing, _startSpawn);
+                yield break;
+            }
+            // -continue: the last desk's save, in the room she rested in (PRO-04's testers, after a crash).
+            if (Bootstrap.Continue && GameState.Load(Bootstrap.ContinueSlot) && !string.IsNullOrEmpty(GameState.World.RespawnRoom))
+            {
+                Debug.Log("[OWSBG] continuing from the save in slot " + Bootstrap.ContinueSlot + ": " + GameState.World.RespawnRoom);
+                yield return Load(GameState.World.RespawnRoom, GameState.World.RespawnSpawn, null);
                 yield break;
             }
             bool prologue = !string.IsNullOrEmpty(_prologueRoom) && !Bootstrap.SkipPrologue && !GameState.World.Is("prologue.woke_on_shore");
@@ -124,6 +147,8 @@ namespace OWSBG.World
         {
             IsTransitioning = true;
             float started = Time.realtimeSinceStartup;
+            long allocatedAtStart = AllocatedBytes();
+            float tLocate = 0f, tAssets = 0f, tActivate = 0f, tPlace = 0f;
             if (_preloading != null) { StopCoroutine(_preloading); _preloading = null; IsPreloading = false; }
 
             Scene loaded = default;
@@ -142,12 +167,16 @@ namespace OWSBG.World
                 yield return locations;
                 bool addressable = locations.Status == AsyncOperationStatus.Succeeded && locations.Result.Count > 0;
                 Addressables.Release(locations);
+                tLocate = Time.realtimeSinceStartup;
                 if (addressable)
                 {
-                    var handle = Addressables.LoadSceneAsync(scene, LoadSceneMode.Additive, SceneReleaseMode.ReleaseSceneWhenSceneUnloaded);
+                    // Loaded without activating, so the assets' load and the scene's activation (its Awakes) are timed apart.
+                    var handle = Addressables.LoadSceneAsync(scene, LoadSceneMode.Additive, SceneReleaseMode.ReleaseSceneWhenSceneUnloaded, activateOnLoad: false);
                     yield return handle;
+                    tAssets = Time.realtimeSinceStartup;
                     if (handle.Status == AsyncOperationStatus.Succeeded)
                     {
+                        yield return handle.Result.ActivateAsync();
                         _scenes[scene] = handle;
                         loaded = handle.Result.Scene;
                         ok = true;
@@ -167,6 +196,7 @@ namespace OWSBG.World
                 yield return op;
                 loaded = SceneManager.GetSceneByName(scene);
             }
+            tActivate = Time.realtimeSinceStartup;
 
             if (loaded.IsValid()) SceneManager.SetActiveScene(loaded);
             Room room = null;
@@ -179,15 +209,30 @@ namespace OWSBG.World
                 }
             }
             Place(room, spawn);
+            tPlace = Time.realtimeSinceStartup;
 
             if (!string.IsNullOrEmpty(unload)) yield return Unload(unload);
 
             CurrentRoom = scene;
             IsTransitioning = false;
-            LastTransitionMs = (Time.realtimeSinceStartup - started) * 1000f;
+            float ended = Time.realtimeSinceStartup;
+            LastTransitionMs = (ended - started) * 1000f;
+            long allocatedAtEnd = AllocatedBytes();
+            if (tLocate <= 0f) tLocate = started;
+            if (tAssets <= 0f) tAssets = tLocate;
+            LastTransitionDetail = "locate " + ((tLocate - started) * 1000f).ToString("0") + " ms, assets " + ((tAssets - tLocate) * 1000f).ToString("0") +
+                                   " ms, activate " + ((tActivate - tAssets) * 1000f).ToString("0") + " ms, place " + ((tPlace - tActivate) * 1000f).ToString("0") +
+                                   " ms, unload and first frame " + ((ended - tPlace) * 1000f).ToString("0") + " ms" +
+                                   (allocatedAtStart > 0 && allocatedAtEnd > allocatedAtStart ? ", " + ((allocatedAtEnd - allocatedAtStart) / 1024f).ToString("0") + " KB allocated" : "");
             RoomChanged?.Invoke(scene);
             Transitioned?.Invoke(scene, LastTransitionMs);
             if (_preloadNeighbours) _preloading = StartCoroutine(PreloadNeighbours(room));
+        }
+
+        static long AllocatedBytes()
+        {
+            try { return System.GC.GetAllocatedBytesForCurrentThread(); }
+            catch { return -1; }
         }
 
         IEnumerator Unload(string scene)

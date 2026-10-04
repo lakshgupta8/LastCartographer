@@ -135,13 +135,39 @@ namespace OWSBG.Core
         };
 
         /// <summary>The region a room belongs to, from its plan or its name ("Greybox_Saltmarrow_A"); null if it says nothing.</summary>
+        // Asked every frame by the audio drivers and the lighting, so a room's answer is kept: a scene name is
+        // a few dozen bytes of substrings and a parse each time otherwise (PRG-24: a quiet frame allocates nothing).
+        static readonly Dictionary<string, Region?> s_regionOf = new Dictionary<string, Region?>();
+        static readonly Dictionary<string, string> s_placeOf = new Dictionary<string, string>();
+        static readonly char[] s_zoneCut = { '.', '_', '/' };
+
+        /// <summary>The place a room scene stands for: its name without the greybox prefix. Memoised.</summary>
+        public static string PlaceOf(string room)
+        {
+            if (string.IsNullOrEmpty(room)) return null;
+            if (s_placeOf.TryGetValue(room, out var place)) return place;
+            place = room.StartsWith(WorldGraph.GreyboxPrefix, StringComparison.Ordinal) ? room.Substring(WorldGraph.GreyboxPrefix.Length) : room;
+            s_placeOf[room] = place;
+            return place;
+        }
+
         public static Region? RegionOf(string room)
         {
             if (string.IsNullOrEmpty(room)) return null;
-            string id = room.StartsWith(WorldGraph.GreyboxPrefix, StringComparison.Ordinal) ? room.Substring(WorldGraph.GreyboxPrefix.Length) : room;
+            if (s_regionOf.TryGetValue(room, out var known)) return known;
+            var r = ComputeRegionOf(room);
+            s_regionOf[room] = r;
+            return r;
+        }
+
+        static Region? ComputeRegionOf(string room)
+        {
+            if (Islands.IsIslandScene(room)) return Region.Blank;                                  // the Blank's islands are runtime rooms (AUD-08)
+            string id = PlaceOf(room);
+            if (id.StartsWith("Epilogue_", StringComparison.Ordinal)) id = id.Substring("Epilogue_".Length);   // the epilogue's stand-ins are named for their zones
             var plan = RoomPlans.Find(id);
             string head = plan != null ? plan.Zone : id;
-            int cut = head.IndexOfAny(new[] { '.', '_', '/' });
+            int cut = head.IndexOfAny(s_zoneCut);
             if (cut > 0) head = head.Substring(0, cut);
             return Enum.TryParse<Region>(head, out var r) ? r : (Region?)null;
         }

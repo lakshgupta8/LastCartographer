@@ -43,6 +43,7 @@ namespace OWSBG.UI
             Row = 0;
             IsOpen = true;
             Refresh();
+            UiSounds.Open();
         }
 
         public void Close()
@@ -52,17 +53,24 @@ namespace OWSBG.UI
             if (_wren != null) _wren.Frozen = _wasFrozen;
             GameState.Save();
             if (_built) InkTheme.Show(_panel, false);
+            UiSounds.Close();
         }
 
-        public void SetRow(int row) { Row = Mathf.Clamp(row, 0, Mathf.Max(0, _items.Count - 1)); Refresh(); }
+        public void SetRow(int row)
+        {
+            int to = Mathf.Clamp(row, 0, Mathf.Max(0, _items.Count - 1));
+            if (to != Row) UiSounds.Move();
+            Row = to;
+            Refresh();
+        }
 
         /// <summary>Buy the selected item. False when owned or unaffordable.</summary>
         public bool Confirm()
         {
-            if (!IsOpen || Row >= _items.Count) return false;
+            if (!IsOpen || Row >= _items.Count) return UiSounds.Did(false);
             bool ok = Economy.Buy(GameState.World, _items[Row]);
             Refresh();
-            return ok;
+            return UiSounds.Did(ok);   // the seeds counted out sound from the world
         }
 
         void Update()
@@ -99,7 +107,7 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 760;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
-            _title = InkTheme.Text("title", Loc.T("shop.title.saltmarrow", "Sable's table"), 30, InkTheme.Wash, FontStyle.Bold);
+            _title = InkTheme.TitleText("title", Loc.T("shop.title.saltmarrow", "Sable's table"), 34, InkTheme.Wash);
             _title.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
@@ -137,14 +145,14 @@ namespace OWSBG.UI
                 InkTheme.SetPadding(row, 6f, 10f);
                 InkTheme.SetRadius(row, 4f);
                 row.style.backgroundColor = sel ? InkTheme.PaperDark : new Color(0f, 0f, 0f, 0f);
-                var marker = InkTheme.Text("marker", sel ? "▸" : "", 22, InkTheme.Wash);
-                marker.style.width = 26;
+                var marker = InkTheme.Marker(sel);
                 var name = InkTheme.Text("name", info.Name ?? item.Kind.ToString(), 22, owned ? InkTheme.Dim : can ? InkTheme.Ink : InkTheme.Dim);
                 name.style.flexGrow = 1;
                 var price = InkTheme.Text("price", owned ? Loc.T("shop.owned", "owned") : Loc.F("shop.price", "{0} ✿", Economy.PriceOf(w, item)), 20, owned ? InkTheme.Dim : can ? InkTheme.Ochre : InkTheme.Dim, FontStyle.Bold);
                 price.style.width = 110;
                 price.style.unityTextAlign = TextAnchor.MiddleRight;
-                row.Add(marker); row.Add(name); row.Add(price);
+                var icon = InkTheme.Icon("icon", InkArt.InstrumentIcon(item.Kind), 26f);
+                row.Add(marker); if (icon != null) row.Add(icon); row.Add(name); row.Add(price);
                 _rows.Add(row);
             }
             if (Row < _items.Count)

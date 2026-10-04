@@ -170,10 +170,19 @@ want the feel-test's eye.
 
 ## 9. Open
 
-- **No sound exists yet.** This is the brief; AUD-02 to AUD-08 are the work, and the mixer (AUD-09) is waiting.
-- **The music system:** stems, bar-synced layer changes and rests for the silence targets are to build when the
-  first stems arrive (AUD-04). The beat table is what it will clock from.
+- **The roll-call is the first sound** (AUD-02, `docs/design/roll-call.md`): sung by an in-engine synth in every
+  walk, under the Bone Bridge, at the Bell and in the ending's chorus. **Wren's sounds and the four tells** are the
+  second (AUD-03, `docs/design/wren-sounds.md`), made from ink and paper in code. **The coast's theme and the
+  Lamp-Keeper's** are the third (AUD-04, `docs/design/music.md`), with the music system under them; **every
+  region's ambience layers** the fourth (AUD-05, `docs/design/ambience.md`), thinning by the fade stage. AUD-06 to
+  AUD-08 are the rest; the mixer (AUD-09) is running. **The enemies' voices** (AUD-10,
+  `docs/design/enemy-sounds.md`) give every family its material and its moves, put the missing tells on the plain
+  enemies and the bell-ringers, and enforce the 24-voice limit in the order above. **The world and the pages** (AUD-11,
+  `docs/design/world-sounds.md`) are the last of the game to sound: rooms, lamps, the desk, seeds, the ledger, the
+  decisions, her Instruments, and every page of the atlas on the Ui bus.
+- **The music system** is built (AUD-04, `MusicDriver`): stems in step, layer changes on the bar line, the rests
+  baked into each region theme's loop at its silence share. It clocks from the beat table.
 - **Smudges in the Blank's islands** follow the Blank's slow beat (1.8 s each). Whether that's too easy wants a
   playtest.
 - **Accessibility:** captions for tells ("[a low breath]") would give deaf players the ear's "now" as text. The
-  captions system (DES-14) can take them when the tells exist.
+  captions system (DES-14) can take them when the tells exist; the roll-call's uses already caption themselves.

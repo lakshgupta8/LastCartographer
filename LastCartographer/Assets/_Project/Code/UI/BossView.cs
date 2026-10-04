@@ -13,7 +13,7 @@ namespace OWSBG.UI
         Boss _boss;
         string _line;
         float _lineUntil;
-        bool _built;
+        bool _built, _drawn;
         VisualElement _panel, _bar, _fill, _marks;
         Label _name, _caption;
 
@@ -96,16 +96,35 @@ namespace OWSBG.UI
             _panel.style.alignItems = Align.Center;
             InkTheme.ApplyFont(_panel);
 
-            _name = InkTheme.Text("name", "", 24, InkTheme.Ink, FontStyle.Bold);
+            _name = InkTheme.TitleText("name", "", 26, InkTheme.Ink);
             _name.style.marginBottom = 8;
             _bar = new VisualElement { name = "bar", pickingMode = PickingMode.Ignore };
             _bar.style.width = new Length(100, LengthUnit.Percent);
-            _bar.style.height = 12;
-            _bar.style.backgroundColor = InkTheme.Paper;
-            InkTheme.SetBorder(_bar, InkTheme.Ink, 1.5f);
             _fill = new VisualElement { name = "fill", pickingMode = PickingMode.Ignore };
             _fill.style.height = new Length(100, LengthUnit.Percent);
-            _fill.style.backgroundColor = InkTheme.Ink;
+            var trough = InkArt.Tex("UI_BossBar");
+            var stroke = InkArt.Tex("UI_BossFill");
+            if (trough != null && stroke != null)
+            {
+                // The brush stroke (ENV-11): the trough drawn under, the ink stroke clipped to what health is left.
+                _drawn = true;
+                _bar.style.height = 620f * trough.height / trough.width;
+                _bar.style.backgroundImage = new StyleBackground(trough);
+                _fill.style.overflow = Overflow.Hidden;
+                var ink = new VisualElement { name = "stroke", pickingMode = PickingMode.Ignore };
+                ink.style.position = Position.Absolute;
+                ink.style.left = 0; ink.style.top = 0; ink.style.bottom = 0;
+                ink.style.backgroundImage = new StyleBackground(stroke);
+                _fill.Add(ink);
+                _bar.RegisterCallback<GeometryChangedEvent>(ev => ink.style.width = ev.newRect.width);   // the stroke is the bar's width however much of it shows
+            }
+            else
+            {
+                _bar.style.height = 12;
+                _bar.style.backgroundColor = InkTheme.Paper;
+                InkTheme.SetBorder(_bar, InkTheme.Ink, 1.5f);
+                _fill.style.backgroundColor = InkTheme.Ink;
+            }
             _marks = new VisualElement { name = "marks", pickingMode = PickingMode.Ignore };
             _marks.style.position = Position.Absolute;
             _marks.style.left = 0; _marks.style.right = 0; _marks.style.top = -4; _marks.style.bottom = -4;
@@ -124,8 +143,17 @@ namespace OWSBG.UI
             return true;
         }
 
-        static VisualElement MakeMark()
+        VisualElement MakeMark()
         {
+            var tick = InkArt.Tex("UI_Tick");
+            if (_drawn && tick != null)
+            {
+                var g = InkArt.Glyph("mark", tick, 40f);
+                g.style.position = Position.Absolute;
+                g.style.top = -6;
+                g.style.translate = new Translate(new Length(-50, LengthUnit.Percent), 0);
+                return g;
+            }
             var m = new VisualElement { pickingMode = PickingMode.Ignore };
             m.style.position = Position.Absolute;
             m.style.top = 0; m.style.bottom = 0;

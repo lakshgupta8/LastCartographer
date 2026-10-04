@@ -574,7 +574,7 @@ def prop_drillrack(rng, p):
         blob("wrap_%d" % i, rng, x + lean * 1.05, 2.08, 0.07, 0.11, cloth, y=-0.02, n=8, wobble=0.2)
     box("tag", 0.0, 1.62, 0.3, 0.16, p("paper", PAPER), y=-0.03)
     line("tag_mark", -0.08, 1.62, 0.08, 1.62, 0.02, p("ink", INK), y=-0.05)
-    return 2.5, 2.3, 2.0
+    return 2.5, 2.25, 2.0
 
 
 def prop_chalkboard(rng, p):
@@ -612,7 +612,7 @@ def prop_paces(rng, p):
         for j in range(k + 1):   # a tally, not a figure: the yard was chalked by birds who count
             line("tally_%d_%d" % (k, j), x + 0.08 + 0.05 * j, 0.06, x + 0.08 + 0.05 * j, 0.0, 0.035, chalk, y=0.0)
     line("edge", -4.1, 0.3, 4.1, 0.3, 0.035, chalk, y=0.0)
-    return 8.5, 0.35, 2.0
+    return 8.5, 0.375, 2.0
 
 
 # ---------------------------------------------------------------- Windreach (ENV-07): the Steppe's own

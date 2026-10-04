@@ -1833,7 +1833,7 @@ namespace OWSBG.Setup
                     .Down(H("Orchard_2"), 16f).Up(H("Bastion_2"), 8f, 12.3f),
                 new RoomRecipe("Halden_Bastion_2").Tiles("Ground_Granite", "Ground_Granite").HaldenPapers("Mid_Tower", "Far_Citadel", null)
                     .Floor(-20f, -16f).Floor(-12f, 20f).Vantage("Yard", -18f, 0f).Npc("Oriel", -4f, "Bastion_Oriel", oriel)
-                    .Prop("DrillRack", -10f).Prop("ChalkBoard", 12.5f).Prop("Paces", 4f, -0.35f, -1.05f)   // the yard's drill: the lances, the morning's three strokes, the paces chalked on the flags' edge
+                    .Prop("DrillRack", -10f).Prop("ChalkBoard", 12.5f).Prop("Paces", 4f, -0.375f, -1.05f)   // the yard's drill: the lances, the morning's three strokes, the paces chalked on the flags' edge
                     .Arena(typeof(Oriel), "oriel", 6f, new Vector2(0.7f, 1.6f), -8f, 16f, Ability.None, "pell.report_sent")   // the drill-yard, if the report went
                     .Down(H("Bastion_1"), -14f).East(H("Bastion_3")),
                 new RoomRecipe("Halden_Bastion_3").Tiles("Ground_Parquet", "Ground_Parquet").HaldenPapers("Mid_Hall", "Far_Citadel", null)

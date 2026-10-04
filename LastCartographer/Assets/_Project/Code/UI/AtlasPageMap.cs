@@ -25,6 +25,9 @@ namespace OWSBG.UI
         public string Here => _here;
         /// <summary>How many of the page's rooms are on it in each ink (tests, and the page's note).</summary>
         public int Count(MapInk ink) => _counts.TryGetValue(ink, out var n) ? n : 0;
+        /// <summary>The marks on the page (desks, lamps, shops): in ink where she has used them, in pencil where she passed them.</summary>
+        public int Marks(MapMarkKind kind, bool inked) => _marks.TryGetValue((kind, inked), out var n) ? n : 0;
+        readonly Dictionary<(MapMarkKind, bool), int> _marks = new Dictionary<(MapMarkKind, bool), int>();
         public IReadOnlyList<Label> Labels => _labels;
 
         public AtlasPageMap()
@@ -45,10 +48,17 @@ namespace OWSBG.UI
             _world = world;
             _here = here;
             _counts.Clear();
+            _marks.Clear();
             foreach (var r in AtlasMap.Page(page))
             {
                 var ink = AtlasMap.InkOf(world, r.Id);
                 _counts[ink] = Count(ink) + 1;
+                if (!Marked(ink)) continue;
+                foreach (var (kind, id) in AtlasMap.MarksOf(r.Id))
+                {
+                    var key = (kind, AtlasMap.IsMarkInked(world, kind, id, r.Id));
+                    _marks[key] = _marks.TryGetValue(key, out var n) ? n + 1 : 1;
+                }
             }
             foreach (var l in _labels) l.RemoveFromHierarchy();
             _labels.Clear();
@@ -109,6 +119,9 @@ namespace OWSBG.UI
         /// <summary>A cell's centre on the page: x east, y up the page.</summary>
         Vector2 Centre(int x, int y) => new Vector2(_ox + (x - _x0 + 0.5f) * _cell, _oy + (_y1 - y + 0.5f) * _cell);
         Vector2 Half => new Vector2(_cell * 0.39f, _cell * 0.28f);
+
+        /// <summary>A room carries its marks once she has been in it (a vantage's glimpse shows the box, not what is in it).</summary>
+        static bool Marked(MapInk ink) => ink == MapInk.Walked || ink == MapInk.Drawn;
 
         static Vector2 Out(Side s) => s == Side.West ? Vector2.left : s == Side.East ? Vector2.right : s == Side.Up ? Vector2.down : Vector2.up;
 
@@ -226,6 +239,20 @@ namespace OWSBG.UI
                     }
                 }
 
+                // Its marks, up the right edge from the bottom corner (clear of the nib at the middle and the rings
+                // along the top): a desk, a lamp, a shop; in ink once used.
+                if (Marked(ink))
+                {
+                    var marks = AtlasMap.MarksOf(r.Id);
+                    float s = Mathf.Clamp(_cell * 0.075f, 3f, 5f);
+                    for (int k = 0; k < marks.Count; k++)
+                    {
+                        var (kind, id) = marks[k];
+                        var at = c + new Vector2(half.x - 4f - s, half.y - 3f - s - k * (2.4f * s));
+                        Mark(p, kind, at, s, AtlasMap.IsMarkInked(_world, kind, id, r.Id));
+                    }
+                }
+
                 // The ways off the page: an arrow out of the box's side.
                 foreach (var (side, _) in r.Leaves)
                 {
@@ -249,6 +276,41 @@ namespace OWSBG.UI
                 p.BeginPath(); p.MoveTo(tip); p.LineTo(tip + new Vector2(-s * 0.6f, s * 1.6f)); p.LineTo(tip + new Vector2(s * 0.6f, s * 1.6f)); p.ClosePath(); p.Fill();
                 p.strokeColor = InkTheme.Paper; p.lineWidth = 1f;
                 p.BeginPath(); p.MoveTo(tip + new Vector2(0f, s * 0.5f)); p.LineTo(tip + new Vector2(0f, s * 1.4f)); p.Stroke();   // the nib's slit
+            }
+        }
+
+        /// <summary>
+        /// One mark, about 2s across, centred on <paramref name="at"/>: a drafting desk (its slanted board on two legs), a
+        /// lamp (a post with the flame on it, lit in ochre), a shop (an iris seed, the coast's coin). Ink when used, pencil otherwise.
+        /// </summary>
+        static void Mark(Painter2D p, MapMarkKind kind, Vector2 at, float s, bool inked)
+        {
+            p.strokeColor = inked ? InkTheme.Ink : InkTheme.Dim;
+            p.lineWidth = inked ? 1.5f : 1f;
+            switch (kind)
+            {
+                case MapMarkKind.Desk:
+                    p.BeginPath(); p.MoveTo(at + new Vector2(-s, -s * 0.1f)); p.LineTo(at + new Vector2(s, -s * 0.7f)); p.Stroke();
+                    p.BeginPath(); p.MoveTo(at + new Vector2(-s * 0.6f, -s * 0.2f)); p.LineTo(at + new Vector2(-s * 0.6f, s)); p.Stroke();
+                    p.BeginPath(); p.MoveTo(at + new Vector2(s * 0.6f, -s * 0.55f)); p.LineTo(at + new Vector2(s * 0.6f, s)); p.Stroke();
+                    break;
+                case MapMarkKind.Lamp:
+                    p.BeginPath(); p.MoveTo(at + new Vector2(0f, s)); p.LineTo(at + new Vector2(0f, -s * 0.3f)); p.Stroke();
+                    p.BeginPath(); p.MoveTo(at + new Vector2(-s * 0.45f, s)); p.LineTo(at + new Vector2(s * 0.45f, s)); p.Stroke();
+                    p.BeginPath(); p.Arc(at + new Vector2(0f, -s * 0.65f), s * 0.38f, Angle.Degrees(0f), Angle.Degrees(360f));
+                    if (inked) { p.fillColor = InkTheme.Ochre; p.Fill(); }
+                    p.Stroke();
+                    break;
+                default:
+                    var top = at + new Vector2(s * 0.3f, -s);
+                    var bottom = at + new Vector2(-s * 0.3f, s);
+                    p.BeginPath(); p.MoveTo(top);
+                    p.BezierCurveTo(top + new Vector2(s * 0.9f, s * 0.6f), bottom + new Vector2(s * 0.5f, -s * 0.2f), bottom);
+                    p.BezierCurveTo(bottom + new Vector2(-s * 0.9f, -s * 0.6f), top + new Vector2(-s * 0.5f, s * 0.2f), top);
+                    p.ClosePath();
+                    if (inked) { p.fillColor = InkTheme.Ink; p.Fill(); }
+                    p.Stroke();
+                    break;
             }
         }
 

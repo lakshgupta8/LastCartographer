@@ -71,6 +71,38 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void TheMarksAreWhereTheDesksLampsAndShopsAre()
+        {
+            // Every desk and lamp is marked in its room, on its room's page; every hub that sells has its seller's room.
+            foreach (var wp in Atlas.AllWaypoints)
+            {
+                var room = wp.Room.Substring("Greybox_".Length);
+                Assert.IsNotNull(AtlasMap.Find(room), wp.Id + "'s room is on the map");
+                var kind = wp.Kind == WaypointKind.Desk ? MapMarkKind.Desk : MapMarkKind.Lamp;
+                CollectionAssert.Contains(AtlasMap.MarksOf(room), (kind, wp.Id), wp.Id + " is marked");
+            }
+            foreach (var hub in Economy.Stock.Select(s => s.Hub).Distinct())
+            {
+                var shop = AtlasMap.Shops.Where(s => s.hub == hub).Select(s => s.room).SingleOrDefault();
+                Assert.IsNotNull(shop, hub + "'s shop is on the map");
+                Assert.IsTrue(AtlasMap.PageOfRoom(shop)!.EndsWith(hub), hub + "'s shop is on its own page");
+            }
+            CollectionAssert.AreEqual(new[] { MapMarkKind.Desk, MapMarkKind.Lamp }, AtlasMap.MarksOf("Saltmarrow_Lighthouse").Select(m => m.kind), "the lighthouse: its desk and the fourth lamp");
+            CollectionAssert.AreEqual(new[] { MapMarkKind.Desk, MapMarkKind.Shop }, AtlasMap.MarksOf("Saltmarrow_A").Select(m => m.kind), "the quay: its desk and Sable's shop");
+            Assert.IsEmpty(AtlasMap.MarksOf("Saltmarrow_Stilts"));
+
+            // In pencil as she passes, in ink once used: a desk stood at, a lamp lit, a shop's room walked.
+            var w = new WorldState();
+            Assert.IsFalse(AtlasMap.IsMarkInked(w, MapMarkKind.Desk, "desk.Saltmarrow_A", "Saltmarrow_A"));
+            Assert.IsFalse(AtlasMap.IsMarkInked(w, MapMarkKind.Shop, "Saltmarrow", "Saltmarrow_A"));
+            Atlas.Discover(w, "desk.Saltmarrow_A");
+            AtlasMap.Walk(w, "Saltmarrow_A");
+            Assert.IsTrue(AtlasMap.IsMarkInked(w, MapMarkKind.Desk, "desk.Saltmarrow_A", "Saltmarrow_A"), "the desk she stood at");
+            Assert.IsTrue(AtlasMap.IsMarkInked(w, MapMarkKind.Shop, "Saltmarrow", "Saltmarrow_A"), "the shop in the room she walked");
+            Assert.IsFalse(AtlasMap.IsMarkInked(w, MapMarkKind.Lamp, "lamp.Saltmarrow_Lighthouse", "Saltmarrow_Lighthouse"), "a lamp she has not lit");
+        }
+
+        [Test]
         public void TheInkFollowsWhatSheHasDone()
         {
             var w = new WorldState();

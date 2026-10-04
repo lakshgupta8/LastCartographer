@@ -89,6 +89,7 @@ namespace OWSBG.Tests
             yield return Until(() => RoomManager.Instance.CurrentRoom == "Greybox_Saltmarrow_Stilts" && !RoomManager.Instance.IsTransitioning, 10f, "the stilts");
             Assert.IsTrue(AtlasMap.IsWalked(w, "Saltmarrow_Stilts"), "a room she comes into is walked");
             foreach (var v in Atlas.VantagesOf("Saltmarrow_A")) Atlas.Survey(w, v.Id);
+            Atlas.Discover(w, "desk.Saltmarrow_A");
 
             var atlas = AtlasView.Instance;
             Assert.IsNotNull(atlas);
@@ -105,6 +106,8 @@ namespace OWSBG.Tests
             if (!AtlasMap.IsWalked(w, "Saltmarrow_Shore") && Atlas.VantagesOf("Saltmarrow_Shore").Count > 0)
                 Assert.AreEqual(MapInk.Seen, AtlasMap.InkOf(w, "Saltmarrow_Shore"), "the shore, beside the quay: the vantage saw it");
             Assert.Greater(map.contentRect.height, 100f, "the page has room to draw on");
+            Assert.AreEqual(1, map.Marks(MapMarkKind.Desk, true), "the quay's desk, stood at: in ink");
+            Assert.AreEqual(1, map.Marks(MapMarkKind.Shop, true) + map.Marks(MapMarkKind.Shop, false), "Sable's shop on the quay");
             yield return Picture("Saltmarrow");
 
             atlas.Turn(1);

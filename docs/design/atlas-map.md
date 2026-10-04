@@ -58,6 +58,22 @@ colours (`InkTheme.Ink`, `Dim`, `InkFaint`, `Wash`), so high contrast flattens i
 wander by up to a pixel, by a hash of the room's name, so the hand is the same every time the page is drawn. The
 nib is a filled pen point with its slit, standing under the room she is in.
 
+A room she has been in carries its **marks**, stacked up the box's right edge from the bottom corner, clear of the
+nib and the vantage rings (`AtlasMap.MarksOf`):
+
+| Mark | Where | In ink when |
+|---|---|---|
+| a drafting desk, its slanted board on two legs | every desk waypoint's room | she has stood at it (a known waypoint) |
+| a lamp, a post with its flame | every lamp waypoint's room (the fourth lamp) | she has lit it; the flame is ochre |
+| an iris seed, the coast's coin | the room its seller stands in (`AtlasMap.Shops`: Sable's, on the quay) | she has walked the room |
+
+Before that they are in pencil, as she noticed them passing. A room only glimpsed from a vantage shows its box but
+not its marks. There are no benches: the desks are where she rests.
+
+Every box is one cell. The planned rooms are all the same 40 units across (a recipe's `Bounds`; only a tall room
+differs, upward), and the long places, the chain and the stair, are already several rooms each, so a cell a room is
+the shape she walks.
+
 The page's name sits above the map with its place in the book: "The Saltmarrow ◂ 1 / 7 ▸".
 
 ## 5. Controls
@@ -72,15 +88,18 @@ book opens at her page every time; turning is only for looking.
   - every door goes both ways, and at least 80% of each page's doors join neighbours (the coast's all of them, the
     roots above the stilts);
   - the coast's two leaves are marked, and every page leads somewhere off itself;
-  - the ink follows a walk, a survey and an erasure, and an island walks onto no page.
+  - the ink follows a walk, a survey and an erasure, and an island walks onto no page;
+  - every desk and lamp is marked in its room and every hub that sells has its shop on its own page; a mark is in
+    ink once used (a desk stood at, a lamp lit, a shop's room walked).
 - `AtlasMapPlayTests` (play mode): she comes into the stilts and it is walked; she surveys the quay and opens the
-  book. It opens at the Saltmarrow with the nib in the stilts, the quay and the stilts in ink. Turning the page shows
+  book. It opens at the Saltmarrow with the nib in the stilts, the quay and the stilts in ink, the quay's desk in ink and Sable's shop marked. Turning the page shows
   a blank Emberdown, and turning back goes round the back of the book. The open page is pictured in
   `logs/atlas/Saltmarrow.png`.
 
 ## 7. Open
 
 - The region headings are in the UI's serif. The hand-cut lettering is the hand pass's (`ui-art.md`).
-- A room's box is the same size whatever the room's size; the long rooms (the chain, the stair) could take two cells.
-- No marks yet for lamps, desks, benches or shops on the page; the travel rows under the map still carry them.
+- The travel rows under the map still list the desks and lamps; the map's marks do not travel yet (choosing a mark
+  to go to would want a cursor on the page).
+- A boss's arena has no mark.
 - The Blank's page holds its built rooms (the Hollow, the Capital, Aury's); the generated islands come and go off it.

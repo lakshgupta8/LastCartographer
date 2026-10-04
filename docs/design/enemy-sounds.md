@@ -1,4 +1,4 @@
-# The Enemies' Voices (AUD-10, AUD-15, v1)
+# The Enemies' Voices (AUD-10, AUD-15, AUD-16, v1)
 
 Everything that fights her is a drawing, and version one makes each of them sound like what it is drawn as: a shell
 is a hard tick, a wing is air, a smudge is wet ink, a Cantor is a handbell, a Warden is brass, a Remnant is dry
@@ -98,6 +98,31 @@ their own way (`Voice.OwnDeath`).
 itself, a toll as each ring lands and takes the light, after the ring's chime has read it. A cut rope is heard twice,
 its snap and the bell's last ping (the material's hurt, as the cut is the blow).
 
+## 2b. The fights' loose pieces (AUD-16)
+
+A boss fight is more than the boss: stone feathers, rubble, an ink surge, a fist left down, seals, fire. Each is a
+`BossPart`, and `BossPart.Make` now puts a `PartVoice` on every one. A part is known by the name its boss makes it
+under, or that name's stem (`Strike_3` is a `Strike_`; `EnemySounds.PartOf`), and has four moments to be heard at:
+as it **appears**, as a strike **lands** on it (`BossPart.TakeHit` tells it), as it **goes** without one, and
+**while** it is there (a loop, panned where it is). A part cleared as its fight ends or its room unloads goes quietly.
+Nothing in a boss changed to be heard. A part whose owner already speaks for it has no voice of its own (a dove's hit
+is the Choir's hurt, a rope's cut the Bells' event, the small Voss Corra's; `EnemySounds.SpokenFor`).
+
+| Part (boss) | Appears | Struck | Goes | While there |
+|---|---|---|---|---|
+| Feather (the Gatekeeper) | — (its shadow is the read) | `feather_crack`, a tick and a short ring | `feather_shatter`, on the floor | — |
+| Rubble (the Collapse) | `rubble_crash`, made where it lands | `rubble_break`, a knock and grit | — | — |
+| Surge (the Collapse) | — | — | — | `surge_flow`, wet ink rushing |
+| Fist (the Fallen Star) | — | `fist_ring`, iron rung by the pogo | — | — |
+| Seal (Voss) | `voss_seal_set`, a thump, wax and brass | `voss_seal_break` | — | — |
+| Fire (the Reedmother's Brood) | — | `fire_stamp`, a thud and a hiss | — | `fire_burn` |
+| InkPool (the Complete Survey) | `pool_spread` | (the Atlas's hurt) | — | — |
+| Strike_ (Hale) | `stone_erupt` | — | — | — |
+| Frame_ (the Archivist) | `frame_drawn`, two long strokes | — | — | — |
+
+The Star's iron walls are not parts but a count it keeps: `WallRaisings` → `star_walls`, iron grinding up out of the
+ground (§2a's events).
+
 ## 3. The pipeline
 
 ```
@@ -129,14 +154,20 @@ crossfaded onto their heads); the wasp's hum is a whole number of cycles a secon
   an iron slam, the Star's fall, the roof's rubble) are low and a pencil line has nothing low. `BossVoiceTests`
   (PlayMode, 3): the Bells toll after the ring's chime and toll the great bell in phase 3; Brann's floor clanks as the
   heat shifts; the Gatekeeper is silent through the sweep's read but for its tell and grinds after it.
+- AUD-16: `PartSoundsTests` (EditMode, 3): every part any boss's code makes (read from the source) is heard or spoken
+  for by its owner, not both; every part voice names a part some boss makes, its cues world one-shots and its loops
+  under the room; a part is found by its name or its stem; rubble crashes low and a feather shatters higher, cracked
+  shorter than shattered, iron rings on, a drawn line has nothing low. `PartVoiceTests` (PlayMode, 3): the
+  Gatekeeper's feathers shatter on the floor, unstruck; the Brood's fire burns while it is there; a rope wears a voice
+  with nothing in it, the Bells speaking for it.
 - `InkSoundsTests` and `WrenSoundsTests` take the new cues in: a loop's join is no bigger a step than any inside it,
   and the target under her strike now answers in its own voice.
 
 ## 5. Open
 
 - **They are sketches.** A band-passed tick is a shell by suggestion; the sound designer's recordings are the point.
-- **Bosses' parts** (the Gatekeeper's stone feathers falling and pogoed, the Collapse's rubble striking, the Star's
-  walls of iron) are their own objects, not the boss's clips, and are silent but for their tells.
+- **A part's fall** is not heard while it falls (a feather, the rubble before it lands): only its landing. The
+  props that are no part (Brann's grates, the lamps, the Survey's pages) are heard through their bosses' events or not.
 - **The Complete Survey** has no voice of its own beyond the chorus; its ink pools are silent when struck but for the hit.
 - **Projectiles** (the wasp's pellet in flight and landing) and the eraser the Cantor's toll drags are silent.
 - **Steps on the beat.** A Warden's walk and a crab's scuttle are loops, not footfalls on the clip's frames.

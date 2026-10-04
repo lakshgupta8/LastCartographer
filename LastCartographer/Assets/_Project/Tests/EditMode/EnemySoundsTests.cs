@@ -115,8 +115,8 @@ namespace OWSBG.Tests
                 Assert.LessOrEqual(Math.Abs(s[0] - s[s.Length - 1]), inside + 0.01f, c.Id + " meets itself");
                 Assert.That(InkSounds.Of(c.Id).Gain, Is.LessThanOrEqualTo(0.5f), c.Id + ": a loop sits under the room, not on it");
             }
-            Assert.AreEqual(14, InkSounds.Cues.Count(c => c.Loop && c.Kind == InkSounds.Kind.Enemy), "the scuttle, the drift, the crackle, the flutter, the hum, the rumble; and the bosses' "
-                + "lamp, furnace, Bind, stone wings, iron feet, burning, crayon and quill (AUD-15)");
+            Assert.AreEqual(16, InkSounds.Cues.Count(c => c.Loop && c.Kind == InkSounds.Kind.Enemy), "the scuttle, the drift, the crackle, the flutter, the hum, the rumble; the bosses' "
+                + "lamp, furnace, Bind, stone wings, iron feet, burning, crayon and quill (AUD-15); the surge and the Brood's fire (AUD-16)");
         }
 
         [Test]

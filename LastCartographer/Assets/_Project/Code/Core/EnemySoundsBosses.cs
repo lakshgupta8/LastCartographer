@@ -34,8 +34,8 @@ namespace OWSBG.Core
                 moves: Map("quill", "hale_quill", "count", "hale_count"));
             Family("Collapse", Material.Earth, "the mine's collapse itself: rubble coming down as it shakes the roof",
                 moves: Map("shake", "collapse_fall"));
-            Family("FallenStar", Material.Ember, "an iron meteorite-golem: iron feet, a slam that rings the ground, a roar of burning in the last phase, and its fall: iron striking the ground and cooling, ticking",
-                moves: Map("slam", "star_slam"), loops: Map("walk", "star_walk", "burn", "star_burn"), death: "star_fall");
+            Family("FallenStar", Material.Ember, "an iron meteorite-golem: iron feet, a slam that rings the ground, iron walls grinding up, a roar of burning in the last phase, and its fall: iron striking the ground and cooling, ticking",
+                moves: Map("slam", "star_slam"), loops: Map("walk", "star_walk", "burn", "star_burn"), events: Map("WallRaisings", "star_walls"), death: "star_fall");
             Family("Voss", Material.Paper, "the Guildmaster, the Unwriter: a Warden's lance and lunge, the compass-rose shield ringing deep as he guards, and dry paper when he is struck",
                 moves: Map("thrust", "warden_thrust", "lunge", "halvard_lunge", "guard", "voss_guard"));
             Family("CorrasDrawing", Material.Graphite, "a child's crayon drawing of her father: wax scribbling as it walks, dragged hard in a swipe, a stomp of paper, a limb scribbled back in after a hit and the small one drawn back quick; in outline, a thin pencil line",
@@ -46,6 +46,7 @@ namespace OWSBG.Core
             Family("CompleteSurvey", Material.Graphite, "the Great Atlas: the chorus is its voice (the music keeps its beat); the page itself is only ink");
             Family("ReedmotherBrood", Material.Wing, "a great bird over its nest: the reeds thrashing, the nest's reeds parting as it opens, the reeds burning",
                 moves: Map("thresh", "brood_thresh", "open", "brood_open"), loops: Map("burn", "ember_crackle"));
+            BossParts();
         }
 
         /// <summary>The bosses' cues, into <see cref="InkSounds"/>' table: moves, loops and events as world one-shots, a death of its own as an enemy death.</summary>
@@ -98,6 +99,7 @@ namespace OWSBG.Core
             One("archivist_swoop", "an owl's swoop: almost nothing", ArchivistSwoop, 0.4f);
             One("brood_thresh", "the reeds thrashing", BroodThresh, 0.9f);
             One("brood_open", "the nest's reeds parting", BroodOpen, 0.8f);
+            RegisterParts();
         }
 
         /// <summary>A phase's own take of a cue, if it has one (<c>bells_toll_p3</c>: the great bell), else the cue.</summary>

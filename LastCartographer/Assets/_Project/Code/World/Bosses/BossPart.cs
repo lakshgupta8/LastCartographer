@@ -23,7 +23,15 @@ namespace OWSBG.World
         public InkSheetPlayer Sheets { get; private set; }
         public bool IsDressed => Sheets != null;
 
-        public bool TakeHit(in HitInfo hit) => OnHit != null && OnHit(hit);
+        PartVoice _voice;
+
+        /// <summary>The owner says whether it landed; a landed strike is the part's struck sound (AUD-16).</summary>
+        public bool TakeHit(in HitInfo hit)
+        {
+            bool landed = OnHit != null && OnHit(hit);
+            if (landed && _voice != null) _voice.Struck();
+            return landed;
+        }
 
         public void MoveTo(Vector2 p)
         {
@@ -149,6 +157,7 @@ namespace OWSBG.World
             q.transform.localScale = new Vector3(size.x, size.y, 0.3f);
             q.GetComponent<MeshRenderer>().sharedMaterial = mat != null ? mat : InkMaterials.Dark;
             part.Visual = q.transform;
+            part._voice = go.AddComponent<PartVoice>();   // heard as it appears, is struck, goes, and while it is there (AUD-16)
             return part;
         }
 

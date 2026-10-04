@@ -27,6 +27,9 @@ namespace OWSBG.Narrative
             return m;
         }
 
+        /// <summary>The quad every drawn piece of a runtime room is stood on.</summary>
+        public static Mesh QuadMesh => MeshOf(PrimitiveType.Quad, ref _quad);
+
         static Mesh MeshOf(PrimitiveType type, ref Mesh cache)
         {
             if (cache != null) return cache;
@@ -67,12 +70,13 @@ namespace OWSBG.Narrative
             return room;
         }
 
-        public static void MakeGround(Room room, string name, Vector2 center, Vector2 size, Material mat)
+        public static Renderer MakeGround(Room room, string name, Vector2 center, Vector2 size, Material mat)
         {
             var b = MakeShape(room.transform, name, PrimitiveType.Cube, ref _cube, "Ground", mat, ShadowCastingMode.On);
             b.transform.position = new Vector3(center.x, center.y, 0f);
             b.transform.localScale = new Vector3(size.x, size.y, 2f);
             b.AddComponent<BoxCollider2D>();
+            return b.GetComponent<Renderer>();
         }
 
         /// <summary>A shape to look at, not stand on: behind the play plane, no collider.</summary>

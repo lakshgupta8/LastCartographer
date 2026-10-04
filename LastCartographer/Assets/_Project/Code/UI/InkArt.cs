@@ -36,8 +36,9 @@ namespace OWSBG.UI
             "UI_Instrument_TetherHook", "UI_Instrument_IrisTincture", "UI_Instrument_WaxSeal",
         };
 
-        [System.Serializable] public sealed class Slices { public int l, t, r, b; }
-        [System.Serializable] public sealed class Fill { public float bottom, top; }
+        [System.Serializable] public sealed class Slices { public int l, t, r, b; public bool Any => l + t + r + b > 0; }
+        [System.Serializable] public sealed class Fill { public float bottom, top; public bool Any => top > bottom; }
+        /// <summary>One drawing's manifest entry. JsonUtility fills an absent <see cref="slices"/> or <see cref="fill"/> with zeros rather than null, so ask <c>Any</c>.</summary>
         [System.Serializable] public sealed class Piece { public string name; public int w, h; public Slices slices; public Fill fill; }
         [System.Serializable] sealed class Manifest { public Piece[] pieces; }
 
@@ -184,7 +185,7 @@ namespace OWSBG.UI
             if (tex != null)
             {
                 var piece = PieceOf(TextureOf(kind));
-                var s = piece != null && piece.slices != null ? piece.slices : new Slices { l = 0, t = 0, r = 0, b = 0 };
+                var s = piece != null && piece.slices != null && piece.slices.Any ? piece.slices : new Slices();
                 st.backgroundImage = new StyleBackground(tex);
                 st.unitySliceLeft = s.l; st.unitySliceTop = s.t; st.unitySliceRight = s.r; st.unitySliceBottom = s.b;
                 st.backgroundColor = Color.clear;

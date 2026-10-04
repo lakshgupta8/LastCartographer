@@ -77,8 +77,9 @@ namespace OWSBG.UI
             if (bottle != null)
             {
                 var fill = InkArt.PieceOf("UI_InkwellFill")?.fill;
-                _wellBottom = fill != null ? fill.bottom : 0.10f;
-                float top = fill != null ? fill.top : 0.80f;
+                bool known = fill != null && fill.Any;
+                _wellBottom = known ? fill.bottom : 0.10f;
+                float top = known ? fill.top : 0.80f;
                 _wellSpan = Mathf.Max(0.01f, top - _wellBottom);
                 _well = InkArt.Glyph("hud-well", bottle, WellHeight);
                 _well.style.marginRight = 14;

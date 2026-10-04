@@ -30,7 +30,7 @@ namespace OWSBG.Tests
                 Assert.IsNotNull(piece, name + " is in ui.json");
                 Assert.AreEqual(piece.w, tex.width, name + " is as wide as ui.json says");
                 Assert.AreEqual(piece.h, tex.height, name + " is as tall as ui.json says");
-                if (piece.slices != null)
+                if (piece.slices != null && piece.slices.Any)
                 {
                     Assert.Less(piece.slices.l + piece.slices.r, piece.w, name + "'s side slices leave a middle");
                     Assert.Less(piece.slices.t + piece.slices.b, piece.h, name + "'s top and bottom slices leave a middle");
@@ -52,7 +52,9 @@ namespace OWSBG.Tests
             var fill = InkArt.PieceOf("UI_InkwellFill")?.fill;
             Assert.IsNotNull(fill, "where the ink runs in the bottle");
             Assert.Greater(fill.bottom, 0f); Assert.Greater(fill.top, fill.bottom); Assert.LessOrEqual(fill.top, 1f);
-            Assert.IsNull(InkArt.PieceOf("UI_MaskFull").slices, "a glyph does not stretch");
+            var glyph = InkArt.PieceOf("UI_MaskFull");
+            Assert.IsFalse(glyph.slices != null && glyph.slices.Any, "a glyph does not stretch");
+            Assert.IsFalse(glyph.fill != null && glyph.fill.Any, "and has no fill");
         }
 
         [Test]

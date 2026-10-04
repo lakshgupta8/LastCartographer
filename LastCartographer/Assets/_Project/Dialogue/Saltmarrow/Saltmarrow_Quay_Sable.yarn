@@ -90,13 +90,33 @@ title: Quay_Sable_Again
         <<flag saltmarrow.sable.walked 1>>
     <<endif>>
 <<endif>>
+<<if has_flag("act2.started") and not has_flag("sable.windreach_offered")>>
+    Sable: Steppe's open, they say. South road, through Lowmarket. Long way round. #line:0c26532
+    Sable: Ferrymen used to row there. Up the Dry River, when it was wet. Sea still is. #line:0cbed34
+    <<flag sable.windreach_offered 1>>
+<<endif>>
 -> What are you selling? #line:082f994
     <<voice surveyor saltmarrow>>
     Sable: Tools. Ferrymen's prices. #still #line:0457a7c
     <<if has_flag("saltmarrow.iris_burned")>>
         Sable: Dearer than they were. Ask the ones who burned the fields. #still #line:0b3f86f
     <<endif>>
-    <<shop Saltmarrow>>
+    <<if has_flag("sable.windreach_offered") and flag("sable.boat_at") != 2>>
+        Sable: And the boat north. That one's not for sale. It's free. #still #line:09780c1
+        -> The tools. #line:0bdb2d5
+            <<voice surveyor saltmarrow>>
+            <<shop Saltmarrow>>
+        -> The boat north. To the steppe. #line:063543c
+            <<voice warden saltmarrow>>
+            <<if not has_flag("sable.windreach_rowed")>>
+                Sable: No price. I want to see if they're still there. Get in. #line:00c268d
+            <<else>>
+                Sable: Same boat. Same water. Get in. #line:02799ba
+            <<endif>>
+            <<row windreach>>
+    <<else>>
+        <<shop Saltmarrow>>
+    <<endif>>
 -> The third lighthouse. Who keeps it? <<if has_flag("boss.lamp_keeper.defeated") and not has_flag("saltmarrow.sable.aury")>> #line:02f3a83
     <<voice warden saltmarrow>>
     Sable: Nobody. It faded. There's a tether to it on the post; price on the tag. #line:04e2f6a

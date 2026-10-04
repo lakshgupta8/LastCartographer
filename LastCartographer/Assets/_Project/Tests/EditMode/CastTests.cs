@@ -47,9 +47,10 @@ namespace OWSBG.Tests
         [Test]
         public void TheOrderOfTheMapIsKept()
         {
-            // Sable belongs to the coast until the Blank.
-            foreach (var a in Cast.AppearancesOf("sable").Where(a => a.Act <= Cast.Act2))
+            // Sable belongs to the coast until the Blank, but for the one place her boat goes from it: the Dry River (Boat).
+            foreach (var a in Cast.AppearancesOf("sable").Where(a => a.Act <= Cast.Act2 && a.Node != "River_Sable"))
                 Assert.IsTrue(a.Zone.StartsWith("Saltmarrow."), "Sable stays on the coast in the acts: " + a.Zone);
+            Assert.AreEqual("Windreach.DryRiver", Cast.AppearancesOf("sable").Single(a => a.Node == "River_Sable").Zone, "rowed north from the quay");
             // Pell is not met before the act break, and is Halden's from then on.
             var pell = Cast.AppearancesOf("pell");
             Assert.AreEqual("Greyfold.RoadThatStops", pell.First().Zone, "Pell first, at the Edge");

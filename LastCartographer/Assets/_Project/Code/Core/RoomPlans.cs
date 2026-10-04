@@ -319,7 +319,7 @@ namespace OWSBG.Core
             R("Windreach_River_1", "Windreach.DryRiver", "The far bank", "A river with no water, a Wingbeat wide at the camp's edge (soft: a pogo off the dead reed-heads crosses it).", null, "smudge, tussock", new string[0], false, null, null)
                 .West("Windreach_Camp_2", Ability.Wingbeat, null, true)
                 .East("Windreach_River_2", Ability.None);
-            R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried.", "Bed", "smudge ×2, moths", new[] { "idrenne" }, false, null, null)
+            R("Windreach_River_2", "Windreach.DryRiver", "The riverbed", "Cracked mud, boats on their sides; the camp's second night pitches here. Smudges in the boats: things the river forgot it carried. Sable berths here when she rows Wren north (Boat).", "Bed", "smudge ×2, moths", new[] { "idrenne", "sable" }, false, null, null)
                 .West("Windreach_River_1", Ability.None)
                 .East("Windreach_River_3", Ability.None);
             R("Windreach_River_3", "Windreach.DryRiver", "The cut bank", "The river's old cliff. The Wind Gate is at the top, and only Talonhold climbs it.", null, "smudge", new string[0], false, null, null)

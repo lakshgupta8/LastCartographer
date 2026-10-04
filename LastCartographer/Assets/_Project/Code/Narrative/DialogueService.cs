@@ -168,6 +168,7 @@ namespace OWSBG.Narrative
                     Debug.LogWarning("[OWSBG] <<erase " + place + ">> refused: already erased or anchored");
             });
             runner.AddCommandHandler("camp", (Func<string, YarnTask>)CampAsync);
+            runner.AddCommandHandler("row", (Func<string, YarnTask>)RowAsync);
             runner.AddCommandHandler<string, string>("commission", (id, verb) =>
             {
                 if (!Commissions.Apply(GameState.World, id, verb))
@@ -188,6 +189,15 @@ namespace OWSBG.Narrative
             if (!Camp.IsReadyToWalk(GameState.World)) { Debug.LogWarning("[OWSBG] <<camp walk>>: the camp isn't moving yet"); return; }
             StartCoroutine(CampWalk.Go());
             while (CampWalk.IsWalking) await YarnTask.Yield();
+        }
+
+        /// <summary><c>&lt;&lt;row windreach&gt;&gt;</c> or <c>&lt;&lt;row quay&gt;&gt;</c>: Sable rows Wren to the other berth (<see cref="Boat"/>), and the line waits until there.</summary>
+        async YarnTask RowAsync(string destination)
+        {
+            if (!Boat.TryDestination(destination, out _, out _, out _)) { Debug.LogWarning("[OWSBG] <<row " + destination + ">>: only \"windreach\" or \"quay\""); return; }
+            StartCoroutine(BoatRow.Go(destination));
+            await YarnTask.Yield();
+            while (BoatRow.IsRowing) await YarnTask.Yield();
         }
 
         static async YarnTask PlayCutsceneAsync(string id)

@@ -1861,6 +1861,9 @@ namespace OWSBG.Setup
                     .West(W("Camp_2")).East(W("River_2")),
                 new RoomRecipe("Windreach_River_2").Tiles("Ground_Cracked", "Ground_Cracked").WindreachPapers("Mid_River")
                     .Floor(-20f, 20f).Plat(14f, 2.5f, 3f).Prop("Hull", -15f).Prop("Hull", 16f).Smudge(-13f).Smudge(15f).Moths(5f, 4.5f).Vantage("Bed", -3f, 0f).Camp(1)   // boats on their sides; the second night pitches here
+                    // Sable by her boat among the Ferrymen's hulls while it is berthed here (Boat; River_Sable).
+                    .Npc("Sable", -12.4f, "River_Sable", new Color(0.16f, 0.18f, 0.22f))
+                    .NpcWhen("Sable", Boat.AtKey, null, 0, Boat.AtRiver)
                     .West(W("River_1")).East(W("River_3")),
                 new RoomRecipe("Windreach_River_3").Tall().Tiles("Ground_Cracked", "Ground_Lip").WindreachPapers("Mid_Cliff", "Far_Rim")
                     .Floor(-20f, 20f).Smudge(-8f).Prop("Reeds", -15f)

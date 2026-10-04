@@ -55,6 +55,9 @@ hers either way.
   Never says "always" or "never" (`SteppeTests` holds every one of her lines to it). Calls Wren "map-bird".
 - **Hale** (godwit, Guild surveyor; added to the cast): professional courtesy, a colleague to her. Works alone and
   does not say "we", the opposite of Voss.
+- **Sable** (Act 2, by boat from the quay; `River_Sable`, character-bibles.md §2): the hulls in the riverbed were the
+  Ferrymen's, rowed up the river when it had water. She reads the names on the bows and counts the eleven that never
+  came back. The clan sleeping in them is, to her, the right use ("Good. Somebody should.").
 - **Ossa** (a child) and **Garrow** (an old crane; failed the leap forty-one years ago) at the third fire.
 - **Brek** (a clan fledgling, a young crane) by the Gate's stones after Wren's leap: he has no place to stand on
   and asks for one (`Gate_Brek`, offerings.md). Two birds, decided 2026-10-02: the old one who never flew is

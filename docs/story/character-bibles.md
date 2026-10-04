@@ -116,6 +116,7 @@ He doesn't know the difference." (`saltmarrow.sable.aury`, staged.)
 |---|---|---|---|---|
 | 1 | Saltmarrow.Quay | **The quay** (staged: `Quay_Sable`, `_First`, `_Again`, `_Widow`, `_Night`; `docs/story/saltmarrow-arc.md`) | The Guild's haste; the board; the reed; the whale; the widow; the shop; Halvard; Aury | `saltmarrow.sable.*`, `saltmarrow.bone_bridge.heard`, `saltmarrow.widow.decided` |
 | 1 | Saltmarrow.BoneBridge | The whale's step: she rows Wren under the Bone Bridge and does not sing along | "Its names cost nothing. That's the only free thing on this coast. Listen." #plant:3.4 | `saltmarrow.bone_bridge.rowed` |
+| 2 | Saltmarrow.Quay → Windreach.DryRiver | **The boat north** (`Quay_Sable`, `River_Sable`). In Act 2 she says the Ferrymen once rowed the Dry River to the steppe, and rows Wren there from the quay (`<<row>>`, `Boat`): nine hours, the last mile walked through silt. Among the old hulls on their sides she reads the names on the bows and counts the ones that never came back, aloud, the first time she counts who did not come back. She waits by the boat (it stays where Wren left it) and rows her home when asked | "No price. I want to see if they're still there." / "Eleven out, none back. I stopped counting who came back. Turns out I only stopped aloud." | `sable.windreach_offered`, `sable.windreach_rowed`, `sable.boat_at`, `sable.hulls_counted` |
 | 2 | Saltmarrow.LanternChain | **The tether.** She sells the cord to the third lighthouse, then goes with it herself | "Tether's fifteen. My rowing's free. Don't read anything into that." | `sable.tether_sold`, `saltmarrow.tether` |
 | 3 | Blank.AurysLighthouse | **Aury.** She sits with him; talks prices; does not tell him. Wren can, or not | If Wren tells him: Sable says nothing for the first time in the game, then "Boat's leaving." | `sable.aury_told`, `blank.aury.knows` |
 | 4 | Saltmarrow.Quay | Epilogue, by ending | Fixed: "Prices are the same." `#still`. Open: "Prices went up. Good. Things do." Unwritten: she is counting boats back again, out loud | |
@@ -360,4 +361,5 @@ Marrow: Lost. #echo:corvin
   teaching the walk on the coast (hearing it under the bridge, `BoundsWalks.IsLearned`), because the slice holds
   Merrow's End that way and it is proven in play; Runa's visit is bible 4.1's "needs Emberdown" way for a Wren who
   never heard the whale, and for everyone else it is the village counted in. The whale's song is her roll-call either way.
-- Sable's Act 2 voyage to Windreach by sea (world-map.md §6) would give her a fourth region; not written.
+- ~~Sable's Act 2 voyage to Windreach by sea.~~ Written (`River_Sable`, `Boat`): from the quay, a ride and not a way on the
+  map (world-map.md §6). Counting the hulls plants the unwritten ending's epilogue, where she counts boats back aloud.

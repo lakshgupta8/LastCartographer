@@ -137,6 +137,7 @@ namespace OWSBG.World
             {
                 int from = Named >= 0 ? Named : (NextNamed >= 0 ? NextNamed : 0);
                 NextNamed = Named >= 0 ? (from + Stride) % sections : from;
+                Tell(AttackKind.Window);   // the next ground named: the read starts (AUD-10)
             }
             RefreshTiles();
         }

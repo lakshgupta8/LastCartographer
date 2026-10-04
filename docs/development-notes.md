@@ -238,6 +238,9 @@ The game's one tune is sung by a small in-engine synth: `RollCallSong` (Core) tu
 ## Her sounds
 Wren's quill is ink and paper: `InkSounds` (Core) makes every cue from a few lines of noise, filters and envelopes (a stroke, the hit and kill layers, the nib's tap, a page turned fast, the thread, a word being written for the Bind, the survey's hatching, a smudge for hurt) and the four telegraph tells; `InkSoundBank` plays them at the Sfx bus's gain and `WrenSounds` on Wren hooks her events. `Unity.exe -batchmode -executeMethod OWSBG.Setup.InkSoundsExport.Render` (or **OWSBG → Render Wren's Sounds**) writes them to `docs/audio/sfx/` for the sound designer to replace (`docs/design/wren-sounds.md`).
 
+## Their voices
+Every enemy is a drawing and sounds like what it is drawn as (`docs/design/enemy-sounds.md`): `EnemySounds` (Core) gives each family a material (a shell's tick, wet ink, the Cantor's handbell in D, a Warden's brass, a Remnant's dry paper, embers, moths, pulp, graphite, earth, fluff) for its hurt, death and turned-away strike, and cues on the clips the animator asks for (the crab's hop and scuttle, the skimmer's rise and dive, the wasp's hum and spit, the tussock's rumble and heave, a reedling's peep); `EnemyVoice` goes on every enemy as it wakes and plays them from where it stands, panned and quieter past the screen. The crab, the skimmer, a smudge, the Cantors, the Choir, the Bells and the Survey now tell like every other attack, and `InkSoundBank` keeps to the direction's 24 voices in its order, dropping from the bottom. The same render command as Wren's writes `docs/audio/sfx/enemy_sfx_*.wav`.
+
 ## The cast
 `tools/characters/cast.py` draws the returning cast (Sable, Dotha, Isolde, Pell, Runa, Kettil, Teodor, Idrenne, Maren, Corvin, Ilse, Corra, Marrow, Aury) from one parametric townsfolk bird: idle, talk, walk and asleep for everyone, plus each one's own (Sable mends and reads, Dotha sings, Corra draws). The bootstrap build dresses any NPC whose name has sheets (`Sable_Greybox` → `Sable`) with `InkSheetPlayer`, `NpcAnimator` (the post's activity, the talk, the walk) and `NpcInk`, whose colour state follows the place: drawn, washing toward paper as the place fades, the ink removed once it is let go or on an island in the Blank (`docs/design/npc-animation.md`).
 
@@ -258,14 +261,6 @@ In one room of every region young birds leap from a perch in the background (`do
 and for each ability Wren has one more of them glides, a little further each. Anchored places never glide, a fade thins
 them, and in the Open World one doesn't come down. Drawn by `tools/characters/fledglings.py` (seven species), stood by
 the recipes' `.Fledglings(...)`, leapt by `FledglingLoop`.
-
-## The UI's drawings
-The atlas UI is drawn by the same pen as the world (`docs/design/ui-art.md`): `tools/ui/ui_art.py` renders the paper the
-pages are made of (the page, the strip, the atlas's spread, the portrait's frame), the masks as feathers, the Inkwell as a
-bottle that fills, the boss bar as a brush stroke and the glyphs the pages point with (the nib, the rose, the vantage
-marks, the Charters' cowls, the Instruments), `tools/ui/pack.py` packs them under `Art/UI/Resources/UI/` with `ui.json`,
-and `InkArt` loads them through Resources with no setup pass. Titles are IM Fell English and body text Alegreya Sans
-(both OFL, beside their licences). Under high-contrast ink the paper goes back to the flat opaque page and the glyphs stay.
 
 ## The store's assets
 `docs/marketing/` holds the key art, the nine Steam capsules, thirteen screenshots and four trailer clips, all made from the

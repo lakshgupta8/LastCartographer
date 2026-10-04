@@ -32,7 +32,14 @@ namespace OWSBG.Tests
                 Assert.That(c.Gain, Is.InRange(0.2f, 1f), c.Id);
                 var again = InkSounds.Render(c.Id);
                 CollectionAssert.AreEqual(s, again, c.Id + " is deterministic");
-                Assert.AreEqual(0f, Math.Abs(s[s.Length - 1]), 0.02f, c.Id + " ends at nothing: no click");
+                if (c.Loop)
+                {
+                    // A loop's join is no bigger a step than any inside it: it meets itself (AUD-10's hums and rumbles).
+                    float inside = 0f;
+                    for (int i = 1; i < s.Length; i++) inside = Math.Max(inside, Math.Abs(s[i] - s[i - 1]));
+                    Assert.LessOrEqual(Math.Abs(s[0] - s[s.Length - 1]), inside + 0.01f, c.Id + " meets itself: no click at the join");
+                }
+                else Assert.AreEqual(0f, Math.Abs(s[s.Length - 1]), 0.02f, c.Id + " ends at nothing: no click");
             }
             Assert.IsNull(InkSounds.Render("nothing"));
             Assert.IsFalse(InkSounds.Has("wren_voice"), "her voice is never heard");
@@ -106,7 +113,7 @@ namespace OWSBG.Tests
             float head = 0f, tail = 0f;
             for (int i = 0; i < edge; i++) { head += Math.Abs(s[i]); tail += Math.Abs(s[s.Length - 1 - i]); }
             Assert.Less(head / edge, 0.02f, "silent at the start"); Assert.Less(tail / edge, 0.02f, "and at the end: no click at the join");
-            Assert.AreEqual(1, InkSounds.Cues.Count(c => c.Loop), "only the survey loops");
+            Assert.AreEqual(1, InkSounds.Cues.Count(c => c.Loop && c.Kind != InkSounds.Kind.Enemy), "of hers, only the survey loops");
         }
 
         [Test]
@@ -116,7 +123,7 @@ namespace OWSBG.Tests
             Assert.IsTrue(Directory.Exists(dir), dir);
             foreach (var c in InkSounds.Cues)
             {
-                string file = Path.Combine(dir, (c.Kind == InkSounds.Kind.Tell ? "tell_sfx_" + c.Tell.ToString().ToLowerInvariant() : "wren_sfx_" + c.Id) + ".wav");
+                string file = Path.Combine(dir, InkSounds.FileName(c));
                 Assert.IsTrue(File.Exists(file), c.Id + " is rendered");
                 var head = new byte[44];
                 using (var fs = File.OpenRead(file)) Assert.AreEqual(44, fs.Read(head, 0, 44), file);

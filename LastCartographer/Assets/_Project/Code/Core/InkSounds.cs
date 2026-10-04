@@ -16,12 +16,15 @@ namespace OWSBG.Core
     {
         public const int SampleRate = RollCallSong.SampleRate;
 
-        public enum Kind { Wren, Layer, Flourish, Tell }
+        /// <summary>Whose a cue is: hers, a layer over hers, a Flourish's, a tell's, or an enemy's (<see cref="EnemySounds"/>, AUD-10).</summary>
+        public enum Kind { Wren, Layer, Flourish, Tell, Enemy }
 
         public sealed class Cue
         {
             public string Id;
             public Kind Kind;
+            /// <summary>Its place when too much sounds at once (audio-direction 4): the bank drops the last first.</summary>
+            public AudioDirection.Voice Voice;
             /// <summary>What it is, for the doc and the sound designer.</summary>
             public string What;
             /// <summary>Played at this against the rendered peak (a jump is quieter than a strike).</summary>
@@ -39,8 +42,35 @@ namespace OWSBG.Core
         public static bool Has(string id) => Of(id) != null;
         public static string TellCue(AudioDirection.Tell t) => "tell_" + t.ToString().ToLowerInvariant();
 
-        static void Add(string id, Kind kind, string what, Func<float[]> render, float gain = 1f, bool loop = false, AudioDirection.Tell? tell = null) =>
-            _cues.Add(new Cue { Id = id, Kind = kind, What = what, Render = render, Gain = gain, Loop = loop, Tell = tell });
+        internal static void Add(string id, Kind kind, string what, Func<float[]> render, float gain = 1f, bool loop = false, AudioDirection.Tell? tell = null, AudioDirection.Voice? voice = null)
+        {
+            if (Has(id)) throw new InvalidOperationException("two cues called " + id);
+            _cues.Add(new Cue { Id = id, Kind = kind, Voice = voice ?? VoiceOf(kind, id), What = what, Render = render, Gain = gain, Loop = loop, Tell = tell });
+        }
+
+        /// <summary>The direction's order: the tells first, her hurt next, her strikes after the dialogue, the enemies after her.</summary>
+        static AudioDirection.Voice VoiceOf(Kind kind, string id) => kind switch
+        {
+            Kind.Tell => AudioDirection.Voice.Tell,
+            Kind.Enemy => AudioDirection.Voice.Enemy,
+            _ => id == "hurt" || id == "died" ? AudioDirection.Voice.WrenHurt : AudioDirection.Voice.Wren,
+        };
+
+        /// <summary>The delivery file for a cue: wren_sfx_<id>, tell_sfx_<kind> or enemy_sfx_<id> (no region, no beat: one-shots).</summary>
+        public static string FileName(Cue c) => (c.Kind == Kind.Tell ? "tell_sfx_" + c.Tell.ToString().ToLowerInvariant()
+            : c.Kind == Kind.Enemy ? "enemy_sfx_" + c.Id : "wren_sfx_" + c.Id) + ".wav";
+
+        // ---- where a sound stands (AUD-10): the room is a plane, so a sound's place is how far it is from the listener along it ----
+
+        /// <summary>Stereo pan for a sound <paramref name="dx"/> units right of the listener, the screen <paramref name="halfWidth"/> wide each way: never hard to one side.</summary>
+        public static float Pan(float dx, float halfWidth) => Math.Max(-1f, Math.Min(1f, dx / Math.Max(0.01f, halfWidth))) * 0.7f;
+
+        /// <summary>How much of its gain a sound keeps: all of it on screen, then falling to nothing three screens out.</summary>
+        public static float Falloff(float dx, float halfWidth)
+        {
+            float w = Math.Max(0.01f, halfWidth), d = Math.Abs(dx);
+            return d <= w ? 1f : Math.Max(0f, 1f - (d - w) / (2f * w));
+        }
 
         static InkSounds()
         {
@@ -68,6 +98,8 @@ namespace OWSBG.Core
             Add(TellCue(AudioDirection.Tell.Slam), Kind.Tell, "a low drawn breath: the only low tell", TellSlam, 1f, false, AudioDirection.Tell.Slam);
             Add(TellCue(AudioDirection.Tell.Window), Kind.Tell, "a chime as the opening starts", TellWindow, 0.8f, false, AudioDirection.Tell.Window);
             Add(TellCue(AudioDirection.Tell.Shape), Kind.Tell, "a swell that follows the shape across the floor", TellShape, 0.9f, false, AudioDirection.Tell.Shape);
+            // ---- the enemies' voices (AUD-10, docs/design/enemy-sounds.md) ----
+            EnemySounds.Register();
         }
 
         /// <summary>Render a cue's samples: mono at <see cref="SampleRate"/>, peaks at −1 dBTP (audio-direction 6).</summary>
@@ -84,11 +116,11 @@ namespace OWSBG.Core
 
         // ---- the tools: a few lines each ----
 
-        static int N(float seconds) => (int)(seconds * SampleRate);
-        static float[] Buf(float seconds) => new float[N(seconds)];
+        internal static int N(float seconds) => (int)(seconds * SampleRate);
+        internal static float[] Buf(float seconds) => new float[N(seconds)];
 
         /// <summary>White noise, seeded so a cue renders the same every time.</summary>
-        sealed class Rng
+        internal sealed class Rng
         {
             uint _s;
             public Rng(int seed) { _s = (uint)(seed * 2654435761u + 12345u); }
@@ -96,7 +128,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>A resonant band-pass (biquad), re-tuned per sample so a scratch can sweep.</summary>
-        sealed class Band
+        internal sealed class Band
         {
             float _x1, _x2, _y1, _y2;
             public float Tick(float x, float hz, float q)
@@ -110,13 +142,13 @@ namespace OWSBG.Core
             }
         }
 
-        sealed class OnePole
+        internal sealed class OnePole
         {
             float _y;
             public float Low(float x, float hz) { float a = 1f - (float)Math.Exp(-2 * Math.PI * hz / SampleRate); _y += (x - _y) * a; return _y; }
         }
 
-        static float Env(float t, float attack, float length, float decay)
+        internal static float Env(float t, float attack, float length, float decay)
         {
             if (t < 0f || t >= length) return 0f;
             float a = attack <= 0f ? 1f : Math.Min(1f, t / attack);
@@ -125,10 +157,10 @@ namespace OWSBG.Core
             return a * d * tail;
         }
 
-        static float Lerp(float a, float b, float t) => a + (b - a) * Math.Max(0f, Math.Min(1f, t));
+        internal static float Lerp(float a, float b, float t) => a + (b - a) * Math.Max(0f, Math.Min(1f, t));
 
         /// <summary>A pen scratch: band-passed noise with its centre sweeping, from <paramref name="at"/> for <paramref name="len"/> seconds.</summary>
-        static void Scratch(float[] s, float at, float len, float fromHz, float toHz, float q, float gain, int seed, float attack = 0.003f, float decay = 0.05f)
+        internal static void Scratch(float[] s, float at, float len, float fromHz, float toHz, float q, float gain, int seed, float attack = 0.003f, float decay = 0.05f)
         {
             var rng = new Rng(seed); var band = new Band();
             int start = N(at), end = Math.Min(s.Length, N(at + len));
@@ -141,7 +173,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>A soft low thump or a drop: a sine sliding down.</summary>
-        static void Drop(float[] s, float at, float len, float fromHz, float toHz, float gain, float attack = 0.002f, float decay = 0.06f)
+        internal static void Drop(float[] s, float at, float len, float fromHz, float toHz, float gain, float attack = 0.002f, float decay = 0.06f)
         {
             int start = N(at), end = Math.Min(s.Length, N(at + len));
             double ph = 0;
@@ -155,7 +187,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>Low, dull noise: a smudge, a breath, the spread of a blot.</summary>
-        static void Smear(float[] s, float at, float len, float fromHz, float toHz, float gain, int seed, float attack = 0.01f, float decay = 0.08f)
+        internal static void Smear(float[] s, float at, float len, float fromHz, float toHz, float gain, int seed, float attack = 0.01f, float decay = 0.08f)
         {
             var rng = new Rng(seed); var lp = new OnePole(); var lp2 = new OnePole();
             int start = N(at), end = Math.Min(s.Length, N(at + len));

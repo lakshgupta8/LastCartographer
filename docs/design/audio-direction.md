@@ -175,7 +175,9 @@ want the feel-test's eye.
   second (AUD-03, `docs/design/wren-sounds.md`), made from ink and paper in code. **The coast's theme and the
   Lamp-Keeper's** are the third (AUD-04, `docs/design/music.md`), with the music system under them; **every
   region's ambience layers** the fourth (AUD-05, `docs/design/ambience.md`), thinning by the fade stage. AUD-06 to
-  AUD-08 are the rest; the mixer (AUD-09) is running.
+  AUD-08 are the rest; the mixer (AUD-09) is running. **The enemies' voices** (AUD-10,
+  `docs/design/enemy-sounds.md`) give every family its material and its moves, put the missing tells on the plain
+  enemies and the bell-ringers, and enforce the 24-voice limit in the order above.
 - **The music system** is built (AUD-04, `MusicDriver`): stems in step, layer changes on the bar line, the rests
   baked into each region theme's loop at its silence share. It clocks from the beat table.
 - **Smudges in the Blank's islands** follow the Blank's slow beat (1.8 s each). Whether that's too easy wants a

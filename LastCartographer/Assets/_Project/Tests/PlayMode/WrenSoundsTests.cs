@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using OWSBG.Core;
 using OWSBG.World;
@@ -93,18 +94,21 @@ namespace OWSBG.Tests
             var target = _enemy.AddComponent<Target>();
             yield return Frames(2);
             int hp = target.Health;
-            before = Bank.Played;
+            int mark = Bank.Recent.Count;
             _input.PressAttack();
-            yield return Until(() => Bank.Played >= before + 2);
-            Assert.AreEqual("hit", Bank.Last, "the strike landed: the hit layer over the stroke");
-            Assert.AreEqual(before + 2, Bank.Played);
+            yield return Until(() => Bank.Recent.Skip(mark).Contains("hit"));
+            var since = Bank.Recent.Skip(mark).ToList();
+            Assert.That(since, Does.Contain("stroke").And.Contain("hit"), "the strike landed: the hit layer over the stroke");
+            Assert.That(since, Does.Contain("ink_hurt"), "and the target's own hurt under them (AUD-10)");
+            Assert.AreEqual(1, since.Count(id => id == "stroke"), "one swing");
             Assert.Less(target.Health, hp);
 
-            before = Bank.Played;
+            mark = Bank.Recent.Count;
             for (int i = 0; i < 10 && !target.IsDead; i++) target.TakeHit(new HitInfo { Damage = 1, Direction = Vector2.right });
             Assert.IsTrue(target.IsDead);
-            Assert.AreEqual("kill", Bank.Last, "the kill layer");
-            Assert.AreEqual(before + 1, Bank.Played, "a hit from nowhere is not her stroke: only the death sounds");
+            since = Bank.Recent.Skip(mark).ToList();
+            Assert.That(since, Does.Contain("kill").And.Contain("ink_death"), "the kill layer, and the target's death under it");
+            Assert.That(since, Does.Not.Contain("stroke").And.Not.Contain("hit"), "a hit from nowhere is not her stroke");
         }
 
         [UnityTest]

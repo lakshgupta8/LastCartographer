@@ -93,6 +93,7 @@ namespace OWSBG.World
         {
             if (!IsDoveActive(dove)) return;
             _ring[dove] = 0;
+            Tell(AttackKind.Window);   // a ring is a window: its chime as it starts (AUD-10)
             _doves[dove].SetMaterial(DoveMaterial(true));
             _doves[dove].Play("ring", true);
         }

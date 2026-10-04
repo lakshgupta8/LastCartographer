@@ -174,6 +174,7 @@ namespace OWSBG.World
         {
             if (bell < 0 || bell >= RopeCount || IsCut(bell)) return;
             _ring[bell] = 0;
+            Tell(AttackKind.Window);   // a ring is a window: its chime as it starts (AUD-10)
             if (bell < _ropes.Count && _ropes[bell] != null) _ropes[bell].Play("ring", true);
         }
 

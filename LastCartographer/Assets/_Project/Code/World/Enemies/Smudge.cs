@@ -69,6 +69,7 @@ namespace OWSBG.World
             {
                 Body.linearVelocity = to.normalized * _lungeSpeed;
                 _lungeT = _drawnSeconds;
+                Tell(AttackKind.Strike);   // the lunge, as it starts (AUD-10)
             }
             else if (_lungeT <= 0f)
             {

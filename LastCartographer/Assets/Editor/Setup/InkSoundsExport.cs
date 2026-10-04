@@ -15,8 +15,8 @@ namespace OWSBG.Setup
         public const string Folder = "docs/audio/sfx";
         public static string Root => Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", Folder));
 
-        /// <summary>A cue's file: wren_sfx_<id>.wav, or tell_sfx_<kind>.wav for a tell (no region, no beat: one-shots).</summary>
-        public static string FileName(InkSounds.Cue c) => (c.Kind == InkSounds.Kind.Tell ? "tell_sfx_" + c.Tell.ToString().ToLowerInvariant() : "wren_sfx_" + c.Id) + ".wav";
+        /// <summary>A cue's file: wren_sfx_<id>.wav, tell_sfx_<kind>.wav for a tell, enemy_sfx_<id>.wav for an enemy's (no region, no beat: one-shots).</summary>
+        public static string FileName(InkSounds.Cue c) => InkSounds.FileName(c);
 
         [MenuItem("OWSBG/Render Wren's Sounds")]
         public static void Render()

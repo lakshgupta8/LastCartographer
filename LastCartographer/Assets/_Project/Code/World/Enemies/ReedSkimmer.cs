@@ -50,6 +50,7 @@ namespace OWSBG.World
                     {
                         _state = State.Rise;
                         _t = 0f;
+                        Tell(AttackKind.Strike);   // the rise is its telegraph (AUD-10)
                     }
                     break;
                 }

@@ -82,6 +82,7 @@ namespace OWSBG.World
                             State = Move.Ring;
                             _frames = 0;
                             Body.linearVelocity = Vector2.zero;
+                            Tell(AttackKind.Window);   // the ring is the opening to strike into (AUD-10)
                         }
                     }
                     break;

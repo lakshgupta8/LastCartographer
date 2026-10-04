@@ -189,6 +189,12 @@ namespace OWSBG.Core
             "world one-shots", "ambience", "music",
         };
 
+        /// <summary>A one-shot's place in <see cref="Priority"/>, in that order: the sound bank keeps the first and drops the last (AUD-10).</summary>
+        public enum Voice { Tell, WrenHurt, Dialogue, Wren, Enemy, World, Ambience, Music }
+
+        /// <summary>What <see cref="Priority"/> calls a voice.</summary>
+        public static string PriorityOf(Voice v) => Priority[(int)v];
+
         /// <summary>The least an unpaused snapshot may leave the Sfx bus, where the tells ride.</summary>
         public const float TellBusFloor = 0.8f;
         /// <summary>At most this many one-shots at once; beyond it the lowest in <see cref="Priority"/> is dropped.</summary>

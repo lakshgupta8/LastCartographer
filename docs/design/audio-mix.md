@@ -122,7 +122,8 @@ Nothing plays yet; there are no clips.
   theme and the Lamp-Keeper's (AUD-04) ride the Music bus's gain and cutoff through `MusicDriver`'s stem sources
   (the driver's own Music source stays free); every region's ambience layers (AUD-05) ride the Ambience bus's gain
   and cutoff through `AmbienceDriver`'s layer sources, the stage's filter and the layer dropout agreeing on the same
-  reading of the place.
+  reading of the place. The enemies' voices (AUD-10) ride the Sfx bus too, through the bank's 24 ranked sources and
+  each `EnemyVoice`'s own loop source.
 - **A mixer asset.** If the DSP wants more than a low-pass (reverb in the Half-Cathedral, the Blank's reversal),
   an `AudioMixer` asset with these buses can take the gains as decibels from `Mix.ToDb`; the snapshots and ducks
   stay in code.

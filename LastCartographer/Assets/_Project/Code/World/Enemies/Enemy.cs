@@ -46,6 +46,8 @@ namespace OWSBG.World
         public bool IsSlowed => SlowLeft > 0f;
         public float SlowFactor { get; set; } = 0.35f;
         public event Action<Enemy, HitInfo> WasHit;
+        /// <summary>A strike turned away (a shell, an undrawn smudge, a cloud the quill passes through): its voice may say so (AUD-10).</summary>
+        public event Action<Enemy> HitBlocked;
         public event Action<Enemy> Died;
         /// <summary>Every enemy death in the game (commission counters, later stats).</summary>
         public static event Action<Enemy> AnyDied;
@@ -83,6 +85,7 @@ namespace OWSBG.World
             if (Tuning.TryEnemy(Family, out var tune)) { _maxHealth = tune.Health; _contactDamage = tune.Contact; }
             Health = _maxHealth;
             if (_playerMask.value == 0) _playerMask = LayerMask.GetMask("Player");
+            if (GetComponent<EnemyVoice>() == null) gameObject.AddComponent<EnemyVoice>();   // every drawing has a voice (AUD-10)
         }
 
         protected virtual void Start()
@@ -215,7 +218,7 @@ namespace OWSBG.World
         public bool TakeHit(in HitInfo hit)
         {
             if (IsDead || _deathT >= 0f) return false;
-            if (!AcceptsHit(hit)) { OnHitBlocked(hit); return false; }
+            if (!AcceptsHit(hit)) { OnHitBlocked(hit); HitBlocked?.Invoke(this); return false; }
             Health = Mathf.Max(0, Health - hit.Damage);
             Mix.Note(Mix.Duck.Impact);   // the mix makes room for the impact (AUD-09)
             if (hit.Drain > 0f)

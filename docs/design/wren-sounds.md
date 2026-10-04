@@ -76,9 +76,10 @@ v1 has the hook (`InkSoundBank.Clip`) and no loader yet: the first recorded set 
 
 - **They are sketches.** A band-passed noise is a pen only by suggestion; the sound designer's recordings of a real
   nib on real paper are the point of the delivery files.
-- **Plain enemies' tells.** The Warden's thrust tells; the crab, the reed-things and the smudges' attacks do not yet.
-  The Choir's and the Bells' rings, and the Complete Survey's named ground, are windows without `Telegraph` calls.
+- **Plain enemies' tells** are in since AUD-10 (`docs/design/enemy-sounds.md`): the crab's hop, the skimmer's rise and a
+  smudge's lunge tell as strikes, and the Cantors', the Choir's, the Bells' rings and the Survey's named ground as windows.
 - **Captions for tells** ("[a low breath]") are the direction's ask for deaf players; the captions system can take
   them, but a caption per attack in a fight wants a setting first (DES-14).
-- **Voice limiting** (24 at once, the priority order) is not enforced: `PlayOneShot` plays everything.
+- **Voice limiting** is enforced since AUD-10: 24 sources, each cue ranked in the direction's order
+  (`AudioDirection.Voice`), the newcomer taking the least voice's place or being dropped (`InkSoundBank.Dropped`).
 - **Hit-stop and shake** do not yet read the cue, and the hit layer does not scale with the strike's strength.

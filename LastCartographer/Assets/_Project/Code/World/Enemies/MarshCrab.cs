@@ -44,6 +44,7 @@ namespace OWSBG.World
                         Face(toWren.x >= 0f ? 1 : -1);
                         Body.linearVelocity = new Vector2(Facing * _walkSpeed * 1.5f, _hopVelocity);
                         _hopT = 0f;
+                        Tell(AttackKind.Strike);   // the hop is its telegraph (AUD-10)
                         return;
                     }
                 }

@@ -125,6 +125,7 @@ namespace OWSBG.Core
             ComposeBosses();
             ComposeBlank();
             ComposeRhythm();
+            ComposeMainBosses();
         }
 
         /// <summary>The instruments a region's theme may use: audio-direction 2's bands, as ids (the coast's with the drone and bell its theme leans on).</summary>

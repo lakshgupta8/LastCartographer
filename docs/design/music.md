@@ -117,8 +117,9 @@ Each region's resolution (the answer on the fiddle over the drone, in its key) i
 brass, each in the key of the region he is fought in; the drone, drum, whistle and bell under Halvard's are the
 Guild's travelling band. **Every other boss fights to its region's motif** (`Score.SharedThemeOf`): the region's
 own theme with its rests gone, the bed, pulse and drive from the first telegraph, the lead in the second phase, the
-voices in the third. That covers the optionals (the Choir, Hale, the Fallen Star) and, for now, the Gatekeeper,
-Oriel, the Bells and Corra's Drawing. The rhythm bosses and the Brood have their own since AUD-13 (section 3d).
+voices in the third. That covers the optionals (the Choir, Hale, the Fallen Star). The rhythm bosses and the Brood
+have their own since AUD-13 (section 3d), and the Gatekeeper, Oriel, the Bells and Corra's Drawing since AUD-14
+(section 3e).
 
 | Boss | Key, beat | Loop | Phase 1 | Phase 2 | Phase 3 |
 |---|---|---|---|---|---|
@@ -150,6 +151,24 @@ the music through every blow.
 
 `Score.ThemeOfBoss(family, region, phase)` picks the Survey's ink by phase; a boss with one theme keeps it in every
 phase. The resolution rings in the key of the theme playing when it falls: Halden's, for the Survey's last ink.
+
+## 3e. The last four main bosses (AUD-14)
+
+**Every main boss now has a theme of its own**; only the optionals (the Choir, Hale, the Fallen Star) fight to their
+region's motif. Each of the four is in the key and at the beat of the region it is fought in, opens with its bed,
+pulse and lead at the first telegraph, and adds or changes a layer a phase (`Score.ComposeMainBosses`).
+
+| Boss | Key, beat | Loop | Phase 1 | Phase 2 | Phase 3 |
+|---|---|---|---|---|---|
+| The Gatekeeper (`gatekeeper`) | the Verdance's E Phrygian, 50 | 6 bars | the root-chapel's organ pedal, the roots in the ground; a Cantor handbell on one and three, the stone wings; the gamba, slow as stone, "Passage is for the winged", stopping on the flat second unresolved | the glass held high, a step higher every bar: it rises up the gate and the fight goes up the threads | the pedal and the standing voice **leave** (the roots tear free); the gamba tries to fly, a climb a bar coming down hard, each climb lower |
+| Warden-Captain Oriel (`oriel`) | Halden's C major, 100 | 8 bars | the music box on every beat, the drill-yard's count; Halden's I IV V vi on the strings; the Guild's brass playing the Guild's motif **backwards** (`Score.MirroredMotif`), as she plays Wren's combo reversed | the motif the right way up on the strings, an octave above her mirror ("That's my stance"); the harpsichord's run up an octave and back every other bar, Wren's Flourish | the clockwork **leaves**; the cello holds the dominant and the violin its leading tone under everything: the Bind she is writing, the cadence never let home |
+| The Half-Cathedral Bells (`bells`) | the Greyfold's held tone on D, 40 | 4 bars | the held tone; a bowed cymbal a bar; a second held tone rising a step a bar, "For the flock, going north" (the first bell's hum) | the second bell's hum, in canon a bar behind the first and a fourth under: "For the ones who stayed" | the held tone **leaves** (the white); the great bell's hum sings the roll-call's answer under everything, a bar a note: "We did not forget you" |
+| Corra's Drawing (`corra`) | the Blank's D, 33 | 4 bars | the Remnant's voices, the crayon's colour; a celesta counting on every beat (on it, where the Blank's clock is off it); her song, a child's sing-song on the fifth and the third that does not come home | her father's motif, the Guild's, drawn bigger: twice its length, low on the reversed piano ("He was bigger"); the small one beside it at its own size, high on the celesta, the two starting together | the colour and her song **leave** (the crayon runs out); the song comes back as its outline, only the notes on the beat, at twice the pace |
+
+**The Bells' music strikes no bell.** Every ring in the nave is the fight's own tell, and a bell in the score would be
+a tell that the telegraph doesn't show (audio-direction 4); what the score has is the hum a bell leaves, on the
+Greyfold's held sine, and the bowed cymbal. The Gatekeeper's theme keeps the Verdance's rule and never quotes the
+roll-call; the Bells' great bell and every boss's resolution are the only places the answer comes in the Greyfold.
 
 ## 3c. The Blank and the endings (AUD-08)
 
@@ -226,6 +245,15 @@ arrangement.
   (PlayMode, 3): the Collapse's beat keeps real time through eight hitstops; its theme lands within a tenth of a
   second of the fight's beat and is put back on it after a pause; the Survey's theme changes ink with its phase
   and keeps the new beat.
+- AUD-14: `MainBossScoreTests` (EditMode, 6): the four themes are in their regions' keys at their beats, never
+  rest, open with bed, pulse and lead, add a layer a phase and change one in the last, render to their loops at the
+  ceiling, and are found under their bosses' class names in every phase; every main boss on the sheets has a theme
+  of its own and the three optionals none. The Gatekeeper's gamba stops on the flat second, its glass climbs, and
+  its flight comes down hard and lower; Oriel's brass is the Guild's motif backwards, her strings it forwards, and
+  the Bind holds the dominant and never the tonic; the Bells' theme plays no struck instrument, its second bell is
+  the first a bar behind and a fourth under, and the great bell sings the answer; Corra's Drawing draws the motif
+  at twice its length with the small one at its own size beside it, and its outline is her song's on-beat notes at
+  twice the pace.
 
 ## 7. Open
 
@@ -240,6 +268,8 @@ arrangement.
 - **The codas loop.** The title holds for eight seconds and the game stops there (M4's credits); a coda that ends
   rather than loops wants that roll to end with.
 - **The rhythm bosses** are scored to their fights' beats since AUD-13 (section 3d). A resync after a pause is a jump
-  in the loop, heard as the paused snapshot lets go. The Gatekeeper, Oriel, the Bells and Corra's Drawing still wait
-  for themes of their own.
+  in the loop, heard as the paused snapshot lets go.
+- **The optionals** (the Choir, Hale, the Fallen Star) still fight to their region's motif; the Brood alone has its own.
+- **The Bells' theme does not know which bell is cut**: the canon and the great bell come with the phases, not
+  with the ropes, and an inscription read as a bell is silenced is not yet a line in the score.
 - **Halvard's third fight** stops counting halfway; the theme does not know that yet.

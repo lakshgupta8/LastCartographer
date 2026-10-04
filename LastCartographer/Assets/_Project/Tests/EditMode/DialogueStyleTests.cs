@@ -69,7 +69,7 @@ namespace OWSBG.Tests
                 foreach (Match t in Regex.Matches(raw, @"\s#([a-z]+)(:[0-9.a-z]+)?"))
                 {
                     var kind = t.Groups[1].Value;
-                    if (kind != "still" && kind != "plant" && kind != "reveal" && kind != "callback" && kind != "interject" && kind != "echo" && kind != "line")
+                    if (kind != "still" && kind != "plant" && kind != "reveal" && kind != "callback" && kind != "interject" && kind != "echo" && kind != "line" && kind != "face")
                         problems.Add(file + ":" + line + " unknown tag #" + kind);
                     if ((kind == "plant" || kind == "reveal" || kind == "callback") && !Regex.IsMatch(t.Groups[2].Value, @"^:[0-9]+\.[0-9]+$"))
                         problems.Add(file + ":" + line + " #" + kind + " needs a bible section, like #" + kind + ":5.1");

@@ -9,9 +9,9 @@ title: Lowmarket_Strike
 <<if has_flag("halden.strike.decided")>>
     <<jump Lowmarket_Strike_After>>
 <<endif>>
-Brisk: Forty days out. The mills are cold. The owners are warm. Lowmarket is getting thinner. #line:03a0322
+Brisk: Forty days out. The mills are cold. The owners are warm. Lowmarket is getting thinner. #face:wary #line:03a0322
 Anvers: The survey is scheduled. It has been scheduled for nine years. Schedules take time. #line:07a24c7
-Brisk: Nine years. Look at the paint. Look at my hands. You can see the table through them, some mornings. #line:0a65a3b
+Brisk: Nine years. Look at the paint. Look at my hands. You can see the table through them, some mornings. #face:grave #line:0a65a3b
 -> The owners pay for the survey. #line:02ec805
     <<jump Lowmarket_Mediate>>
 -> Hold it yourselves. I'll teach the walk. <<if walk_known()>> #line:0dd848d
@@ -22,10 +22,10 @@ Brisk: Nine years. Look at the paint. Look at my hands. You can see the table th
 
 title: Lowmarket_Mediate
 ---
-Anvers: The owners, pay? For a district that pays no dues? That is not how... #line:0f65c7a
-Brisk: They'll pay. Or the journeyman stands at their mill gate with the rest of us. #line:07dadab
+Anvers: The owners, pay? For a district that pays no dues? That is not how... #face:wary #line:0f65c7a
+Brisk: They'll pay. Or the journeyman stands at their mill gate with the rest of us. #face:wary #line:07dadab
 Anvers: Very well. Four hundred crowns a street. Anchored by the new moon. It will be the same, after. Forever. #line:016757e
-Brisk: The same is better than gone. Isn't it? Tell me it is. #line:0274589
+Brisk: The same is better than gone. Isn't it? Tell me it is. #face:grave #line:0274589
 <<voice surveyor halden>>
 <<anchor Halden_Lowmarket_1>>
 <<anchor Halden_Lowmarket_2>>
@@ -35,10 +35,10 @@ Brisk: The same is better than gone. Isn't it? Tell me it is. #line:0274589
 
 title: Lowmarket_Walk
 ---
-Brisk: A walk? Round the district, every night? We're millworkers, not a choir. #line:05a17b9
-Brisk: ...Every street a name. Every name a step. Aye. We can learn a thing if we're shown it twice. #line:0c36062
-Anvers: That is not a survey. The Guild will not recognise it. #line:01b5fb6
-Brisk: The Guild hasn't recognised us for nine years. We'll manage. #line:08378cb
+Brisk: A walk? Round the district, every night? We're millworkers, not a choir. #face:wary #line:05a17b9
+Brisk: ...Every street a name. Every name a step. Aye. We can learn a thing if we're shown it twice. #face:bright #line:0c36062
+Anvers: That is not a survey. The Guild will not recognise it. #face:wary #line:01b5fb6
+Brisk: The Guild hasn't recognised us for nine years. We'll manage. #face:bright #line:08378cb
 <<voice warden halden>>
 <<flag halden.strike.walk_taught 1>>
 <<flag halden.strike.decided 2>>
@@ -46,9 +46,9 @@ Brisk: The Guild hasn't recognised us for nine years. We'll manage. #line:08378c
 
 title: Lowmarket_StayOut
 ---
-Brisk: No. It isn't. Nobody's is. That's what the owners say too. #line:0575e25
+Brisk: No. It isn't. Nobody's is. That's what the owners say too. #face:wary #line:0575e25
 Anvers: The strike will end within the month. They always do. The survey remains scheduled. #line:048987f
-Brisk: Go on, then. Up the stair. Remember us, if you can. Somebody should. #line:0fd4243
+Brisk: Go on, then. Up the stair. Remember us, if you can. Somebody should. #face:grave #line:0fd4243
 <<voice drift halden>>
 <<release Halden_Lowmarket_1>>
 <<release Halden_Lowmarket_2>>
@@ -59,10 +59,10 @@ Brisk: Go on, then. Up the stair. Remember us, if you can. Somebody should. #lin
 title: Lowmarket_Strike_After
 ---
 <<if flag("halden.strike.decided") == 1>>
-    Brisk: Same bread. Same paint. Same me. It holds. I don't know if I'm glad. #still #line:0515694
+    Brisk: Same bread. Same paint. Same me. It holds. I don't know if I'm glad. #still #face:grave #line:0515694
 <<elseif flag("halden.strike.decided") == 2>>
-    Brisk: Forty-two streets and a bakery. We walked them last night. Nobody missed a name. #line:06d845f
+    Brisk: Forty-two streets and a bakery. We walked them last night. Nobody missed a name. #face:bright #line:06d845f
 <<else>>
-    Brisk: Thinner every day. We'll be in your white place soon. Save us a street. #still #line:0b5d00c
+    Brisk: Thinner every day. We'll be in your white place soon. Save us a street. #still #face:grave #line:0b5d00c
 <<endif>>
 ===

@@ -11,15 +11,15 @@ namespace OWSBG.Tests
 {
     /// <summary>
     /// Portraits for dialogue (CHR-13, docs/design/portraits.md): every Yarn speaker has a face or is named faceless,
-    /// never both; each face is drawn from the body the speaker is met in; every face is packed as a strip of rest,
-    /// talk and the two in the Remnant's grey; two speakers in one look still read apart; the persistent dialogue page
-    /// carries them all.
+    /// never both; each face is drawn from the body the speaker is met in; every face is packed as a row per mood of
+    /// rest, talk and the two in the Remnant's grey; the moods are different faces, chosen by a line's #face: tag or its
+    /// punctuation; two speakers in one look still read apart; the persistent dialogue page carries them all.
     /// </summary>
     public class PortraitTests
     {
         const string Folder = "Assets/_Project/Art/Portraits/";
 
-        [System.Serializable] class Manifest { public int cell; public string[] frames; public Entry[] speakers; }
+        [System.Serializable] class Manifest { public int cell; public string[] frames, moods; public Entry[] speakers; }
         [System.Serializable] class Entry { public string speaker, body, file; }
 
         static Manifest Load()
@@ -44,6 +44,13 @@ namespace OWSBG.Tests
 
         static readonly Color32 Paper = new Color32(237, 227, 204, 255);   // InkSprite's _PaperColor
         static double ToPaper(Color32 c) => Mathf.Abs(c.r - Paper.r) + Mathf.Abs(c.g - Paper.g) + Mathf.Abs(c.b - Paper.b);
+
+        /// <summary>A pixel of a sheet: the mood's row (counted from the top), the frame's column, x and y in the cell.</summary>
+        static Color32 At(Color32[] px, int width, int mood, int frame, int x, int y) =>
+            px[((Portraits.Moods.Length - 1 - mood) * Portraits.Cell + y) * width + frame * Portraits.Cell + x];
+
+        static bool Differ(Color32 p, Color32 q) =>
+            (p.a > 127) != (q.a > 127) || (p.a > 127 && Mathf.Abs(p.r - q.r) + Mathf.Abs(p.g - q.g) + Mathf.Abs(p.b - q.b) > 60);
 
         static Texture2D Decode(string assetPath)
         {
@@ -80,19 +87,20 @@ namespace OWSBG.Tests
         }
 
         [Test]
-        public void EveryFaceIsPackedAsAStripOfFourFrames()
+        public void EveryFaceIsPackedAsARowOfFourFramesPerMood()
         {
             var m = Load();
             Assert.AreEqual(Portraits.Cell, m.cell);
             CollectionAssert.AreEqual(Portraits.Frames, m.frames);
+            CollectionAssert.AreEqual(Portraits.Moods, m.moods, "the pack draws the moods the page asks for, in its order");
             CollectionAssert.AreEquivalent(Portraits.Faces.Keys, m.speakers.Select(e => e.speaker), "the pack and the table list the same speakers");
             foreach (var e in m.speakers)
             {
                 Assert.AreEqual(Portraits.Faces[e.speaker], e.body, e.speaker + "'s body");
                 Assert.AreEqual(Portraits.FileOf(e.speaker), e.file);
                 var tex = Decode(Folder + e.file);
-                Assert.AreEqual(Portraits.Frames.Length * Portraits.Cell, tex.width, e.speaker + " is a strip of four");
-                Assert.AreEqual(Portraits.Cell, tex.height);
+                Assert.AreEqual(Portraits.Frames.Length * Portraits.Cell, tex.width, e.speaker + " is four frames across");
+                Assert.AreEqual(Portraits.Moods.Length * Portraits.Cell, tex.height, e.speaker + " has a row per mood");
                 Object.DestroyImmediate(tex);
                 var importer = AssetImporter.GetAtPath(Folder + e.file) as TextureImporter;
                 Assert.IsNotNull(importer, e.speaker + "'s importer");
@@ -109,27 +117,87 @@ namespace OWSBG.Tests
                 var tex = Decode(Folder + e.file);
                 var px = tex.GetPixels32();
                 int w = tex.width, cell = Portraits.Cell;
-                Color32 At(int frame, int x, int y) => px[y * w + frame * cell + x];
-                int talkDiffers = 0, shapeDiffers = 0, covered = 0;
-                double toPaperDrawn = 0, toPaperGrey = 0;
-                for (int y = 0; y < cell; y++)
-                for (int x = 0; x < cell; x++)
+                for (int mood = 0; mood < Portraits.Moods.Length; mood++)
                 {
-                    Color32 rest = At(Portraits.Rest, x, y), talk = At(Portraits.Talk, x, y), grey = At(Portraits.Rest + Portraits.RemnantOffset, x, y);
-                    if ((rest.a > 127) != (talk.a > 127) || Mathf.Abs(rest.r - talk.r) + Mathf.Abs(rest.g - talk.g) + Mathf.Abs(rest.b - talk.b) > 60) talkDiffers++;
-                    if ((rest.a > 127) != (grey.a > 127)) shapeDiffers++;
-                    if (rest.a <= 127) continue;
-                    covered++;
-                    toPaperDrawn += ToPaper(rest);
-                    toPaperGrey += ToPaper(grey);
+                    string who = e.speaker + " (" + Portraits.Moods[mood] + ")";
+                    int talkDiffers = 0, shapeDiffers = 0, covered = 0;
+                    double toPaperDrawn = 0, toPaperGrey = 0;
+                    for (int y = 0; y < cell; y++)
+                    for (int x = 0; x < cell; x++)
+                    {
+                        Color32 rest = At(px, w, mood, Portraits.Rest, x, y), talk = At(px, w, mood, Portraits.Talk, x, y);
+                        Color32 grey = At(px, w, mood, Portraits.Rest + Portraits.RemnantOffset, x, y);
+                        if (Differ(rest, talk)) talkDiffers++;
+                        if ((rest.a > 127) != (grey.a > 127)) shapeDiffers++;
+                        if (rest.a <= 127) continue;
+                        covered++;
+                        toPaperDrawn += ToPaper(rest);
+                        toPaperGrey += ToPaper(grey);
+                    }
+                    Assert.Greater(covered, cell * cell / 10, who + " fills the frame");
+                    Assert.Greater(talkDiffers, 40, who + ": the beak opens to talk");
+                    Assert.AreEqual(0, shapeDiffers, who + ": the grey is the same drawing");
+                    // The ink removed: every fill most of the way to the paper, the line some of the way (InkSprite's ColourState).
+                    Assert.Less(toPaperGrey, toPaperDrawn * 0.5, who + ": the grey is nearer the paper");
                 }
                 Object.DestroyImmediate(tex);
-                Assert.Greater(covered, cell * cell / 10, e.speaker + " fills the frame");
-                Assert.Greater(talkDiffers, 40, e.speaker + "'s beak opens to talk");
-                Assert.AreEqual(0, shapeDiffers, e.speaker + "'s grey is the same drawing");
-                // The ink removed: every fill most of the way to the paper, the line some of the way (InkSprite's ColourState).
-                Assert.Less(toPaperGrey, toPaperDrawn * 0.5, e.speaker + "'s grey is nearer the paper");
             }
+        }
+
+        [Test]
+        public void EachMoodIsADifferentFace()
+        {
+            // A mood moves the head, the beak or the eye enough to be seen at the page's size: every mood's resting
+            // face differs from the plain one over a fiftieth of what either covers, for every speaker.
+            foreach (var e in Load().speakers)
+            {
+                var tex = Decode(Folder + e.file);
+                var px = tex.GetPixels32();
+                for (int mood = 1; mood < Portraits.Moods.Length; mood++)
+                {
+                    int either = 0, differ = 0;
+                    for (int y = 0; y < Portraits.Cell; y++)
+                    for (int x = 0; x < Portraits.Cell; x++)
+                    {
+                        Color32 p = At(px, tex.width, Portraits.Plain, Portraits.Rest, x, y), q = At(px, tex.width, mood, Portraits.Rest, x, y);
+                        if (p.a <= 127 && q.a <= 127) continue;
+                        either++;
+                        if (Differ(p, q)) differ++;
+                    }
+                    Assert.Greater(differ / (float)either, 0.02f, e.speaker + " looks " + Portraits.Moods[mood] + " as they look plain");
+                }
+                Object.DestroyImmediate(tex);
+            }
+        }
+
+        [Test]
+        public void ALineIsSaidWithItsTagOrWhatItsPunctuationSays()
+        {
+            Assert.AreEqual(Portraits.Grave, Portraits.MoodOf(new[] { "line:abc", "face:grave" }, "Have you eaten?"), "a tag wins");
+            Assert.AreEqual(Portraits.Wary, Portraits.MoodOf(new[] { "#face:wary" }, "Quay's shut."), "with or without its #");
+            Assert.AreEqual(Portraits.Asking, Portraits.MoodOf(null, "A visitor! Up the causeway, in this. Have you eaten?"), "a question asks");
+            Assert.AreEqual(Portraits.Bright, Portraits.MoodOf(new string[0], "Twice! A regular. We'll keep your chair."), "an exclamation is bright");
+            Assert.AreEqual(Portraits.Grave, Portraits.MoodOf(null, "The road..."), "a line that trails off");
+            Assert.AreEqual(Portraits.Grave, Portraits.MoodOf(null, "We haven't a\u2014"), "or breaks off");
+            Assert.AreEqual(Portraits.Plain, Portraits.MoodOf(new[] { "still" }, "Quay's shut. So am I."), "anything else is plain");
+            Assert.AreEqual(Portraits.Plain, Portraits.MoodOf(new[] { "face:sulky" }, "Fine?"), "a mood nobody drew is plain");
+        }
+
+        [Test]
+        public void EveryFaceTagIsAMoodOnALineWithAFace()
+        {
+            int tagged = 0;
+            foreach (var file in Directory.GetFiles(Path.GetFullPath("Assets/_Project/Dialogue"), "*.yarn", SearchOption.AllDirectories))
+                foreach (var node in YarnAudit.Parse(Path.GetFileName(file), File.ReadAllText(file)))
+                    foreach (var line in node.Lines)
+                        foreach (var mood in line.Values("face"))
+                        {
+                            tagged++;
+                            Assert.GreaterOrEqual(Portraits.MoodIndex(mood), 0, line + ": #face:" + mood + " is a drawn mood");
+                            Assert.IsFalse(line.IsOption, line + ": Wren's choices have no face to wear it");
+                            Assert.IsTrue(Portraits.Has(line.Speaker), line + ": said by someone with a face");
+                        }
+            Assert.Greater(tagged, 0, "the dialogue sets moods");
         }
 
         [Test]
@@ -152,10 +220,10 @@ namespace OWSBG.Tests
                     for (int y = 0; y < Portraits.Cell; y++)
                     for (int x = 0; x < Portraits.Cell; x++)
                     {
-                        Color32 p = pa[y * a.width + x], q = pb[y * b.width + x];
+                        Color32 p = At(pa, a.width, Portraits.Plain, Portraits.Rest, x, y), q = At(pb, b.width, Portraits.Plain, Portraits.Rest, x, y);
                         if (p.a <= 127 && q.a <= 127) continue;
                         either++;
-                        if ((p.a > 127) != (q.a > 127) || Mathf.Abs(p.r - q.r) + Mathf.Abs(p.g - q.g) + Mathf.Abs(p.b - q.b) > 60) differ++;
+                        if (Differ(p, q)) differ++;
                     }
                     Object.DestroyImmediate(a); Object.DestroyImmediate(b);
                     Assert.Greater(differ / (float)either, 0.05f, names[i] + " and " + names[j] + " share a face");

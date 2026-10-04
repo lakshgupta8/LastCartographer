@@ -250,7 +250,9 @@ same greybox on a laptop, most likely on a different power plan; it is far insid
 - **The characters' sheets are uncompressed** (`CharacterTextureImporter`: so the ink line stays a line), 804 MB of
   raw RGBA over the whole cast, and the shared bundle keeps a sheet resident once used. A session that meets the
   whole cast would hold the lot. BC7 would quarter it with the line intact on PC; it waits for the hand pass, when
-  the sheets are final and the look can be judged against the compression.
+  the sheets are final and the look can be judged against the compression. The dialogue portraits are the same
+  question, and always resident: the persistent page carries all 41 sheets, five moods each, about 215 MB raw
+  (portraits.md §2).
 - **Fights.** The probe only walks. A boss fight, a full camp at night and the Blank's islands need their own
   samples; the probe's route can take a scripted list of rooms when those rooms are built.
 - **CI measures the CPU side only.** A self-hosted runner with a target card would let CI run the gate itself. The

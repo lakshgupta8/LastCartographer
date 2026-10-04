@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace OWSBG.UI
 {
-    /// <summary>One speaker's portrait strip (CHR-13): rest, talk, and the two again in the Remnant's grey.</summary>
+    /// <summary>One speaker's portrait sheet (CHR-13): a row per mood, each rest, talk, and the two again in the Remnant's grey.</summary>
     [Serializable]
     public sealed class PortraitSheet
     {
@@ -18,8 +18,9 @@ namespace OWSBG.UI
     /// <summary>
     /// The dialogue page: a paper panel along the bottom with the speaker's portrait on the left (CHR-13), the
     /// speaker in wash blue, the line in ink, and options as numbered rows. Registers as the presenter's view.
-    /// A portrait opens and shuts its beak while a line is new, then rests; a speaker who is a Remnant (or is
-    /// fading, in the room they are met in) has the grey drawing laid over the drawn one as far as their wash.
+    /// A portrait wears the line's mood (its <c>#face:</c> tag, or its punctuation: <see cref="Portraits.MoodOf"/>),
+    /// opens and shuts its beak while the line is new, then rests; a speaker who is a Remnant (or is fading, in the
+    /// room they are met in) has the grey drawing laid over the drawn one as far as their wash.
     /// </summary>
     public sealed class DialogueView : MonoBehaviour, IDialogueView
     {
@@ -37,10 +38,11 @@ namespace OWSBG.UI
         Label _speaker, _text, _prompt;
         PortraitSheet _shownPortrait;
         float _talkUntil, _wash;
-        int _frame;
+        int _frame, _mood;
         bool _built;
         string[] _pendingTexts; bool[] _pendingAvail; int _pendingHighlight = -1;
         string _pendingSpeaker, _pendingLine;
+        string[] _pendingTags;
 
         public bool IsVisible => _built && _panel.style.display == DisplayStyle.Flex;
         public bool IsShowingOptions => _built && _options.style.display == DisplayStyle.Flex;
@@ -57,6 +59,10 @@ namespace OWSBG.UI
         public string PortraitSpeaker => _built && _shownPortrait != null && _portrait.style.display == DisplayStyle.Flex ? _shownPortrait.Speaker : null;
         /// <summary>The frame showing: <see cref="Portraits.Rest"/> or <see cref="Portraits.Talk"/>.</summary>
         public int PortraitFrame => _frame;
+        /// <summary>The mood the portrait wears, an index into <see cref="Portraits.Moods"/>.</summary>
+        public int PortraitMood => _mood;
+        /// <summary>The part of the sheet the drawn face shows (its mood's row, its frame's column).</summary>
+        public Rect FaceUv => _built ? _face.uv : default;
         /// <summary>How far the grey drawing lies over the drawn one (0 drawn, 1 a Remnant).</summary>
         public float PortraitGrey => _wash;
         public bool IsTalking => PortraitSpeaker != null && Time.unscaledTime < _talkUntil;
@@ -103,7 +109,7 @@ namespace OWSBG.UI
             if (!Build()) return;
             // Replay anything shown before the document was ready.
             if (_pendingTexts != null) { ShowOptions(_pendingTexts, _pendingAvail); if (_pendingHighlight >= 0) Highlight(_pendingHighlight); }
-            else if (_pendingLine != null) ShowLine(_pendingSpeaker, _pendingLine);
+            else if (_pendingLine != null) ShowLine(_pendingSpeaker, _pendingLine, _pendingTags);
         }
 
         bool Build()
@@ -165,8 +171,9 @@ namespace OWSBG.UI
             return image;
         }
 
-        void ShowPortrait(string speaker, string text)
+        void ShowPortrait(string speaker, string text, string[] tags)
         {
+            _mood = Portraits.MoodOf(tags, text);
             _shownPortrait = FindPortrait(speaker);
             InkTheme.Show(_portrait, _shownPortrait != null);
             if (_shownPortrait == null) { _wash = 0f; _talkUntil = 0f; return; }
@@ -189,16 +196,17 @@ namespace OWSBG.UI
         void SetFrame(int frame)
         {
             _frame = frame;
-            int n = Portraits.Frames.Length;
-            _face.uv = new Rect(frame / (float)n, 0f, 1f / n, 1f);
-            _grey.uv = new Rect((frame + Portraits.RemnantOffset) / (float)n, 0f, 1f / n, 1f);
+            int n = Portraits.Frames.Length, rows = Portraits.Moods.Length;
+            float v = 1f - (_mood + 1) / (float)rows;   // the mood's row, counted from the top of the sheet
+            _face.uv = new Rect(frame / (float)n, v, 1f / n, 1f / rows);
+            _grey.uv = new Rect((frame + Portraits.RemnantOffset) / (float)n, v, 1f / n, 1f / rows);
         }
 
-        public void ShowLine(string speaker, string text)
+        public void ShowLine(string speaker, string text, string[] tags = null)
         {
-            _pendingSpeaker = speaker; _pendingLine = text; _pendingTexts = null;
+            _pendingSpeaker = speaker; _pendingLine = text; _pendingTags = tags; _pendingTexts = null;
             if (!_built) return;
-            ShowPortrait(speaker, text);
+            ShowPortrait(speaker, text, tags);
             _speaker.text = speaker ?? "";
             InkTheme.Show(_speaker, !string.IsNullOrEmpty(speaker));
             _text.text = text ?? "";

@@ -130,6 +130,29 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator ALineIsSaidInItsMood()
+        {
+            yield return Boot();
+            // Corvin's question is tagged #face:wary: the tag reaches the page through Yarn's metadata and wins over
+            // the question mark, and the portrait shows that mood's row of the sheet, talking and then resting in it.
+            yield return FirstLine("Capital_Corvin_Argue");
+            StringAssert.EndsWith("?", _view.LineText);
+            Assert.AreEqual(Portraits.Wary, _view.PortraitMood, "his tag, not his question mark");
+            float until = Time.unscaledTime + DialogueView.TalkSeconds(_view.LineText) + 0.3f;
+            while (Time.unscaledTime < until)
+            {
+                Assert.AreEqual(Portraits.Wary, _view.PortraitMood, "the beak moves inside the mood");
+                yield return null;
+            }
+            Assert.AreEqual(Portraits.Rest, _view.PortraitFrame);
+            var face = _view.FaceUv;
+            Assert.AreEqual(1f / Portraits.Moods.Length, face.height, 1e-5f, "a row of the sheet");
+            Assert.AreEqual(1f - (Portraits.Wary + 1f) / Portraits.Moods.Length, face.y, 1e-5f, "the wary row, counted from the top");
+            Assert.AreEqual(Portraits.Rest / (float)Portraits.Frames.Length, face.x, 1e-5f, "resting");
+            _svc.Stop();
+        }
+
+        [UnityTest]
         public IEnumerator TheBirdInTheRoomDecidesHowGrey()
         {
             yield return Boot();

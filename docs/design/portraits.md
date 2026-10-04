@@ -5,14 +5,15 @@ in, framed on the head from three-quarters in front and turned toward the line. 
 the Warden rig, or the look a minor named bird wears. Things that speak, places that speak, the Lantern's narration
 and Marrow have no portrait. The page shows the line alone.
 
-Drawings: `tools/characters/portraits.py` (Blender) renders each speaker at rest and mid-word.
+Drawings: `tools/characters/portraits.py` (Blender) renders each speaker in five moods, each at rest and mid-word.
 `tools/characters/portraits_pack.py` packs them to `Art/Portraits/Portrait_<Speaker>.png` with `portraits.json`.
-The contact sheet is `docs/art/portraits.png`. The page as it plays, Sable drawn and Corvin a Remnant, is
+The contact sheet is `docs/art/portraits.png`, and every speaker's five moods side by side are
+`docs/art/portrait-moods.png`. The page as it plays, Sable drawn and Corvin a Remnant, is
 `docs/art/portraits-page.png`.
-Data: `Portraits` (Core) holds who has a face and what body it is drawn from, who speaks faceless, and who is a
-Remnant at rest.
+Data: `Portraits` (Core) holds who has a face and what body it is drawn from, who speaks faceless, who is a
+Remnant at rest, the moods, and which mood a line is said with (`MoodOf`).
 Page: `DialogueView` (UI) holds the strips and is wired by `ProjectSetup.LoadPortraits`.
-Tests: `PortraitTests` (edit, 6), `DialoguePortraitTests` (play, 4).
+Tests: `PortraitTests` (edit, 9), `DialoguePortraitTests` (play, 5).
 
 ## 1. Who has a face
 
@@ -59,24 +60,43 @@ brother, the same bird in a keeper's coat"; his coat still sets the two portrait
 The camera turns 48° toward the face. The Freestyle line is 3.0 px at 512 and packs at 256, so the weight matches
 the sheets at the portrait's size.
 
-There are two poses:
-- `rest`.
-- `talk`: the jaw open 18° and the head lifted 5°. The Warden rig has one bill, so the portrait script gives it a
-  lower half, hinged at the base, to open.
+Every mood has two poses: `rest`, and `talk`, the jaw open and the head lifted 5°. The Warden rig has one bill, so
+the portrait script gives it a lower half, hinged at the base, to open.
 
-`portraits_pack.py` downsamples with premultiplied alpha, as `pack.py` does. It then makes the Remnant's two frames:
+### The moods
+
+A mood is what a bird's head, beak and eye can say without a new drawing (`MOODS` in `portraits.py`):
+
+| Mood | The face | Jaw at rest / mid-word |
+|---|---|---|
+| `plain` | as the bird stands | 0° / 18° |
+| `bright` | the head up 14°, the neck lifted, the eye wide (×1.28) | 6° / 24° |
+| `grave` | the head down 12°, the neck forward, the lid half down and drooping away from the beak | 0° / 12° |
+| `wary` | the head drawn back and the chin down, the lid a third down and dropping toward the beak, a frown | 0° / 10° |
+| `asking` | the head tilted 22° and turned toward the reader, the eye wide (×1.18) | 3° / 16° |
+
+The lid is a cap of the head's own colour over the eye, cut straight or slanted, parented to the eye so it takes the
+eye's size and shape on every rig (the cast's `eye_m`, the Warden's `eye`, a boss's `eye0`). Under a lid the glint
+is hidden; it sits proud of the eye and would show through. The frame does not move with the mood, so a bird that
+lifts its head lifts it in the frame. On a dark bird (Sable, the choughs) the lid is quieter than on a pale one; the
+head's pitch carries those.
+
+`portraits_pack.py` downsamples with premultiplied alpha, as `pack.py` does. It then makes each mood's two Remnant frames:
 InkSprite's `ColourState` at `_Wash` 1 and `_LineFade` 1, worked on the pixels in linear light. A Remnant's portrait
 is therefore the drawing the player sees standing in the room: the same shapes with the ink removed.
 
-A strip is four 256-px frames: `rest`, `talk`, `rest_remnant`, `talk_remnant`. The importer treats `Art/Portraits/`
-like the character sheets: no mipmaps, bilinear, uncompressed.
+A sheet is a row per mood, top to bottom `plain`, `bright`, `grave`, `wary`, `asking`. Each row is four 256-px frames:
+`rest`, `talk`, `rest_remnant`, `talk_remnant`. That makes 1024 × 1280 px. The importer treats `Art/Portraits/` like
+the character sheets: no mipmaps, bilinear, uncompressed. That is 5 MB a speaker and about 215 MB for the 41, all
+carried by the persistent page. It is the same open question as the sheets' (performance.md: BC7 at the hand pass).
 
 ## 3. On the page
 
 `DialogueView` puts a 168-px square of darker paper, framed in faint ink, to the left of the speaker's name and line.
 - **Shown:** while a line is spoken by someone with a face.
 - **Hidden:** for a faceless speaker, and for Wren's choices (she has no portrait of her own).
-- **Beak:** while the line is new, the beak opens and shuts at 8 frames a second. A line is new for 0.04 s per
+- **Mood:** the line's mood picks the sheet's row (`Portraits.MoodOf`, below).
+- **Beak:** while the line is new, the beak opens and shuts at 8 frames a second, inside the mood. A line is new for 0.04 s per
   letter, at least 0.5 s and at most 3.5 s. Then the portrait rests on its `rest` frame.
 - **Grey:** the grey frames lie over the drawn ones at an opacity, the speaker's wash (`DialogueView.WashOf`). The
   wash comes from the first of these that applies:
@@ -86,16 +106,37 @@ like the character sheets: no mipmaps, bilinear, uncompressed.
   2. With no bird in the room, the speaker's rest state: 1 for those in `Portraits.RemnantAtRest` (Ilse, Corra,
      Aury, Corvin, the Innkeeper, the Gannet, the Traveller, Brask), otherwise 0.
 
+### Which mood a line is said with
+
+A line's `#face:<mood>` hashtag sets it. The presenter hands the line's Yarn metadata to the page
+(`IDialogueView.ShowLine`). An untagged line takes its mood from its punctuation:
+
+1. ending in `?`: `asking`;
+2. any `!`: `bright`;
+3. trailing off, with `...`, `…` or a dash: `grave`;
+4. anything else: `plain`.
+
+Writing the tags (the style rule):
+- **Tag a line only when it wants something its punctuation would not give it.** A plain statement said plainly
+  needs no tag; a question that is really a challenge does (Corvin's "Do you want your mother to fade?" is
+  `#face:wary`).
+- **One tag a line, said by someone with a face.** Wren's options have no portrait, and neither does a faceless
+  speaker; `PortraitTests` holds every `#face:` to a drawn mood on a speaker with a face.
+- **The mood is the line's, not the scene's.** It does not carry to the next line; a speaker who stays grave is
+  tagged on each line they are grave on.
+- **The tag goes before `#line:`,** with the line's other tags. It changes neither the text nor the line's id, so
+  the localisation is untouched.
+
 The overlay is a blend of two drawings, not the shader. The fills match the shader; while a person fades, the line
 greys a little faster than in the room, about 0.6 against 0.35 of the way at full wash. A shader on the
 UI element would match exactly; that is for the hand pass if it matters.
 
 ## 4. Redrawing
 
-- **One portrait:** replace `Portrait_<Speaker>.png` with a strip of the same four 256-px frames. A hand-drawn
-  portrait can have any number of expressions later; the page only asks for rest and talk.
+- **One portrait:** replace `Portrait_<Speaker>.png` with a sheet of the same five rows of four 256-px frames.
+- **A new mood:** add a row to `MOODS` in `portraits.py` and its name to `Portraits.Moods`, in the same place.
 - **Re-render everything:** run `blender -b -P tools/characters/portraits.py`, then
-  `python tools/characters/portraits_pack.py`. The 37 render in about 40 s.
+  `python tools/characters/portraits_pack.py`. The 41 speakers' 410 frames render in about 4 minutes.
 - **Re-wire the page:** rebuild with **OWSBG → Build Bootstrap Scene**.
 
 ## 5. Verification
@@ -104,11 +145,15 @@ UI element would match exactly; that is for the hand pass if it matters.
 |---|---|
 | Every Yarn speaker has a face or is faceless, never both, never neither; Marrow has none; every Remnant at rest has a face | `PortraitTests.EverySpeakerHasAFaceOrIsFacelessAndNeverBoth` |
 | A face is drawn from the body the speaker is met in: the named birds' looks, the cast's own sheets | `PortraitTests.EachFaceIsDrawnFromTheBodyTheSpeakerIsMetIn` |
-| The pack and the table list the same speakers; four 256-px frames each; import settings | `PortraitTests.EveryFaceIsPackedAsAStripOfFourFrames` |
-| The beak opens; the grey is the same outline with less colour, nearer the paper | `PortraitTests.TheBeakOpensAndTheRemnantIsTheSameDrawingGreyed` |
+| The pack and the table list the same speakers and moods; a row of four 256-px frames per mood; import settings | `PortraitTests.EveryFaceIsPackedAsARowOfFourFramesPerMood` |
+| In every mood the beak opens; the grey is the same outline with less colour, nearer the paper | `PortraitTests.TheBeakOpensAndTheRemnantIsTheSameDrawingGreyed` |
+| Every mood's face differs from the plain one over a fiftieth of what either covers, for every speaker | `PortraitTests.EachMoodIsADifferentFace` |
+| A tag wins; a question asks, an exclamation is bright, a line that trails off is grave; an unknown mood is plain | `PortraitTests.ALineIsSaidWithItsTagOrWhatItsPunctuationSays` |
+| Every `#face:` in the Yarn project is a drawn mood, on a line said by someone with a face, never on an option | `PortraitTests.EveryFaceTagIsAMoodOnALineWithAFace` |
 | The choughs and the cranes each differ over a twentieth of what either covers | `PortraitTests.TheBirdsWhoShareALookStillReadApart` |
 | The persistent page carries every strip; the contact sheet exists | `PortraitTests.ThePersistentPageCarriesEveryPortrait` |
 | Sable's line shows her face, talking and then resting | `DialoguePortraitTests.ASpeakerWithAFaceShowsItTalkingThenResting` |
 | The ashes show no face; Wren's choices show none | `DialoguePortraitTests.AThingThatSpeaksShowsNoFace` |
 | Corvin, with no Corvin in the room, speaks in grey | `DialoguePortraitTests.ARemnantSpeaksInGrey` |
+| Corvin's tagged question is wary, not asking; the page shows the wary row, talking then resting in it | `DialoguePortraitTests.ALineIsSaidInItsMood` |
 | A Sable in the room, fading and then a Remnant, sets her portrait's grey | `DialoguePortraitTests.TheBirdInTheRoomDecidesHowGrey` |

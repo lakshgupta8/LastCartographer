@@ -11,51 +11,51 @@ title: Merrow_Dotha
 <<if commission_is("saltmarrow.dotha", "taken")>>
     <<jump Merrow_Dotha_Season>>
 <<endif>>
-Dotha: Sit if you're sitting. Stand if you're Guild. #still #line:072a47b
+Dotha: Sit if you're sitting. Stand if you're Guild. #still #face:wary #line:072a47b
 -> I'm sitting. #line:0147bb2
     <<voice drift saltmarrow>>
-    Dotha: Then you're not Guild. They don't. The wax, they say. Ruins the knees. #still #line:06f18dd
+    Dotha: Then you're not Guild. They don't. The wax, they say. Ruins the knees. #still #face:bright #line:06f18dd
 -> Which are you? #line:0b30913
     <<voice surveyor saltmarrow>>
-    Dotha: The last. That's not a faction. #still #line:0efff47
+    Dotha: The last. That's not a faction. #still #face:grave #line:0efff47
 -> ... #line:0202b5c
     <<voice drift saltmarrow>>
-    Dotha: Quiet one. The water will like you. #still #line:0de4631
+    Dotha: Quiet one. The water will like you. #still #face:bright #line:0de4631
 <<if not has_flag("saltmarrow.dotha.met")>>
-    Dotha: Merrow's End had eleven songs and forty roofs. Nine and one, now. Count them yourself. #line:04c6f53
+    Dotha: Merrow's End had eleven songs and forty roofs. Nine and one, now. Count them yourself. #face:grave #line:04c6f53
     <<flag saltmarrow.dotha.met 1>>
 <<endif>>
-Dotha: The board has my name on it. Has for three seasons. Nobody reads that far down. #still #line:0dc6c14
+Dotha: The board has my name on it. Has for three seasons. Nobody reads that far down. #still #face:grave #line:0dc6c14
 ===
 
 title: Merrow_Dotha_Season
 ---
 <<if not has_flag("saltmarrow.dotha.songs")>>
     Dotha: You read that far down. Hm. #line:02287ff
-    Dotha: Merrow's End had eleven songs. I have nine of them. The other two went with people. #line:0943c2c
+    Dotha: Merrow's End had eleven songs. I have nine of them. The other two went with people. #face:grave #line:0943c2c
     Dotha: The first one is about weather. Sit. It's short. Everything true is. #line:08f5d6a
     <<flag saltmarrow.dotha.songs 1>>
 <<else>>
-    Dotha: Nine songs. Still nine. Decide before it's eight. #line:02dd192
+    Dotha: Nine songs. Still nine. Decide before it's eight. #face:grave #line:02dd192
 <<endif>>
 Dotha: Then you decide what the map says about us. That's what the cowl's for. #line:01c480c
 -> Write it as it was. Sing the nine. #line:0728075
     <<voice surveyor saltmarrow>>
-    Dotha: As it was. Nobody's asked for that in forty years. #line:01dac57
-    Dotha: Get your quill out, then. Slowly. Weather first. #line:0f1dc04
+    Dotha: As it was. Nobody's asked for that in forty years. #face:bright #line:01dac57
+    Dotha: Get your quill out, then. Slowly. Weather first. #face:bright #line:0f1dc04
     <<bind dotha.nine_songs>>
     <<flag saltmarrow.dotha.remembered 1>>
     <<flag saltmarrow.dotha.decided 1>>
 -> Let it go. Keep the songs. #line:0f8d6e8
     <<voice drift saltmarrow>>
-    Dotha: Kind, I suppose. Kinder than the Guild manages. #line:0250b3c
-    Dotha: I'll sing them to the water, then. It listens as well as anyone. #line:076b7cd
+    Dotha: Kind, I suppose. Kinder than the Guild manages. #face:grave #line:0250b3c
+    Dotha: I'll sing them to the water, then. It listens as well as anyone. #face:grave #line:076b7cd
     <<sing dotha>>
     <<flag saltmarrow.dotha.decided 2>>
     <<fade Saltmarrow_B 2>>
 -> Walk it with me. All of it. <<if walk_known()>> #line:00f912a
     <<voice warden saltmarrow>>
-    Dotha: You heard the whale, then. That's the shape of it. Old as the bridge. #plant:3.4 #line:03707ab
+    Dotha: You heard the whale, then. That's the shape of it. Old as the bridge. #plant:3.4 #face:bright #line:03707ab
     Dotha: Stand where I say, when I say it. That's all a village ever was. #line:0150a02
     <<walk merrows_end>>
 ===
@@ -63,18 +63,18 @@ Dotha: Then you decide what the map says about us. That's what the cowl's for. #
 title: Merrow_Dotha_After
 ---
 <<if flag("saltmarrow.dotha.decided") == 3>>
-    Dotha: Walked. All of it. Nobody's walked it in forty years; the water was surprised. #still #line:0cb81cb
-    Dotha: Come back at dusk. We'll walk it again. That's the whole trick. #still #line:08ff22f
+    Dotha: Walked. All of it. Nobody's walked it in forty years; the water was surprised. #still #face:bright #line:0cb81cb
+    Dotha: Come back at dusk. We'll walk it again. That's the whole trick. #still #face:bright #line:08ff22f
 <<elseif has_flag("saltmarrow.dotha.remembered")>>
     <<if place_fate("Saltmarrow_B") == "anchored">>
-        Dotha: Nine songs. You got the eighth one wrong. Leave it wrong. It's ours now. #still #line:067db8a
+        Dotha: Nine songs. You got the eighth one wrong. Leave it wrong. It's ours now. #still #face:bright #line:067db8a
     <<else>>
         Dotha: You wrote it down. Now seal it, or the writing's just weather. #still #line:003f8bd
     <<endif>>
 <<else>>
-    Dotha: Still here. The water's a poor audience but it never leaves early. #still #line:027a19d
+    Dotha: Still here. The water's a poor audience but it never leaves early. #still #face:grave #line:027a19d
     <<if fade_stage("Saltmarrow_B") >= 3>>
-        Dotha: The roofs are going. I can see the reeds through the Marrow house. Good roof, that was. #still #line:0a54fb0
+        Dotha: The roofs are going. I can see the reeds through the Marrow house. Good roof, that was. #still #face:grave #line:0a54fb0
     <<endif>>
 <<endif>>
 ===

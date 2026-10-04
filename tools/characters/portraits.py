@@ -6,10 +6,12 @@
 
 No new birds: each portrait builds the rig its speaker already walks the world on (the cast's bird in cast.py, the
 Warden rig of wardens.py and bosses.py, a look from the townsfolk library for a minor named bird or one who asks),
-at rest, and frames the head from three-quarters in front, turned toward the line on the page's right. Two frames:
-`rest`, and `talk` with the beak open mid-word (the Warden rig has one bill, so the portrait gives it a lower half to
-open). Rendered at twice the portrait's size into .frames/portraits/<Speaker>_<frame>.png; portraits_pack.py
-downsamples them, adds the Remnant's grey (the shader's colour state, worked on the pixels) and writes the strips.
+at rest, and frames the head from three-quarters in front, turned toward the line on the page's right. Five moods
+(MOODS: plain, bright, grave, wary, asking), each twice: `rest`, and `talk` with the beak open mid-word (the Warden
+rig has one bill, so the portrait gives it a lower half to open). A mood is the head's pitch and tilt, the beak, and
+the eye: widened, or narrowed by a lid of the head's colour cut straight or slanted. Rendered at twice the portrait's
+size into .frames/portraits/<Speaker>_<mood>_<rest|talk>.png; portraits_pack.py downsamples them, adds the Remnant's
+grey (the shader's colour state, worked on the pixels) and writes the sheets.
 
 Where two speakers wear the same look, one of them has a touch of their own in the portrait (TOUCHES): Brask a
 miner's helmet and lamp, Lorne a grown crane's grey and spectacles; Garrow is the crane grown old. (Ostry, Anvers, Hollin and Wend are drawn as
@@ -197,10 +199,90 @@ def jaw_for_warden(rig):
     rig.snapshot()
 
 
-def talk(rig):
-    """Mid-word: the beak open, the head a touch up and toward the line."""
-    rig.rot("jaw", y=18)
-    rig.rot("head", y=-5)
+# ---------------------------------------------------------------- the moods (portraits.md §2)
+#
+# Five faces, each at rest and mid-word: what the bird's head, beak and eye can say without a new drawing. The neck
+# and head pitch (negative lifts), the head rolls for a tilt, the eye widens, and a lid (a cap of the head's own
+# colour over the eye, cut straight or slanted) narrows it. A slant > 0 drops the lid toward the beak, a frown; < 0
+# drops it away from the beak, the sorry brow. The head turns (negative toward the reader) for the asking look.
+# (name, neck, head pitch, head roll, head turn, eye scale, lid cover, lid slant, jaw at rest, jaw mid-word)
+MOODS = [
+    ("plain",  0,    0,  0,   0, 1.00, 0.00,   0, 0, 18),
+    ("bright", -6, -14,  0,   0, 1.28, 0.00,   0, 6, 24),
+    ("grave",  4,   12,  0,   0, 1.00, 0.50, -14, 0, 12),
+    ("wary",   -5,   5,  0,   0, 1.00, 0.36,  24, 0, 10),
+    ("asking", 0,   -6, 22, -18, 1.18, 0.00,   0, 3, 16),
+]
+MOOD_NAMES = [m[0] for m in MOODS]
+
+
+def eyes_of(rig):
+    """The eye meshes on the head (cast.Townsfolk's eye_m, the Warden rig's eye, a boss's eye0/eye1)."""
+    import re
+    found = []
+
+    def walk(ob):
+        for c in ob.children:
+            if c.type == "MESH" and re.match(r"^eye\d*(_m)?$", c.name.split(".")[0]) and not c.hide_render:
+                found.append(c)
+            walk(c)
+    walk(rig.head)
+    return found
+
+
+def lid(eye, cover, slant, material):
+    """A cap of the head's colour over the eye, down to `cover` of its height (0.5 the half-shut lid), its edge
+    slanted `slant` degrees; parented to the eye, so it is the eye's own size and shape."""
+    import bmesh
+    from inklib import from_bmesh
+    r = max(v.co.length for v in eye.data.vertices) * 1.12
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=24, v_segments=12, radius=r)
+    a = D(slant)
+    h = r * (1.0 - 2.0 * cover)
+    bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=(0, 0, h),
+                           plane_no=(math.sin(a), 0, math.cos(a)), clear_inner=True)
+    bmesh.ops.holes_fill(bm, edges=[e for e in bm.edges if e.is_boundary])
+    return from_bmesh("lid_" + eye.name, bm, material, eye)
+
+
+def head_wash(rig):
+    meshes = [c for c in rig.head.children if c.type == "MESH"]
+    core = next((c for c in meshes if c.name.startswith("head_m")), meshes[0])
+    return core.data.materials[0] if core.data.materials else mat("ink", INK)
+
+
+def pose(rig, mood, talking):
+    """The mood on a rig at rest, mid-word if `talking`; returns what it added (lids) and changed (eyes, glints)
+    so `unpose` can take it off again."""
+    name, neck, pitch, roll, turn, eye, cover, slant, jaw_rest, jaw_talk = next(m for m in MOODS if m[0] == mood)
+    rig.rot("neck", y=neck)
+    rig.rot("head", x=roll, y=pitch - (5 if talking else 0), z=turn)
+    rig.rot("jaw", y=jaw_talk if talking else jaw_rest)
+    added, changed = [], []
+    for e in eyes_of(rig):
+        changed.append((e, tuple(e.scale)))
+        if cover > 0:
+            added.append(lid(e, cover, slant, head_wash(rig)))
+        else:
+            e.scale = tuple(v * eye for v in e.scale)
+    if cover > 0:            # the glint sits proud of the eye: under a lid it would show through
+        for ob in bpy.data.objects:
+            if ob.name.startswith("glint") and not ob.hide_render:
+                ob.hide_render = True
+                changed.append((ob, None))
+    return added, changed
+
+
+def unpose(added, changed):
+    for ob in added:
+        bpy.data.objects.remove(ob, do_unlink=True)
+    for ob, scale in changed:
+        if scale is None:
+            ob.hide_render = False
+        else:
+            ob.scale = scale
+
 
 
 def frame(rig, size):
@@ -219,7 +301,8 @@ def main():
     only = argv_after_dashes()
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, "speakers.json"), "w") as f:
-        json.dump([{"speaker": speaker, "body": body} for speaker, body, build in SPEAKERS], f, indent=2)
+        json.dump({"moods": MOOD_NAMES, "speakers": [{"speaker": speaker, "body": body} for speaker, body, build in SPEAKERS]},
+                  f, indent=2)
     for speaker, body, build in SPEAKERS:
         if only and speaker not in only:
             continue
@@ -231,10 +314,12 @@ def main():
             jaw_for_warden(rig)
         rig.reset()
         frame(rig, SIZE)
-        render(os.path.join(OUT, "%s_rest.png" % speaker))
-        rig.reset()
-        talk(rig)
-        render(os.path.join(OUT, "%s_talk.png" % speaker))
+        for mood in MOOD_NAMES:
+            for talking in (False, True):
+                rig.reset()
+                added, changed = pose(rig, mood, talking)
+                render(os.path.join(OUT, "%s_%s_%s.png" % (speaker, mood, "talk" if talking else "rest")))
+                unpose(added, changed)
         print("[portraits] %s (from %s)" % (speaker, body))
 
 

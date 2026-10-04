@@ -6,15 +6,48 @@ namespace OWSBG.Core
     /// Portraits for dialogue (CHR-13, docs/design/portraits.md): every bird who speaks has a face beside their lines,
     /// drawn from the body they are met in (<c>tools/characters/portraits.py</c>), and everyone else who speaks (a
     /// door, the ashes, a page, the Lantern, Marrow) speaks without one. A Yarn speaker is one or the other, never
-    /// neither, so a new speaker is a decision someone makes. Pure data; the strips are Art/Portraits/Portrait_&lt;Speaker&gt;.png.
+    /// neither, so a new speaker is a decision someone makes. Pure data; the sheets are Art/Portraits/Portrait_&lt;Speaker&gt;.png,
+    /// a row per mood.
     /// </summary>
     public static class Portraits
     {
         public const string Prefix = "Portrait_";
-        /// <summary>The frames of a strip, left to right, each a square of <see cref="Cell"/> px.</summary>
+        /// <summary>The frames of a mood's row, left to right, each a square of <see cref="Cell"/> px.</summary>
         public static readonly string[] Frames = { "rest", "talk", "rest_remnant", "talk_remnant" };
+        /// <summary>
+        /// The moods, one row each, top to bottom (portraits.md §2): the face a line is said with. A line's
+        /// <c>#face:&lt;mood&gt;</c> tag picks one; untagged, <see cref="MoodOf"/> reads it from the line's punctuation.
+        /// </summary>
+        public static readonly string[] Moods = { "plain", "bright", "grave", "wary", "asking" };
         public const int Cell = 256;
         public const int Rest = 0, Talk = 1, RemnantOffset = 2;
+        public const int Plain = 0, Bright = 1, Grave = 2, Wary = 3, Asking = 4;
+        /// <summary>The Yarn hashtag that sets a line's mood: <c>#face:grave</c>.</summary>
+        public const string FaceTag = "face:";
+
+        /// <summary>A mood's row by name, or -1.</summary>
+        public static int MoodIndex(string mood) => System.Array.IndexOf(Moods, mood);
+
+        /// <summary>
+        /// The mood a line is said with: its <c>#face:</c> tag when it has one, else what its punctuation says. A
+        /// question asks; an exclamation is bright; a line that trails off (an ellipsis, a dash) is grave; anything
+        /// else is plain. An unknown mood in a tag is plain (YarnAudit and the tests hold the tags to <see cref="Moods"/>).
+        /// </summary>
+        public static int MoodOf(IEnumerable<string> tags, string text)
+        {
+            if (tags != null)
+                foreach (var t in tags)
+                {
+                    if (t == null) continue;
+                    string tag = t.StartsWith("#") ? t.Substring(1) : t;
+                    if (tag.StartsWith(FaceTag)) return System.Math.Max(Plain, MoodIndex(tag.Substring(FaceTag.Length)));
+                }
+            string line = (text ?? "").TrimEnd();
+            if (line.EndsWith("?")) return Asking;
+            if (line.IndexOf('!') >= 0) return Bright;
+            if (line.EndsWith("...") || line.EndsWith("…") || line.EndsWith("—") || line.EndsWith("-")) return Grave;
+            return Plain;
+        }
 
         /// <summary>Who has a face, and the body it is drawn from: a cast member's own sheets, a Warden, a boss, or a townsfolk look.</summary>
         public static readonly IReadOnlyDictionary<string, string> Faces = new Dictionary<string, string>

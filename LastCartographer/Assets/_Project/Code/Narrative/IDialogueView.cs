@@ -9,7 +9,8 @@ namespace OWSBG.Narrative
     public interface IDialogueView
     {
         bool IsVisible { get; }
-        void ShowLine(string speaker, string text);
+        /// <summary>A line, with its hashtags (Yarn's metadata, e.g. <c>face:grave</c>) for the page to read.</summary>
+        void ShowLine(string speaker, string text, string[] tags = null);
         void ShowOptions(string[] texts, bool[] available);
         void Highlight(int index);
         void Clear();

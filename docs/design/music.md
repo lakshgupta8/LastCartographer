@@ -176,7 +176,17 @@ roll-call; the Bells' great bell and every boss's resolution are the only places
 and two of rest (40%). Its lead is the reversed piano playing each region's lead as it opens, backwards, in the
 Blank's own mode (so Windreach's pentatonic degrees land on Dorian steps: the tune remembered wrong); the Remnant's
 voices hold under it and sing the roll-call the wrong way round above; a celesta ticks off the beat; in combat it
-ticks every half-beat. The Blank's islands are runtime rooms (`Island_*`) and now read as the Blank's
+ticks every half-beat.
+
+**It remembers only what she drew** (AUD-18). The audio direction's Blank is "everything the player has heard", so the
+lead has a slot for each region in the order the world is walked, and a region with nothing on her page (no vantage
+surveyed, or all of them erased; `Score.RegionsDrawn`) is a rest in its slot: the tune has holes where she never was.
+The coast she woke on is always heard. `Score.BlankThemeOf(regions)` makes a variant once per set and keeps it
+(`blank-se` is the coast and Emberdown); every region drawn is `blank` itself, the one rendered for the composer. The
+driver asks for the Blank as her page has it, and counts the page again only when a vantage is drawn or erased. Its
+renders are now kept by region and id (`MusicDriver.Key`): every region's shared motif had been one `shared` to it.
+
+The Blank's islands are runtime rooms (`Island_*`) and now read as the Blank's
 (`Mix.RegionOf`), so they get this theme and the Blank's ambience; the epilogue's stand-ins (`Epilogue_<zone>`)
 read as their zones' regions. `<<sing blank>>` sounds on the Remnant's island (`Island_Remnant`).
 
@@ -245,6 +255,11 @@ arrangement.
   (PlayMode, 3): the Collapse's beat keeps real time through eight hitstops; its theme lands within a tenth of a
   second of the fight's beat and is put back on it after a pause; the Survey's theme changes ink with its phase
   and keeps the new beat.
+- AUD-18: `BlankThemeTests` (EditMode, 2): every region drawn is the Blank's own theme; a set is made once whatever its
+  order and named for what it remembers, each drawn region's tune backwards in its own slot and a rest in an undrawn
+  one, the other stems and the loop the same, rendered at the ceiling and not a deliverable; nothing drawn is the
+  coast alone; a page's regions are its drawn vantages', not the erased ones', and never the Greyfold's.
+  `MusicDriverTests`: an island plays the Blank as the new game's page has it.
 - AUD-14: `MainBossScoreTests` (EditMode, 6): the four themes are in their regions' keys at their beats, never
   rest, open with bed, pulse and lead, add a layer a phase and change one in the last, render to their loops at the
   ceiling, and are found under their bosses' class names in every phase; every main boss on the sheets has a theme
@@ -262,8 +277,8 @@ arrangement.
 - **Loudness** is by peak (−1 dBTP across the stems), not the spec's −18 LUFS.
 - **The handover is on the old theme's bar line**, not on a shared one: the beats differ by region, so the new
   theme starts a bar on the old bar's line and keeps its own beat from there.
-- **The Blank remembers all five regions** whether or not the player has heard them; the direction's "everything
-  the player has heard" would take the lead from the regions drawn, a theme variant per set.
+- **The Blank remembers by slot**, so a page with only the coast is mostly white; a variant that closes its holes
+  (the tunes heard, run together) is the other reading, for the playtest.
 - Windreach's "drum when the fire is lit" is its pulse, always soft: the camp's fire is no state yet.
 - **The codas loop.** The title holds for eight seconds and the game stops there (M4's credits); a coda that ends
   rather than loops wants that roll to end with.

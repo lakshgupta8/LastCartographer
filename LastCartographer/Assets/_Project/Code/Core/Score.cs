@@ -553,32 +553,76 @@ namespace OWSBG.Core
         }
 
         /// <summary>The regions whose themes the Blank remembers wrong, in the order the world is walked.</summary>
-        static readonly Region[] Heard = { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach };
+        public static readonly Region[] Heard = { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach };
 
-        /// <summary>The Blank's theme and the four endings' codas (AUD-08).</summary>
-        static void ComposeBlank()
+        /// <summary>
+        /// The Blank's theme as this player remembers it (AUD-18): only the regions drawn on her page are in its lead, each
+        /// in its own slot, and a region she never drew is a rest where its tune would be. The coast she woke on is always
+        /// heard. Every region drawn is the <c>blank</c> theme itself; the rest are made once and kept, one per set.
+        /// </summary>
+        public static Theme BlankThemeOf(IEnumerable<Region> drawn)
+        {
+            int mask = 1;   // the coast, always
+            if (drawn != null)
+                foreach (var r in drawn) { int i = Array.IndexOf(Heard, r); if (i >= 0) mask |= 1 << i; }
+            if (_blankOf.TryGetValue(mask, out var kept)) return kept;
+            var t = BlankTheme(mask);
+            _blankOf[mask] = t;
+            return t;
+        }
+
+        static readonly Dictionary<int, Theme> _blankOf = new Dictionary<int, Theme>();
+        const int AllHeard = (1 << 5) - 1;
+
+        /// <summary>The regions drawn on a page: those with a vantage surveyed and not erased, the Blank's own left out.</summary>
+        public static HashSet<Region> RegionsDrawn(WorldState w)
+        {
+            var set = new HashSet<Region>();
+            if (w == null) return set;
+            foreach (var v in w.SurveyedVantages)
+            {
+                if (w.IsErased(v)) continue;
+                var r = Mix.RegionOf(Atlas.PlaceOf(v));
+                if (r.HasValue && Array.IndexOf(Heard, r.Value) >= 0) set.Add(r.Value);
+            }
+            return set;
+        }
+
+        /// <summary>The Blank's theme for a set of the heard regions, as bits in <see cref="Heard"/>'s order.</summary>
+        static Theme BlankTheme(int mask)
         {
             // ---- The Blank: everything the player has heard, remembered wrong; motifs reversed, the Remnant's voices under them. ----
             // Three bars at the Blank's slow beat, then two of rest (silence 40%).
-            var blank = new Theme { Id = "blank", Region = Region.Blank, Bars = 3, RestBars = 2 };
-            _themes.Add(blank);
+            string id = mask == AllHeard ? "blank" : "blank-" + string.Concat(Heard.Where((r, i) => (mask & (1 << i)) != 0).Select(r => char.ToLowerInvariant(r.ToString()[0])));
+            var blank = new Theme { Id = id, Region = Region.Blank, Bars = 3, RestBars = 2 };
             blank.Add("bed", "remnant", 0.6f).Add(0, 0f, 11f, 1f).Add(-3, 0f, 11f, 0.6f);                                  // the Remnant's voices under
             var kpulse = blank.Add("pulse", "celesta", 0.4f);
             for (int bar = 0; bar < 3; bar++) kpulse.Add(7, bar * 4f + 0.5f, 0.5f, 0.7f).Add(9, bar * 4f + 2.5f, 0.5f, 0.5f);   // a clock, off the beat
             var klead = blank.Add("lead", "reversedpiano", 0.9f);
-            float at = 1f;
-            foreach (var r in Heard)
+            for (int k = 0; k < Heard.Length; k++)
             {
-                // Each region's lead as it opens, backwards, in the Blank's own mode: the tune remembered wrong.
-                foreach (var n in ThemeOf(r).Stem("lead").Notes.OrderBy(n => n.Start).Take(4).Reverse()) { klead.Add(n.Degree, at, 0.5f, 0.8f); at += 0.5f; }
+                if ((mask & (1 << k)) == 0) continue;   // never drawn: a rest where its tune would be
+                // Each region's lead as it opens, backwards, in the Blank's own mode: the tune remembered wrong, in its slot.
+                float at = 1f + k * 2f;
+                foreach (var n in ThemeOf(Heard[k]).Stem("lead").Notes.OrderBy(n => n.Start).Take(4).Reverse()) { klead.Add(n.Degree, at, 0.5f, 0.8f); at += 0.5f; }
             }
             var kvoices = blank.Add("voices", "remnant", 0.5f);
             var reversed = PhraseDegrees(Region.Blank, RollCallSong.Form.Reversed);
             var rbeats = RollCallSong.Notes(RollCallSong.Form.Reversed, 1).Select(n => n.Beats).ToArray();
-            at = 4f;
-            for (int i = 0; i < reversed.Length; i++) { kvoices.Add(reversed[i] + 7, at, rbeats[i], 0.9f); at += rbeats[i]; }   // the roll-call, the wrong way round
+            float v = 4f;
+            for (int i = 0; i < reversed.Length; i++) { kvoices.Add(reversed[i] + 7, v, rbeats[i], 0.9f); v += rbeats[i]; }   // the roll-call, the wrong way round
             var kdrive = blank.Add("drive", "celesta", 0.5f, combat: true);
             for (int bar = 0; bar < 3; bar++) for (int k = 0; k < 8; k++) kdrive.Add(k % 2 == 0 ? 7 : 9, bar * 4f + k * 0.5f, 0.5f, k % 4 == 0 ? 0.9f : 0.5f);
+            return blank;
+        }
+
+        /// <summary>The Blank's theme and the four endings' codas (AUD-08).</summary>
+        static void ComposeBlank()
+        {
+            var blank = BlankTheme(AllHeard);   // every region drawn: the deliverable, and the region's theme
+            _blankOf[AllHeard] = blank;
+            _themes.Add(blank);
+            float at;
 
             // ---- The Fixed World: Halden's clockwork with the bar finished at last: I IV V I, and the last chord held. Nothing will ever fade. ----
             var fixedWorld = new Theme { Id = "coda-fixed", Region = Region.Halden, Coda = Ending.Fixed, Bars = 8, RestBars = 0 };

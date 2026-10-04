@@ -275,9 +275,9 @@ namespace OWSBG.Tests
         public IEnumerator TheBlanksIslandsPlayTheBlankAndACodaEndsTheGame()
         {
             Driver.RoomOverride = "Island_Merrow";
-            var blank = Score.ThemeOf(Region.Blank);
+            var blank = Score.BlankThemeOf(Score.RegionsDrawn(GameState.World));
             yield return null;
-            Assert.AreSame(blank, Driver.Wanted, "an island is the Blank's room");
+            Assert.AreSame(blank, Driver.Wanted, "an island is the Blank's room, remembered as far as her page goes (AUD-18)");
             yield return Until(() => Driver.Current == blank, 60f);
             Assert.AreSame(blank, Driver.Current);
             Assert.AreEqual(blank.LoopSeconds, Driver.Source("lead")!.clip.length, 0.01f, "three bars and two of the white");

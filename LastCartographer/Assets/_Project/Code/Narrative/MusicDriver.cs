@@ -70,10 +70,12 @@ namespace OWSBG.Narrative
         public int PendingPhase => _pendingPhase;
         public bool IsResolving => AudioSettings.dspTime < _resolvingUntil;
         public int BarsPlayed => Current == null ? 0 : Mathf.Max(0, (int)((AudioSettings.dspTime - _start) / Current.BarSeconds));
-        public bool IsRendering(Score.Theme t) => t != null && _rendering.ContainsKey(t.Id);
+        public bool IsRendering(Score.Theme t) => t != null && _rendering.ContainsKey(Key(t));
         /// <summary>A theme is still rendering on its thread (the probe waits for it: its garbage is the load's, not a quiet frame's).</summary>
         public bool IsRenderingAny => _rendering.Count > 0;
-        public bool IsReady(Score.Theme t) => t != null && _clips.ContainsKey(t.Id);
+        public bool IsReady(Score.Theme t) => t != null && _clips.ContainsKey(Key(t));
+        /// <summary>A theme's renders are kept by its region and id: every region's shared motif is "shared", and the Blank's are several.</summary>
+        static string Key(Score.Theme t) => t.Region + "/" + t.Id;
         public AudioSource Source(string stem) => _sources.TryGetValue(stem, out var s) ? s : null;
         public AudioLowPassFilter Filter(string stem) => _filters.TryGetValue(stem, out var f) ? f : null;
         /// <summary>A stem's level now (0..its design level), fading toward its target.</summary>
@@ -179,7 +181,24 @@ namespace OWSBG.Narrative
                 var boss = Score.ThemeOfBoss(_boss.Family, r, _boss.Phase) ?? (r.HasValue ? Score.SharedThemeOf(r.Value) : null);
                 if (boss != null) return boss;
             }
+            if (r == Region.Blank) return Score.BlankThemeOf(DrawnRegions());   // everything she has heard, as far as her page goes (AUD-18)
             return r.HasValue ? Score.ThemeOf(r.Value) : null;
+        }
+
+        int _drawnSeen = -1, _erasedSeen = -1;
+        HashSet<Region> _drawn;
+        /// <summary>The regions on her page, counted again only when a vantage is drawn or erased.</summary>
+        HashSet<Region> DrawnRegions()
+        {
+            var w = GameState.World;
+            if (w == null) return null;
+            if (_drawn == null || w.SurveyedVantages.Count != _drawnSeen || w.ErasedVantages.Count != _erasedSeen)
+            {
+                _drawn = Score.RegionsDrawn(w);
+                _drawnSeen = w.SurveyedVantages.Count;
+                _erasedSeen = w.ErasedVantages.Count;
+            }
+            return _drawn;
         }
 
         void Update()
@@ -197,8 +216,8 @@ namespace OWSBG.Narrative
 
         void Request(Score.Theme t)
         {
-            if (_rendering.ContainsKey(t.Id)) return;
-            _rendering[t.Id] = Task.Run(() => Score.Render(t));
+            if (_rendering.ContainsKey(Key(t))) return;
+            _rendering[Key(t)] = Task.Run(() => Score.Render(t));
         }
 
         /// <summary>Rendered stems become clips on the main thread.</summary>
@@ -245,7 +264,7 @@ namespace OWSBG.Narrative
             }
             Release(ramp, at);
             Current = t;
-            var clips = _clips[t.Id];
+            var clips = _clips[Key(t)];
             _start = at;
             _driftAvg = 0f;
             BeatDrift = 0f;

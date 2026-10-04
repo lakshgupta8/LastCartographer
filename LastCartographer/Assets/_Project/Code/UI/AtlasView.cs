@@ -24,6 +24,9 @@ namespace OWSBG.UI
         public int Cursor { get; private set; }
         public VisualElement Panel => _panel;
         public IReadOnlyList<Waypoint> Destinations => _destinations;
+        /// <summary>The map's page open (ENV-11, atlas-map.md): an index into <see cref="AtlasMap.Pages"/>.</summary>
+        public int Page => _page;
+        public AtlasPageMap Map => _map;
         public bool CanTravel => TravelPoint.Nearby != null && _destinations.Count > 0;
 
         WrenController _wren;
@@ -32,7 +35,9 @@ namespace OWSBG.UI
         float _nextRefresh;
         VisualElement _panel, _places, _travel, _journalHost, _here;
         ScrollView _scroll;
-        Label _title, _day;
+        Label _title, _day, _pageName;
+        AtlasPageMap _map;
+        int _page;
         readonly List<Waypoint> _destinations = new List<Waypoint>();
 
         void Awake() { Instance = this; }
@@ -49,6 +54,11 @@ namespace OWSBG.UI
             if (wren != null) { _wasFrozen = wren.Frozen; wren.Frozen = true; }
             IsOpen = true;
             Cursor = 0;
+            // The book opens at the page she stands on, and has the room she stands in.
+            string here = Room.Current != null ? Room.Current.RoomId : null;
+            AtlasMap.Walk(GameState.World, here);
+            int at = System.Array.IndexOf(AtlasMap.Pages, AtlasMap.PageOfRoom(here));
+            if (at >= 0) _page = at;
             if (_journal != null) _journal.Open(null);
             Refresh();
             UiSounds.Open();
@@ -71,6 +81,15 @@ namespace OWSBG.UI
             Cursor = (Cursor + dir + n) % n;
             Refresh();
             if (n > 1) UiSounds.Move();
+        }
+
+        /// <summary>Turn the map's page: ← and → (or the bumpers), round the book.</summary>
+        public void Turn(int dir)
+        {
+            int n = AtlasMap.Pages.Length;
+            _page = (_page + dir + n) % n;
+            Refresh();
+            UiSounds.Move();
         }
 
         /// <summary>J on a destination: close the atlas and go. False when there is nowhere to go from here.</summary>
@@ -98,8 +117,12 @@ namespace OWSBG.UI
                 bool up = (k != null && (k.upArrowKey.wasPressedThisFrame || k.wKey.wasPressedThisFrame)) || (g != null && (g.dpad.up.wasPressedThisFrame || g.leftStick.up.wasPressedThisFrame));
                 bool down = (k != null && (k.downArrowKey.wasPressedThisFrame || k.sKey.wasPressedThisFrame)) || (g != null && (g.dpad.down.wasPressedThisFrame || g.leftStick.down.wasPressedThisFrame));
                 bool confirm = (k != null && (k.jKey.wasPressedThisFrame || k.spaceKey.wasPressedThisFrame || k.enterKey.wasPressedThisFrame)) || (g != null && g.buttonSouth.wasPressedThisFrame);
+                bool left = (k != null && (k.leftArrowKey.wasPressedThisFrame || k.aKey.wasPressedThisFrame)) || (g != null && (g.dpad.left.wasPressedThisFrame || g.leftShoulder.wasPressedThisFrame));
+                bool right = (k != null && (k.rightArrowKey.wasPressedThisFrame || k.dKey.wasPressedThisFrame)) || (g != null && (g.dpad.right.wasPressedThisFrame || g.rightShoulder.wasPressedThisFrame));
                 if (up) Move(-1);
                 if (down) Move(1);
+                if (left) Turn(-1);
+                if (right) Turn(1);
                 if (confirm) Confirm();
                 if (Time.unscaledTime >= _nextRefresh) { _nextRefresh = Time.unscaledTime + _refreshSeconds; Refresh(); }
                 return;
@@ -137,7 +160,11 @@ namespace OWSBG.UI
             if (rose != null) titleRow.Add(rose);
             titleRow.Add(_title);
             _day = InkTheme.Text("day", "", 16, InkTheme.Dim);
-            _day.style.marginBottom = 12;
+            _day.style.marginBottom = 8;
+            // The map: the region's page drawn as far as she has drawn it, turned with ← →.
+            _pageName = InkTheme.TitleText("page", "", 18, InkTheme.Ink);
+            _pageName.style.flexShrink = 0;
+            _map = new AtlasPageMap();
             // The places are more than a page holds: they scroll, and the page opens at where she stands.
             _scroll = new ScrollView(ScrollViewMode.Vertical) { name = "places-scroll" };
             _scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
@@ -148,11 +175,11 @@ namespace OWSBG.UI
             _travel = new VisualElement { name = "travel", pickingMode = PickingMode.Ignore };
             _travel.style.marginTop = 16;
             _travel.style.flexShrink = 0;
-            var hint = InkTheme.Say("hint", "atlas.hint", "↑↓ destination    J travel    M / Esc close", 15, InkTheme.Dim);
+            var hint = InkTheme.Say("hint", "atlas.hint", "←→ page    ↑↓ destination    J travel    M / Esc close", 15, InkTheme.Dim);
             hint.style.marginTop = 14;
             hint.style.flexShrink = 0;
             map.style.minHeight = 0;
-            map.Add(titleRow); map.Add(_day); map.Add(_scroll); map.Add(_travel); map.Add(hint);
+            map.Add(titleRow); map.Add(_day); map.Add(_pageName); map.Add(_map); map.Add(_scroll); map.Add(_travel); map.Add(hint);
 
             _journalHost = new VisualElement { name = "journal-host", pickingMode = PickingMode.Ignore };
             _journalHost.style.width = new Length(50, LengthUnit.Percent);
@@ -180,6 +207,9 @@ namespace OWSBG.UI
                         + (DayClock.IsLocked(w, here) ? Loc.T("atlas.held_hour", "  (held at this hour)") : "");
             _noted.Clear();
             _here = null;
+            var page = AtlasMap.Pages[_page];
+            _pageName.text = Atlas.RegionName(page) + "   \u25C2 " + (_page + 1) + " / " + AtlasMap.Pages.Length + " \u25B8";
+            _map.Show(page, w, here);
             foreach (var place in Atlas.AllPlaces)
             {
                 if (place.Region != region)

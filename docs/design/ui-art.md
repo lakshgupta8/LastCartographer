@@ -32,7 +32,7 @@ collection get no Freestyle line (washes, rules, highlights); everything else ca
 |---|---|---|---|
 | `UI_Page` | 1024×512, sliced 96 | a deckled sheet, an ink rule set in, a fainter one inside it, corner ticks | every panel (`InkTheme.Panel`): dialogue, desk, ledger, shop, options, the journal alone |
 | `UI_Strip` | 768×128, sliced 64/24 | a strip torn off the sheet, a short rule at each end | prompts and captions, the journal's toast, the roll-call strip (`InkTheme.Strip`) |
-| `UI_Spread` | 1500×900, sliced 120/100 | two pages on a sewn spine, shade where they curl into it | the atlas (`InkTheme.Spread`): the map on the left page in a scrolling list that opens at where she stands, the journal on the right |
+| `UI_Spread` | 1500×900, sliced 120/100 | two pages on a sewn spine, shade where they curl into it | the atlas (`InkTheme.Spread`): the region's map drawn by the pen on the left page (`atlas-map.md`) over a scrolling list that opens at where she stands, the journal on the right |
 | `UI_Portrait` | 256×256, sliced 40 | a square sheet with a darker inner square and a rule | the speaker's face on the dialogue page |
 | `UI_MaskFull`, `UI_MaskEmpty` | 96×96 | a feather: ink with paper barbs, or paper with ink barbs | the HUD's masks |
 | `UI_Inkwell`, `UI_InkwellFill` | 112×144 | the bottle with its cork and highlights; the ink in it to the brim | the HUD's Inkwell: the fill is clipped from the bottom to the pips' share of its run (`fill.bottom`..`fill.top`), the nine pips are marks up the glass |
@@ -76,8 +76,7 @@ glyphs (feathers, bottle, nib, icons) stay, being ink on nothing.
 
 ## 6. Open
 
-- The atlas's map is still a list on a page; the bible's map that the pen draws as she surveys (unsurveyed areas as
-  blank pages) is the hand pass's, as is lettering the region headings.
+- The atlas's map is drawn (`atlas-map.md`); lettering its region headings is the hand pass's.
 - The atlas's status line still says ☼ and ▣ in text for the lamps and desks it lists; only the travel rows draw them.
 - The paper stretches between its slices; a very tall page stretches the deckle's wobble. A tiled middle
   (`-unity-slice-type: tiled`) would keep it, once the project's UI Toolkit is confirmed to carry it.

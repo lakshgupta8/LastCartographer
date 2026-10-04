@@ -18,6 +18,12 @@ miner's helmet and lamp, Lorne a grown crane's grey and spectacles; Garrow is th
 themselves in townsfolk.py OWN, so their portraits are their own birds.)
 
 The list is SPEAKERS below and again in Unity (`Portraits.Faces`, Core), which the tests compare with the pack.
+
+Every look of the townsfolk library has a face too (LOOK_FACES, `Folk_<Look>`): the faces of the Blank's islands'
+unnamed people, who speak as `Remnant` in whichever look their island stands them in. Rendered the same way, packed
+apart (Art/Portraits/Looks/), and loaded with the island rather than carried by the page.
+
+    ... -- Folk_Gull                     (only that look)
 """
 import json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -172,6 +178,10 @@ SPEAKERS = [
 ]
 
 
+# Every look of the townsfolk library, for the islands' unnamed (Portraits.LookFaces in Unity): no touches, the look as it stands.
+LOOK_FACES = [("Folk_" + lid, "Folk_" + lid, folk(lid)) for lid, region, cell, spec in townsfolk.LOOKS]
+
+
 def head_of(rig):
     """The head's centre and its size, in world units, from the world bounds of the head's mesh."""
     from mathutils import Vector
@@ -301,9 +311,10 @@ def main():
     only = argv_after_dashes()
     os.makedirs(OUT, exist_ok=True)
     with open(os.path.join(OUT, "speakers.json"), "w") as f:
-        json.dump({"moods": MOOD_NAMES, "speakers": [{"speaker": speaker, "body": body} for speaker, body, build in SPEAKERS]},
+        json.dump({"moods": MOOD_NAMES, "speakers": [{"speaker": speaker, "body": body} for speaker, body, build in SPEAKERS],
+                   "looks": [{"speaker": speaker, "body": body} for speaker, body, build in LOOK_FACES]},
                   f, indent=2)
-    for speaker, body, build in SPEAKERS:
+    for speaker, body, build in SPEAKERS + LOOK_FACES:
         if only and speaker not in only:
             continue
         reset_scene()

@@ -97,6 +97,9 @@ namespace OWSBG.Narrative
             var talker = drift.IsGeneric
                 ? RuntimeRooms.MakeNpc(room, "Npc_" + drift.Node, new Vector2(TalkerX, 0f), drift.Node, "Remnant_Pale", drift.IsHalf ? new Color(0.84f, 0.84f, 0.82f) : new Color(0.72f, 0.72f, 0.70f))
                 : RuntimeRooms.MakeNpc(room, "Npc_" + drift.Node, new Vector2(TalkerX, 0f), drift.Node, "Remnant_Grey", new Color(0.62f, 0.62f, 0.60f));
+            // An unnamed person speaks as Remnant in the look they stand in: the page shows that look's face (portraits.md §1).
+            if (drift.IsGeneric && look != null)
+                PortraitFace.Lend(talker.gameObject, look.Speaker, AddressableArt.Load<Texture2D>(AddressableArt.PortraitPath(look.Speaker), talker.gameObject));
             if (drawing != null)
             {
                 IslandDrawing.Dress(talker.gameObject, look.Speaker, drawing.People, true, "");

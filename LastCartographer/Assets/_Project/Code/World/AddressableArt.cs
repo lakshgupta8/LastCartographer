@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using OWSBG.Core;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -18,6 +19,9 @@ namespace OWSBG.World
         public static string MaterialPath(string name) => Root + "Materials/" + name + ".mat";
         /// <summary>A character's sheet for one clip: Art/Characters/Folk_Chough/Folk_Chough_idle.png.</summary>
         public static string SheetPath(string character, string clip) => Root + "Characters/" + character + "/" + character + "_" + clip + ".png";
+
+        /// <summary>A townsfolk look's portrait sheet: Art/Portraits/Looks/Portrait_Folk_Gull.png.</summary>
+        public static string PortraitPath(string character) => Root + "Portraits/" + Portraits.LookFile(character);
 
         /// <summary>The asset at an address, held until <paramref name="owner"/> is destroyed; null when nothing is there.</summary>
         public static T Load<T>(string address, GameObject owner) where T : Object

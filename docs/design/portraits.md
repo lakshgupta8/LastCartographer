@@ -26,12 +26,20 @@ Tests: `PortraitTests` (edit, 9), `DialoguePortraitTests` (play, 5).
 | Ostry, Anvers, Hollin, Wend | their own drawings, the nightjar, the heron, the thrush and the dove their arcs name (`Townsfolk.OwnDrawn`, townsfolk.md §3) |
 | the Gannet, the Traveller, Brek | the asker's look (`Offerings.Asker.Look`, the Crane for Brek) |
 | Ossa, Lorne, Garrow, Brask | the species their arc gives them, from the library (Plover, Crane, Crane, Chough); none of them is stood up in a room yet |
+| `Remnant`, the Blank's islands' unnamed | the look their island stands them in (`IslandLooks.For`): every look of the townsfolk library has a face of its own (`Portraits.LookFaces`), and the talker lends it (`Portraits.InTheirBody`, below) |
 
 **Faceless** (`Portraits.Faceless`) covers:
 - the things and places that speak (the ashes, a door, the pages, the milestones, the Mine, the Hollow);
 - the Lantern, which narrates;
-- the islands' unnamed `Remnant` speakers, whose bodies wait on a Resources pass (CHR-12);
 - Marrow, who has no portrait and no name plate until named (character-bibles.md §5).
+
+**In their body** (`Portraits.InTheirBody`): `Remnant`. One name speaks for every unnamed person on every generic
+island and half-island, each standing in whichever townsfolk look the island gives them. So the face is not the
+speaker's but the talker's: `IslandBuilder` loads that look's sheet (`Art/Portraits/Looks/Portrait_Folk_<Look>.png`,
+by its address in the Art group) with the island's other drawings, lends it to the talker (`PortraitFace`), and lets
+it go with the room. The page shows the face the talker lends (`DialogueView.BorrowedFace`), in the talker's grey;
+with no talker it shows none. The thirty looks' sheets are never on the persistent page, and an island holds one.
+The looks' faces are `docs/art/portrait-looks.png`, each in its five moods and greyed.
 
 Every Yarn speaker must be on one list or the other, never both, and never neither. A new speaker is a decision
 someone makes, and `PortraitTests` holds the lists to the project.
@@ -88,7 +96,7 @@ is therefore the drawing the player sees standing in the room: the same shapes w
 A sheet is a row per mood, top to bottom `plain`, `bright`, `grave`, `wary`, `asking`. Each row is four 256-px frames:
 `rest`, `talk`, `rest_remnant`, `talk_remnant`. That makes 1024 × 1280 px. The importer treats `Art/Portraits/` like
 the character sheets: no mipmaps, bilinear, uncompressed. That is 5 MB a speaker and about 215 MB for the 41, all
-carried by the persistent page. It is the same open question as the sheets' (performance.md: BC7 at the hand pass).
+carried by the persistent page. The thirty looks' faces are another 150 MB on disk, but only an island's one is ever loaded. It is the same open question as the sheets' (performance.md: BC7 at the hand pass).
 
 ## 3. On the page
 
@@ -136,7 +144,8 @@ UI element would match exactly; that is for the hand pass if it matters.
 - **One portrait:** replace `Portrait_<Speaker>.png` with a sheet of the same five rows of four 256-px frames.
 - **A new mood:** add a row to `MOODS` in `portraits.py` and its name to `Portraits.Moods`, in the same place.
 - **Re-render everything:** run `blender -b -P tools/characters/portraits.py`, then
-  `python tools/characters/portraits_pack.py`. The 41 speakers' 410 frames render in about 4 minutes.
+  `python tools/characters/portraits_pack.py`. The 41 speakers' 410 frames render in about 4 minutes, the 30 looks'
+  300 in about 3 more. Name speakers or looks after `--` to render only those (`-- Folk_Gull`).
 - **Re-wire the page:** rebuild with **OWSBG → Build Bootstrap Scene**.
 
 ## 5. Verification
@@ -145,13 +154,14 @@ UI element would match exactly; that is for the hand pass if it matters.
 |---|---|
 | Every Yarn speaker has a face or is faceless, never both, never neither; Marrow has none; every Remnant at rest has a face | `PortraitTests.EverySpeakerHasAFaceOrIsFacelessAndNeverBoth` |
 | A face is drawn from the body the speaker is met in: the named birds' looks, the cast's own sheets | `PortraitTests.EachFaceIsDrawnFromTheBodyTheSpeakerIsMetIn` |
-| The pack and the table list the same speakers and moods; a row of four 256-px frames per mood; import settings | `PortraitTests.EveryFaceIsPackedAsARowOfFourFramesPerMood` |
+| The pack and the table list the same speakers and moods, and every townsfolk look; a row of four 256-px frames per mood; import settings | `PortraitTests.EveryFaceIsPackedAsARowOfFourFramesPerMood` |
 | In every mood the beak opens; the grey is the same outline with less colour, nearer the paper | `PortraitTests.TheBeakOpensAndTheRemnantIsTheSameDrawingGreyed` |
 | Every mood's face differs from the plain one over a fiftieth of what either covers, for every speaker | `PortraitTests.EachMoodIsADifferentFace` |
 | A tag wins; a question asks, an exclamation is bright, a line that trails off is grave; an unknown mood is plain | `PortraitTests.ALineIsSaidWithItsTagOrWhatItsPunctuationSays` |
 | Every `#face:` in the Yarn project is a drawn mood, on a line said by someone with a face, never on an option | `PortraitTests.EveryFaceTagIsAMoodOnALineWithAFace` |
 | The choughs and the cranes each differ over a twentieth of what either covers | `PortraitTests.TheBirdsWhoShareALookStillReadApart` |
-| The persistent page carries every strip; the contact sheet exists | `PortraitTests.ThePersistentPageCarriesEveryPortrait` |
+| The persistent page carries every speaker's strip and none of the looks'; the contact sheets exist | `PortraitTests.ThePersistentPageCarriesEveryPortrait` |
+| A generic island's talker lends the face of its look; its Remnant speaks with it, in grey; a named island's speaker keeps their own | `IslandDrawingTests.EveryKindOfIslandIsDrawnAsThePlaceItWas` |
 | Sable's line shows her face, talking and then resting | `DialoguePortraitTests.ASpeakerWithAFaceShowsItTalkingThenResting` |
 | The ashes show no face; Wren's choices show none | `DialoguePortraitTests.AThingThatSpeaksShowsNoFace` |
 | Corvin, with no Corvin in the room, speaks in grey | `DialoguePortraitTests.ARemnantSpeaksInGrey` |

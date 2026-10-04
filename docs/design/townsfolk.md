@@ -29,7 +29,8 @@ finch, a lark), 2.0 for most, 2.4 for a raven and a young crane, 2.6 for a goose
 | Windreach | Lark, Hoopoe, Kestrel, Bustard, Plover, Crane | **Brek** at the Gate (a young crane, an asker); the clan at the wagon (a hoopoe, a lark cheering, a plover watching the leap), the elder by the first fire, the walkers at the third, the singer and the elder at the Gate, a scout on the walk |
 
 The Greyfold and the Blank have no living townsfolk: theirs are these looks as Remnant (`NpcInkState.Remnant`), and
-the Blank's islands' people are still runtime grey quads (§5).
+the Blank's islands' people wear these looks too, loaded at runtime (blank-generator.md), and speak with the
+looks' faces (portraits.md §1).
 
 ## 2. The clips
 
@@ -87,6 +88,4 @@ cheering and talk); captures of the camp, the Stilts' roost, the picket, the gan
 - **Redraw a look** as its own strips at the same clip names (any cell); nothing reads the drawing but the quad.
 - **A new look** is a line in `LOOKS` (`townsfolk.py`) and a line in `Townsfolk.Looks`; the test keeps them equal.
 - **The watchers' voices**: the counting under the Rest's roosts and the clan's song are AUD's.
-- **The Blank's islands** (`IslandBuilder`, runtime) still stand grey quads: a runtime room has no `AssetDatabase`,
-  so their people need the sheets in a loadable place (Resources or Addressables) before they can wear the library.
 - **Who stands where** is the recipes' (`.Folk(...)`): the hubs built by hand (the Quay, Merrow's End) have no crowd yet.

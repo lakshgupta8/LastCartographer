@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using OWSBG.Core;
 using OWSBG.Narrative;
+using OWSBG.UI;
 using OWSBG.World;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -140,6 +141,27 @@ namespace OWSBG.Tests
                     Assert.AreEqual(NpcInkState.Remnant, c.GetComponent<NpcInk>().State, at + c.name + " is a Remnant");
                     Assert.Greater(Mathf.Abs(c.transform.position.x - IslandBuilder.TalkerX), 1.5f, at + c.name + " is not on top of the speaker");
                 }
+                // An unnamed person speaks with the face of the look they stand in, greyed (portraits.md §1).
+                var face = talker.GetComponent<PortraitFace>();
+                if (drift.IsGeneric)
+                {
+                    Assert.IsNotNull(face, at + "the talker lends its face");
+                    Assert.AreEqual(look.Speaker, face!.Body, at + "the face of the look they stand in");
+                    Assert.AreEqual(Portraits.Prefix + look.Speaker, face.Sheet.name, at + "the look's portrait sheet");
+                    var svc = DialogueService.Instance!;
+                    var view = UiRoot.Instance.GetComponent<DialogueView>();
+                    NpcTalker.Talking = talker;
+                    Assert.IsTrue(svc.StartNode(drift.Node), drift.Node);
+                    yield return Until(() => view.IsVisible && !string.IsNullOrEmpty(view.LineText), 5f, drift.Node + "'s first line");
+                    Assert.AreEqual("Remnant", view.PortraitSpeaker, at + "the Remnant has a face");
+                    Assert.AreSame(face.Sheet, view.PortraitTexture, at + "and it is the look's");
+                    Assert.AreEqual(1f, view.PortraitGrey, at + "in grey");
+                    svc.Stop();
+                    NpcTalker.Talking = null;
+                    yield return null;
+                }
+                else Assert.IsNull(face, at + "a named speaker's face is their own");
+
                 var held = room.GetComponent<AddressableArt.Held>();
                 Assert.IsNotNull(held, at + "the room holds its art");
                 Assert.Greater(held.Count, 5, at + "the kit, the floor and the sheets");

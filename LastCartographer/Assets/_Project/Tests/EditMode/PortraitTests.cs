@@ -19,8 +19,11 @@ namespace OWSBG.Tests
     {
         const string Folder = "Assets/_Project/Art/Portraits/";
 
-        [System.Serializable] class Manifest { public int cell; public string[] frames, moods; public Entry[] speakers; }
+        [System.Serializable] class Manifest { public int cell; public string[] frames, moods; public Entry[] speakers, looks; }
         [System.Serializable] class Entry { public string speaker, body, file; }
+
+        /// <summary>Every packed sheet: the speakers' and the townsfolk looks'.</summary>
+        static IEnumerable<Entry> Sheets() { var m = Load(); return m.speakers.Concat(m.looks ?? new Entry[0]); }
 
         static Manifest Load()
         {
@@ -65,10 +68,11 @@ namespace OWSBG.Tests
             var speakers = YarnSpeakers();
             Assert.Greater(speakers.Count, 40, "the project's speakers were read");
             foreach (var s in speakers)
-                Assert.IsTrue(Portraits.Has(s) ^ Portraits.Faceless.Contains(s), s + " is either a face or faceless");
+                Assert.IsTrue(Portraits.HasAnyFace(s) ^ Portraits.Faceless.Contains(s), s + " is either a face or faceless");
             foreach (var s in Portraits.Faces.Keys) Assert.IsTrue(speakers.Contains(s), s + " has a face and speaks");
             foreach (var s in Portraits.Faceless) Assert.IsTrue(speakers.Contains(s), s + " is faceless and speaks");
-            foreach (var s in Portraits.RemnantAtRest) Assert.IsTrue(Portraits.Has(s), s + " is a Remnant with a face");
+            foreach (var s in Portraits.InTheirBody) Assert.IsTrue(speakers.Contains(s) && !Portraits.Has(s), s + " speaks, in the face of the body they stand in");
+            foreach (var s in Portraits.RemnantAtRest) Assert.IsTrue(Portraits.HasAnyFace(s), s + " is a Remnant with a face");
             Assert.IsFalse(Portraits.Has("Marrow"), "Marrow has no portrait (character-bibles.md §5)");
         }
 
@@ -94,10 +98,19 @@ namespace OWSBG.Tests
             CollectionAssert.AreEqual(Portraits.Frames, m.frames);
             CollectionAssert.AreEqual(Portraits.Moods, m.moods, "the pack draws the moods the page asks for, in its order");
             CollectionAssert.AreEquivalent(Portraits.Faces.Keys, m.speakers.Select(e => e.speaker), "the pack and the table list the same speakers");
-            foreach (var e in m.speakers)
+            CollectionAssert.AreEquivalent(Portraits.LookFaces, m.looks.Select(e => e.speaker), "and every townsfolk look has a face");
+            foreach (var e in m.looks)
             {
-                Assert.AreEqual(Portraits.Faces[e.speaker], e.body, e.speaker + "'s body");
-                Assert.AreEqual(Portraits.FileOf(e.speaker), e.file);
+                Assert.AreEqual(e.speaker, e.body, e.speaker + " is drawn as the look stands");
+                Assert.AreEqual(Portraits.LookFile(e.speaker), e.file);
+            }
+            foreach (var e in m.speakers.Concat(m.looks))
+            {
+                if (Portraits.Faces.ContainsKey(e.speaker))
+                {
+                    Assert.AreEqual(Portraits.Faces[e.speaker], e.body, e.speaker + "'s body");
+                    Assert.AreEqual(Portraits.FileOf(e.speaker), e.file);
+                }
                 var tex = Decode(Folder + e.file);
                 Assert.AreEqual(Portraits.Frames.Length * Portraits.Cell, tex.width, e.speaker + " is four frames across");
                 Assert.AreEqual(Portraits.Moods.Length * Portraits.Cell, tex.height, e.speaker + " has a row per mood");
@@ -112,7 +125,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheBeakOpensAndTheRemnantIsTheSameDrawingGreyed()
         {
-            foreach (var e in Load().speakers)
+            foreach (var e in Sheets())
             {
                 var tex = Decode(Folder + e.file);
                 var px = tex.GetPixels32();
@@ -149,7 +162,7 @@ namespace OWSBG.Tests
         {
             // A mood moves the head, the beak or the eye enough to be seen at the page's size: every mood's resting
             // face differs from the plain one over a fiftieth of what either covers, for every speaker.
-            foreach (var e in Load().speakers)
+            foreach (var e in Sheets())
             {
                 var tex = Decode(Folder + e.file);
                 var px = tex.GetPixels32();
@@ -195,7 +208,7 @@ namespace OWSBG.Tests
                             tagged++;
                             Assert.GreaterOrEqual(Portraits.MoodIndex(mood), 0, line + ": #face:" + mood + " is a drawn mood");
                             Assert.IsFalse(line.IsOption, line + ": Wren's choices have no face to wear it");
-                            Assert.IsTrue(Portraits.Has(line.Speaker), line + ": said by someone with a face");
+                            Assert.IsTrue(Portraits.HasAnyFace(line.Speaker), line + ": said by someone with a face");
                         }
             Assert.Greater(tagged, 0, "the dialogue sets moods");
         }
@@ -240,7 +253,11 @@ namespace OWSBG.Tests
                 StringAssert.Contains("Speaker: " + e.speaker + "\n", scene.Replace("\r\n", "\n"), e.speaker + " is on the page");
                 StringAssert.Contains(AssetDatabase.AssetPathToGUID(Folder + e.file), scene, e.speaker + "'s strip is wired");
             }
+            // The looks' faces are not on the page: an island loads the one its person stands in, and lets it go with the room.
+            foreach (var e in Load().looks)
+                StringAssert.DoesNotContain(AssetDatabase.AssetPathToGUID(Folder + e.file), scene, e.speaker + "'s face is loaded with its island, not carried");
             Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/portraits.png")), "the contact sheet");
+            Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/portrait-looks.png")), "the looks' sheet");
         }
     }
 }

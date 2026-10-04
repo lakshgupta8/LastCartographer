@@ -73,7 +73,21 @@ namespace OWSBG.Core
             { "Skua", "Folk_Gull" }, { "Dunlin", "Folk_Turnstone" }, { "Knot", "Folk_Puffin" },
         };
 
-        /// <summary>Speakers with no face: things, places, the narrating Lantern, the islands' unnamed, and Marrow.</summary>
+        /// <summary>
+        /// Speakers whose face is the body of the bird they are talking through: the Blank's islands' unnamed people
+        /// (<c>Remnant</c>), who stand in whichever townsfolk look their island gives them (IslandLooks), so their
+        /// face is that look's (<see cref="LookFaces"/>), loaded with the island.
+        /// </summary>
+        public static readonly HashSet<string> InTheirBody = new HashSet<string> { "Remnant" };
+
+        /// <summary>The townsfolk library's looks, each with a face of its own (Art/Portraits/Looks/), for <see cref="InTheirBody"/>.</summary>
+        public static IEnumerable<string> LookFaces { get { foreach (var l in Townsfolk.Looks) yield return l.Character; } }
+        /// <summary>A look's face: "Folk_Gull" → Looks/Portrait_Folk_Gull.png under Art/Portraits.</summary>
+        public static string LookFile(string character) => "Looks/" + Prefix + character + ".png";
+        /// <summary>Whether a speaker can be shown with a face: one of their own, or the body they talk through.</summary>
+        public static bool HasAnyFace(string speaker) => Has(speaker) || (speaker != null && InTheirBody.Contains(speaker));
+
+        /// <summary>Speakers with no face: things, places, the narrating Lantern, and Marrow.</summary>
         public static readonly HashSet<string> Faceless = new HashSet<string>
         {
             "Ashes", "Atlas", "Beam", "Bedroll", "Board", "Cloth", "Door", "Doorframe", "Drawing", "Fire", "Frame", "Gate",
@@ -81,7 +95,6 @@ namespace OWSBG.Core
             "Milepost", "Milestone", "Mine", "Mirror", "Notice", "Pages", "Papers", "Plaque", "Plate", "Pool", "Post",
             "Report", "Riverbed", "Road", "Roll", "Sheet", "Stone", "Stones", "Table", "Tapestry", "Threshold", "Wall",
             "Marrow",       // no portrait, no name plate until named (character-bibles.md §5)
-            "Remnant",      // the islands' people, not drawn yet (CHR-12 left them to a Resources pass)
         };
 
         /// <summary>
@@ -90,7 +103,7 @@ namespace OWSBG.Core
         /// </summary>
         public static readonly HashSet<string> RemnantAtRest = new HashSet<string>
         {
-            "Ilse", "Corra", "Aury", "Corvin", "Innkeeper", "Gannet", "Traveller", "Brask",
+            "Ilse", "Corra", "Aury", "Corvin", "Innkeeper", "Gannet", "Traveller", "Brask", "Remnant",
         };
 
         public static bool Has(string speaker) => speaker != null && Faces.ContainsKey(speaker);

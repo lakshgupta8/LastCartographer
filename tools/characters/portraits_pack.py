@@ -9,6 +9,10 @@ Remnant's grey. The grey is InkSprite's colour state (ColourState in
 the shader, at _Wash 1 and _LineFade 1) worked on the pixels in linear light, so a Remnant's portrait is the drawing
 the player sees in the room. portraits.json beside them lists every speaker, the body the face is drawn from and the
 file, for the Unity setup and the tests. The contact sheet goes to docs/art/portraits.png.
+
+The townsfolk library's looks (speakers.json "looks", the islands' unnamed) are packed the same way to
+Art/Portraits/Looks/Portrait_Folk_<Look>.png and listed under "looks", apart from the speakers the page carries;
+their sheet, every look in its five moods and greyed, is docs/art/portrait-looks.png.
 """
 import json, os
 import numpy as np
@@ -64,11 +68,14 @@ def main():
         rendered = json.load(f)
     moods, speakers = rendered["moods"], rendered["speakers"]
     os.makedirs(OUT, exist_ok=True)
-    manifest = {"cell": CELL, "frames": STRIP, "moods": moods, "speakers": []}
-    tiles, faces = [], {}
-    for entry in speakers:
+    os.makedirs(os.path.join(OUT, "Looks"), exist_ok=True)
+    manifest = {"cell": CELL, "frames": STRIP, "moods": moods, "speakers": [], "looks": []}
+    tiles, faces, looks = [], {}, []
+
+    def pack(entry, file):
         speaker = entry["speaker"]
         sheet = Image.new("RGBA", (CELL * len(STRIP), CELL * len(moods)), (0, 0, 0, 0))
+        rows = []
         for row, mood in enumerate(moods):
             def cell(pose):
                 return premultiplied_resize(Image.open(os.path.join(FRAMES, "%s_%s_%s.png" % (speaker, mood, pose))), (CELL, CELL))
@@ -76,13 +83,23 @@ def main():
             frames = [rest, talk, remnant(rest), remnant(talk)]
             for i, im in enumerate(frames):
                 sheet.alpha_composite(im, (i * CELL, row * CELL))
-            if row == 0:
-                tiles.append((speaker, entry["body"], frames))
-            faces.setdefault(speaker, []).append(rest)
-        file = "Portrait_%s.png" % speaker
+            rows.append(frames)
         sheet.save(os.path.join(OUT, file))
-        manifest["speakers"].append({"speaker": speaker, "body": entry["body"], "file": file})
         print("[portraits] %s -> %s" % (speaker, file))
+        return rows
+
+    for entry in speakers:
+        speaker = entry["speaker"]
+        file = "Portrait_%s.png" % speaker
+        rows = pack(entry, file)
+        tiles.append((speaker, entry["body"], rows[0]))
+        faces[speaker] = [r[0] for r in rows]
+        manifest["speakers"].append({"speaker": speaker, "body": entry["body"], "file": file})
+    for entry in rendered.get("looks", []):
+        file = "Looks/Portrait_%s.png" % entry["speaker"]
+        rows = pack(entry, file)
+        looks.append((entry["speaker"], rows))
+        manifest["looks"].append({"speaker": entry["speaker"], "body": entry["body"], "file": file})
     with open(os.path.join(OUT, "portraits.json"), "w") as f:
         json.dump(manifest, f, indent=2)
 
@@ -118,6 +135,25 @@ def main():
     path = os.path.join(ROOT, "docs", "art", "portrait-moods.png")
     sheet.save(path)
     print("[portraits] moods sheet -> %s %s" % (path, sheet.size))
+
+    # The looks' sheet: each look in its five moods at rest and then greyed, as an island's people speak.
+    if looks:
+        t, cols, pad = 80, 2, 12
+        tile_w, tile_h = (len(moods) + 1) * t + pad, t + 22
+        rows = (len(looks) + cols - 1) // cols
+        sheet = Image.new("RGBA", (cols * tile_w + pad, rows * tile_h + pad + 20), (237, 227, 204, 255))
+        draw = ImageDraw.Draw(sheet)
+        for c in range(cols):
+            for i, label in enumerate(moods + ["grey"]):
+                draw.text((pad + c * tile_w + i * t + 4, 6), label, fill=INK)
+        for k, (speaker, frames) in enumerate(looks):
+            x, y = pad + (k % cols) * tile_w, pad + 20 + (k // cols) * tile_h
+            for i, im in enumerate([r[0] for r in frames] + [frames[0][2]]):
+                sheet.alpha_composite(im.resize((t, t), Image.LANCZOS), (x + i * t, y))
+            draw.text((x + 4, y + t + 4), speaker[len("Folk_"):], fill=INK)
+        path = os.path.join(ROOT, "docs", "art", "portrait-looks.png")
+        sheet.save(path)
+        print("[portraits] looks sheet -> %s %s" % (path, sheet.size))
 
 
 if __name__ == "__main__":

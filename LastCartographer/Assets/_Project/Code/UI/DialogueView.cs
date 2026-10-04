@@ -57,6 +57,8 @@ namespace OWSBG.UI
         public IReadOnlyList<PortraitSheet> PortraitSheets => _portraits;
         /// <summary>The speaker whose portrait shows, or null when the page shows none.</summary>
         public string PortraitSpeaker => _built && _shownPortrait != null && _portrait.style.display == DisplayStyle.Flex ? _shownPortrait.Speaker : null;
+        /// <summary>The sheet the portrait shows (a speaker's own, or the face their body lends them).</summary>
+        public Texture2D PortraitTexture => PortraitSpeaker != null ? _shownPortrait.Sheet : null;
         /// <summary>The frame showing: <see cref="Portraits.Rest"/> or <see cref="Portraits.Talk"/>.</summary>
         public int PortraitFrame => _frame;
         /// <summary>The mood the portrait wears, an index into <see cref="Portraits.Moods"/>.</summary>
@@ -71,6 +73,18 @@ namespace OWSBG.UI
         public void ConfigurePortraits(IEnumerable<PortraitSheet> sheets)
         {
             _portraits = new List<PortraitSheet>(sheets);
+        }
+
+        /// <summary>
+        /// The face of the bird a speaker talks through (<see cref="Portraits.InTheirBody"/>): the talker's
+        /// <see cref="PortraitFace"/>, the look an island stood its unnamed person in. Null when it lends none.
+        /// </summary>
+        public static PortraitSheet BorrowedFace(string speaker)
+        {
+            if (speaker == null || !Portraits.InTheirBody.Contains(speaker)) return null;
+            var talking = NpcTalker.Talking;
+            var face = talking != null ? talking.GetComponentInParent<PortraitFace>() : null;
+            return face != null && face.Sheet != null ? new PortraitSheet { Speaker = speaker, Sheet = face.Sheet } : null;
         }
 
         public PortraitSheet FindPortrait(string speaker)
@@ -91,7 +105,7 @@ namespace OWSBG.UI
         {
             NpcInk ink = null;
             var talking = NpcTalker.Talking;
-            if (talking != null && Portraits.IsSpeaker(talking.name, speaker)) ink = talking.GetComponentInChildren<NpcInk>();
+            if (talking != null && (Portraits.IsSpeaker(talking.name, speaker) || Portraits.InTheirBody.Contains(speaker))) ink = talking.GetComponentInChildren<NpcInk>();
             if (ink == null)
                 foreach (var i in FindObjectsByType<NpcInk>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
                     if (Portraits.IsSpeaker(i.name, speaker) || (i.transform.parent != null && Portraits.IsSpeaker(i.transform.parent.name, speaker))) { ink = i; break; }
@@ -174,7 +188,7 @@ namespace OWSBG.UI
         void ShowPortrait(string speaker, string text, string[] tags)
         {
             _mood = Portraits.MoodOf(tags, text);
-            _shownPortrait = FindPortrait(speaker);
+            _shownPortrait = FindPortrait(speaker) ?? BorrowedFace(speaker);
             InkTheme.Show(_portrait, _shownPortrait != null);
             if (_shownPortrait == null) { _wash = 0f; _talkUntil = 0f; return; }
             _face.image = _shownPortrait.Sheet;

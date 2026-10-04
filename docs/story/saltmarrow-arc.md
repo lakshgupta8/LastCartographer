@@ -61,8 +61,13 @@ The Tether-Widows (the tether-post; posts after the Lamp-Keeper; answered throug
   for a Wren who never learned it, and once the village is held counts it into the roll-call: "Forty-three, Dotha."
   `RunaAtMerrowsEndTests` (PlayMode, 2).
 
+- **The Salt Chapel after the first hunt** (`Saltmarrow_Chapel_Halvard`, boss-sheets.md 6.3): once the fight is won
+  Halvard stands by the altar (`FlagPresence` on `boss.halvard.defeated`, gone once he has spoken) and says it is a
+  withdrawal, not a retreat; Halden will hear the count, "It will not hear that you were good. That part is mine."
+  His mercy is exact: "I am letting you go. Today." `ChapelHalvardTests` (PlayMode, 1).
+
 ## 5. Open
 - Sable in the Blank at Aury's lighthouse (8.6) is NAR-14's (`Blank_Aury`).
-- The Salt Chapel scene beyond the slice (DES-08 §3): the room stands (ENV-05); Halvard's words there are the
-  lighthouse scene's. The Bone Bridge crossing is written (§4).
+- ~~The Salt Chapel scene.~~ The measuring stays the lighthouse's; the chapel has his withdrawal (§4). The chapel of
+  salt-eaten paper behind it (saltmarrow-rooms.md, two more rooms) is unbuilt. The Bone Bridge crossing is written (§4).
 - Localization keys (NAR-18): lines are still literal.

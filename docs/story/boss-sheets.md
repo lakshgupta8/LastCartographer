@@ -74,8 +74,9 @@ is marked but one pace.
 1. "Three paces. I measured them."
 2. "You were taught by the best. So was I."
 3. "Noted. Halden will hear the count."
-**Answers.** Parry the lance; pogo over the lunge; read the marks. **Aftermath.** He withdraws; she stays
-unlicensed; the Wardens in anchored towns know her (`act1.unlicensed`).
+**Answers.** Parry the lance; pogo over the lunge; read the marks. **Aftermath.** He withdraws, and says so by the
+altar (`Chapel_Halvard_After`: "Not retreating."); she stays unlicensed; the Wardens in anchored towns know her
+(`act1.unlicensed`).
 
 ### Second hunt — Halden, the Seven Bridges (II)
 New kit: a second lance, thrown and recalled on a cord; he cuts bridge sections. **Arena.** A bridge over the

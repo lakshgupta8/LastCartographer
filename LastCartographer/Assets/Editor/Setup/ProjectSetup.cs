@@ -876,6 +876,9 @@ namespace OWSBG.Setup
             arSo.ApplyModifiedPropertiesWithoutUndo();
 
             MakeVantage(room, "Altar", "Saltmarrow_Chapel/Altar", new Vector2(17f, 1.6f));
+            // At zero he withdraws (6.3): by the altar once the hunt is won, he says so and goes (Chapel_Halvard_After).
+            MakeNpc(room, "Halvard_Greybox", new Vector2(13.6f, 0f), "Chapel_Halvard_After", new Color(0.55f, 0.50f, 0.36f));
+            GateNpc(room, "Halvard", Bosses.FlagKey("halvard"), "saltmarrow.chapel.halvard_spoke", 0, 0);
             MakeFadeGroup(room);
 
             EditorSceneManager.SaveScene(scene, RoomChapelScenePath);

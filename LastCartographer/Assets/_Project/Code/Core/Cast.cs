@@ -148,6 +148,7 @@ namespace OWSBG.Core
 
             Member("halvard", "Warden-Sergeant Halvard", "heron", "Meridian Guild", "paces and counts", "enters silence as a plea", "her first name");
             At("halvard", Act1, "Saltmarrow.LanternChain", "the first hunt: three paces, the count, unlicensed (staged in the fourth lighthouse; the bible's Salt Chapel)", "Lighthouse_Halvard_Hunt", staged: true, writes: "act1.halvard_met, act1.unlicensed");
+            At("halvard", Act1, "Saltmarrow.SaltChapel", "after the first hunt: he withdraws by the altar, and says it is withdrawing", "Chapel_Halvard_After", staged: true, writes: "saltmarrow.chapel.halvard_spoke");
             At("halvard", Act2, "Halden.SevenBridges", "the second hunt, new kit", "Bridges_Halvard_Hunt", staged: true, writes: "act2.halvard_second");
             At("halvard", Act2, "Greyfold.Threshold", "the third, beside Voss", "Threshold_Halvard", staged: true, writes: "act2.halvard_third");
 

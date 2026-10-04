@@ -32,7 +32,7 @@ collection get no Freestyle line (washes, rules, highlights); everything else ca
 |---|---|---|---|
 | `UI_Page` | 1024×512, sliced 96 | a deckled sheet, an ink rule set in, a fainter one inside it, corner ticks | every panel (`InkTheme.Panel`): dialogue, desk, ledger, shop, options, the journal alone |
 | `UI_Strip` | 768×128, sliced 64/24 | a strip torn off the sheet, a short rule at each end | prompts and captions, the journal's toast, the roll-call strip (`InkTheme.Strip`) |
-| `UI_Spread` | 1500×900, sliced 120/100 | two pages on a sewn spine, shade where they curl into it | the atlas (`InkTheme.Spread`): the map on the left page, the journal on the right |
+| `UI_Spread` | 1500×900, sliced 120/100 | two pages on a sewn spine, shade where they curl into it | the atlas (`InkTheme.Spread`): the map on the left page in a scrolling list that opens at where she stands, the journal on the right |
 | `UI_Portrait` | 256×256, sliced 40 | a square sheet with a darker inner square and a rule | the speaker's face on the dialogue page |
 | `UI_MaskFull`, `UI_MaskEmpty` | 96×96 | a feather: ink with paper barbs, or paper with ink barbs | the HUD's masks |
 | `UI_Inkwell`, `UI_InkwellFill` | 112×144 | the bottle with its cork and highlights; the ink in it to the brim | the HUD's Inkwell: the fill is clipped from the bottom to the pips' share of its run (`fill.bottom`..`fill.top`), the nine pips are marks up the glass |
@@ -82,5 +82,6 @@ glyphs (feathers, bottle, nib, icons) stay, being ink on nothing.
 - The paper stretches between its slices; a very tall page stretches the deckle's wobble. A tiled middle
   (`-unity-slice-type: tiled`) would keep it, once the project's UI Toolkit is confirmed to carry it.
 - The roll-call strip's three miss marks are still diamonds, and the options page has no drawings but the marker.
+- The atlas's place list scrolls behind the engine's default grey scroller; a drawn scroller (a ribbon bookmark) is the hand pass's.
 - The Charter and Instrument icons are glyphs, not the 3D rigs' renders; a hand pass may want them from `wren.py`'s
   own cowls.

@@ -30,7 +30,8 @@ namespace OWSBG.UI
         JournalView _journal;
         bool _wasFrozen, _built;
         float _nextRefresh;
-        VisualElement _panel, _places, _travel, _journalHost;
+        VisualElement _panel, _places, _travel, _journalHost, _here;
+        ScrollView _scroll;
         Label _title, _day;
         readonly List<Waypoint> _destinations = new List<Waypoint>();
 
@@ -133,12 +134,21 @@ namespace OWSBG.UI
             titleRow.Add(_title);
             _day = InkTheme.Text("day", "", 16, InkTheme.Dim);
             _day.style.marginBottom = 12;
+            // The places are more than a page holds: they scroll, and the page opens at where she stands.
+            _scroll = new ScrollView(ScrollViewMode.Vertical) { name = "places-scroll" };
+            _scroll.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
+            _scroll.verticalScrollerVisibility = ScrollerVisibility.Auto;
+            _scroll.style.flexGrow = 1; _scroll.style.flexShrink = 1; _scroll.style.minHeight = 0;
             _places = new VisualElement { name = "places", pickingMode = PickingMode.Ignore };
+            _scroll.Add(_places);
             _travel = new VisualElement { name = "travel", pickingMode = PickingMode.Ignore };
             _travel.style.marginTop = 16;
+            _travel.style.flexShrink = 0;
             var hint = InkTheme.Say("hint", "atlas.hint", "↑↓ destination    J travel    M / Esc close", 15, InkTheme.Dim);
             hint.style.marginTop = 14;
-            map.Add(titleRow); map.Add(_day); map.Add(_places); map.Add(_travel); map.Add(hint);
+            hint.style.flexShrink = 0;
+            map.style.minHeight = 0;
+            map.Add(titleRow); map.Add(_day); map.Add(_scroll); map.Add(_travel); map.Add(hint);
 
             _journalHost = new VisualElement { name = "journal-host", pickingMode = PickingMode.Ignore };
             _journalHost.style.width = new Length(50, LengthUnit.Percent);
@@ -165,19 +175,27 @@ namespace OWSBG.UI
             _day.text = Loc.F("atlas.day", "Day {0} · {1}", DayClock.Day(w), DayClock.Display(DayClock.PhaseIn(w, here)))
                         + (DayClock.IsLocked(w, here) ? Loc.T("atlas.held_hour", "  (held at this hour)") : "");
             _noted.Clear();
+            _here = null;
             foreach (var place in Atlas.AllPlaces)
             {
                 if (place.Region != region)
                 {
                     region = place.Region;
-                    var head = InkTheme.Text("region", Atlas.RegionName(region), 16, InkTheme.Dim, FontStyle.Bold);
-                    head.style.marginTop = 6; head.style.marginBottom = 4;
+                    var head = InkTheme.TitleText("region", Atlas.RegionName(region), 19, InkTheme.Dim);
+                    head.style.marginTop = 8; head.style.marginBottom = 4; head.style.flexShrink = 0;
                     _places.Add(head);
                     // The page's heading note, once anything on it is drawn (NAR-17).
                     var note = RegionNote(w, region);
                     if (note.Length > 0) _places.Add(Margin("region-note", note, 0f));
                 }
-                _places.Add(PlaceEntry(w, place, place.Id == here));
+                var entry = PlaceEntry(w, place, place.Id == here);
+                if (place.Id == here) _here = entry;
+                _places.Add(entry);
+            }
+            if (_here != null && _scroll != null)
+            {
+                var target = _here;
+                _scroll.schedule.Execute(() => { if (target.panel != null) _scroll.ScrollTo(target); });   // once it has a size
             }
 
             _travel.Clear();
@@ -306,6 +324,7 @@ namespace OWSBG.UI
             var box = new VisualElement { name = "place-" + place.Id, pickingMode = PickingMode.Ignore };
             box.AddToClassList("atlas-place");
             box.style.marginBottom = 8;
+            box.style.flexShrink = 0;
             var head = InkTheme.Row("head");
             var name = InkTheme.Text("name", Atlas.PlaceName(place.Id), 21, drawn ? InkTheme.Ink : InkTheme.Dim, FontStyle.Bold);
             head.Add(name);

@@ -136,6 +136,13 @@ namespace OWSBG.Narrative
             runner.AddCommandHandler<string>("shop", hub => Shops.Request(hub));
             runner.AddCommandHandler<string>("walk", id =>
             {
+                // A walk through rooms begins here and is taken up by its first room when Wren comes in (Hollowvein).
+                var relay = BoundsWalks.FindRelay(id);
+                if (relay != null)
+                {
+                    if (!BoundsWalks.BeginRelay(GameState.World, relay)) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: already walked");
+                    return;
+                }
                 var walk = BoundsWalk.Find(id);
                 if (walk == null || !walk.Begin()) Debug.LogWarning("[OWSBG] <<walk " + id + ">>: no such walk here, or it is already walked");
             });

@@ -58,7 +58,7 @@ namespace OWSBG.UI
             if (_flash > 0f) _flash -= Time.deltaTime; else _name.style.color = InkTheme.Ink;
             var verse = walk.CurrentVerse;
             _line.text = (verse != null && !string.IsNullOrEmpty(verse.Title) ? walk.VerseTitle(walk.VerseIndex) + "  ·  " : "")
-                         + Loc.F("walk.progress", "verse {0} of {1}  ·  beat {2} of {3}", walk.VerseIndex + 1, walk.Verses.Count, walk.BeatIndex + 1, verse != null ? verse.Beats.Count : 0);
+                         + Loc.F("walk.progress", "verse {0} of {1}  ·  beat {2} of {3}", walk.WholeVerse + 1, walk.WholeVerses, walk.BeatIndex + 1, verse != null ? verse.Beats.Count : 0);
             _fill.style.width = new Length(walk.BeatProgress * 100f, LengthUnit.Percent);
             for (int i = 0; i < _marks.childCount; i++)
                 _marks[i].style.backgroundColor = i < walk.Misses ? InkTheme.Ochre : new Color(0f, 0f, 0f, 0f);

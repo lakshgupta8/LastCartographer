@@ -28,7 +28,7 @@ how **Hold** (anchoring.md) is actually performed. Runtime: `BoundsWalk` (World)
 |---|---|---|---|---|
 | **Merrow's End** (greybox now) | `Saltmarrow_B` | 2 × 4: the stoop, the tether-post, the shaft's foot, the reed steps; back by the steps | Dotha alone, nine songs short | The village, the Holdfast way: Dotha's third choice (`saltmarrow.dotha.decided` = 3) |
 | **Kettil's Rest** (built, ENV-03: `Emberdown_Bell_2`) | `Emberdown.KettilsRest` | 3 × 5 at 2.4 s (three Emberdown beats): the well-cap, the bell's foot, the rope post, the east rail, the stair head; Runa leads | Runa, Kettil, the families | Teaches the walk (`holdfast.walk_learned`); the town is already held, so this one only teaches: misses restart, nothing is lost |
-| **Hollowvein** (the descent, boss 6.4) | `Emberdown.Hollowvein` | 4 × 6 going down; every bound is a dead miner's name | The families, one voice fewer each verse | Wakes the Collapse between verses 3 and 4; walked to the end, the dead are recovered and the keystone is free |
+| **Hollowvein** (built: `Emberdown_Hollow_1`–`4`) | `Emberdown.Hollowvein` | 4 going down, a verse a room at 3.2 s (four Hollowvein beats): the adit, the first gallery, the flooded gallery, six bounds each, every one a dead miner's name ("Aske's beam", "Nell's desk"); the fourth verse is the Collapse | Runa and the families, one voice fewer each verse (five, four, three, two) | The third verse walked wakes the Collapse (its arena waits for `walk.hollowvein.wakes`); the fight won walks the fourth, all four rooms are held, and Runa at the bottom has the count and the stone |
 
 Later, unauthored: the Blank's last walk (bible 9.2, the true ending) is the whole cast singing every bound in
 the game; it is a cutscene on this system, not a challenge.
@@ -61,7 +61,10 @@ Code: `BoundsWalk.Begin/Abort`, `BoundsWalk.Find(id)`, events `Started`, `NameCa
 
 ## 7. Open
 - The chorus sings notes, not the bounds' names; the composer's recordings will (roll-call.md §6).
-- Whether a walk may cross rooms (Hollowvein's descent wants to).
+- ~~Whether a walk may cross rooms.~~ It may (`BoundsWalks.Relay`): `<<walk hollowvein>>` at the pit-head begins it
+  (`walk.hollowvein.begun`), each room's `BoundsWalk` is one leg and takes the walk up when Wren comes in on its
+  turn (`walk.hollowvein.legs`), and a last leg may be a fight (`WalkRelayFight`). A room left mid-verse starts that
+  verse again on the way back; the legs already walked stay walked. The strip counts the whole walk's verses.
 - Strangers: the bible says the Holdfast fails where a bird is not known. A walk in a place where Wren is a
   stranger could need a named NPC to vouch (a bound with a person in it).
 - How the moving camp's walk (Windreach) uses the three sites.

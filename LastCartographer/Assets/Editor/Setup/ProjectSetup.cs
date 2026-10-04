@@ -1230,6 +1230,7 @@ namespace OWSBG.Setup
             public readonly List<Vector2> Desks = new List<Vector2>();
             public (string hub, Vector2 pos)? LedgerAt;
             public string WalkId, WalkFlag; public int WalkValue; public float WalkSeconds;
+            public string WalkRelay, RelayFightId; public int WalkLeg;
             public readonly List<(string title, (string name, Vector2 pos)[] beats)> Verses = new List<(string, (string, Vector2)[])>();
             public (System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward, string flag)? ArenaOf;
             // The Steppe's (ENV-07): the camp's site in this room, grass that leans and parts, updrafts drawn as ink, a gauntlet on the room's own ground.
@@ -1380,6 +1381,10 @@ namespace OWSBG.Setup
             public RoomRecipe Desk(float x, float y = 0f) { Desks.Add(new Vector2(x, y)); return this; }
             public RoomRecipe Ledger(string hub, float x) { LedgerAt = (hub, new Vector2(x, 0f)); return this; }
             public RoomRecipe Walk(string id, string flag, int value, float seconds) { WalkId = id; WalkFlag = flag; WalkValue = value; WalkSeconds = seconds; return this; }
+            /// <summary>This room's walk is one leg of a walk through rooms (BoundsWalks.Relay).</summary>
+            public RoomRecipe Leg(int leg) { WalkRelay = WalkId; WalkLeg = leg; return this; }
+            /// <summary>A walk through rooms whose last leg is this room's fight (WalkRelayFight).</summary>
+            public RoomRecipe RelayFight(string relay) { RelayFightId = relay; return this; }
             public RoomRecipe Verse(string title, params (string name, float x, float y)[] beats)
             {
                 var list = new (string, Vector2)[beats.Length];
@@ -1481,6 +1486,8 @@ namespace OWSBG.Setup
         /// everything past the town goes up by the wall or down into the mine. Bats and salamanders have no drawings
         /// yet, so their rooms stand empty of them; the Overlook's road to the Plateau waits for Halden (ENV-05).
         /// </summary>
+        static readonly BoundsWalks.Relay HollowveinRelay = BoundsWalks.FindRelay("hollowvein");
+
         static List<RoomRecipe> EmberdownRecipes()
         {
             var kettil = new Color(0.36f, 0.33f, 0.30f);
@@ -1565,21 +1572,35 @@ namespace OWSBG.Setup
                     .Floor(-20f, 20f).Plat(8f, 3f, 3f).Plat(13f, 6f, 4f).Vantage("Overlook", 13f, 6.3f).Desk(-10f).Npc("Runa", 4f, "Overlook_Runa", runa)
                     .West(E("Overlook_1")).East(Scene("Halden_Bridges_1")),   // the road down to the Plateau's bridges (ENV-05)
                 // ---- Hollowvein: four rooms straight down ----
+                // The long roll-call (bounds-walk.md §2): one verse of six a room, every bound a dead miner's name, at four
+                // Hollowvein beats; the chorus goes down with her, one voice fewer each verse, and the Collapse is the fourth.
+                // Runa stands in the room whose verse is due, a line for it, and at the bottom once it is walked.
                 new RoomRecipe("Emberdown_Hollow_1").Tall().Tiles("Ground_Timber", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
                     .Floor(-20f, -12f).Floor(-8f, 20f).Plat(0f, 12f, 4f).Plat(-5f, 9f, 3f).Plat(1f, 6f, 3f).Plat(7f, 3f, 3f)
-                    .Npc("Runa", 6f, "Hollowvein_Runa_After", runa)
+                    .Npc("Runa", 6f, "Hollowvein_Runa_Down", runa).NpcWhen("Runa", HollowveinRelay.BegunKey, HollowveinRelay.LegsKey)
+                    .Walk("hollowvein", "", 0, AudioDirection.BeatOf(Region.Emberdown) * 4f).Leg(0)
+                    .Verse("the adit", ("Aske's beam", 0f, 12.3f), ("Tolla's ladder", -5f, 9.3f), ("Old Fenn's ledge", 1f, 6.3f), ("the twins' lamp", 7f, 3.3f), ("Marra's turn", 3f, 0f), ("Ivo's sump", -6f, 0f))
                     .Up(E("Rest_3"), 0f, 12.3f).Down(E("Hollow_2"), -10f),
                 new RoomRecipe("Emberdown_Hollow_2").Tall().Tiles("Ground_Timber", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
                     .Floor(-20f, 8f).Floor(12f, 20f).Plat(-10f, 12f, 4f).Plat(-4f, 9f, 3f).Plat(2f, 6f, 3f).Plat(-2f, 3f, 3f).Vantage("Gallery", 0f, 0f)
                     .Smudge(-6f).Smudge(4f)
+                    .Npc("Runa", -16f, "Hollowvein_Runa_Down", runa).NpcWhen("Runa", HollowveinRelay.LegsKey, null, 0, 1)
+                    .Walk("hollowvein", "", 0, AudioDirection.BeatOf(Region.Emberdown) * 4f).Leg(1)
+                    .Verse("the first gallery", ("Hesk's prop", -10f, 12.3f), ("Dunne's lamp", -4f, 9.3f), ("Brannock's seam", 2f, 6.3f), ("Wyll's stair", -2f, 3.3f), ("Corrie's niche", -12f, 0f), ("the boy's lamp", 5f, 0f))
                     .Up(E("Hollow_1"), -10f, 12.3f).Down(E("Hollow_3"), 10f),
                 new RoomRecipe("Emberdown_Hollow_3").Tall().Tiles("Ground_Timber", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
                     .Floor(-20f, -18f).Floor(-14f, -6f).Shallows(-6f, 6f).Floor(6f, 20f).Plat(10f, 12f, 4f).Plat(6f, 9f, 3f).Plat(10f, 6f, 3f).Plat(14f, 3f, 3f)
                     .Desk(12f).Smudge(-10f)
+                    .Npc("Runa", 17f, "Hollowvein_Runa_Down", runa).NpcWhen("Runa", HollowveinRelay.LegsKey, null, 0, 2)
+                    .Walk("hollowvein", "", 0, AudioDirection.BeatOf(Region.Emberdown) * 4f).Leg(2)
+                    .Verse("the flooded gallery", ("Sefa's rail", 10f, 12.3f), ("Ord's pump", 6f, 9.3f), ("Lida's ledge", 10f, 6.3f), ("Haskin's step", 14f, 3.3f), ("Nell's desk", 12f, 0f), ("Rowe's water", 0f, -2.5f))
                     .Up(E("Hollow_2"), 10f, 12.3f).Down(E("Hollow_4"), -16f),
                 new RoomRecipe("Emberdown_Hollow_4").Tall().Tiles("Ground_Basalt", "Ground_Timber").EmberdownPapers("Mid_Gallery", "Far_Dark", null)
                     .Floor(-20f, 20f).Plat(-16f, 12f, 4f).Plat(-12f, 9f, 3f).Plat(-16f, 6f, 3f).Plat(-12f, 3f, 3f)
-                    .Arena(typeof(Collapse), "collapse", 6f, new Vector2(2.2f, 2.6f), -6f, 18f).Dress("hollow.bottom", -18.5f, 0f, 0.9f)   // out of the light, west of the plats
+                    // The fourth verse is the fight: the Collapse wakes once the three above are walked, and the fight won walks it.
+                    .Arena(typeof(Collapse), "collapse", 6f, new Vector2(2.2f, 2.6f), -6f, 18f, Ability.None, HollowveinRelay.WakeFlag).Dress("hollow.bottom", -18.5f, 0f, 0.9f)   // out of the light, west of the plats
+                    .RelayFight("hollowvein")
+                    .Npc("Runa", -9f, "Hollowvein_Runa_After", runa).NpcWhen("Runa", BoundsWalks.DoneKey("Emberdown_Hollow_4"))
                     .Up(E("Hollow_3"), -16f, 12.3f),
             };
         }
@@ -2103,8 +2124,15 @@ namespace OWSBG.Setup
             {
                 var walk = MakeBoundsWalk(room, r.WalkId, r.WalkFlag, r.WalkValue);
                 walk.SecondsPerBeat = r.WalkSeconds;
+                if (r.WalkRelay != null) walk.SetRelay(r.WalkRelay, r.WalkLeg);
                 foreach (var v in r.Verses) walk.AddVerse(v.title, v.beats);
                 MakeBoundMarkers(room, walk);
+            }
+            if (r.RelayFightId != null)
+            {
+                var leg = new GameObject("WalkRelay_" + r.RelayFightId);
+                leg.transform.SetParent(room.transform, false);
+                leg.AddComponent<WalkRelayFight>().Configure(r.RelayFightId);
             }
             foreach (var e in r.Enemies)
             {

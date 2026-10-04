@@ -402,9 +402,9 @@ fight.
   the walk's, like the Collapse's. It fights only in the true ending; its room always holds it.
 - **Inkthread doesn't exist as a movement yet** (CMB-04). The Gatekeeper's phase 2 is reachable in the tests by
   placing Wren; in play it needs the thread. The roots are already the anchors the ability will look for.
-- **The Collapse keeps its own beat.** The bible's fight is the bounds-walk's last verse, so it should share the
-  walk's clock (`BoundsWalk`) and Runa's chorus. When the Hollowvein walk is staged into the room, the beat becomes
-  the walk's.
+- **The Collapse keeps its own beat.** The Hollowvein walk is staged (bounds-walk.md §2): the fight is its fourth
+  verse, wakes only once the three above are walked, and walks the whole when won. Its 0.8 s lamps are one
+  Hollowvein beat, a quarter of the walk's bound; sharing the chorus's voice in the fight is still open.
 - **The Choir fights only if Wren tries to stop Aldermere's last day.** The arena room always holds it; gating it
   on `verdance.aldermere.stopped` belongs with the region's built room.
 - **No intro cutscenes or arena cameras yet.** The arenas use the short intro wait; PRG-16 staging follows the

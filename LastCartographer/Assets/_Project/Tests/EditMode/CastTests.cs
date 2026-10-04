@@ -89,7 +89,7 @@ namespace OWSBG.Tests
             foreach (Ending e in System.Enum.GetValues(typeof(Ending)))
                 foreach (var node in Endings.EpilogueWalk(e))
                     Assert.IsTrue(Cast.Appearances.Any(a => a.Node == node && a.Staged), e + "'s walk stops at a staged scene: " + node);
-            Assert.AreEqual(6, Cast.AppearancesOf("runa").Count(a => a.Staged && a.Zone.StartsWith("Emberdown.") && a.Act < Cast.Epilogue), "Runa's Emberdown scenes are written (NAR-07)");
+            Assert.AreEqual(8, Cast.AppearancesOf("runa").Count(a => a.Staged && a.Zone.StartsWith("Emberdown.") && a.Act < Cast.Epilogue), "Runa's Emberdown scenes are written (NAR-07), the descent and the bottom among them");
             Assert.AreEqual(6, Cast.AppearancesOf("teodor").Count(a => a.Staged && a.Zone.StartsWith("Verdance.") && a.Act < Cast.Epilogue), "Teodor's Verdance scenes are written (NAR-08)");
         }
     }

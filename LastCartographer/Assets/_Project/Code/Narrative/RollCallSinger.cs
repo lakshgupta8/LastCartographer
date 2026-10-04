@@ -170,7 +170,7 @@ namespace OWSBG.Narrative
 
         void OnCalled(BoundsWalk walk, BoundsWalk.Bound bound)
         {
-            var chorus = RollCallSong.WalkChorus(walk.Id);
+            var chorus = RollCallSong.WalkChorus(walk.Id, walk.WholeVerse);
             var clip = Make("call", RollCallSong.Form.WalkCall, RegionOf(walk), walk.SecondsPerBeat, chorus);
             _call.Stop();
             _call.clip = clip;
@@ -183,7 +183,7 @@ namespace OWSBG.Narrative
         {
             if (hit) return;
             // The name should land now and she is not there: the chorus falters on it.
-            var chorus = RollCallSong.WalkChorus(walk.Id);
+            var chorus = RollCallSong.WalkChorus(walk.Id, walk.WholeVerse);
             var clip = Make("falter", RollCallSong.Form.Name, RegionOf(walk), walk.SecondsPerBeat, chorus, 1, 0);
             _call.Stop();
             _call.clip = clip;
@@ -195,7 +195,7 @@ namespace OWSBG.Narrative
         void OnVerseDone(BoundsWalk walk, int verse)
         {
             // The last name was on the reciting tone; the answer starts there and comes home, in the region's own time.
-            var chorus = RollCallSong.WalkChorus(walk.Id);
+            var chorus = RollCallSong.WalkChorus(walk.Id, walk.WholeVerse);
             var clip = Make("answer", RollCallSong.Form.Answer, RegionOf(walk), AudioDirection.BeatOf(RegionOf(walk)), chorus);
             _call.Stop();
             _voice.PlayOneShot(clip);

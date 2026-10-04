@@ -113,6 +113,8 @@ namespace OWSBG.Core
             At("runa", Act1, "Emberdown.Overlook", "the Greyfold from the north (plant 4.6)", "Overlook_Runa", staged: true, writes: "emberdown.overlook.seen");
             At("runa", Act1, "Emberdown.CinderBaths", "the debate: she sings the surveyor's numbers back", "Baths_Runa_Debate", staged: true, writes: "emberdown.debate.heard");
             At("runa", Act1, "Emberdown.Hollowvein", "the long roll-call down, or leave it buried", "Hollowvein_Runa_Walk", staged: true, writes: "emberdown.hollowvein.walked / .buried");
+            At("runa", Act1, "Emberdown.Hollowvein", "down the long roll-call ahead of Wren, a line in each room for the verse below", "Hollowvein_Runa_Down", staged: true);
+            At("runa", Act1, "Emberdown.Hollowvein", "at the bottom, walked: thirty-one came up, and the stone that hums is Wren's", "Hollowvein_Runa_After", staged: true, writes: "emberdown.hollowvein.walked, keystone.hollowvein");
             At("runa", Act2, "Emberdown.RollCallBell", "named: Wren in the roll-call once she has held a place; asked to the coast", "Bell_Runa_Named", staged: true, writes: "runa.named_wren, emberdown.runa.asked_for_merrow");
             At("runa", Act2, "Saltmarrow.MerrowsEnd", "comes to count a fish village: teaches and leads the walk, or puts Merrow's End in the roll-call", "Merrow_Runa", staged: true, writes: "saltmarrow.runa.came / .counted_merrow");
             At("runa", Act3, "Halden.Observatory", "the true ending's chorus: she leads the roll-call round the Blank", "Observatory_Runa_Chorus", staged: true, writes: "ending.chorus_led");

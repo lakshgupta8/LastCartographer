@@ -197,7 +197,24 @@ namespace OWSBG.Core
         // ---- the choruses ----
 
         /// <summary>The walk's chorus by walk id: Merrow's End is Dotha alone; the Holdfast's walks are Runa, Kettil and the families.</summary>
-        public static string[] WalkChorus(string walkId) => walkId switch
+        public static string[] WalkChorus(string walkId) => WalkChorus(walkId, 0);
+
+        /// <summary>The chorus for a verse: Hollowvein loses one family's voice each verse going down (audio-direction.md 4).</summary>
+        public static string[] WalkChorus(string walkId, int verse) => walkId switch
+        {
+            "hollowvein" => Hollowvein[Math.Clamp(verse, 0, Hollowvein.Length - 1)],
+            _ => WalkChorusOf(walkId),
+        };
+
+        static readonly string[][] Hollowvein =
+        {
+            new[] { "runa", "family", "family", "family", "family" },
+            new[] { "runa", "family", "family", "family" },
+            new[] { "runa", "family", "family" },
+            new[] { "runa", "family" },
+        };
+
+        static string[] WalkChorusOf(string walkId) => walkId switch
         {
             "merrows_end" => new[] { "dotha" },
             "hollowvein" => new[] { "runa", "family", "family", "family", "family" },

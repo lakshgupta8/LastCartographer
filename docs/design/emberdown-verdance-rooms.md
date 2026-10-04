@@ -63,8 +63,9 @@ baths' boardwalks over pools with the debate's two speakers; the Overlook's Ward
 horizon, Runa and a desk at the end; Hollowvein's four rooms straight down on timber, the Collapse's arena at the
 bottom. The Bone Bridge (`Saltmarrow_BoneBridge`) joins the chapel to Stair_1 under the whale's bones. The
 cave-bats and salamanders are drawn and placed as the table says (`CaveBat`, `Salamander`; enemy-animation.md
-§2b): bats roost under the landings and in the shafts, salamanders crawl the ledges and the flue road. Not yet:
-the Hollowvein walk (it crosses four rooms, §4); Overlook_2's road to the Plateau is built (ENV-05); Brann's and Lorne's
+§2b): bats roost under the landings and in the shafts, salamanders crawl the ledges and the flue road. The
+Hollowvein walk goes down the four rooms, a verse a room, the Collapse as the fourth (bounds-walk.md §2). Not yet:
+Overlook_2's road to the Plateau is built (ENV-05); Brann's and Lorne's
 talks before their scenes.
 
 ## 2. The Verdance (19 rooms, 8 vantages)
@@ -137,7 +138,7 @@ who bow and do not speak; Aldermere's after-state (§4).
   ninth chimney, the Greyfold from the Overlook; the milestone, the cloister, the canopy, Ansel's page.
 
 ## 4. Open
-- Whether a bounds-walk may cross rooms (Hollowvein's does, four rooms deep); bounds-walk.md has the question.
+- ~~Whether a bounds-walk may cross rooms.~~ It does (`BoundsWalks.Relay`, bounds-walk.md §7).
 - Emberdown's second vantage in the chimneys: the ninth chimney's top may belong to the Guild agent's commission
   and not be reachable until it is resolved.
 - Aldermere after its last day (ENV-04 builds one state: the script releases the three rooms and they thin with their fade stage, but the square and the bunting stay): attended, the three rooms go to fade stage 4 and the ash field becomes the way

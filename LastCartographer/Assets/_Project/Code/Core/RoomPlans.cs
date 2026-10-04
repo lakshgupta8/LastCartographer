@@ -168,16 +168,16 @@ namespace OWSBG.Core
             R("Emberdown_Overlook_2", "Emberdown.Overlook", "The overlook", "First sight of the Greyfold from outside: bigger than it looks. The road down to the Plateau's bridges.", "Overlook", "", new[] { "runa" }, true, null, null)
                 .West("Emberdown_Overlook_1", Ability.None)
                 .East("Halden_Bridges_1", Ability.Talonhold);
-            R("Emberdown_Hollow_1", "Emberdown.Hollowvein", "The adit", "Down from the pit-head behind the boards; the long roll-call starts at its first beam.", null, "", new[] { "runa" }, false, null, "hollowvein")
+            R("Emberdown_Hollow_1", "Emberdown.Hollowvein", "The adit", "Down from the pit-head behind the boards; the long roll-call starts at its first beam: the first verse.", null, "", new[] { "runa" }, false, null, "hollowvein")
                 .Up("Emberdown_Rest_3", Ability.Talonhold, "emberdown.hollowvein_opened")
                 .Down("Emberdown_Hollow_2", Ability.None);
-            R("Emberdown_Hollow_2", "Emberdown.Hollowvein", "The first gallery", "Lamps on the walls, one for each name; the walk's second and third verses.", "Gallery", "smudge ×2", new string[0], false, null, "hollowvein")
+            R("Emberdown_Hollow_2", "Emberdown.Hollowvein", "The first gallery", "Lamps on the walls, one for each name; the walk's second verse.", "Gallery", "smudge ×2", new[] { "runa" }, false, null, "hollowvein")
                 .Up("Emberdown_Hollow_1", Ability.None)
                 .Down("Emberdown_Hollow_3", Ability.None);
-            R("Emberdown_Hollow_3", "Emberdown.Hollowvein", "The flooded gallery", "Black water to the knee; a desk the miners left, still dry.", null, "smudge", new string[0], true, null, "hollowvein")
+            R("Emberdown_Hollow_3", "Emberdown.Hollowvein", "The flooded gallery", "Black water to the knee; a desk the miners left, still dry; the third verse.", null, "smudge", new[] { "runa" }, true, null, "hollowvein")
                 .Up("Emberdown_Hollow_2", Ability.None)
                 .Down("Emberdown_Hollow_4", Ability.None);
-            R("Emberdown_Hollow_4", "Emberdown.Hollowvein", "The bottom", "The collapse itself: the Collapse wakes on the fourth verse (6.4). The keystone is under it.", null, "", new string[0], false, "collapse", "hollowvein")
+            R("Emberdown_Hollow_4", "Emberdown.Hollowvein", "The bottom", "The collapse itself: the Collapse is the fourth verse, and wakes once the three above are walked (6.4). The keystone is under it.", null, "", new[] { "runa" }, false, "collapse", "hollowvein")
                 .Up("Emberdown_Hollow_3", Ability.None);
             R("Verdance_Road_1", "Verdance.OldRoad", "The iris gap", "From the Pale Iris Fields over a Wingbeat gap (soft) onto a road the forest has half taken.", null, "crab, skimmer, reedling ×3", new string[0], false, null, null)
                 .West("Saltmarrow.IrisFields", Ability.Wingbeat, null, true)

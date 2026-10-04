@@ -80,6 +80,6 @@ The same render command as Wren's (**OWSBG → Render Wren's Sounds**, `InkSound
 ## 5. Open
 
 - **They are sketches.** The sound designer's paper, ink and wax are the point of the delivery files.
-- **Steps.** Wren's feet on each region's ground (boards, ash, moss, stone, grass) are still one pen-set-down.
+- **Steps** are in since AUD-12 (`docs/design/footsteps.md`): her feet on each ground the kits draw.
 - **Doors and props** that move (the lift, the bridges, the bell rope outside a fight) have no sound of their own.
 - **The title, the save and the credits** pages are not hooked; the endings runner's pages neither.

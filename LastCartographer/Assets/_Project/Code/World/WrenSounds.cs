@@ -35,6 +35,7 @@ namespace OWSBG.World
             _clarity = GetComponent<ClarityMeter>();
             _interactor = GetComponent<Interactor>();
             _abilities = GetComponent<AbilitySet>();
+            if (_ctrl != null && GetComponent<Footsteps>() == null) gameObject.AddComponent<Footsteps>();   // her feet on the ground (AUD-12)
         }
 
         void OnEnable()

@@ -106,6 +106,8 @@ namespace OWSBG.Core
             EnemySounds.Register();
             // ---- the world's and the pages' (AUD-11, docs/design/world-sounds.md) ----
             WorldSounds.Register();
+            // ---- her feet on the ground (AUD-12, docs/design/footsteps.md) ----
+            FootstepSounds.Register();
         }
 
         /// <summary>Render a cue's samples: mono at <see cref="SampleRate"/>, peaks at −1 dBTP (audio-direction 6).</summary>

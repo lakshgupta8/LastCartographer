@@ -262,6 +262,14 @@ and for each ability Wren has one more of them glides, a little further each. An
 them, and in the Open World one doesn't come down. Drawn by `tools/characters/fledglings.py` (seven species), stood by
 the recipes' `.Fledglings(...)`, leapt by `FledglingLoop`.
 
+## The UI's drawings
+The atlas UI is drawn by the same pen as the world (`docs/design/ui-art.md`): `tools/ui/ui_art.py` renders the paper the
+pages are made of (the page, the strip, the atlas's spread, the portrait's frame), the masks as feathers, the Inkwell as a
+bottle that fills, the boss bar as a brush stroke and the glyphs the pages point with (the nib, the rose, the vantage
+marks, the Charters' cowls, the Instruments), `tools/ui/pack.py` packs them under `Art/UI/Resources/UI/` with `ui.json`,
+and `InkArt` loads them through Resources with no setup pass. Titles are IM Fell English and body text Alegreya Sans
+(both OFL, beside their licences). Under high-contrast ink the paper goes back to the flat opaque page and the glyphs stay.
+
 ## The store's assets
 `docs/marketing/` holds the key art, the nine Steam capsules, thirteen screenshots and four trailer clips, all made from the
 game: `MarketingCaptureTests` (play mode, with `-captureMarketing`) captures the shots and clips, `tools/marketing/` renders Wren

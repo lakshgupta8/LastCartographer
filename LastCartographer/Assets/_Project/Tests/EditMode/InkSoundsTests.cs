@@ -113,7 +113,8 @@ namespace OWSBG.Tests
             float head = 0f, tail = 0f;
             for (int i = 0; i < edge; i++) { head += Math.Abs(s[i]); tail += Math.Abs(s[s.Length - 1 - i]); }
             Assert.Less(head / edge, 0.02f, "silent at the start"); Assert.Less(tail / edge, 0.02f, "and at the end: no click at the join");
-            Assert.AreEqual(1, InkSounds.Cues.Count(c => c.Loop && c.Kind != InkSounds.Kind.Enemy), "of hers, only the survey loops");
+            CollectionAssert.AreEquivalent(new[] { "survey", FootstepSounds.SlideCue }, InkSounds.Cues.Where(c => c.Loop && c.Kind != InkSounds.Kind.Enemy).Select(c => c.Id),
+                "of hers, only the survey and the wall's scrape loop (AUD-17)");
         }
 
         [Test]

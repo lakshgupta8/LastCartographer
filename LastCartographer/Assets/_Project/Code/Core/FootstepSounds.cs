@@ -85,6 +85,29 @@ namespace OWSBG.Core
         /// <summary>A landing's loudness by how long she was in the air: a hop is half, a long fall is whole.</summary>
         public static float LandGain(float airSeconds) => Math.Max(0.5f, Math.Min(1f, 0.5f + airSeconds));
 
+        // ---- a fading place (AUD-17) ----
+
+        /// <summary>The fade stage from which the ground's drawing is gone and only the page is underfoot.</summary>
+        public const int PaperStage = 3;
+
+        /// <summary>What a step is on in a place this faded: the ground itself, until the drawing of it is gone (stage
+        /// <see cref="PaperStage"/>), and then the page. Forgetting is subtraction (audio-direction 1): the ground loses
+        /// its sound before it loses its colour.</summary>
+        public static Surface UnderFade(Surface s, int stage) => stage >= PaperStage ? Surface.Paper : s;
+
+        /// <summary>How loud her feet are in a place this faded: whole when it is whole, thinning a stage at a time, a
+        /// whisper where it is erased.</summary>
+        public static float FadeGain(int stage) => Math.Max(0, Math.Min(stage, FadeStages.Max)) switch { 0 => 1f, 1 => 0.85f, 2 => 0.65f, 3 => 0.45f, _ => 0.3f };
+
+        // ---- the wall (AUD-17) ----
+
+        /// <summary>The Talonhold's catch as she grips a wall.</summary>
+        public const string ClingCue = "wall_cling";
+        /// <summary>Her talons scraping down the wall once the hold is spent; a loop.</summary>
+        public const string SlideCue = "wall_slide";
+        /// <summary>The push off the wall.</summary>
+        public const string KickCue = "wall_kick";
+
         // ---- the sounds ----
 
         internal static void Register()
@@ -99,6 +122,9 @@ namespace OWSBG.Core
                 }
                 InkSounds.Add(LandCue(s), InkSounds.Kind.Wren, "a landing on " + What(s), () => Land(surface), 0.5f, false, null, AudioDirection.Voice.World);
             }
+            InkSounds.Add(ClingCue, InkSounds.Kind.Wren, "the Talonhold's catch: talons biting the wall, two quick scratches and a small knock", Cling, 0.35f, false, null, AudioDirection.Voice.World);
+            InkSounds.Add(SlideCue, InkSounds.Kind.Wren, "talons scraping down the wall, the hold spent", Slide, 0.3f, true, null, AudioDirection.Voice.World);
+            InkSounds.Add(KickCue, InkSounds.Kind.Wren, "the push off the wall: a scuff and the air", Kick, 0.4f, false, null, AudioDirection.Voice.World);
         }
 
         static string What(Surface s) => s switch
@@ -179,6 +205,33 @@ namespace OWSBG.Core
                     InkSounds.Scratch(b, 0f, 0.03f, 2600f * v, 2200f * v, 2f, 1f, seed, 0.001f, 0.01f);
                     break;
             }
+            return b;
+        }
+
+        static float[] Cling()
+        {
+            var b = Buf(0.14f);
+            InkSounds.Scratch(b, 0f, 0.04f, 3000f, 2200f, 2.5f, 1f, 1400, 0.001f, 0.012f);
+            InkSounds.Scratch(b, 0.03f, 0.04f, 2800f, 2000f, 2.5f, 0.8f, 1401, 0.001f, 0.012f);
+            InkSounds.Drop(b, 0.02f, 0.05f, 240f, 160f, 0.5f, 0.001f, 0.015f);
+            return b;
+        }
+
+        const float SlideOverlap = 0.05f;
+
+        static float[] Slide()
+        {
+            var b = Buf(0.6f + SlideOverlap);
+            InkSounds.Scratch(b, 0f, 0.6f + SlideOverlap, 1800f, 1800f, 1.5f, 0.6f, 1402, 0.05f, 10f);       // the drag, steady
+            EnemySounds.Grain(b, 0f, 0.6f + SlideOverlap, 30f, 0.008f, 2200f, 3600f, 2.5f, 1f, 1403);        // the talons catching and letting go
+            return EnemySounds.Seamless(b, SlideOverlap);
+        }
+
+        static float[] Kick()
+        {
+            var b = Buf(0.2f);
+            InkSounds.Scratch(b, 0f, 0.05f, 1600f, 1100f, 1.5f, 1f, 1404, 0.001f, 0.02f);
+            EnemySounds.Whoosh(b, 0.02f, 0.15f, 900f, 2200f, 1.2f, 0.6f, 1405, 0.3f);
             return b;
         }
 

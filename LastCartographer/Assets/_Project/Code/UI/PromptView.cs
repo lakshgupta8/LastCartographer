@@ -46,6 +46,7 @@ namespace OWSBG.UI
             _pending = text;
             _left = Options.CaptionSeconds(seconds);
             if (_built) { _label.text = text; InkTheme.Show(_label, true); }
+            UiSounds.Toast();
         }
 
         void Update()

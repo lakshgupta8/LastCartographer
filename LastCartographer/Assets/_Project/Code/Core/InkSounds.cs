@@ -16,8 +16,8 @@ namespace OWSBG.Core
     {
         public const int SampleRate = RollCallSong.SampleRate;
 
-        /// <summary>Whose a cue is: hers, a layer over hers, a Flourish's, a tell's, or an enemy's (<see cref="EnemySounds"/>, AUD-10).</summary>
-        public enum Kind { Wren, Layer, Flourish, Tell, Enemy }
+        /// <summary>Whose a cue is: hers, a layer over hers, a Flourish's, a tell's, an enemy's (<see cref="EnemySounds"/>, AUD-10), the world's or a page's (<see cref="WorldSounds"/>, AUD-11).</summary>
+        public enum Kind { Wren, Layer, Flourish, Tell, Enemy, World, Ui }
 
         public sealed class Cue
         {
@@ -25,6 +25,8 @@ namespace OWSBG.Core
             public Kind Kind;
             /// <summary>Its place when too much sounds at once (audio-direction 4): the bank drops the last first.</summary>
             public AudioDirection.Voice Voice;
+            /// <summary>The bus it rides: the Sfx bus for everything in the room, the Ui bus for the pages (heard paused).</summary>
+            public Mix.Bus Bus = Mix.Bus.Sfx;
             /// <summary>What it is, for the doc and the sound designer.</summary>
             public string What;
             /// <summary>Played at this against the rendered peak (a jump is quieter than a strike).</summary>
@@ -45,20 +47,22 @@ namespace OWSBG.Core
         internal static void Add(string id, Kind kind, string what, Func<float[]> render, float gain = 1f, bool loop = false, AudioDirection.Tell? tell = null, AudioDirection.Voice? voice = null)
         {
             if (Has(id)) throw new InvalidOperationException("two cues called " + id);
-            _cues.Add(new Cue { Id = id, Kind = kind, Voice = voice ?? VoiceOf(kind, id), What = what, Render = render, Gain = gain, Loop = loop, Tell = tell });
+            _cues.Add(new Cue { Id = id, Kind = kind, Voice = voice ?? VoiceOf(kind, id), Bus = kind == Kind.Ui ? Mix.Bus.Ui : Mix.Bus.Sfx, What = what, Render = render, Gain = gain, Loop = loop, Tell = tell });
         }
 
-        /// <summary>The direction's order: the tells first, her hurt next, her strikes after the dialogue, the enemies after her.</summary>
+        /// <summary>The direction's order: the tells first, her hurt next, her strikes after the dialogue, the enemies after her, the world and the pages last.</summary>
         static AudioDirection.Voice VoiceOf(Kind kind, string id) => kind switch
         {
             Kind.Tell => AudioDirection.Voice.Tell,
             Kind.Enemy => AudioDirection.Voice.Enemy,
+            Kind.World => AudioDirection.Voice.World,
+            Kind.Ui => AudioDirection.Voice.World,
             _ => id == "hurt" || id == "died" ? AudioDirection.Voice.WrenHurt : AudioDirection.Voice.Wren,
         };
 
-        /// <summary>The delivery file for a cue: wren_sfx_<id>, tell_sfx_<kind> or enemy_sfx_<id> (no region, no beat: one-shots).</summary>
+        /// <summary>The delivery file for a cue: wren_sfx_<id>, tell_sfx_<kind>, enemy_sfx_<id>, world_sfx_<id> or ui_sfx_<id> (no region, no beat: one-shots).</summary>
         public static string FileName(Cue c) => (c.Kind == Kind.Tell ? "tell_sfx_" + c.Tell.ToString().ToLowerInvariant()
-            : c.Kind == Kind.Enemy ? "enemy_sfx_" + c.Id : "wren_sfx_" + c.Id) + ".wav";
+            : c.Kind == Kind.Enemy ? "enemy_sfx_" + c.Id : c.Kind == Kind.World ? "world_sfx_" + c.Id : c.Kind == Kind.Ui ? "ui_sfx_" + c.Id : "wren_sfx_" + c.Id) + ".wav";
 
         // ---- where a sound stands (AUD-10): the room is a plane, so a sound's place is how far it is from the listener along it ----
 
@@ -100,6 +104,8 @@ namespace OWSBG.Core
             Add(TellCue(AudioDirection.Tell.Shape), Kind.Tell, "a swell that follows the shape across the floor", TellShape, 0.9f, false, AudioDirection.Tell.Shape);
             // ---- the enemies' voices (AUD-10, docs/design/enemy-sounds.md) ----
             EnemySounds.Register();
+            // ---- the world's and the pages' (AUD-11, docs/design/world-sounds.md) ----
+            WorldSounds.Register();
         }
 
         /// <summary>Render a cue's samples: mono at <see cref="SampleRate"/>, peaks at −1 dBTP (audio-direction 6).</summary>

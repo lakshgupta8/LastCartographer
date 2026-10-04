@@ -42,6 +42,7 @@ namespace OWSBG.UI
             Row = 0;
             IsOpen = true;
             Refresh();
+            UiSounds.Open();
         }
 
         public void Close()
@@ -50,6 +51,7 @@ namespace OWSBG.UI
             IsOpen = false;
             if (_wren != null) _wren.Frozen = _wasFrozen;
             if (_built) InkTheme.Show(_panel, false);
+            UiSounds.Close();
         }
 
         /// <summary>Take a posted row or turn in a fulfilled one. False when the row cannot move.</summary>
@@ -66,12 +68,14 @@ namespace OWSBG.UI
                 default: ok = false; break;
             }
             Refresh();
-            return ok;
+            return UiSounds.Did(ok);   // the ledger's own tick or stamp sounds from the world
         }
 
         public void SetRow(int row)
         {
-            Row = _entries.Count == 0 ? 0 : Mathf.Clamp(row, 0, _entries.Count - 1);
+            int to = _entries.Count == 0 ? 0 : Mathf.Clamp(row, 0, _entries.Count - 1);
+            if (to != Row) UiSounds.Move();
+            Row = to;
             Refresh();
         }
 

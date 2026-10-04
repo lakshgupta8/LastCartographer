@@ -43,6 +43,7 @@ namespace OWSBG.UI
             Row = 0;
             IsOpen = true;
             Refresh();
+            UiSounds.Open();
         }
 
         public void Close()
@@ -52,17 +53,24 @@ namespace OWSBG.UI
             if (_wren != null) _wren.Frozen = _wasFrozen;
             GameState.Save();
             if (_built) InkTheme.Show(_panel, false);
+            UiSounds.Close();
         }
 
-        public void SetRow(int row) { Row = Mathf.Clamp(row, 0, Mathf.Max(0, _items.Count - 1)); Refresh(); }
+        public void SetRow(int row)
+        {
+            int to = Mathf.Clamp(row, 0, Mathf.Max(0, _items.Count - 1));
+            if (to != Row) UiSounds.Move();
+            Row = to;
+            Refresh();
+        }
 
         /// <summary>Buy the selected item. False when owned or unaffordable.</summary>
         public bool Confirm()
         {
-            if (!IsOpen || Row >= _items.Count) return false;
+            if (!IsOpen || Row >= _items.Count) return UiSounds.Did(false);
             bool ok = Economy.Buy(GameState.World, _items[Row]);
             Refresh();
-            return ok;
+            return UiSounds.Did(ok);   // the seeds counted out sound from the world
         }
 
         void Update()

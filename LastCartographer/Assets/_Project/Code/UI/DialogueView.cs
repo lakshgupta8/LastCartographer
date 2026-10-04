@@ -206,6 +206,7 @@ namespace OWSBG.UI
             InkTheme.Show(_options, false);
             InkTheme.Show(_prompt, true);
             InkTheme.Show(_panel, true);
+            UiSounds.Line();
         }
 
         public void ShowOptions(string[] texts, bool[] available)
@@ -235,12 +236,17 @@ namespace OWSBG.UI
             _shownPortrait = null;
             InkTheme.Show(_options, true);
             InkTheme.Show(_panel, true);
+            _shownHighlight = -1;
+            UiSounds.Open();   // her choices laid out: a page lifted
         }
+        int _shownHighlight = -1;
 
         public void Highlight(int index)
         {
             _pendingHighlight = index;
             if (!_built) return;
+            if (_shownHighlight >= 0 && index != _shownHighlight) UiSounds.Move();   // the first highlight is where the cursor starts, not a move
+            _shownHighlight = index;
             for (int i = 0; i < _options.childCount; i++)
             {
                 var row = _options[i];

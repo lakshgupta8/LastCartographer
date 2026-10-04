@@ -78,7 +78,11 @@ namespace OWSBG.World
             if (Time.time - _lastBump < 2f) return;
             _lastBump = Time.time;
             Captions.Show(ShutLine, 2.5f);
+            Bumped?.Invoke(this);
         }
+
+        /// <summary>She pressed on a shut way (once per two seconds): a knock on the page (AUD-11).</summary>
+        public static event System.Action<RoomTransition> Bumped;
 
         /// <summary>What the bar says: the ability the way wants if she lacks it, else that the story has not opened it.</summary>
         public string ShutLine

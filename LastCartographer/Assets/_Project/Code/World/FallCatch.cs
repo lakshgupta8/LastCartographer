@@ -16,6 +16,8 @@ namespace OWSBG.World
         public int Falls { get; private set; }
         public bool SafeKnown { get; private set; }
         public event Action<FallCatch> Fell;
+        /// <summary>Any fall into the margin anywhere (AUD-11: its sound).</summary>
+        public static event Action<FallCatch> AnyFell;
 
         static bool _captioned;
         WrenController _wren;
@@ -45,6 +47,7 @@ namespace OWSBG.World
             wren.Teleport(SafeKnown ? LastSafe : NearestSpawn(wren.Position));
             if (!_captioned) { _captioned = true; Captions.Show(Loc.T("caption.gauntlet_fall", "Back to solid ground."), 2.5f); }
             Fell?.Invoke(this);
+            AnyFell?.Invoke(this);
         }
 
         Vector2 NearestSpawn(Vector2 from)

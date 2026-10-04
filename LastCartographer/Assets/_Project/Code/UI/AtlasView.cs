@@ -51,6 +51,7 @@ namespace OWSBG.UI
             Cursor = 0;
             if (_journal != null) _journal.Open(null);
             Refresh();
+            UiSounds.Open();
         }
 
         public void Close()
@@ -60,6 +61,7 @@ namespace OWSBG.UI
             if (_journal != null) _journal.Close();
             if (_wren != null) _wren.Frozen = _wasFrozen;
             if (_built) InkTheme.Show(_panel, false);
+            UiSounds.Close();
         }
 
         public void Move(int dir)
@@ -68,14 +70,16 @@ namespace OWSBG.UI
             if (n == 0) return;
             Cursor = (Cursor + dir + n) % n;
             Refresh();
+            if (n > 1) UiSounds.Move();
         }
 
         /// <summary>J on a destination: close the atlas and go. False when there is nowhere to go from here.</summary>
         public bool Confirm()
         {
-            if (!IsOpen || !CanTravel || Cursor >= _destinations.Count) return false;
+            if (!IsOpen || !CanTravel || Cursor >= _destinations.Count) return UiSounds.Did(false);
             var to = _destinations[Cursor];
-            if (!FastTravel.CanTravel(GameState.World, to)) return false;
+            if (!FastTravel.CanTravel(GameState.World, to)) return UiSounds.Did(false);
+            UiSounds.Select();   // the journey itself sounds from the world when she arrives
             Close();
             StartCoroutine(FastTravel.Go(to));
             return true;

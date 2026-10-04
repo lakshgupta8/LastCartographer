@@ -59,6 +59,7 @@ namespace OWSBG.UI
             _pendingToast = text;
             _toastLeft = Options.CaptionSeconds(_toastSeconds);
             if (_built) { _toast.text = text; InkTheme.Show(_toast, true); }
+            UiSounds.Toast();
         }
 
         public void Toggle()
@@ -98,6 +99,7 @@ namespace OWSBG.UI
             if (wren != null) { _wasFrozen = wren.Frozen; wren.Frozen = true; }
             IsOpen = true;
             Refresh();
+            if (!IsHosted) UiSounds.Open();   // hosted by the atlas, the atlas's page is the one that sounds
         }
 
         public void Close()
@@ -106,6 +108,7 @@ namespace OWSBG.UI
             IsOpen = false;
             if (_wren != null) _wren.Frozen = _wasFrozen;
             if (_built) InkTheme.Show(_panel, false);
+            if (!IsHosted) UiSounds.Close();
         }
 
         void Update()

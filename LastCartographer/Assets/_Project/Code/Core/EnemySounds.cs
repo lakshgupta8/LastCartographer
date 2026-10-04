@@ -191,16 +191,16 @@ namespace OWSBG.Core
         static void Scratch(float[] s, float at, float len, float fromHz, float toHz, float q, float gain, int seed, float attack = 0.003f, float decay = 0.05f) => InkSounds.Scratch(s, at, len, fromHz, toHz, q, gain, seed, attack, decay);
         static void Drop(float[] s, float at, float len, float fromHz, float toHz, float gain, float attack = 0.002f, float decay = 0.06f) => InkSounds.Drop(s, at, len, fromHz, toHz, gain, attack, decay);
         static void Smear(float[] s, float at, float len, float fromHz, float toHz, float gain, int seed, float attack = 0.01f, float decay = 0.08f) => InkSounds.Smear(s, at, len, fromHz, toHz, gain, seed, attack, decay);
-        static void Click(float[] s, float at, float hz, float gain, int seed) => Scratch(s, at, 0.006f, hz, hz, 1f, gain, seed, 0f, 0.003f);
+        internal static void Click(float[] s, float at, float hz, float gain, int seed) => Scratch(s, at, 0.006f, hz, hz, 1f, gain, seed, 0f, 0.003f);
 
         /// <summary>The partials of a struck thing: (ratio to the pitch, loudness).</summary>
-        static readonly (float, float)[] Handbell = { (1f, 1f), (2.76f, 0.4f), (5.4f, 0.15f) };
-        static readonly (float, float)[] TowerBell = { (0.5f, 0.5f), (1f, 1f), (1.2f, 0.6f), (1.5f, 0.4f), (2f, 0.5f) };
-        static readonly (float, float)[] Brass = { (1f, 1f), (1.5f, 0.5f), (2.9f, 0.35f), (4.2f, 0.2f) };
-        static readonly (float, float)[] Shell = { (1f, 1f), (2.3f, 0.3f) };
+        internal static readonly (float, float)[] Handbell = { (1f, 1f), (2.76f, 0.4f), (5.4f, 0.15f) };
+        internal static readonly (float, float)[] TowerBell = { (0.5f, 0.5f), (1f, 1f), (1.2f, 0.6f), (1.5f, 0.4f), (2f, 0.5f) };
+        internal static readonly (float, float)[] Brass = { (1f, 1f), (1.5f, 0.5f), (2.9f, 0.35f), (4.2f, 0.2f) };
+        internal static readonly (float, float)[] Shell = { (1f, 1f), (2.3f, 0.3f) };
 
         /// <summary>A struck thing ringing: damped sines at the pitch's partials, the upper ones dying first; the pitch may sag to <paramref name="slideTo"/>.</summary>
-        static void Ring(float[] s, float at, float len, float hz, float gain, float decay, (float ratio, float amp)[] partials, float slideTo = 0f)
+        internal static void Ring(float[] s, float at, float len, float hz, float gain, float decay, (float ratio, float amp)[] partials, float slideTo = 0f)
         {
             int start = N(at), end = Math.Min(s.Length, N(at + len));
             var ph = new double[partials.Length];
@@ -220,7 +220,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>Many small things at random: ticks (or soft puffs) <paramref name="perSecond"/>, each <paramref name="tickLen"/> long, pitched between the two; the rate may change over the length.</summary>
-        static void Grain(float[] s, float at, float len, float perSecond, float tickLen, float hzLo, float hzHi, float q, float gain, int seed, float perSecondEnd = -1f, bool soft = false)
+        internal static void Grain(float[] s, float at, float len, float perSecond, float tickLen, float hzLo, float hzHi, float q, float gain, int seed, float perSecondEnd = -1f, bool soft = false)
         {
             var rng = new InkSounds.Rng(seed);
             float t = at;
@@ -239,7 +239,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>A pulse train through a low-pass, with a slow wobble: a wasp. Seamless when hz and wobbleHz times the length are whole.</summary>
-        static void Buzz(float[] s, float at, float len, float hz, float gain, float wobbleHz, float wobbleDepth, float cutoff, int seed)
+        internal static void Buzz(float[] s, float at, float len, float hz, float gain, float wobbleHz, float wobbleDepth, float cutoff, int seed)
         {
             var lp = new InkSounds.OnePole(); var lp2 = new InkSounds.OnePole(); var rng = new InkSounds.Rng(seed);
             int start = N(at), end = Math.Min(s.Length, N(at + len));
@@ -256,7 +256,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>Air moved fast: band noise sweeping, swelling to <paramref name="humpAt"/> of the length and gone.</summary>
-        static void Whoosh(float[] s, float at, float len, float fromHz, float toHz, float q, float gain, int seed, float humpAt = 0.4f)
+        internal static void Whoosh(float[] s, float at, float len, float fromHz, float toHz, float q, float gain, int seed, float humpAt = 0.4f)
         {
             var rng = new InkSounds.Rng(seed); var band = new InkSounds.Band();
             int start = N(at), end = Math.Min(s.Length, N(at + len));
@@ -271,7 +271,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>A small bird's note: a sine sliding with a little vibrato, an octave above it and a breath of noise.</summary>
-        static void Peep(float[] s, float at, float len, float fromHz, float toHz, float gain, int seed, float attack = 0.004f, float decay = 0.08f)
+        internal static void Peep(float[] s, float at, float len, float fromHz, float toHz, float gain, int seed, float attack = 0.004f, float decay = 0.08f)
         {
             var rng = new InkSounds.Rng(seed); var band = new InkSounds.Band();
             int start = N(at), end = Math.Min(s.Length, N(at + len));
@@ -287,7 +287,7 @@ namespace OWSBG.Core
         }
 
         /// <summary>A loop's end made to meet its start: the tail past the loop's length is crossfaded onto its head.</summary>
-        static float[] Seamless(float[] s, float overlap)
+        internal static float[] Seamless(float[] s, float overlap)
         {
             int ov = N(overlap), len = s.Length - ov;
             var r = new float[len];

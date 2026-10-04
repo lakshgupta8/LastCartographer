@@ -123,7 +123,8 @@ Nothing plays yet; there are no clips.
   (the driver's own Music source stays free); every region's ambience layers (AUD-05) ride the Ambience bus's gain
   and cutoff through `AmbienceDriver`'s layer sources, the stage's filter and the layer dropout agreeing on the same
   reading of the place. The enemies' voices (AUD-10) ride the Sfx bus too, through the bank's 24 ranked sources and
-  each `EnemyVoice`'s own loop source.
+  each `EnemyVoice`'s own loop source. The world's sounds and the pages' (AUD-11) follow: the world on the Sfx bus, the pages on
+  the Ui bus, which the Paused snapshot keeps whole, so the options page is heard while the room is silent.
 - **A mixer asset.** If the DSP wants more than a low-pass (reverb in the Half-Cathedral, the Blank's reversal),
   an `AudioMixer` asset with these buses can take the gains as decibels from `Mix.ToDb`; the snapshots and ducks
   stay in code.

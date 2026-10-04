@@ -177,7 +177,9 @@ want the feel-test's eye.
   region's ambience layers** the fourth (AUD-05, `docs/design/ambience.md`), thinning by the fade stage. AUD-06 to
   AUD-08 are the rest; the mixer (AUD-09) is running. **The enemies' voices** (AUD-10,
   `docs/design/enemy-sounds.md`) give every family its material and its moves, put the missing tells on the plain
-  enemies and the bell-ringers, and enforce the 24-voice limit in the order above.
+  enemies and the bell-ringers, and enforce the 24-voice limit in the order above. **The world and the pages** (AUD-11,
+  `docs/design/world-sounds.md`) are the last of the game to sound: rooms, lamps, the desk, seeds, the ledger, the
+  decisions, her Instruments, and every page of the atlas on the Ui bus.
 - **The music system** is built (AUD-04, `MusicDriver`): stems in step, layer changes on the bar line, the rests
   baked into each region theme's loop at its silence share. It clocks from the beat table.
 - **Smudges in the Blank's islands** follow the Blank's slow beat (1.8 s each). Whether that's too easy wants a

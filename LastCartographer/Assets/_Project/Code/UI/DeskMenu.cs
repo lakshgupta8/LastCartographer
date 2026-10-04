@@ -70,6 +70,7 @@ namespace OWSBG.UI
             Proposed = PlaceFate.Unwritten;
             IsOpen = true;
             Refresh();
+            UiSounds.Open();
         }
 
         public void Close()
@@ -78,6 +79,7 @@ namespace OWSBG.UI
             IsOpen = false;
             if (_wren != null) _wren.Frozen = _wasFrozen;
             GameState.Save();
+            UiSounds.Close();
             if (_built) InkTheme.Show(_panel, false);
         }
 
@@ -140,16 +142,16 @@ namespace OWSBG.UI
                 bool bought = Row == MaskRow ? Economy.BuyMask(GameState.World) : Economy.BuySlot(GameState.World);
                 if (bought) GameState.Save();
                 Refresh();
-                return bought;
+                return UiSounds.Did(bought);   // the purchase itself sounds from the world (AUD-11)
             }
-            if (Row != FateRow || !CanSeal || Proposed == PlaceFate.Unwritten) return false;
-            if (Proposed == PlaceFate.Held && !BoundsWalks.IsWalked(GameState.World, PlaceId)) return false;   // the people hold it, not the seal (DES-13)
-            if (Proposed == PlaceFate.Anchored && !Licence.MayAnchor(GameState.World)) return false;   // the Guild's seal, the Guild's licence
-            if (Proposed == PlaceFate.Anchored && Memories.BoundFor(GameState.World, PlaceId) == null) return false;   // survey, bind, seal (bible 1.3)
+            if (Row != FateRow || !CanSeal || Proposed == PlaceFate.Unwritten) return UiSounds.Did(false);
+            if (Proposed == PlaceFate.Held && !BoundsWalks.IsWalked(GameState.World, PlaceId)) return UiSounds.Did(false);   // the people hold it, not the seal (DES-13)
+            if (Proposed == PlaceFate.Anchored && !Licence.MayAnchor(GameState.World)) return UiSounds.Did(false);   // the Guild's seal, the Guild's licence
+            if (Proposed == PlaceFate.Anchored && Memories.BoundFor(GameState.World, PlaceId) == null) return UiSounds.Did(false);   // survey, bind, seal (bible 1.3)
             bool ok = Places.Decide(GameState.World, PlaceId, Proposed);
             if (ok) GameState.Save();
             Refresh();
-            return ok;
+            return UiSounds.Did(ok);   // and the decision itself sounds from the world: a stake, a hand, a breath
         }
 
         static readonly PlaceFate[] Choices = { PlaceFate.Unwritten, PlaceFate.Anchored, PlaceFate.Held, PlaceFate.Released };
@@ -165,6 +167,7 @@ namespace OWSBG.UI
                 int at = System.Array.IndexOf(Choices, Proposed);
                 Proposed = Choices[(at + dir + Choices.Length) % Choices.Length];
                 Refresh();
+                UiSounds.Tick();
                 return;
             }
             if (Row == 0)
@@ -174,6 +177,7 @@ namespace OWSBG.UI
                 int i = Mathf.Max(0, owned.IndexOf(e.Charter));
                 e.SetCharter(owned[(i + dir + owned.Count) % owned.Count]);
                 Refresh();
+                UiSounds.Tick();
                 return;
             }
             int slot = Row - 1;
@@ -184,9 +188,10 @@ namespace OWSBG.UI
             var next = choices[(cur + dir + choices.Count) % choices.Count];
             _belt.Equip(slot, next);
             Refresh();
+            UiSounds.Tick();
         }
 
-        public void SetRow(int row) { Row = row; Refresh(); }
+        public void SetRow(int row) { if (row != Row) UiSounds.Move(); Row = row; Refresh(); }
 
         bool Build()
         {

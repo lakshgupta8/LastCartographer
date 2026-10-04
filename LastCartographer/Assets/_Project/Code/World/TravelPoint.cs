@@ -25,6 +25,9 @@ namespace OWSBG.World
         /// <summary>The point Wren is standing at, or null.</summary>
         public static TravelPoint Nearby { get; private set; }
         public static event Action<TravelPoint> NearbyChanged;
+        /// <summary>A lamp lit while the room is live (its vantage drawn): the sound of it (AUD-11). Not raised for lamps already lit when the room woke.</summary>
+        public static event Action<TravelPoint> Lit;
+        bool _wasLit;
 
         public string WaypointId => _waypointId;
         public WaypointKind Kind => _kind;
@@ -78,9 +81,13 @@ namespace OWSBG.World
             if (Nearby == this) { Nearby = null; NearbyChanged?.Invoke(null); }
         }
 
+        void Start() { _wasLit = IsLit; }
+
         void Update()
         {
             bool lit = IsLit;
+            if (lit && !_wasLit) Lit?.Invoke(this);
+            _wasLit = lit;
             if (_glow != null) _glow.enabled = lit;
             if (_light != null && _light.enabled != lit) _light.enabled = lit;
         }

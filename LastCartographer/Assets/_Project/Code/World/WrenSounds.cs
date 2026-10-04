@@ -1,3 +1,4 @@
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -14,7 +15,12 @@ namespace OWSBG.World
         QuillStrike _strike;
         Flourishes _flourishes;
         WrenVitals _vitals;
-        bool _surveying;
+        InstrumentBelt _belt;
+        CharterSet _charters;
+        ClarityMeter _clarity;
+        Interactor _interactor;
+        AbilitySet _abilities;
+        bool _surveying, _charterSeen;
 
         public bool IsSurveyLooping => _surveying;
 
@@ -24,6 +30,11 @@ namespace OWSBG.World
             _strike = GetComponent<QuillStrike>();
             _flourishes = GetComponent<Flourishes>();
             _vitals = GetComponent<WrenVitals>();
+            _belt = GetComponent<InstrumentBelt>();
+            _charters = GetComponent<CharterSet>();
+            _clarity = GetComponent<ClarityMeter>();
+            _interactor = GetComponent<Interactor>();
+            _abilities = GetComponent<AbilitySet>();
         }
 
         void OnEnable()
@@ -36,6 +47,11 @@ namespace OWSBG.World
             if (_strike != null) { _strike.Swung += OnSwung; _strike.Landed += OnHit; }
             if (_flourishes != null) { _flourishes.Performed += OnFlourish; _flourishes.Refused += OnFlourishRefused; }
             if (_vitals != null) { _vitals.Bound += OnBound; _vitals.Hurt += OnHurt; _vitals.Died += OnDied; }
+            if (_belt != null) { _belt.Used += OnInstrument; _belt.Refused += OnInstrumentRefused; _belt.Parried += OnParried; _belt.SelectionChanged += OnBeltTurned; }
+            if (_charters != null) _charters.Applied += OnCharter;
+            if (_clarity != null) { _clarity.Emptied += OnClarityGone; _clarity.Grew += OnClarityGrew; }
+            if (_interactor != null) _interactor.CurrentChanged += OnPrompt;
+            if (_abilities != null) _abilities.Unlocked += OnAbility;
             VantagePoint.AnySurveyed += OnSurveyed;
         }
 
@@ -49,9 +65,25 @@ namespace OWSBG.World
             if (_strike != null) { _strike.Swung -= OnSwung; _strike.Landed -= OnHit; }
             if (_flourishes != null) { _flourishes.Performed -= OnFlourish; _flourishes.Refused -= OnFlourishRefused; }
             if (_vitals != null) { _vitals.Bound -= OnBound; _vitals.Hurt -= OnHurt; _vitals.Died -= OnDied; }
+            if (_belt != null) { _belt.Used -= OnInstrument; _belt.Refused -= OnInstrumentRefused; _belt.Parried -= OnParried; _belt.SelectionChanged -= OnBeltTurned; }
+            if (_charters != null) _charters.Applied -= OnCharter;
+            if (_clarity != null) { _clarity.Emptied -= OnClarityGone; _clarity.Grew -= OnClarityGrew; }
+            if (_interactor != null) _interactor.CurrentChanged -= OnPrompt;
+            if (_abilities != null) _abilities.Unlocked -= OnAbility;
             VantagePoint.AnySurveyed -= OnSurveyed;
             if (_surveying) { _surveying = false; InkSoundBank.Loop(null); }
         }
+
+        // ---- her Instruments, her Charter, her Clarity (AUD-11) ----
+        void OnInstrument(InstrumentKind kind, int slot) => InkSoundBank.Play(WorldSounds.InstrumentCue(kind));
+        void OnInstrumentRefused(InstrumentKind kind, int slot) => InkSoundBank.Play("refused");
+        void OnParried(Enemy e) => InkSoundBank.Play("parry");
+        void OnBeltTurned(int slot) => InkSoundBank.Play("belt_turn");
+        void OnCharter(CharterProfile p) { if (_charterSeen) InkSoundBank.Play("charter"); _charterSeen = true; }   // the first is the one she woke in
+        void OnClarityGone(ClarityMeter m) => InkSoundBank.Play("clarity_gone");
+        void OnClarityGrew(ClarityMeter m) => InkSoundBank.Play("clarity_grew");
+        void OnPrompt(Interactable i) { if (i != null) InkSoundBank.Play("prompt"); }
+        void OnAbility(Ability a) => InkSoundBank.Play("ability");
 
         void Update()
         {

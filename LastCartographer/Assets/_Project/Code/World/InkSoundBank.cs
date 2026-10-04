@@ -24,6 +24,8 @@ namespace OWSBG.World
         readonly AudioDirection.Voice[] _rank = new AudioDirection.Voice[AudioDirection.VoiceLimit];
         readonly float[] _since = new float[AudioDirection.VoiceLimit];
         readonly float[] _level = new float[AudioDirection.VoiceLimit];
+        readonly bool[] _ui = new bool[AudioDirection.VoiceLimit];
+        float _uiGain;
         readonly Dictionary<string, AudioClip> _clips = new Dictionary<string, AudioClip>();
         readonly List<string> _recent = new List<string>(RecentKept);
         const int RecentKept = 32;
@@ -40,8 +42,12 @@ namespace OWSBG.World
         public IReadOnlyList<string> Recent => _recent;
         public string Looping => _loop != null && _loop.isPlaying && _loop.clip != null ? _loop.clip.name : null;
         public int Cached => _clips.Count;
-        /// <summary>The Sfx bus's gain, which every sound here is under.</summary>
+        /// <summary>The Sfx bus's gain, which every sound in the room is under.</summary>
         public float Volume => _gain;
+        /// <summary>The Ui bus's gain, which the pages' sounds are under: whole while the game is paused (AUD-11).</summary>
+        public float UiVolume => _uiGain;
+        /// <summary>The pitch the last sound was played at.</summary>
+        public float LastPitch { get; private set; } = 1f;
         /// <summary>How many one-shots are sounding now.</summary>
         public int Active { get { int n = 0; for (int i = 0; i < _pool.Length; i++) if (_pool[i] != null && _pool[i].isPlaying) n++; return n; } }
         /// <summary>Where the last placed sound stood: its pan, and how much of its gain the distance left it.</summary>
@@ -94,8 +100,9 @@ namespace OWSBG.World
         void Update()
         {
             _gain = Mix.Live != null ? Mix.Live.Gain(Mix.Bus.Sfx) : Options.Get(Options.Volume.Master) * Options.Get(Options.Volume.Sound);
+            _uiGain = Mix.Live != null ? Mix.Live.Gain(Mix.Bus.Ui) : Options.Get(Options.Volume.Master) * Options.Get(Options.Volume.Sound);
             for (int i = 0; i < _pool.Length; i++)
-                if (_pool[i].isPlaying) _pool[i].volume = _gain * _level[i];
+                if (_pool[i].isPlaying) _pool[i].volume = (_ui[i] ? _uiGain : _gain) * _level[i];
             _loop.volume = _gain;
         }
 
@@ -155,8 +162,8 @@ namespace OWSBG.World
         /// <summary>Play a cue once from nowhere in particular; a cue that does not exist is a no-op. Returns the clip played.</summary>
         public static AudioClip Play(string id, float volume = 1f) => Play(id, volume, null);
 
-        /// <summary>Play a cue once from a place in the room (panned, and quieter past the screen); null if it was dropped or too far.</summary>
-        public static AudioClip Play(string id, float volume, Vector2? at)
+        /// <summary>Play a cue once from a place in the room (panned, and quieter past the screen), at a pitch; null if it was dropped or too far.</summary>
+        public static AudioClip Play(string id, float volume, Vector2? at, float pitch = 1f)
         {
             var bank = Instance;
             if (bank == null) return null;
@@ -173,14 +180,17 @@ namespace OWSBG.World
             var src = bank.Take(cue.Voice, out int slot);
             if (src == null) { bank.Dropped++; return null; }
             bank._level[slot] = volume * cue.Gain * gain;
+            bank._ui[slot] = cue.Bus == Mix.Bus.Ui;
             src.clip = clip;
             src.panStereo = pan;
-            src.volume = bank._gain * bank._level[slot];
+            src.pitch = pitch;
+            src.volume = (bank._ui[slot] ? bank._uiGain : bank._gain) * bank._level[slot];
             src.Play();
             bank.Played++;
             bank.Last = id;
             bank.LastPan = pan;
             bank.LastGain = gain;
+            bank.LastPitch = pitch;
             bank.Note(id);
             return clip;
         }

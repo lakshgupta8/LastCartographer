@@ -46,8 +46,9 @@ lines of noise, filters and envelopes, never a recording.
 **Hers** (`wren_sfx_*`, with her strikes): the Instruments (`dart_throw`, `plumb_drop`, `lens_raise`, `lantern_light`,
 `hook_cast`, `tincture_drink`, `seal_set`, from `InstrumentBelt.Used`; a refused use is her dry dot), `parry` (the
 lens rings, full gain: it is the answer to a tell), `belt_turn`, `charter` (a Charter put on, not the one she woke
-in), `clarity_gone` and `clarity_grew`, `ability` (`AbilitySet.Unlocked`: a flourish rising to the bell) and `prompt`
-(the smallest tick when something to read comes into reach).
+in), `clarity_gone` and `clarity_grew`, and `prompt` (the smallest tick when something to read comes into reach).
+`WrenSounds` also plays the world's `ability` (`AbilitySet.Unlocked`: a flourish rising to the bell), delivered as
+`world_sfx_ability.wav`.
 
 ## 2. How they play
 

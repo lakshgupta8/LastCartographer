@@ -27,6 +27,9 @@ namespace OWSBG.UI
         /// <summary>The map's page open (ENV-11, atlas-map.md): an index into <see cref="AtlasMap.Pages"/>.</summary>
         public int Page => _page;
         public AtlasPageMap Map => _map;
+        /// <summary>The lettered title and the page's lettered region (atlas-map.md §5).</summary>
+        public InkLettering TitleLettering => _titleLettering;
+        public InkLettering PageLettering => _pageLettering;
         public bool CanTravel => TravelPoint.Nearby != null && _destinations.Count > 0;
 
         WrenController _wren;
@@ -35,7 +38,8 @@ namespace OWSBG.UI
         float _nextRefresh;
         VisualElement _panel, _places, _travel, _journalHost, _here;
         ScrollView _scroll;
-        Label _title, _day, _pageName;
+        Label _title, _day, _pageName, _pageCount;
+        InkLettering _titleLettering, _pageLettering;
         AtlasPageMap _map;
         int _page;
         readonly List<Waypoint> _destinations = new List<Waypoint>();
@@ -158,12 +162,20 @@ namespace OWSBG.UI
             titleRow.style.marginBottom = 2;
             var rose = InkTheme.Icon("rose", InkArt.Tex("UI_Rose"), 34f, 10f);
             if (rose != null) titleRow.Add(rose);
-            titleRow.Add(_title);
+            // Her hand letters the book's title, the page's region and the places' regions (atlas-map.md §5).
+            _titleLettering = InkLettering.Over(_title, 34, InkTheme.Wash, InkLettering.Rule.Flourish);
+            titleRow.Add(_titleLettering);
             _day = InkTheme.Text("day", "", 16, InkTheme.Dim);
             _day.style.marginBottom = 8;
             // The map: the region's page drawn as far as she has drawn it, turned with ← →.
-            _pageName = InkTheme.TitleText("page", "", 18, InkTheme.Ink);
-            _pageName.style.flexShrink = 0;
+            _pageName = InkTheme.TitleText("page", "", 20, InkTheme.Ink);
+            _pageLettering = InkLettering.Over(_pageName, 20, InkTheme.Ink, InkLettering.Rule.Flourish);
+            _pageCount = InkTheme.Text("page-count", "", 14, InkTheme.Dim);
+            _pageCount.style.marginLeft = 14;
+            var pageRow = InkTheme.Row("page-row");
+            pageRow.style.alignItems = Align.FlexEnd;
+            pageRow.style.flexShrink = 0;
+            pageRow.Add(_pageLettering); pageRow.Add(_pageCount);
             _map = new AtlasPageMap();
             // The places are more than a page holds: they scroll, and the page opens at where she stands.
             _scroll = new ScrollView(ScrollViewMode.Vertical) { name = "places-scroll" };
@@ -179,7 +191,7 @@ namespace OWSBG.UI
             hint.style.marginTop = 14;
             hint.style.flexShrink = 0;
             map.style.minHeight = 0;
-            map.Add(titleRow); map.Add(_day); map.Add(_pageName); map.Add(_map); map.Add(_scroll); map.Add(_travel); map.Add(hint);
+            map.Add(titleRow); map.Add(_day); map.Add(pageRow); map.Add(_map); map.Add(_scroll); map.Add(_travel); map.Add(hint);
 
             _journalHost = new VisualElement { name = "journal-host", pickingMode = PickingMode.Ignore };
             _journalHost.style.width = new Length(50, LengthUnit.Percent);
@@ -208,15 +220,17 @@ namespace OWSBG.UI
             _noted.Clear();
             _here = null;
             var page = AtlasMap.Pages[_page];
-            _pageName.text = Atlas.RegionName(page) + "   \u25C2 " + (_page + 1) + " / " + AtlasMap.Pages.Length + " \u25B8";
+            _pageName.text = Atlas.RegionName(page);
+            _pageLettering.Follow();
+            _pageCount.text = Loc.F("atlas.page", "\u25C2 {0} / {1} \u25B8", _page + 1, AtlasMap.Pages.Length);
             _map.Show(page, w, here);
             foreach (var place in Atlas.AllPlaces)
             {
                 if (place.Region != region)
                 {
                     region = place.Region;
-                    var head = InkTheme.TitleText("region", Atlas.RegionName(region), 19, InkTheme.Dim);
-                    head.style.marginTop = 8; head.style.marginBottom = 4; head.style.flexShrink = 0;
+                    var head = InkLettering.Over(InkTheme.TitleText("region", Atlas.RegionName(region), 17, InkTheme.Dim), 17, InkTheme.Dim, InkLettering.Rule.Short);
+                    head.style.marginTop = 10; head.style.marginBottom = 4;
                     _places.Add(head);
                     // The page's heading note, once anything on it is drawn (NAR-17).
                     var note = RegionNote(w, region);

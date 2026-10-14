@@ -304,10 +304,13 @@ namespace OWSBG.Narrative
         public bool StemOn(Score.Stem stem)
         {
             if (Current == null) return false;
-            if (Current.Boss != null) return Score.Theme.Sounds(stem, _phase);   // entered at its phase, and not yet left (a layer changed)
+            if (Current.Boss != null) return Score.Theme.Sounds(stem, _phase) && !PartGone(stem);   // entered at its phase, not yet left (a layer changed), and its part still there
             if (stem.Combat) return Mix.Live != null && Mix.Live.InCombat;
             return true;
         }
+
+        /// <summary>Whether the fight says the part a stem is the sound of is gone (a bell's rope cut: AUD-20).</summary>
+        bool PartGone(Score.Stem stem) => stem.Part >= 0 && _boss is IScoredParts p && p.PartGone(stem.Part);
 
         void Tick()
         {

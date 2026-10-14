@@ -11,7 +11,7 @@ namespace OWSBG.World
     /// steadies the radius back to full. Phase 1: one bell. Phase 2: two, in canon. Phase 3: the great bell, whose rope
     /// is in the white and shows only to a wide radius or the lantern. The bells are the boss: four ropes, four cuts.
     /// </summary>
-    public sealed class HalfCathedralBells : Boss, IRevealable
+    public sealed class HalfCathedralBells : Boss, IRevealable, IScoredParts
     {
         public const string RadiusGlobal = Lantern.RadiusGlobal;
         public const int RopeCount = 4;
@@ -60,6 +60,8 @@ namespace OWSBG.World
         /// <summary>Whether this bell is one of the current phase's.</summary>
         public bool RingsNow(int bell) { foreach (var b in BellsOf(Phase)) if (b == bell) return true; return false; }
         public bool IsCut(int rope) => rope >= 0 && rope < RopeCount && _cut[rope];
+        /// <summary>A bell's hum is in the music while its rope hangs (AUD-20).</summary>
+        public bool PartGone(int rope) => IsCut(rope);
         public bool IsRinging(int bell) => bell >= 0 && bell < RopeCount && _ring[bell] >= 0;
         public int RingingCount { get { int n = 0; foreach (var r in _ring) if (r >= 0) n++; return n; } }
 

@@ -106,15 +106,20 @@ namespace OWSBG.Core
             // A bowed cymbal every bar, swelling off the bar line.
             var pulse = t.Add("pulse", "cymbal", 0.45f, phase: 1);
             for (int bar = 0; bar < t.Bars; bar++) pulse.Add(0, bar * 4f + 1f, 3f, bar % 2 == 0 ? 0.8f : 0.6f);
+            // Each bell's hum is the music of its rope (AUD-20): a rope cut, that bell's hum is gone at once; what is left
+            // is the bells still hanging. A phase's bells are new bells, so the hymn moves to them.
             // "For the flock, going north.": the first bell's hum, high, rising a step a bar.
-            var lead = t.Add("lead", "heldtone", 0.7f, phase: 1);
+            var lead = t.Add("lead", "heldtone", 0.7f, phase: 1, until: 2, part: 0);
             for (int bar = 0; bar < t.Bars; bar++) lead.Add(BellsNorth[bar], bar * 4f, 4f, 0.9f);
-            // Phase 2, two bells in canon: "For the ones who stayed.": the second bell's hum a bar behind the first, a fourth under.
-            var voices = t.Add("voices", "heldtone", 0.6f, phase: 2);
+            // Phase 2, two bells in canon: the hymn goes on in the second bell, and "For the ones who stayed.": the third
+            // bell's hum a bar behind it, a fourth under. Cut either rope and the other bell sings alone.
+            var north = t.Add("north", "heldtone", 0.7f, phase: 2, until: 3, part: 1);
+            for (int bar = 0; bar < t.Bars; bar++) north.Add(BellsNorth[bar], bar * 4f, 4f, 0.9f);
+            var voices = t.Add("voices", "heldtone", 0.6f, phase: 2, until: 3, part: 2);
             for (int bar = 0; bar < t.Bars; bar++) voices.Add(BellsNorth[(bar + t.Bars - 1) % t.Bars] - 3, bar * 4f, 4f, 0.8f);
-            // Phase 3, the great bell, its rope in the white: the held tone leaves, and the great bell's hum sings the
-            // roll-call's answer under everything, a bar a note: "We did not forget you."
-            var great = t.Add("great", "heldtone", 0.8f, phase: 3);
+            // Phase 3, the great bell, its rope in the white: the held tone leaves with the small bells, and the great
+            // bell's hum sings the roll-call's answer alone over the cymbal, a bar a note: "We did not forget you."
+            var great = t.Add("great", "heldtone", 0.8f, phase: 3, part: 3);
             var answer = AnswerDegrees(Region.Greyfold);
             for (int i = 0; i < answer.Length; i++) great.Add(answer[i], i * 4f, 4f, 1f);
         }

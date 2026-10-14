@@ -5,11 +5,17 @@
 | Branch | What it is |
 |---|---|
 | `dev` | The working branch and the repository's default. Everything lands here. |
-| `main` | A frozen checkpoint of an earlier state, kept so development can restart another way. Nothing is merged into it. |
+| `main` | A frozen checkpoint of an earlier state, kept so development can restart another way. It changes only when the owner opens a `dev` → `main` pull request. |
 | `feature/<topic>`, `fix/<topic>`, `chore/<topic>` | One per piece of work, made from `dev`, merged back into `dev`, then deleted. |
 
-Nobody commits straight to `dev` or `main`; both are protected. Open a pull request into `dev`, let CI pass
-(both test suites, the Windows build and a smoke run), the owner is requested as reviewer by CODEOWNERS; then merge.
+Nobody commits straight to `dev` or `main`; both are protected. Open a pull request into `dev`; the owner is requested
+as reviewer by CODEOWNERS; then merge. No CI runs on these pull requests or on pushes to `dev`.
+
+### CI
+
+CI (both test suites, the Windows build, a smoke run) runs only when the owner starts it by hand (Actions → CI → Run
+workflow, choosing the jobs and the branch) or on a pull request from `dev` into `main`. `main` takes `dev` that way
+only when the owner wants a new checkpoint.
 
 ### Parallel sessions (people or agents)
 

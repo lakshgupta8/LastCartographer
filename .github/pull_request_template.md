@@ -1,4 +1,4 @@
-<!-- Branch from dev, open the PR against dev (never main), squash or merge when CI is green. -->
+<!-- Branch from dev, open the PR against dev (never main), merge when reviewed. CI does not run here; the owner runs it by hand. -->
 
 ## What and why
 

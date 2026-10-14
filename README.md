@@ -119,8 +119,8 @@ pwsh tools/build.ps1
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
 
-CI runs on every pull request and every push to `dev` using GameCI: both test suites, the Windows build, a smoke run and
-a CPU-side performance probe. See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch model.
+CI uses GameCI (both test suites, the Windows build, a smoke run and a CPU-side performance probe). It runs only when
+started by hand or on a pull request from `dev` into `main`. See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch model.
 
 ## Reporting a bug
 

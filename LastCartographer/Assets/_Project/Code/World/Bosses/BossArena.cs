@@ -98,6 +98,12 @@ namespace OWSBG.World
         public string RequiresFlag { get => _requiresFlag; set => _requiresFlag = value ?? ""; }
         public bool IsWaitingForFlag => !string.IsNullOrEmpty(_requiresFlag) && GameState.World.Get(_requiresFlag) == 0;
 
+        /// <summary>
+        /// Holds the intro while it says so: a boss who speaks first (the Narrative's ArenaIntroTalk) sets it when the doors
+        /// shut, and the fight waits until it returns false. Null, as for most arenas, holds nothing.
+        /// </summary>
+        public Func<bool> IntroHold { get; set; }
+
         void FixedUpdate()
         {
             if (State != ArenaState.Idle || _boss == null || IsDefeated || IsWaitingForFlag) return;
@@ -144,6 +150,7 @@ namespace OWSBG.World
                 while (_introCutscene.IsPlaying && State == ArenaState.Intro) yield return null;
             }
             else if (wait > 0f) yield return new WaitForSeconds(wait);
+            while (IntroHold != null && IntroHold() && State == ArenaState.Intro) yield return null;
             if (_wren != null) _wren.Frozen = false;
             if (State != ArenaState.Intro) yield break;   // reset during the intro
             SetState(ArenaState.Fighting);

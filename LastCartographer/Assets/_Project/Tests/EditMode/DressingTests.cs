@@ -47,7 +47,8 @@ namespace OWSBG.Tests
             {
                 Assert.IsTrue(RoomExists(p.Room), p.Id + ": " + p.Room + " is a planned or built room");
                 Assert.That(p.Brief, Is.Not.Empty, p.Id + " has a brief for the art pass");
-                if (p.Plant != null) Assert.IsTrue(Foreshadowing.Secrets.Contains(p.Plant) || p.Plant == "9.2", p.Id + " plants a bible section: " + p.Plant);
+                // A secret, or one of the other sections a plant may name (foreshadowing.md §1: the whale, Sable's brother, the Greyfold creeping, the bells, Idrenne's Fire).
+                if (p.Plant != null) Assert.IsTrue(Foreshadowing.Secrets.Contains(p.Plant) || new[] { "3.4", "4.1", "4.6", "6.12", "9.2" }.Contains(p.Plant), p.Id + " plants a bible section: " + p.Plant);
             }
             foreach (Region r in Enum.GetValues(typeof(Region)))
                 Assert.GreaterOrEqual(Dressing.In(r).Count(), 2, r + " is dressed");

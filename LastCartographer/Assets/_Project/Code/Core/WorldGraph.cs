@@ -261,6 +261,8 @@ namespace OWSBG.Core
             _placeZones["Saltmarrow_Chain_3"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Lighthouse"] = "Saltmarrow.LanternChain";
             _placeZones["Saltmarrow_Chapel"] = "Saltmarrow.SaltChapel";
+            _placeZones["Saltmarrow_Chapel_2"] = "Saltmarrow.SaltChapel";
+            _placeZones["Saltmarrow_Chapel_3"] = "Saltmarrow.SaltChapel";
             _placeZones["Saltmarrow_BoneBridge"] = "Saltmarrow.BoneBridge";
             _placeZones["Saltmarrow_IrisFields"] = "Saltmarrow.IrisFields";
             // The highland's (ENV-03), the forest's (ENV-04), the Plateau's (ENV-05) and the Steppe's (ENV-07) rooms are the plan's, zone by zone.

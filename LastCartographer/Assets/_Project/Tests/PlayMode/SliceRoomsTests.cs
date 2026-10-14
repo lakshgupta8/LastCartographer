@@ -25,7 +25,7 @@ namespace OWSBG.Tests
             "Greybox_Greyfold_Edge", "Greybox_Saltmarrow_Shore", "Greybox_Saltmarrow_A", "Greybox_Saltmarrow_Stilts", "Greybox_Saltmarrow_Boardwalk",
             "Greybox_Saltmarrow_B", "Greybox_Saltmarrow_Tetherline", "Greybox_Saltmarrow_Ferry", "Greybox_Saltmarrow_Chain_1", "Greybox_Saltmarrow_Chain_2",
             "Greybox_Saltmarrow_Chain_3", "Greybox_Saltmarrow_Lighthouse", "Greybox_Saltmarrow_Chapel", "Greybox_Saltmarrow_Roots_1", "Greybox_Saltmarrow_Roots_2", "Greybox_Saltmarrow_Roots_3",
-            "Greybox_Saltmarrow_Roots_4", "Greybox_Saltmarrow_BoneBridge", "Greybox_Saltmarrow_IrisFields",
+            "Greybox_Saltmarrow_Roots_4", "Greybox_Saltmarrow_BoneBridge", "Greybox_Saltmarrow_IrisFields", "Greybox_Saltmarrow_Chapel_2", "Greybox_Saltmarrow_Chapel_3",
             // The highland (ENV-03): twenty-one rooms past the bridge.
             "Greybox_Emberdown_Stair_1", "Greybox_Emberdown_Stair_2", "Greybox_Emberdown_Stair_3", "Greybox_Emberdown_Rest_1", "Greybox_Emberdown_Rest_2", "Greybox_Emberdown_Rest_3",
             "Greybox_Emberdown_Bell_1", "Greybox_Emberdown_Bell_2", "Greybox_Emberdown_Chimneys_1", "Greybox_Emberdown_Chimneys_2", "Greybox_Emberdown_Chimneys_3", "Greybox_Emberdown_Chimneys_4",
@@ -129,7 +129,8 @@ namespace OWSBG.Tests
                     Assert.AreEqual(info.RoomId, Atlas.PlaceOf(v), v + " belongs to its room");
                 }
                 var plan = RoomPlans.All.FirstOrDefault(p => "Greybox_" + p.Id == kv.Key);
-                if (plan == null || !string.IsNullOrEmpty(plan.Enemies)) Assert.Greater(info.Enemies, 0, kv.Key + " has something to fight");   // a planned room may be empty on purpose (the town, the bell)
+                bool quiet = kv.Key == "Greybox_Saltmarrow_Chapel_3";   // the vestry and its register: the coast's one room left quiet (saltmarrow-rooms.md)
+                if ((plan == null && !quiet) || (plan != null && !string.IsNullOrEmpty(plan.Enemies))) Assert.Greater(info.Enemies, 0, kv.Key + " has something to fight");   // a planned room may be empty on purpose (the town, the bell)
             }
 
             // The whole slice is one connected space from the shore.

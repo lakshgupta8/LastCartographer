@@ -836,6 +836,15 @@ namespace OWSBG.Setup
             // Past the altar, the way east to the Bone Bridge and the climb to Emberdown (world-map: Wingbeat, soft).
             MakeSpawn(room, "East", new Vector2(18.9f, 0f));
             MakeTransition(room, "To_BoneBridge", new Vector2(19.6f, 3f), new Vector2(0.8f, 6f), Scene("Saltmarrow_BoneBridge"), "West");
+            // Behind the altar, salt-crusted ledges up the east wall to the loft (saltmarrow-rooms.md: the chapel's other two
+            // rooms). Clear of the arena, above the way east, so neither the fight nor the road changes.
+            // All east of the arena's east door (x 15), so nothing hangs over it to climb out of the fight by.
+            MakeGround(room, "Salt_1", new Vector2(16.8f, 3.9f), new Vector2(2f, 0.6f), platMat);
+            MakeGround(room, "Salt_2", new Vector2(18.3f, 6.5f), new Vector2(1.4f, 0.6f), platMat);
+            MakeGround(room, "Salt_3", new Vector2(16.6f, 9.1f), new Vector2(1.6f, 0.6f), platMat);
+            SkinGrounds(room, "Ground_Stone", "Salt_1", "Salt_2", "Salt_3");
+            MakeSpawn(room, "Top", new Vector2(16.6f, 9.45f));
+            MakeTransition(room, "To_Up", new Vector2(16.6f, 11.6f), new Vector2(3f, 0.8f), Scene("Saltmarrow_Chapel_2"), "Bottom");
 
             var doorW = MakeDoor(room, "Door_W", new Vector2(-1f, 3f), new Vector2(1f, 6f), doorMat);
             var doorE = MakeDoor(room, "Door_E", new Vector2(15f, 3f), new Vector2(1f, 6f), doorMat);
@@ -1494,6 +1503,22 @@ namespace OWSBG.Setup
                     .Npc("Sable", -5.6f, "BoneBridge_Sable", new Color(0.16f, 0.18f, 0.22f))
                     .NpcWhen("Sable", Commissions.StateKey("saltmarrow.bone_bridge"), "saltmarrow.bone_bridge.rowed", 0, (int)CommissionState.Taken)
                     .West(Scene("Saltmarrow_Chapel")).East(Scene("Emberdown_Stair_1")),
+                // The chapel of salt-eaten paper behind the first (saltmarrow-rooms.md §3): up from behind the altar into the
+                // loft, its walls eaten to lace, smudges where the pews stood; west of it the vestry, where the coast wrote its
+                // drowned (the register, Chapel_Register). Off the road: the way east stays the chapel's.
+                new RoomRecipe("Saltmarrow_Chapel_2").Tiles("Ground_Stone", "Ground_Stone")
+                    .Paper("Mid_Salt", 3f, 0f, new Color(0.74f, 0.74f, 0.70f), 6f)
+                    .Paper("Far_Chapel", 8f, 4f, new Color(0.80f, 0.80f, 0.76f), 14f)
+                    .Paper("Farther_Sea", 16f, 6f, new Color(0.86f, 0.86f, 0.82f), 16f)
+                    .Floor(-20f, 12f).Floor(16f, 20f).Plat(7f, 2.5f, 3f).Plat(1f, 5f, 3f).Plat(-5f, 2.5f, 3f)
+                    .Smudge(4f).Smudge(-9f).Skimmer(1f, 8f).Seed(1f, 5.8f, 3)
+                    .Down(Scene("Saltmarrow_Chapel"), 14f, 17.5f).West(Scene("Saltmarrow_Chapel_3")),
+                new RoomRecipe("Saltmarrow_Chapel_3").Tiles("Ground_Stone", "Ground_Stone")
+                    .Paper("Mid_Salt", 3f, 0f, new Color(0.74f, 0.74f, 0.70f), 6f)
+                    .Paper("Far_Chapel", 8f, 4f, new Color(0.80f, 0.80f, 0.76f), 14f)
+                    .Paper("Farther_Sea", 16f, 6f, new Color(0.86f, 0.86f, 0.82f), 16f)
+                    .Floor(-20f, 20f).Plat(-12f, 2.5f, 3f).Seed(-12f, 3.3f, 4)
+                    .East(Scene("Saltmarrow_Chapel_2")),
             };
         }
 

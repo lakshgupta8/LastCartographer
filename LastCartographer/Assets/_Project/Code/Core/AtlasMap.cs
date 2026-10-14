@@ -41,6 +41,7 @@ namespace OWSBG.Core
             ("Saltmarrow_Ferry", Side.East, "Saltmarrow_Chain_1"), ("Saltmarrow_Chain_1", Side.East, "Saltmarrow_Chain_2"),
             ("Saltmarrow_Chain_2", Side.East, "Saltmarrow_Chain_3"), ("Saltmarrow_Chain_3", Side.East, "Saltmarrow_Lighthouse"),
             ("Saltmarrow_Lighthouse", Side.East, "Saltmarrow_Chapel"), ("Saltmarrow_Chapel", Side.East, "Saltmarrow_BoneBridge"),
+            ("Saltmarrow_Chapel", Side.Up, "Saltmarrow_Chapel_2"), ("Saltmarrow_Chapel_2", Side.West, "Saltmarrow_Chapel_3"),
             ("Saltmarrow_Stilts", Side.Up, "Saltmarrow_Roots_1"), ("Saltmarrow_Roots_1", Side.East, "Saltmarrow_Roots_2"),
             ("Saltmarrow_Roots_2", Side.Up, "Saltmarrow_Roots_3"), ("Saltmarrow_Roots_3", Side.East, "Saltmarrow_Roots_4"),
             ("Saltmarrow_Roots_4", Side.East, "Saltmarrow_IrisFields"),

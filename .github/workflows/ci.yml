@@ -88,7 +88,7 @@ jobs:
           artifactsPath: test-results-${{ matrix.mode }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           checkName: Test results (${{ matrix.mode }})
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-results-${{ matrix.mode }}
@@ -129,7 +129,7 @@ jobs:
           versioning: Semantic
           # Where the upload below looks, whatever path the CLI passes itself: GameBuild takes the last one given.
           customParameters: -buildOutput /github/workspace/build/StandaloneWindows64
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: LastCartographer-Windows
           path: build/StandaloneWindows64
@@ -158,7 +158,7 @@ jobs:
       - name: Walk six rooms and time the transitions (CPU side)
         shell: pwsh
         run: ./tools/perf.ps1 -Exe build/LastCartographer.exe -Batch -Out perf-ci.json -Log perf-ci.log
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: smoke-log

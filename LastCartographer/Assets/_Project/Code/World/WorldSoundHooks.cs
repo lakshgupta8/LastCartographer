@@ -8,8 +8,9 @@ namespace OWSBG.World
     /// the world's own events with <see cref="WorldSounds"/>' cues. A room change is the page turned, a lamp lighting
     /// its whump, the desk its rest, a seed its drop (pitched by its worth), a seal pressed its stamp, a place erased the
     /// eraser and one recovered the ink drawn back, a decision its sound, an ability its flourish, a shut way a knock, a
-    /// pellet landing its pat. Sounds with a place in the room play from it. Wren's own (her Instruments, her Clarity,
-    /// her Charter) are <see cref="WrenSounds"/>'; the pages' are the views' (<c>UiSounds</c>).
+    /// thing thrown its end as it ended (on her, the ground, the air or unwritten: AUD-19). Sounds with a place in the
+    /// room play from it. Wren's own (her Instruments, her Clarity, her Charter) are <see cref="WrenSounds"/>'; the
+    /// pages' are the views' (<c>UiSounds</c>).
     /// </summary>
     public sealed class WorldSoundHooks : MonoBehaviour
     {
@@ -50,7 +51,7 @@ namespace OWSBG.World
             FallCatch.AnyFell += OnFell;
             RoomTransition.Bumped += OnBarred;
             Offerings.Offered += OnOffered;
-            EnemyProjectile.Spent += OnPelletSpent;
+            EnemyProjectile.Spent += OnShotSpent;
         }
 
         void OnDisable()
@@ -75,7 +76,7 @@ namespace OWSBG.World
             FallCatch.AnyFell -= OnFell;
             RoomTransition.Bumped -= OnBarred;
             Offerings.Offered -= OnOffered;
-            EnemyProjectile.Spent -= OnPelletSpent;
+            EnemyProjectile.Spent -= OnShotSpent;
         }
 
         void Play(string id, Vector2? at = null, float pitch = 1f)
@@ -108,7 +109,7 @@ namespace OWSBG.World
         void OnFell(FallCatch f) => Play("fell");
         void OnBarred(RoomTransition t) => Play("barred", At(t));
         void OnOffered(string asker, string memory) => Play("offered");
-        void OnPelletSpent(EnemyProjectile p) => Play("pellet_land", At(p));
+        void OnShotSpent(EnemyProjectile p) => Play(EnemySounds.EndCue(EnemySounds.ShotOf(p.name), p.Ending), At(p));
 
         void LateUpdate() { _hush = false; }
     }

@@ -171,8 +171,7 @@ namespace OWSBG.Tests
             Assert.Less(Bank.LastPan, 0f, "from the left, where the way is");
 
             Mark();
-            var pellet = EnemyProjectile.Spawn("Pulp", null, new Vector2(_lx + 2f, 3f), Vector2.zero, new Vector2(0.3f, 0.3f), 1, null);
-            pellet.LifeLeft = 0.02f;
+            var pellet = EnemyProjectile.Spawn("Pulp", null, new Vector2(_lx + 2f, 0.05f), new Vector2(0f, -2f), new Vector2(0.3f, 0.3f), 1, null);   // on the floor (in the air it crumbles: AUD-19)
             yield return Until(() => Since.Contains("pellet_land"), 1f);
             Assert.That(Since, Does.Contain("pellet_land"), "a wet pat where it is spent");
 

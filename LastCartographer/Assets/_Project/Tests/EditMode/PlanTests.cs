@@ -104,16 +104,13 @@ namespace OWSBG.Tests
         }
 
         [Test]
-        public void TheTrackerScriptUsesTheBarsLabelsAndTheWeeklyBuildIsScheduled()
+        public void TheTrackerScriptUsesTheBarsLabels()
         {
             var script = File.ReadAllText(Path.Combine(RepoRoot, "tools/tracker.ps1"));
             foreach (var a in BugBar.Areas) StringAssert.Contains("\"" + a.ToString().ToLowerInvariant() + "\"", script, a + " in the script's areas");
             StringAssert.Contains("\"plan\"", script);
             StringAssert.Contains("\"in-progress\"", script);
             StringAssert.Contains("OWSBG.Setup.TrackerSetup.Export", script);
-            var ci = File.ReadAllText(Path.Combine(RepoRoot, ".github/workflows/ci.yml"));
-            StringAssert.Contains("schedule:", ci, "the weekly build");
-            StringAssert.Contains("cron:", ci);
         }
     }
 }

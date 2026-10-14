@@ -75,7 +75,7 @@ namespace OWSBG.Tests
                     Assert.AreEqual(12, c.fps, name + " " + c.name + " at the drawn rate for people");
                     Assert.IsTrue(c.loop, name + " " + c.name + " holds while the state does");
                 }
-                Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/" + name.ToLowerInvariant() + "-turnaround.png")), name + "'s model sheet");
+                DevDocs.AssertSheet(Path.GetFullPath("../docs/art/" + name.ToLowerInvariant() + "-turnaround.png"), name + "'s model sheet");
             }
         }
 

@@ -102,9 +102,9 @@ namespace OWSBG.Tests
                 StringAssert.Contains("Name: " + k, scene, k + "'s set is named on the sheet player");
                 foreach (var c in Load(k).clips)
                     StringAssert.Contains(AssetDatabase.AssetPathToGUID(FolderOf(k) + c.file), scene, k + " " + c.name + " is wired");
-                Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/wren_" + k.ToString().ToLowerInvariant() + "-turnaround.png")), k + "'s model sheet");
+                DevDocs.AssertSheet(Path.GetFullPath("../docs/art/wren_" + k.ToString().ToLowerInvariant() + "-turnaround.png"), k + "'s model sheet");
             }
-            Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/wren-charters.png")), "the six side by side");
+            DevDocs.AssertSheet(Path.GetFullPath("../docs/art/wren-charters.png"), "the six side by side");
         }
 
         static Texture2D Decode(string assetPath)

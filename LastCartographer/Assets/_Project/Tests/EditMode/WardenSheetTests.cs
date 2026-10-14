@@ -58,7 +58,7 @@ namespace OWSBG.Tests
                     Assert.AreEqual(m.cell, h, name + " " + c.name);
                     Assert.IsTrue(c.fps == 12 || c.fps == 24, name + " " + c.name + " at a drawn rate");
                 }
-                Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/" + name.ToLowerInvariant() + "-turnaround.png")), name + "'s model sheet");
+                DevDocs.AssertSheet(Path.GetFullPath("../docs/art/" + name.ToLowerInvariant() + "-turnaround.png"), name + "'s model sheet");
             }
             // The strikes are quick: 24 fps, as Wren's are.
             Assert.AreEqual(24, Load("Halvard").clips.First(c => c.name == "lunge").fps);

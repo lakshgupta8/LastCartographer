@@ -105,6 +105,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheSheetIsInTheDocs()
         {
+            DevDocs.Require("docs/art", "docs/design/ui-art.md");
             var root = Directory.GetParent(Application.dataPath).Parent.FullName;
             Assert.IsTrue(File.Exists(Path.Combine(root, "docs", "art", "ui-sheet.png")), "docs/art/ui-sheet.png (tools/ui/pack.py draws it)");
             Assert.IsTrue(File.Exists(Path.Combine(root, "docs", "design", "ui-art.md")));

@@ -180,6 +180,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheDeliverablesAreRendered()
         {
+            DevDocs.Require("docs/audio/rollcall");
             string dir = Path.Combine(RepoRoot, "docs/audio/rollcall");
             Assert.IsTrue(Directory.Exists(dir), dir);
             var wavs = Directory.GetFiles(dir, "*.wav").Select(Path.GetFileName).OrderBy(n => n).ToArray();

@@ -356,6 +356,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheFilesAreTheSpecAndTheDeliverablesAreRendered()
         {
+            DevDocs.Require("docs/audio/music");
             var salt = Score.ThemeOf(Region.Saltmarrow);
             var lamp = Score.ThemeOfBoss("LampKeeper");
             Assert.AreEqual("saltmarrow_music_bed_67.wav", Score.FileName(salt, salt.Stem("bed")));

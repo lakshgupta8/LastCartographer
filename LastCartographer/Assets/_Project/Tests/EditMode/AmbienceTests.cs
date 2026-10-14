@@ -114,6 +114,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheDeliverablesAreRendered()
         {
+            DevDocs.Require("docs/audio/ambience");
             string dir = Path.Combine(RepoRoot, "docs/audio/ambience");
             Assert.IsTrue(Directory.Exists(dir), dir);
             foreach (var l in Ambience.Layers)

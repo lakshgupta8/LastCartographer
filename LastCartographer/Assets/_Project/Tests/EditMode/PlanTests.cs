@@ -20,6 +20,7 @@ namespace OWSBG.Tests
         [Test]
         public void EveryRowOfThePlanParsesInItsPlace()
         {
+            DevDocs.Require("docs/02-production-plan.md");
             var doc = Plan.Load(Path.Combine(RepoRoot, Plan.RelativePath));
             Assert.GreaterOrEqual(doc.Rows.Count, 120, "the plan's rows");
             Assert.AreEqual(doc.Rows.Count, doc.Rows.Select(r => r.Id).Distinct().Count(), "no id twice");

@@ -39,6 +39,16 @@ namespace OWSBG.Tests
             public void Poke() => Tell(AttackKind.Strike);
         }
 
+        sealed class Nave : Boss, IScoredParts
+        {
+            public override string Family => "HalfCathedralBells";
+            public readonly bool[] Cut = new bool[HalfCathedralBells.RopeCount];
+            public bool PartGone(int part) => Cut[part];
+            protected override void Tick(float dt) { }
+            public void Poke() => Tell(AttackKind.Strike);
+            public void Silenced() => AdvanceToPhase(Phase + 1);
+        }
+
         GameObject? _boss;
         MusicDriver Driver => MusicDriver.Instance!;
 
@@ -136,6 +146,40 @@ namespace OWSBG.Tests
             MixDriver.Instance!.Mixer.Tick(Mix.CombatHold + 1f);
             yield return null;
             Assert.IsFalse(Driver.StemOn(drive), "the fight over, it goes");
+        }
+
+        [UnityTest]
+        public IEnumerator ABellsHumLeavesWithItsRope()
+        {
+            NeedsARealtimeClock();
+            yield return PlayTheCoast();
+            var nave = MakeBoss<Nave>();
+            yield return null;
+            var theme = Score.ThemeOfBoss("HalfCathedralBells");
+            nave.BeginFight();
+            yield return null;
+            nave.Poke();
+            yield return Until(() => Driver.Current == theme, 30f);
+            Assert.AreSame(theme, Driver.Current);
+            yield return new WaitForSecondsRealtime((float)MusicDriver.LeadIn + MusicDriver.FadeSeconds + 0.2f);
+            Assert.AreEqual(theme.Stem("lead").Level, Driver.Level("lead"), 0.02f, "the first bell's hum");
+
+            nave.Cut[0] = true;
+            yield return null;
+            Assert.IsFalse(Driver.StemOn(theme.Stem("lead")), "its rope cut, its hum goes");
+            Assert.AreEqual(1, Driver.Phase, "at once, not on the bar line");
+            yield return new WaitForSecondsRealtime(MusicDriver.FadeSeconds + 0.15f);
+            Assert.AreEqual(0f, Driver.Level("lead"), 0.02f, "gone over the short fade");
+            Assert.AreEqual(theme.Stem("bed").Level, Driver.Level("bed"), 0.02f, "the nave's held tone stays");
+
+            nave.Silenced();
+            yield return Until(() => Driver.Phase == 2, theme.BarSeconds + 1f);
+            Assert.AreEqual(2, Driver.Phase, "the next bells on the bar line");
+            Assert.IsTrue(Driver.StemOn(theme.Stem("north")) && Driver.StemOn(theme.Stem("voices")), "two bells, in canon");
+            nave.Cut[2] = true;
+            yield return null;
+            Assert.IsFalse(Driver.StemOn(theme.Stem("voices")), "one rope cut");
+            Assert.IsTrue(Driver.StemOn(theme.Stem("north")), "and the other bell sings alone");
         }
 
         [UnityTest]

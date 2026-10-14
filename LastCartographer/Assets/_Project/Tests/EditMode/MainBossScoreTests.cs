@@ -140,9 +140,12 @@ namespace OWSBG.Tests
             Assert.AreEqual(3, t.Stem("bed").Until, "the held tone gives way to the white");
             var lead = t.Stem("lead");
             CollectionAssert.AreEqual(Score.BellsNorth, Degrees(lead), "\"For the flock, going north.\": rising, a bar a note");
+            var north = t.Stem("north");
+            Assert.AreEqual(2, north.Phase, "phase 2: the hymn goes on in the second bell");
+            CollectionAssert.AreEqual(Score.BellsNorth, Degrees(north));
             var voices = t.Stem("voices");
             Assert.AreEqual(2, voices.Phase, "phase 2: two bells, in canon");
-            var first = lead.Notes.OrderBy(n => n.Start).ToList();
+            var first = north.Notes.OrderBy(n => n.Start).ToList();
             var second = voices.Notes.OrderBy(n => n.Start).ToList();
             Assert.AreEqual(first.Count, second.Count);
             for (int bar = 0; bar < t.Bars; bar++)
@@ -155,7 +158,22 @@ namespace OWSBG.Tests
             Assert.AreEqual(3, great.Phase, "the great bell");
             CollectionAssert.AreEqual(Score.AnswerDegrees(Region.Greyfold), Degrees(great), "\"We did not forget you.\": the roll-call's answer");
             Assert.IsTrue(great.Notes.All(n => n.Beats >= Score.BeatsPerBar), "a bar a note");
-            Assert.Less(great.Notes.Max(n => n.Degree), lead.Notes.Min(n => n.Degree), "under everything");
+            Assert.Less(great.Notes.Max(n => n.Degree), Score.BellsNorth.Min(), "under where the small bells sang");
+        }
+
+        [Test]
+        public void EachBellsHumIsItsRope()
+        {
+            var t = Score.ThemeOfBoss("HalfCathedralBells");
+            var hums = t.Stems.Where(s => s.Part >= 0).ToList();
+            CollectionAssert.AreEquivalent(Enumerable.Range(0, HalfCathedralBells.RopeCount), hums.Select(s => s.Part), "a hum for every rope, and one each (AUD-20)");
+            CollectionAssert.AreEquivalent(new[] { "lead", "north", "voices", "great" }, hums.Select(s => s.Id));
+            foreach (var s in hums)
+                for (int phase = 1; phase <= 3; phase++)
+                    if (Score.Theme.Sounds(s, phase))
+                        CollectionAssert.Contains(HalfCathedralBells.BellsOf(phase).ToList(), s.Part, s.Id + " is heard in phase " + phase + " only while its bell is one that rings then");
+            foreach (var id in new[] { "bed", "pulse" }) Assert.AreEqual(-1, t.Stem(id).Part, id + " is the nave's, no rope's");
+            foreach (var other in Score.Themes.Where(x => x != t)) Assert.IsTrue(other.Stems.All(s => s.Part == -1), other.Id + ": only the Bells' music is their ropes");
         }
 
         [Test]

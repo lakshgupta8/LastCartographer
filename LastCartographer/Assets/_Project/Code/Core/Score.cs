@@ -178,6 +178,9 @@ namespace OWSBG.Core
             public bool Combat;
             /// <summary>The boss phase it leaves at (a layer changed rather than added, audio-direction 4); 0 to stay.</summary>
             public int Until;
+            /// <summary>The fight's part it is the sound of, by the boss's own count (a bell's hum, by its rope: AUD-20); it
+            /// leaves when the fight says that part is gone, not waiting for the bar line. -1 for none.</summary>
+            public int Part = -1;
             public Stem Add(int degree, float start, float beats, float level = 1f) { Notes.Add(new Note(degree, start, beats, level)); return this; }
         }
 
@@ -203,9 +206,9 @@ namespace OWSBG.Core
             /// <summary>The share of the loop that is rest by design.</summary>
             public float Silence => RestBars / (float)LoopBars;
             public Stem Stem(string id) => Stems.FirstOrDefault(s => s.Id == id);
-            public Stem Add(string id, string instrument, float level = 1f, int phase = 0, bool combat = false, int until = 0)
+            public Stem Add(string id, string instrument, float level = 1f, int phase = 0, bool combat = false, int until = 0, int part = -1)
             {
-                var s = new Stem { Id = id, Instrument = instrument, Level = level, Phase = phase, Combat = combat, Until = until };
+                var s = new Stem { Id = id, Instrument = instrument, Level = level, Phase = phase, Combat = combat, Until = until, Part = part };
                 Stems.Add(s);
                 return s;
             }

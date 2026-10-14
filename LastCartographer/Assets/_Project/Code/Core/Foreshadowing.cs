@@ -76,6 +76,7 @@ namespace OWSBG.Core
             { "Merrow_Dotha_Season", (Beat.Coast, ClimbRoute.Either) },
             { "Chain_Log", (Beat.Coast, ClimbRoute.Either) },            // the rooms' own plants (NAR-15, Dressing)
             { "Chapel_Tapestry", (Beat.Coast, ClimbRoute.Either) },
+            { "Chapel_Register", (Beat.Coast, ClimbRoute.Either) },
             // Act 1's climb: Emberdown.
             { "Overlook_Runa", (Beat.Climb, ClimbRoute.Emberdown) },
             { "Chimneys_Runa_Climb", (Beat.Climb, ClimbRoute.Emberdown) },

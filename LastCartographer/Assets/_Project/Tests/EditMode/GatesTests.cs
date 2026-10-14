@@ -147,7 +147,7 @@ namespace OWSBG.Tests
                 Assert.AreEqual(1, Count(text, catchGuid), id);
                 n++;
             }
-            Assert.AreEqual(114, n, "every built room");
+            Assert.AreEqual(116, n, "every built room");   // the Salt Chapel's loft and vestry made it 116
         }
     }
 }

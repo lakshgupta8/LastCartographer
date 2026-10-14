@@ -124,6 +124,7 @@ namespace OWSBG.Core
             Draw("chain.log", "Log");
             Draw("chain.faded_keeper", "Keeper");
             Draw("chapel.tapestry", "Tapestry");
+            Draw("chapel.register", "Log");   // a book open on a stand, as the first light's log is drawn
             Draw("rest.lintel", "Lintel");
             Draw("rest.tally_wall", "TallyWall");
             Draw("pithead.cups", "Cups", "Cups_Up", DressingChange.OnFlag(Walked));
@@ -178,6 +179,8 @@ namespace OWSBG.Core
                 "The first lighthouse's log, open on the lamp-room sill, weighted with a shell. Forty years of the same entry.");
             P("Saltmarrow_Chain_3", DressingKind.Trace, "chain.faded_keeper", null, null,
                 "The faded third lighthouse: in its lamp room, a grey keeper's silhouette at the lamp, seen from outside and never from within (Aury, blank-islands).");
+            P("Saltmarrow_Chapel_3", DressingKind.Inscription, "chapel.register", "Chapel_Register", "4.1",
+                "The chapel's register of the drowned, open on its stand: the names eaten out by salt, the boats left. The last line in a newer, harder hand.");
             P("Saltmarrow_Chapel", DressingKind.Tapestry, "chapel.tapestry", "Chapel_Tapestry", "5.6",
                 "A salt-stiffened tapestry behind the altar: a flock crossing a sky over the sea, the birds eaten out by salt so only their holes remain.");
 

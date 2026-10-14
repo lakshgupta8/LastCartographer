@@ -228,6 +228,8 @@ namespace OWSBG.Core
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_B/Tetherpost", Name = "the tether-post" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Lighthouse/Lamp", Name = "the lamp" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_Chapel/Altar", Name = "the altar" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Chapel_2", Name = "The Salt Chapel, the loft", Region = "The Saltmarrow" });
+            _places.Add(new AtlasPlace { Id = "Saltmarrow_Chapel_3", Name = "The Salt Chapel, the vestry", Region = "The Saltmarrow" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_BoneBridge", Name = "The Bone Bridge", Region = "The Saltmarrow" });
             _vantages.Add(new AtlasVantage { Id = "Saltmarrow_BoneBridge/Whale", Name = "the whale" });
             _places.Add(new AtlasPlace { Id = "Saltmarrow_IrisFields", Name = "The Pale Iris Fields", Region = "The Saltmarrow" });

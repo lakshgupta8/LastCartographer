@@ -37,6 +37,7 @@ namespace OWSBG.Setup
             ("Saltmarrow_Chain_3", "Chain_Gannet", 2f, 4.8f, "Talk", true),         // the faded light's rail
             ("Saltmarrow_Chapel", "Chapel_Tapestry", 15.9f, 0f, "Read", false),     // behind the altar, west side
             ("Saltmarrow_Chapel", "Chapel_Door", 18.6f, 0f, "Read", true),          // the door in the east wall, past the altar
+            ("Saltmarrow_Chapel_3", "Chapel_Register", 2f, 0f, "Read", false),     // the register on its stand, mid-vestry
             // Emberdown (ENV-03): the highland's readables in their rooms.
             ("Emberdown_Rest_1", "Rest_Lintel", -14f, 0f, "Read", false),           // the roosts over the gate, as you come in from the stair
             ("Emberdown_Rest_2", "Rest_TallyWall", -5.5f, 0f, "Read", false),       // behind Kettil's porch

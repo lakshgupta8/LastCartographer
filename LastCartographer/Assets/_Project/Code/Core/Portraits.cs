@@ -93,7 +93,7 @@ namespace OWSBG.Core
             "Ashes", "Atlas", "Beam", "Bedroll", "Board", "Cloth", "Door", "Doorframe", "Drawing", "Fire", "Frame", "Gate",
             "Grass", "Hall", "Hollow", "Inscription", "Lamps", "Lantern", "Lectern", "Ledger", "Lighthouse", "Lintel", "Log",
             "Milepost", "Milestone", "Mine", "Mirror", "Notice", "Pages", "Papers", "Plaque", "Plate", "Pool", "Post",
-            "Report", "Riverbed", "Road", "Roll", "Sheet", "Stone", "Stones", "Table", "Tapestry", "Threshold", "Wall",
+            "Register", "Report", "Riverbed", "Road", "Roll", "Sheet", "Stone", "Stones", "Table", "Tapestry", "Threshold", "Wall",
             "Marrow",       // no portrait, no name plate until named (character-bibles.md §5)
         };
 

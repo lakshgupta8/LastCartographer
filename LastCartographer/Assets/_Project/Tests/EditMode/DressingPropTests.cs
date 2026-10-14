@@ -31,7 +31,7 @@ namespace OWSBG.Tests
         [Test]
         public void EveryPieceHasADrawingInItsKit()
         {
-            Assert.AreEqual(42, Dressing.All.Count, "the catalog");
+            Assert.AreEqual(43, Dressing.All.Count, "the catalog");
             foreach (var p in Dressing.All)
             {
                 Assert.IsFalse(string.IsNullOrEmpty(p.Prop), p.Id + " names a drawing");
@@ -120,7 +120,7 @@ namespace OWSBG.Tests
                     changing++;
                 }
             }
-            Assert.AreEqual(42, stood, "every piece's room is built");
+            Assert.AreEqual(43, stood, "every piece's room is built");
             Assert.AreEqual(6, changing);
         }
 

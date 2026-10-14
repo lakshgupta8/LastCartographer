@@ -1,6 +1,7 @@
 #nullable enable
 using System.Collections;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using OWSBG.Core;
 using OWSBG.UI;
@@ -76,6 +77,9 @@ namespace OWSBG.Tests
             Object.Destroy(rt);
         }
 
+        static string Glyphs(InkLettering l) => string.Concat(l.Glyphs.Select(g => g.text));
+        static string Letters(string words) => new string(words.Where(c => !char.IsWhiteSpace(c)).Select(char.ToUpperInvariant).ToArray());
+
         [UnityTest, Timeout(120000)]
         public IEnumerator TheBookOpensAtHerPageWithWhatSheHasDrawn()
         {
@@ -108,11 +112,22 @@ namespace OWSBG.Tests
             Assert.Greater(map.contentRect.height, 100f, "the page has room to draw on");
             Assert.AreEqual(1, map.Marks(MapMarkKind.Desk, true), "the quay's desk, stood at: in ink");
             Assert.AreEqual(1, map.Marks(MapMarkKind.Shop, true) + map.Marks(MapMarkKind.Shop, false), "Sable's shop on the quay");
+            // Her hand letters the title, the page's region and the regions of the places below (atlas-map.md §5).
+            Assert.AreEqual(Loc.T("atlas.title", "Atlas"), atlas.TitleLettering.Source.text, "the title's words stay in the player's language");
+            Assert.AreEqual(Letters(atlas.TitleLettering.Source.text), Glyphs(atlas.TitleLettering), "the title lettered");
+            Assert.AreEqual("THESALTMARROW", Glyphs(atlas.PageLettering), "the page's region lettered");
+            if (InkArt.Available) Assert.AreSame(InkArt.TitleFont, atlas.TitleLettering.Glyphs[0].style.unityFontDefinition.value.font, "from the title serif's glyphs");
+            Assert.AreEqual(Visibility.Hidden, atlas.TitleLettering.Source.resolvedStyle.visibility, "the words themselves unshown");
+            var regions = atlas.Panel.Query<InkLettering>("region-lettering").ToList();
+            int headings = Atlas.AllPlaces.Select(p => p.Region).Where((r, i) => i == 0 || r != Atlas.AllPlaces[i - 1].Region).Count();
+            Assert.AreEqual(headings, regions.Count, "every region heading in the places lettered");
+            Assert.Greater(atlas.TitleLettering.Glyphs.Select(g => g.style.rotate.value.angle.value).Distinct().Count(), 1, "by hand: the letters lean their own ways");
             yield return Picture("Saltmarrow");
 
             atlas.Turn(1);
             yield return null;
             Assert.AreEqual("Emberdown", map.PageName, "→ turns the page");
+            Assert.AreEqual("EMBERDOWN", Glyphs(atlas.PageLettering), "and the page's region is lettered again");
             Assert.AreEqual(0, map.Count(MapInk.Drawn) + map.Count(MapInk.Walked) + map.Count(MapInk.Seen), "a page she has not been to is blank");
             atlas.Turn(-2);
             yield return null;

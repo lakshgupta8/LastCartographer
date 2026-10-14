@@ -109,7 +109,8 @@ namespace OWSBG.Narrative
                     var go = new GameObject("Folk_" + look.Crowd[i] + "_" + i);
                     go.transform.SetParent(room.transform, false);
                     go.transform.position = new Vector3(x, 0f, 0.6f + 0.18f * (i % 3));
-                    IslandDrawing.Dress(go, Townsfolk.Character(look.Crowd[i]), drawing.People, x > TalkerX, look.CrowdActivity);
+                    if (IslandDrawing.Dress(go, Townsfolk.Character(look.Crowd[i]), drawing.People, x > TalkerX, look.CrowdActivity))
+                        go.AddComponent<CrowdTurns>();   // they turn to watch her go by (blank-generator.md §3)
                 }
             }
 

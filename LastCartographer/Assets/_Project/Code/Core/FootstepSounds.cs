@@ -99,14 +99,33 @@ namespace OWSBG.Core
         /// whisper where it is erased.</summary>
         public static float FadeGain(int stage) => Math.Max(0, Math.Min(stage, FadeStages.Max)) switch { 0 => 1f, 1 => 0.85f, 2 => 0.65f, 3 => 0.45f, _ => 0.3f };
 
-        // ---- the wall (AUD-17) ----
+        // ---- the wall (AUD-17; by its surface, AUD-21) ----
 
-        /// <summary>The Talonhold's catch as she grips a wall.</summary>
-        public const string ClingCue = "wall_cling";
-        /// <summary>Her talons scraping down the wall once the hold is spent; a loop.</summary>
-        public const string SlideCue = "wall_slide";
-        /// <summary>The push off the wall.</summary>
-        public const string KickCue = "wall_kick";
+        /// <summary>The Talonhold's catch as she grips a wall of this surface.</summary>
+        public static string ClingCue(Surface s) => "wall_cling_" + s.ToString().ToLowerInvariant();
+        /// <summary>Her talons scraping down a wall of this surface once the hold is spent; a loop.</summary>
+        public static string SlideCue(Surface s) => "wall_slide_" + s.ToString().ToLowerInvariant();
+        /// <summary>The push off a wall of this surface.</summary>
+        public static string KickCue(Surface s) => "wall_kick_" + s.ToString().ToLowerInvariant();
+
+        /// <summary>
+        /// A wall as her talons find it: the pitch their scrape takes on it and how narrow (iron screeches, moss barely
+        /// speaks), how hard it is (how much of the scratch there is, against the surface's own step), and the grit that
+        /// catches and lets go as she slides.
+        /// </summary>
+        public static (float hz, float q, float hard, float grit, float gritLo, float gritHi) WallOf(Surface s) => s switch
+        {
+            Surface.Wood => (1500f, 1.5f, 0.7f, 25f, 1600f, 2800f),
+            Surface.Stone => (2600f, 3f, 1f, 40f, 2600f, 4200f),
+            Surface.Iron => (1900f, 8f, 1f, 15f, 3000f, 4500f),
+            Surface.Ash => (1700f, 1.2f, 0.5f, 120f, 2200f, 5000f),
+            Surface.Moss => (600f, 1f, 0.15f, 10f, 900f, 1600f),
+            Surface.Earth => (1200f, 1.2f, 0.5f, 60f, 1800f, 3200f),
+            Surface.Grass => (2400f, 1f, 0.3f, 80f, 2500f, 5000f),
+            Surface.Sand => (1900f, 1f, 0.5f, 150f, 3000f, 6000f),
+            Surface.Water => (2200f, 1f, 0.2f, 50f, 1500f, 3000f),
+            _ => (1800f, 1.5f, 0.8f, 30f, 2200f, 3600f),   // paper: the page itself
+        };
 
         // ---- the sounds ----
 
@@ -122,10 +141,29 @@ namespace OWSBG.Core
                 }
                 InkSounds.Add(LandCue(s), InkSounds.Kind.Wren, "a landing on " + What(s), () => Land(surface), 0.5f, false, null, AudioDirection.Voice.World);
             }
-            InkSounds.Add(ClingCue, InkSounds.Kind.Wren, "the Talonhold's catch: talons biting the wall, two quick scratches and a small knock", Cling, 0.35f, false, null, AudioDirection.Voice.World);
-            InkSounds.Add(SlideCue, InkSounds.Kind.Wren, "talons scraping down the wall, the hold spent", Slide, 0.3f, true, null, AudioDirection.Voice.World);
-            InkSounds.Add(KickCue, InkSounds.Kind.Wren, "the push off the wall: a scuff and the air", Kick, 0.4f, false, null, AudioDirection.Voice.World);
+            foreach (Surface s in Enum.GetValues(typeof(Surface)))
+            {
+                var surface = s;
+                string on = WallWhat(s);
+                InkSounds.Add(ClingCue(s), InkSounds.Kind.Wren, "the Talonhold's catch on " + on + ": talons biting, and the wall under them", () => Cling(surface), 0.35f, false, null, AudioDirection.Voice.World);
+                InkSounds.Add(SlideCue(s), InkSounds.Kind.Wren, "talons scraping down " + on + ", the hold spent", () => Slide(surface), 0.3f, true, null, AudioDirection.Voice.World);
+                InkSounds.Add(KickCue(s), InkSounds.Kind.Wren, "the push off " + on + ": a scuff and the air", () => Kick(surface), 0.4f, false, null, AudioDirection.Voice.World);
+            }
         }
+
+        static string WallWhat(Surface s) => s switch
+        {
+            Surface.Wood => "a wall of boards",
+            Surface.Stone => "stone",
+            Surface.Iron => "iron, screeching",
+            Surface.Ash => "an ash bank, crumbling",
+            Surface.Moss => "moss, soft",
+            Surface.Earth => "an earth bank, gritty",
+            Surface.Grass => "turf, swishing",
+            Surface.Sand => "sand, running",
+            Surface.Water => "a wet wall",
+            _ => "the page",
+        };
 
         static string What(Surface s) => s switch
         {
@@ -208,30 +246,52 @@ namespace OWSBG.Core
             return b;
         }
 
-        static float[] Cling()
+        /// <summary>Another sound laid into this one at a time and a gain, cut at its end.</summary>
+        static void Lay(float[] into, float[] what, float at, float gain)
         {
+            int o = (int)(at * InkSounds.SampleRate);
+            for (int i = 0; i < what.Length && o + i < into.Length; i++) into[o + i] += what[i] * gain;
+        }
+
+        /// <summary>The catch: two quick scratches of the talons, as hard as the wall lets them be, and the wall itself
+        /// taking her weight (its own step, under them).</summary>
+        static float[] Cling(Surface s)
+        {
+            var w = WallOf(s);
+            int seed = 1400 + (int)s * 10;
             var b = Buf(0.14f);
-            InkSounds.Scratch(b, 0f, 0.04f, 3000f, 2200f, 2.5f, 1f, 1400, 0.001f, 0.012f);
-            InkSounds.Scratch(b, 0.03f, 0.04f, 2800f, 2000f, 2.5f, 0.8f, 1401, 0.001f, 0.012f);
-            InkSounds.Drop(b, 0.02f, 0.05f, 240f, 160f, 0.5f, 0.001f, 0.015f);
+            float k = w.hz / 1800f;
+            InkSounds.Scratch(b, 0f, 0.04f, 3000f * k, 2200f * k, 2.5f, w.hard, seed, 0.001f, 0.012f);
+            InkSounds.Scratch(b, 0.03f, 0.04f, 2800f * k, 2000f * k, 2.5f, 0.8f * w.hard, seed + 1, 0.001f, 0.012f);
+            Lay(b, Step(s, 0), 0.02f, 1f - 0.5f * w.hard);
             return b;
         }
 
         const float SlideOverlap = 0.05f;
 
-        static float[] Slide()
+        /// <summary>The scrape down: a steady drag at the wall's pitch and the grit catching and letting go; a soft wall
+        /// is more its own rub than any scratch, a hard one all scratch.</summary>
+        static float[] Slide(Surface s)
         {
-            var b = Buf(0.6f + SlideOverlap);
-            InkSounds.Scratch(b, 0f, 0.6f + SlideOverlap, 1800f, 1800f, 1.5f, 0.6f, 1402, 0.05f, 10f);       // the drag, steady
-            EnemySounds.Grain(b, 0f, 0.6f + SlideOverlap, 30f, 0.008f, 2200f, 3600f, 2.5f, 1f, 1403);        // the talons catching and letting go
+            var w = WallOf(s);
+            int seed = 1402 + (int)s * 10;
+            float len = 0.6f + SlideOverlap;
+            var b = Buf(len);
+            InkSounds.Scratch(b, 0f, len, w.hz, w.hz, w.q, 0.6f * w.hard, seed, 0.05f, 10f);              // the drag, steady
+            EnemySounds.Grain(b, 0f, len, w.grit, 0.008f, w.gritLo, w.gritHi, 2.5f, 1f, seed + 1);         // the talons catching and letting go
+            if (w.hard < 0.5f) InkSounds.Smear(b, 0f, len, w.hz * 0.6f, w.hz * 0.6f, 0.6f * (1f - w.hard), seed + 2, 0.05f, 10f);   // the wall's own rub
             return EnemySounds.Seamless(b, SlideOverlap);
         }
 
-        static float[] Kick()
+        /// <summary>The push off: the wall's step under the foot that kicks, the talons' scuff and the air.</summary>
+        static float[] Kick(Surface s)
         {
+            var w = WallOf(s);
+            int seed = 1404 + (int)s * 10;
             var b = Buf(0.2f);
-            InkSounds.Scratch(b, 0f, 0.05f, 1600f, 1100f, 1.5f, 1f, 1404, 0.001f, 0.02f);
-            EnemySounds.Whoosh(b, 0.02f, 0.15f, 900f, 2200f, 1.2f, 0.6f, 1405, 0.3f);
+            Lay(b, Step(s, 2), 0f, 0.8f);
+            InkSounds.Scratch(b, 0f, 0.05f, w.hz * 0.9f, w.hz * 0.6f, 1.5f, w.hard, seed, 0.001f, 0.02f);
+            EnemySounds.Whoosh(b, 0.02f, 0.15f, 900f, 2200f, 1.2f, 0.6f, seed + 1, 0.3f);
             return b;
         }
 

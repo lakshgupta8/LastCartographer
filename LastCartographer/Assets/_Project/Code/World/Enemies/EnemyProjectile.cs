@@ -1,4 +1,5 @@
 using System;
+using OWSBG.Core;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -16,9 +17,11 @@ namespace OWSBG.World
         public LayerMask GroundMask;
 
         public bool IsSpent { get; private set; }
+        /// <summary>How it ended, once it is spent: on her, the ground, its time, or unwritten (AUD-19).</summary>
+        public ShotEnd Ending { get; private set; }
         /// <summary>Every projectile a strike has unwritten.</summary>
         public static event Action<EnemyProjectile> Erased;
-        /// <summary>Spent, on her, the ground or its time: where it lands sounds (AUD-11).</summary>
+        /// <summary>Spent, on her, the ground or its time: where it lands sounds (AUD-11), as it ended (AUD-19).</summary>
         public static event Action<EnemyProjectile> Spent;
 
         Rigidbody2D _body;
@@ -46,6 +49,7 @@ namespace OWSBG.World
             v.transform.SetParent(go.transform, false);
             v.transform.localScale = new Vector3(size.x, size.y, 0.3f);
             v.GetComponent<MeshRenderer>().sharedMaterial = mat != null ? mat : InkMaterials.Dark;
+            go.AddComponent<ProjectileVoice>();
             return p;
         }
 
@@ -62,7 +66,7 @@ namespace OWSBG.World
             var charters = hit.Source.GetComponent<CharterSet>();
             if (charters == null || charters.Current == null || !charters.Current.ErasesProjectiles) return false;
             Erased?.Invoke(this);
-            Spend();
+            Spend(ShotEnd.Unwritten);
             return true;
         }
 
@@ -82,15 +86,17 @@ namespace OWSBG.World
                 var vitals = _hits[i].GetComponentInParent<WrenVitals>();
                 if (vitals == null) continue;
                 vitals.Damage(Damage, p - Velocity.normalized);
-                Spend();
+                Spend(ShotEnd.Her);
                 return;
             }
-            if (LifeLeft <= 0f || Physics2D.OverlapBox(p, size * 0.5f, 0f, GroundMask) != null) Spend();
+            if (Physics2D.OverlapBox(p, size * 0.5f, 0f, GroundMask) != null) Spend(ShotEnd.Ground);
+            else if (LifeLeft <= 0f) Spend(ShotEnd.Time);
         }
 
-        void Spend()
+        void Spend(ShotEnd how)
         {
             IsSpent = true;
+            Ending = how;
             Spent?.Invoke(this);
             Destroy(gameObject);
         }

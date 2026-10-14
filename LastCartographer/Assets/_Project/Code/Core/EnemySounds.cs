@@ -117,6 +117,8 @@ namespace OWSBG.Core
                 moves: Map("peck", "reedling_peck", "lunge", "reedling_peep", "move", "reedling_scurry"));
             // ---- the bosses (AUD-15): their own voices, EnemySoundsBosses.cs ----
             Bosses();
+            // ---- the things thrown at her (AUD-19): EnemySoundsShots.cs ----
+            ShotsThrown();
         }
 
         /// <summary>Put every cue the voices name into <see cref="InkSounds"/>' table. Called once, by its static constructor.</summary>
@@ -182,6 +184,7 @@ namespace OWSBG.Core
             One("reedling_peep", "a peep", ReedlingPeep, 0.7f, move: true);
             One("reedling_scurry", "quick small steps", ReedlingScurry, 0.3f, move: true);
             RegisterBosses();
+            RegisterShots();
             foreach (var v in _voices.Values)
                 foreach (var c in v.Cues)
                     if (!InkSounds.Has(c)) throw new InvalidOperationException(v.Family + " names a cue that does not exist: " + c);

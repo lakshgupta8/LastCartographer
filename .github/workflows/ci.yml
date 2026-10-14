@@ -1,16 +1,14 @@
-# The Last Cartographer: tests, the Windows build, a smoke run of that build, and (on a version tag) Steam.
+# The Last Cartographer: tests, the Windows build, a smoke run of that build, and Steam (by hand only).
 # Secrets it needs: UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD (tests, build); STEAM_USERNAME, STEAM_CONFIG_VDF in the steam environment.
-# dev is the working branch and the default; main is a frozen checkpoint (CONTRIBUTING.md).
+# It runs only on a pull request from dev into main, and when started by hand (Actions > CI > Run workflow).
+# Nothing else triggers it: not pushes, not other pull requests, not a schedule (CONTRIBUTING.md).
 name: CI
 
 on:
-  push:
-    branches: [dev]
-    tags: ['v*']
   pull_request:
-    branches: [dev, main]
+    branches: [main]
   workflow_dispatch:
-    # A manual run picks its jobs; pushes, pull requests and the schedule always run tests, build and smoke run.
+    # A manual run picks its jobs; a pull request into main always runs tests, build and smoke run.
     # A job runs only when everything before it that ran passed. The smoke run and Steam need this run's build.
     inputs:
       tests:
@@ -29,8 +27,6 @@ on:
         description: 'Steam upload (needs the build, and the steam environment''s secrets)'
         type: boolean
         default: false
-  schedule:
-    - cron: '0 6 * * 1'     # the week's build (PRO-02): Mondays 06:00 UTC, tests, build and smoke run
 
 # The test runner posts its results as a check run; the repository's default token may only read.
 permissions:
@@ -51,7 +47,8 @@ env:
 jobs:
   tests:
     name: Tests (${{ matrix.mode }})
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.tests }}
+    # A pull request into main runs only when it comes from dev.
+    if: ${{ (github.event_name != 'pull_request' || github.head_ref == 'dev') && (github.event_name != 'workflow_dispatch' || inputs.tests) }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
@@ -101,7 +98,7 @@ jobs:
     name: Windows build
     needs: tests
     # After the tests pass, or when a manual run skipped them; never after a failure.
-    if: ${{ !cancelled() && (needs.tests.result == 'success' || needs.tests.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.build) }}
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.head_ref == 'dev') && (needs.tests.result == 'success' || needs.tests.result == 'skipped') && (github.event_name != 'workflow_dispatch' || inputs.build) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -142,7 +139,7 @@ jobs:
     name: Smoke run (Windows)
     needs: build-windows
     # Only after this run's build: a skipped job before it would otherwise skip this one too.
-    if: ${{ !cancelled() && needs.build-windows.result == 'success' && (github.event_name != 'workflow_dispatch' || inputs.smoke) }}
+    if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.head_ref == 'dev') && needs.build-windows.result == 'success' && (github.event_name != 'workflow_dispatch' || inputs.smoke) }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -173,8 +170,8 @@ jobs:
   steam:
     name: Steam upload
     needs: [build-windows, smoke-windows]
-    # A version tag uploads after a passing smoke run; a manual run uploads if asked, after the smoke run if it ran.
-    if: ${{ !cancelled() && needs.build-windows.result == 'success' && (needs.smoke-windows.result == 'success' || (needs.smoke-windows.result == 'skipped' && github.event_name == 'workflow_dispatch')) && (startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.steam)) }}
+    # Only a manual run uploads, and only if asked; after the smoke run if it ran.
+    if: ${{ !cancelled() && needs.build-windows.result == 'success' && (needs.smoke-windows.result == 'success' || (needs.smoke-windows.result == 'skipped' && github.event_name == 'workflow_dispatch')) && (github.event_name == 'workflow_dispatch' && inputs.steam) }}
     runs-on: ubuntu-latest
     environment: steam
     steps:

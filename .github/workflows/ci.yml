@@ -1,12 +1,14 @@
 # The Last Cartographer: tests, the Windows build, a smoke run of that build, and (on a version tag) Steam.
-# docs/design/build-pipeline.md explains each job and the secrets it needs.
+# Secrets it needs: UNITY_LICENSE, UNITY_EMAIL, UNITY_PASSWORD (tests, build); STEAM_USERNAME, STEAM_CONFIG_VDF in the steam environment.
+# dev is the working branch and the default; main is a frozen checkpoint (CONTRIBUTING.md).
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [dev]
     tags: ['v*']
   pull_request:
+    branches: [dev, main]
   workflow_dispatch:
     # A manual run picks its jobs; pushes, pull requests and the schedule always run tests, build and smoke run.
     # A job runs only when everything before it that ran passed. The smoke run and Steam need this run's build.

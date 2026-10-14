@@ -1,0 +1,10 @@
+version: 2
+updates:
+  # The workflow's actions (checkout, cache, game-ci, ...) move to a new major now and then.
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+    open-pull-requests-limit: 5

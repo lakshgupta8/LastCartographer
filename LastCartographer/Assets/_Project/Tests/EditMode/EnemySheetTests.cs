@@ -110,7 +110,7 @@ namespace OWSBG.Tests
                 Assert.IsFalse(m.clips.First(c => c.name == "death").loop, name + " dies once");
                 Assert.IsFalse(m.clips.First(c => c.name == "hurt").loop, name + " is hurt once");
                 Assert.IsTrue(m.clips.First(c => c.name == "idle").loop, name + " idles");
-                Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/" + name.ToLowerInvariant() + "-turnaround.png")), name + "'s model sheet");
+                DevDocs.AssertSheet(Path.GetFullPath("../docs/art/" + name.ToLowerInvariant() + "-turnaround.png"), name + "'s model sheet");
             }
         }
 

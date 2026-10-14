@@ -94,7 +94,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheModelSheetAndTheImporterAreInPlace()
         {
-            Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/wren-turnaround.png")), "the turnaround is the model sheet (CHR-02)");
+            DevDocs.AssertSheet(Path.GetFullPath("../docs/art/wren-turnaround.png"), "the turnaround is the model sheet (CHR-02)");
             var importer = AssetImporter.GetAtPath(Folder + "Wren_idle.png") as TextureImporter;
             Assert.IsNotNull(importer, "idle sheet importer");
             Assert.IsFalse(importer.mipmapEnabled, "a sheet is read one frame at a time");

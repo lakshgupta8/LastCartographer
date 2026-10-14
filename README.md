@@ -28,8 +28,7 @@ You are **Wren**, a small cartographer with a needle-quill. The map you carry is
 you leave undrawn begins to fade to blank paper. Fight through ink-and-wash birds, climb layered paper dioramas with
 real depth, and decide for each place whether to **anchor** it, **hold** it, or **let it go**.
 
-Inspired by *Hollow Knight: Silksong*. Built to be read as well as played: the story, systems and tools are all
-documented in this repository.
+Inspired by *Hollow Knight: Silksong*. Built to be read as well as played: the code, tests and content tools are all in this repository.
 
 <table>
   <tr>
@@ -106,48 +105,9 @@ Everything but Move can be remapped in **Options → Controls**.
 
 ## Documentation
 
-The design is written down in full. Start with the pillars, then follow whichever thread you care about.
-
-<details open>
-<summary><b>Start here</b></summary>
-
-- [Game design overview](docs/design/game-design-overview.md): pillars, loop, systems, scope
-- [Combat and movement](docs/design/combat-and-movement.md): Wren's kit, enemies and bosses
-- [Art direction](docs/design/art-direction.md): the ink-on-paper look and the 2.5D recipe
-- [Engine decision](docs/01-engine-decision.md): why Unity 6
-- [Production plan](docs/02-production-plan.md): milestones, task IDs, cut list
-- [Tooling](docs/03-tooling.md)
-
-</details>
-
-<details>
-<summary><b>Story</b> (spoilers)</summary>
-
-- [Story bible](docs/story/story-bible.md): kingdom, factions, gates, secrets, bosses, endings
-- [Character bibles](docs/story/character-bibles.md) and [dialogue style guide](docs/story/dialogue-style-guide.md)
-- [Boss sheets](docs/story/boss-sheets.md) and [endings](docs/story/endings.md)
-- Region arcs: [Saltmarrow](docs/story/saltmarrow-arc.md), [Emberdown](docs/story/emberdown-arc.md), [Verdance](docs/story/verdance-arc.md), [Halden](docs/story/halden-arc.md), [Windreach](docs/story/windreach-arc.md), [Greyfold](docs/story/threshold.md), [Act 3](docs/story/act3.md)
-
-</details>
-
-<details>
-<summary><b>Systems and pipelines</b></summary>
-
-- [Build pipeline](docs/design/build-pipeline.md), [performance](docs/design/performance.md), [bug bar](docs/design/bug-bar.md), [tracker](docs/design/tracker.md)
-- [Accessibility](docs/design/accessibility.md) and [localisation](docs/design/localisation.md)
-- Audio: [direction](docs/design/audio-direction.md), [music](docs/design/music.md), [ambience](docs/design/ambience.md), [mix](docs/design/audio-mix.md), [roll-call](docs/design/roll-call.md)
-- [Feel test](docs/design/feel-test.md), [tuning](docs/design/tuning.md), [store page](docs/design/store-page.md)
-- Character and environment art lives in [docs/art](docs/art/)
-
-</details>
-
-<details>
-<summary><b>Everything else</b></summary>
-
-The old long-form README, with the full repository layout and every content pipeline, is now
-[docs/development-notes.md](docs/development-notes.md).
-
-</details>
+The design, story and production papers are working documents and are kept out of this repository. What lives here is
+the game, its tests, the build and content tools under [`tools/`](tools/), and the press material in
+[`docs/marketing/`](docs/marketing/). To work on the game, read [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Build and test
 
@@ -159,15 +119,15 @@ pwsh tools/build.ps1
 Unity.exe -batchmode -projectPath LastCartographer -runTests -testPlatform PlayMode -testResults logs/playmode-results.xml
 ```
 
-CI runs on every push using GameCI: both test suites, the Windows build, a smoke run and a CPU-side performance
-probe. Details are in [docs/design/build-pipeline.md](docs/design/build-pipeline.md).
+CI runs on every pull request and every push to `dev` using GameCI: both test suites, the Windows build, a smoke run and
+a CPU-side performance probe. See [CONTRIBUTING.md](CONTRIBUTING.md) for the branch model.
 
 ## Reporting a bug
 
 Press **F12** in the game. It writes a `report.md`, the save, the log and a screenshot to a `BugReports` folder under
 `%USERPROFILE%\AppData\LocalLow\<company>\LastCartographer\`. Attach that folder to a
-[new issue](https://github.com/lakshgupta8/LastCartographer/issues/new). Severity follows the
-[bug bar](docs/design/bug-bar.md).
+[new issue](https://github.com/lakshgupta8/LastCartographer/issues/new). The bug form asks for the
+severity and area.
 
 ## Built with
 

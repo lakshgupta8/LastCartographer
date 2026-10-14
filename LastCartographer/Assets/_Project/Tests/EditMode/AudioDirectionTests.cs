@@ -21,6 +21,7 @@ namespace OWSBG.Tests
         [Test]
         public void EveryRegionIsScoredToTheBiblesMood()
         {
+            DevDocs.Require("docs/story/story-bible.md");
             var bible = File.ReadAllText(Path.Combine(RepoRoot, "docs/story/story-bible.md"));
             foreach (Region r in Enum.GetValues(typeof(Region)))
             {

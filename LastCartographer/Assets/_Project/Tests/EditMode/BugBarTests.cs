@@ -83,6 +83,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheTrackersWordsAreTheSameEverywhere()
         {
+            DevDocs.Require("docs/02-production-plan.md");
             var labels = BugBar.Labels().ToList();
             Assert.AreEqual(labels.Count, labels.Select(l => l.Name).Distinct().Count(), "no label twice");
             foreach (var l in labels) { Assert.IsNotEmpty(l.Colour, l.Name); Assert.IsNotEmpty(l.Description, l.Name); }

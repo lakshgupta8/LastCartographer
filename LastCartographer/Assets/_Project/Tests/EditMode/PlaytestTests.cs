@@ -45,6 +45,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheQuestionsAndThePapersAgree()
         {
+            DevDocs.Require("docs/playtest", "docs/design/playtest-round1.md");
             var ids = Playtest.Questions.Select(q => q.Id).ToList();
             CollectionAssert.AllItemsAreUnique(ids);
             Assert.AreEqual(12, ids.Count);

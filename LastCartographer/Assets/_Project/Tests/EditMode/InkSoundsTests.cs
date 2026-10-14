@@ -120,6 +120,7 @@ namespace OWSBG.Tests
         [Test]
         public void TheDeliverablesAreRendered()
         {
+            DevDocs.Require("docs/audio/sfx");
             string dir = Path.Combine(RepoRoot, "docs/audio/sfx");
             Assert.IsTrue(Directory.Exists(dir), dir);
             foreach (var c in InkSounds.Cues)

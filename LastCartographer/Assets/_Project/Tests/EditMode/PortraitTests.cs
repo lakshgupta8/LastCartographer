@@ -256,8 +256,8 @@ namespace OWSBG.Tests
             // The looks' faces are not on the page: an island loads the one its person stands in, and lets it go with the room.
             foreach (var e in Load().looks)
                 StringAssert.DoesNotContain(AssetDatabase.AssetPathToGUID(Folder + e.file), scene, e.speaker + "'s face is loaded with its island, not carried");
-            Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/portraits.png")), "the contact sheet");
-            Assert.IsTrue(File.Exists(Path.GetFullPath("../docs/art/portrait-looks.png")), "the looks' sheet");
+            DevDocs.AssertSheet(Path.GetFullPath("../docs/art/portraits.png"), "the contact sheet");
+            DevDocs.AssertSheet(Path.GetFullPath("../docs/art/portrait-looks.png"), "the looks' sheet");
         }
     }
 }

@@ -87,7 +87,7 @@ namespace OWSBG.Tests
                 Assert.IsNotNull(shop, hub + "'s shop is on the map");
                 Assert.IsTrue(AtlasMap.PageOfRoom(shop)!.EndsWith(hub), hub + "'s shop is on its own page");
             }
-            CollectionAssert.AreEqual(new[] { MapMarkKind.Desk, MapMarkKind.Lamp }, AtlasMap.MarksOf("Saltmarrow_Lighthouse").Select(m => m.kind), "the lighthouse: its desk and the fourth lamp");
+            CollectionAssert.AreEqual(new[] { MapMarkKind.Desk, MapMarkKind.Lamp, MapMarkKind.Arena }, AtlasMap.MarksOf("Saltmarrow_Lighthouse").Select(m => m.kind), "the lighthouse: its desk, the fourth lamp, and the fights in it");
             CollectionAssert.AreEqual(new[] { MapMarkKind.Desk, MapMarkKind.Shop }, AtlasMap.MarksOf("Saltmarrow_A").Select(m => m.kind), "the quay: its desk and Sable's shop");
             Assert.IsEmpty(AtlasMap.MarksOf("Saltmarrow_Stilts"));
 
@@ -100,6 +100,33 @@ namespace OWSBG.Tests
             Assert.IsTrue(AtlasMap.IsMarkInked(w, MapMarkKind.Desk, "desk.Saltmarrow_A", "Saltmarrow_A"), "the desk she stood at");
             Assert.IsTrue(AtlasMap.IsMarkInked(w, MapMarkKind.Shop, "Saltmarrow", "Saltmarrow_A"), "the shop in the room she walked");
             Assert.IsFalse(AtlasMap.IsMarkInked(w, MapMarkKind.Lamp, "lamp.Saltmarrow_Lighthouse", "Saltmarrow_Lighthouse"), "a lamp she has not lit");
+        }
+
+        [Test]
+        public void EveryFightIsMarkedInItsRoomAndInkedOnceWon()
+        {
+            // Every boss is fought in a room on the map, and that room carries one arena mark however many fights it holds.
+            foreach (var b in Bosses.All)
+            {
+                var room = AtlasMap.ArenaRoomOf(b.Id);
+                Assert.IsNotNull(room, b.Id + " is fought in a room");
+                Assert.IsNotNull(AtlasMap.Find(room), b.Id + "'s room, " + room + ", is on the map");
+                CollectionAssert.Contains(AtlasMap.BossesIn(room), b.Id);
+                Assert.AreEqual(1, AtlasMap.MarksOf(room).Count(m => m.kind == MapMarkKind.Arena), room + ": one arena mark");
+            }
+            Assert.AreEqual("Emberdown_Stair_3", AtlasMap.ArenaRoomOf("brann"), "a planned arena");
+            Assert.AreEqual("Saltmarrow_IrisFields", AtlasMap.ArenaRoomOf("reedmother_brood"), "a zone that is a room");
+            CollectionAssert.AreEquivalent(new[] { "lamp_keeper", "halvard" }, AtlasMap.BossesIn("Saltmarrow_Lighthouse"), "the Lamp-Keeper and the first hunt, both in the fourth lighthouse");
+            Assert.IsFalse(AtlasMap.MarksOf("Saltmarrow_Stilts").Any(m => m.kind == MapMarkKind.Arena), "no fight on the stilts");
+
+            // In pencil until every fight there is won.
+            var w = new WorldState();
+            Assert.IsFalse(AtlasMap.IsMarkInked(w, MapMarkKind.Arena, "Saltmarrow_Lighthouse", "Saltmarrow_Lighthouse"));
+            w.Set(Bosses.FlagKey("lamp_keeper"), 1);
+            Assert.IsFalse(AtlasMap.IsMarkInked(w, MapMarkKind.Arena, "Saltmarrow_Lighthouse", "Saltmarrow_Lighthouse"), "the Lamp-Keeper won, the first hunt not yet");
+            w.Set(Bosses.FlagKey("halvard"), 1);
+            Assert.IsTrue(AtlasMap.IsMarkInked(w, MapMarkKind.Arena, "Saltmarrow_Lighthouse", "Saltmarrow_Lighthouse"), "both won: in ink");
+            Assert.IsFalse(AtlasMap.IsMarkInked(w, MapMarkKind.Arena, "Saltmarrow_Stilts", "Saltmarrow_Stilts"), "no fight, no ink");
         }
 
         [Test]

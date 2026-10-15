@@ -18,8 +18,8 @@ namespace OWSBG.Core
     /// <summary>How a room is on the page: not at all, in pencil (seen from a vantage, or walked but not surveyed), in ink, or erased.</summary>
     public enum MapInk { Unknown, Seen, Walked, Drawn, Erased }
 
-    /// <summary>What a room's box carries besides its vantages: a drafting desk, a lamp, a shop.</summary>
-    public enum MapMarkKind { Desk, Lamp, Shop }
+    /// <summary>What a room's box carries besides its vantages: a drafting desk, a lamp, a shop, a boss's arena.</summary>
+    public enum MapMarkKind { Desk, Lamp, Shop, Arena }
 
     /// <summary>
     /// The atlas's map (ENV-11, docs/design/atlas-map.md): each region's rooms laid out on a page's grid by walking their
@@ -150,9 +150,34 @@ namespace OWSBG.Core
         /// <summary>Who sells where: a hub's stock (<see cref="Economy.StockAt"/>) and the room its seller stands in.</summary>
         public static readonly (string room, string hub)[] Shops = { ("Saltmarrow_A", "Saltmarrow") };   // Sable's, on the quay
 
+        /// <summary>The fights in the coast's hand-built rooms: their sheets name the zone, not the room (Halvard's first hunt is staged in the fourth lighthouse).</summary>
+        public static readonly (string boss, string room)[] CoastArenas = { ("lamp_keeper", "Saltmarrow_Lighthouse"), ("halvard", "Saltmarrow_Lighthouse") };
+
+        /// <summary>
+        /// The room a boss is fought in: its planned arena (RoomPlans' Arena column), a coast fight's room, or the room
+        /// its sheet's zone names when that is a room on the map; null when none is.
+        /// </summary>
+        public static string ArenaRoomOf(string bossId)
+        {
+            foreach (var plan in RoomPlans.All) if (plan.Arena == bossId) return plan.Id;
+            foreach (var (boss, room) in CoastArenas) if (boss == bossId) return room;
+            var sheet = Bosses.Find(bossId);
+            var zoneRoom = sheet?.Zone?.Replace('.', '_');
+            return zoneRoom != null && Find(zoneRoom) != null ? zoneRoom : null;
+        }
+
+        /// <summary>The bosses fought in a room.</summary>
+        public static List<string> BossesIn(string room)
+        {
+            var list = new List<string>();
+            foreach (var b in Bosses.All) if (ArenaRoomOf(b.Id) == room) list.Add(b.Id);
+            return list;
+        }
+
         /// <summary>
         /// A room's marks, in the order they are drawn: its desks and lamps (the atlas's waypoints, by the id she
-        /// discovers them by) and the shop whose seller stands there (by its hub).
+        /// discovers them by), the shop whose seller stands there (by its hub), and its arena (by the room: one mark
+        /// however many fights it holds).
         /// </summary>
         public static List<(MapMarkKind kind, string id)> MarksOf(string room)
         {
@@ -165,15 +190,28 @@ namespace OWSBG.Core
                 if (wp.Room == scene && wp.Kind == WaypointKind.Lamp) marks.Add((MapMarkKind.Lamp, wp.Id));
             foreach (var (r, hub) in Shops)
                 if (r == room) marks.Add((MapMarkKind.Shop, hub));
+            if (BossesIn(room).Count > 0) marks.Add((MapMarkKind.Arena, room));
             return marks;
         }
 
         /// <summary>
         /// Whether a mark is in ink: a desk she has stood at, a lamp she has lit (both known waypoints), a shop in a
-        /// room she has walked. Otherwise it is in pencil, seen as she passed.
+        /// room she has walked, an arena whose every fight she has won. Otherwise it is in pencil, seen as she passed.
         /// </summary>
-        public static bool IsMarkInked(WorldState w, MapMarkKind kind, string id, string room) =>
-            w != null && (kind == MapMarkKind.Shop ? IsWalked(w, room) : Atlas.IsKnown(w, id));
+        public static bool IsMarkInked(WorldState w, MapMarkKind kind, string id, string room)
+        {
+            if (w == null) return false;
+            switch (kind)
+            {
+                case MapMarkKind.Shop: return IsWalked(w, room);
+                case MapMarkKind.Arena:
+                    var bosses = BossesIn(room);
+                    if (bosses.Count == 0) return false;
+                    foreach (var b in bosses) if (!Bosses.IsDefeated(w, b)) return false;
+                    return true;
+                default: return Atlas.IsKnown(w, id);
+            }
+        }
 
         // ---- the ink ------------------------------------------------------------------------------------------------
 

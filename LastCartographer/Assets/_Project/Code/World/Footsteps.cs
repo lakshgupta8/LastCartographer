@@ -24,7 +24,7 @@ namespace OWSBG.World
         AudioSource _slide;
         string _slideCue;
         FootstepSounds.Surface _wall = FootstepSounds.Surface.Paper;
-        readonly Dictionary<Collider2D, FootstepSounds.Surface> _known = new Dictionary<Collider2D, FootstepSounds.Surface>();
+        static readonly Dictionary<Collider2D, FootstepSounds.Surface> _known = new Dictionary<Collider2D, FootstepSounds.Surface>();
 
         public int Steps { get; private set; }
         public string LastStep { get; private set; }
@@ -171,8 +171,9 @@ namespace OWSBG.World
             return hit.collider == null ? (FootstepSounds.Surface?)null : SurfaceOf(hit.collider);
         }
 
-        /// <summary>A block's surface: its tile, else its room's region's ground. Kept, since blocks do not change.</summary>
-        FootstepSounds.Surface SurfaceOf(Collider2D col)
+        /// <summary>A block's surface: its tile, else its room's region's ground. Kept, since blocks do not change; anyone's
+        /// feet read it the same (the townsfolk's too, AUD-23).</summary>
+        public static FootstepSounds.Surface SurfaceOf(Collider2D col)
         {
             if (_known.TryGetValue(col, out var known)) return known;
             var r = col.GetComponent<Renderer>();

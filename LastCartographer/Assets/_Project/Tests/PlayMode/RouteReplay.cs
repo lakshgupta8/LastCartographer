@@ -76,15 +76,32 @@ namespace OWSBG.Tests
             yield return Follow(where, node, choices);
         }
 
+        /// <summary>
+        /// A scene played for one thing (a commission's step): the choices that lead to it, and at any other question the
+        /// last option open, the one that walks away. It need not ask every question the choices name.
+        /// </summary>
+        public IEnumerator Converse(string where, string node, int[] choices)
+        {
+            Assert.IsTrue(_svc.StartNode(node), where + ": " + node + " exists and starts");
+            yield return Follow(where, node, choices, lenient: true);
+        }
+
         /// <summary>A scene something else started (an arena whose boss speaks first): read it and make its choices.</summary>
-        public IEnumerator Follow(string where, string node, int[] choices)
+        public IEnumerator Follow(string where, string node, int[] choices, bool lenient = false)
         {
             yield return Until(() => _view.IsVisible, 5f, node + "'s page");
             int k = 0;
             float t = 0f;
             while (_svc.IsRunning && t < 60f)
             {
-                if (_presenter.IsShowingOptions)
+                if (_presenter.IsShowingOptions && lenient && k >= choices.Length)
+                {
+                    int last = _view.OptionCount - 1;
+                    while (last > 0 && !_view.IsOptionAvailable(last)) last--;
+                    _presenter.Choose(last);
+                    yield return null;
+                }
+                else if (_presenter.IsShowingOptions)
                 {
                     Assert.Less(k, choices.Length, where + ": " + node + " offers a choice the route does not make");
                     int c = choices[k++];
@@ -103,7 +120,8 @@ namespace OWSBG.Tests
                 yield return null;
             }
             Assert.IsFalse(_svc.IsRunning, node + " ends");
-            Assert.AreEqual(choices.Length, k, where + ": " + node + " made every choice the route lists");
+            if (!lenient) Assert.AreEqual(choices.Length, k, where + ": " + node + " made every choice the route lists");
+            else Assert.AreEqual(choices.Length, System.Math.Min(k, choices.Length), where + ": " + node + " made every choice listed");
         }
 
         /// <summary>

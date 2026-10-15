@@ -25,6 +25,7 @@ namespace OWSBG.UI
         bool _wasFrozen, _built;
         VisualElement _panel, _rows;
         Label _title, _blurb, _steps, _reward;
+        InkLettering _titleLettering;   // the title in her hand (atlas-map.md §5)
         readonly List<CommissionDef> _entries = new List<CommissionDef>();
 
         void OnEnable() { CommissionLedger.Opened += OnOpened; Commissions.Changed += OnChanged; }
@@ -110,7 +111,8 @@ namespace OWSBG.UI
             _panel.style.width = 860;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
             _title = InkTheme.TitleText("title", Loc.T("ledger.title", "Commissions"), 34, InkTheme.Wash);
-            _title.style.marginBottom = 14;
+            _titleLettering = InkLettering.Over(_title, 34, InkTheme.Wash, InkLettering.Rule.Flourish);
+            _titleLettering.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 17, InkTheme.Ink);
             _blurb.style.marginTop = 12;
@@ -120,7 +122,7 @@ namespace OWSBG.UI
             _reward.style.marginTop = 8;
             var hint = InkTheme.Say("hint", "ledger.hint", "↑↓ choose    J take / turn in    Esc leave", 15, InkTheme.Dim);
             hint.style.marginTop = 18;
-            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(_steps); _panel.Add(_reward); _panel.Add(hint);
+            _panel.Add(_titleLettering); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(_steps); _panel.Add(_reward); _panel.Add(hint);
             InkTheme.Show(_panel, false);
             ui.Desk.Add(_panel);
             _built = true;
@@ -139,6 +141,7 @@ namespace OWSBG.UI
 
             var w = GameState.World;
             _title.text = _ledger != null ? Loc.F("ledger.title_hub", "Commissions — {0}", _ledger.HubId) : Loc.T("ledger.title", "Commissions");
+            _titleLettering.Follow();
             _rows.Clear();
             for (int i = 0; i < _entries.Count; i++) _rows.Add(MakeRow(i, _entries[i], Commissions.StateOf(w, _entries[i].Id)));
 

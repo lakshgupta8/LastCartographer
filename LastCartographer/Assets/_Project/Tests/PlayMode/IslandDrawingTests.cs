@@ -67,6 +67,7 @@ namespace OWSBG.Tests
             for (int i = 0; i < 40; i++) yield return null;
             var cam = Camera.main;
             if (cam == null) yield break;
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null) yield break;   // no GPU (-nographics): no picture
             var rt = new RenderTexture(1280, 720, 24);
             var before = cam.targetTexture;
             cam.targetTexture = rt;

@@ -51,6 +51,9 @@ namespace OWSBG.Core
         /// <summary>The pitch a seed drops at: a little higher for every seed it is worth, up to a fifth.</summary>
         public static float SeedPitch(int count) => 1f + 0.06f * Math.Max(0, Math.Min(8, count - 1));
 
+        /// <summary>A Cantor's eraser, sweep k of three (-1, 0, 1): the outer two a little under and over the middle one.</summary>
+        public static float SweepPitch(int k) => 1f + 0.06f * Math.Max(-1, Math.Min(1, k));
+
         /// <summary>The pitch of a setting's tick, by its value: an octave across the slider, so the ear reads the level.</summary>
         public static float TickPitch(float value01) => value01 < 0f ? 1f : 0.75f + 0.75f * Math.Max(0f, Math.Min(1f, value01));
 
@@ -84,6 +87,7 @@ namespace OWSBG.Core
             World("ability", "an ability learned: a flourish of the pen, rising", Ability, 0.8f);
             World("fade_step", "a place fades a stage: a soft pass of the eraser", FadeStep, 0.35f);
             World("erased", "a place erased: the eraser dragged across the page, twice, and the paper left", Erased, 0.6f);
+            World("eraser_sweep", "a Cantor's toll: one sweep of the eraser across the room, rubber juddering on the page and the crumbs", EraserSweep, 0.45f);
             World("recovered", "a place recovered: ink drawn back", Recovered, 0.6f);
             World("anchor", "a place anchored: a stake driven and the Guild's seal pressed", Anchor, 0.9f);
             World("held", "a place held: a hand laid on the page", Held, 0.5f);
@@ -234,6 +238,21 @@ namespace OWSBG.Core
             Smear(s, 0f, 0.35f, 1200f, 500f, 1f, 740, 0.03f, 0.12f);
             Smear(s, 0.4f, 0.35f, 1100f, 450f, 0.9f, 741, 0.03f, 0.12f);
             Smear(s, 0.7f, 0.19f, 300f, 150f, 0.4f, 742, 0.05f, 0.05f);   // the paper left
+            return s;
+        }
+
+        /// <summary>One sweep of a rubber eraser: a rub that judders as the rubber catches and lets go, and the crumbs.</summary>
+        static float[] EraserSweep()
+        {
+            var s = Buf(0.5f);
+            var rub = Buf(0.42f);
+            Smear(rub, 0f, 0.4f, 1300f, 650f, 1f, 744, 0.03f, 0.1f);
+            for (int i = 0; i < rub.Length; i++)
+            {
+                float t = i / (float)SampleRate;
+                s[i] += rub[i] * (0.65f + 0.35f * (float)Math.Sin(2 * Math.PI * 22f * t));   // the rubber catching
+            }
+            Grain(s, 0.3f, 0.18f, 60f, 0.006f, 2500f, 4500f, 2f, 0.3f, 745, 10f, soft: true);   // the crumbs
             return s;
         }
 

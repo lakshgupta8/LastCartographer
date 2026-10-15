@@ -8,7 +8,8 @@ namespace OWSBG.World
     /// the world's own events with <see cref="WorldSounds"/>' cues. A room change is the page turned, a lamp lighting
     /// its whump, the desk its rest, a seed its drop (pitched by its worth), a seal pressed its stamp, a place erased the
     /// eraser and one recovered the ink drawn back, a decision its sound, an ability its flourish, a shut way a knock, a
-    /// thing thrown its end as it ended (on her, the ground, the air or unwritten: AUD-19). Sounds with a place in the
+    /// thing thrown its end as it ended (on her, the ground, the air or unwritten: AUD-19), a Cantor's toll its eraser's
+    /// three sweeps, which are also the place's erasure when it erases one (AUD-22). Sounds with a place in the
     /// room play from it. Wren's own (her Instruments, her Clarity, her Charter) are <see cref="WrenSounds"/>'; the
     /// pages' are the views' (<c>UiSounds</c>).
     /// </summary>
@@ -52,6 +53,7 @@ namespace OWSBG.World
             RoomTransition.Bumped += OnBarred;
             Offerings.Offered += OnOffered;
             EnemyProjectile.Spent += OnShotSpent;
+            Cantor.Tolled += OnTolled;
         }
 
         void OnDisable()
@@ -77,6 +79,7 @@ namespace OWSBG.World
             RoomTransition.Bumped -= OnBarred;
             Offerings.Offered -= OnOffered;
             EnemyProjectile.Spent -= OnShotSpent;
+            Cantor.Tolled -= OnTolled;
         }
 
         void Play(string id, Vector2? at = null, float pitch = 1f)
@@ -99,7 +102,7 @@ namespace OWSBG.World
         void OnCommission(string id, CommissionState state) => Play(WorldSounds.CommissionCue(state));
         bool _hush;   // an erasure or a recovery also reports a stage change in the same frame: one sound, not two
         void OnFade(string place, int stage) { if (!_hush) Play("fade_step"); }
-        void OnErased(string place) { _hush = true; Play("erased"); }
+        void OnErased(string place) { _hush = true; if (Cantor.Tolling == null) Play("erased"); }   // a toll's erasure is its eraser (OnTolled)
         void OnRecovered(string place) { _hush = true; Play("recovered"); }
         void OnFate(string place, PlaceFate fate) => Play(WorldSounds.FateCue(fate));
         void OnWaypoint(Waypoint wp) => Play("waypoint");
@@ -110,6 +113,13 @@ namespace OWSBG.World
         void OnBarred(RoomTransition t) => Play("barred", At(t));
         void OnOffered(string asker, string memory) => Play("offered");
         void OnShotSpent(EnemyProjectile p) => Play(EnemySounds.EndCue(EnemySounds.ShotOf(p.name), p.Ending), At(p));
+
+        /// <summary>A Cantor's toll drags the eraser three sweeps out from the bell, each heard from where it is drawn (AUD-22).</summary>
+        void OnTolled(Cantor c, string place)
+        {
+            if (c == null) return;
+            for (int k = -1; k <= 1; k++) Play("eraser_sweep", Cantor.SweepAt(c.transform.position, k), WorldSounds.SweepPitch(k));
+        }
 
         void LateUpdate() { _hush = false; }
     }

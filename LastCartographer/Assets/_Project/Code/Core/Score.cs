@@ -559,23 +559,34 @@ namespace OWSBG.Core
         public static readonly Region[] Heard = { Region.Saltmarrow, Region.Emberdown, Region.Verdance, Region.Halden, Region.Windreach };
 
         /// <summary>
-        /// The Blank's theme as this player remembers it (AUD-18): only the regions drawn on her page are in its lead, each
-        /// in its own slot, and a region she never drew is a rest where its tune would be. The coast she woke on is always
-        /// heard. Every region drawn is the <c>blank</c> theme itself; the rest are made once and kept, one per set.
+        /// The Blank's theme as this player remembers it (AUD-18): only the regions drawn on her page are in its lead. The
+        /// tunes she has heard run together from the top of the phrase, in the order the world is walked, and the white
+        /// after them is longer the less she drew (AUD-24); with <see cref="BlankWithHoles"/> each keeps its own slot and an
+        /// undrawn region is a rest where its tune would be. The coast she woke on is always heard. Every region drawn is the
+        /// <c>blank</c> theme itself, either way; the rest are made once and kept, one per set and reading.
         /// </summary>
         public static Theme BlankThemeOf(IEnumerable<Region> drawn)
         {
             int mask = 1;   // the coast, always
             if (drawn != null)
                 foreach (var r in drawn) { int i = Array.IndexOf(Heard, r); if (i >= 0) mask |= 1 << i; }
-            if (_blankOf.TryGetValue(mask, out var kept)) return kept;
-            var t = BlankTheme(mask);
-            _blankOf[mask] = t;
+            bool holes = BlankWithHoles && mask != AllHeard;
+            int key = mask | (holes ? HolesBit : 0);
+            if (_blankOf.TryGetValue(key, out var kept)) return kept;
+            var t = BlankTheme(mask, holes);
+            _blankOf[key] = t;
             return t;
         }
 
+        /// <summary>
+        /// The other reading of the Blank's memory, for the playtest (AUD-24): each region's tune in its own slot and a rest
+        /// where an undrawn region's would be, the tune with holes where she never was. Off, the tunes heard run together.
+        /// </summary>
+        public static bool BlankWithHoles;
+
         static readonly Dictionary<int, Theme> _blankOf = new Dictionary<int, Theme>();
         const int AllHeard = (1 << 5) - 1;
+        const int HolesBit = 1 << 8;
 
         /// <summary>The regions drawn on a page: those with a vantage surveyed and not erased, the Blank's own left out.</summary>
         public static HashSet<Region> RegionsDrawn(WorldState w)
@@ -591,22 +602,23 @@ namespace OWSBG.Core
             return set;
         }
 
-        /// <summary>The Blank's theme for a set of the heard regions, as bits in <see cref="Heard"/>'s order.</summary>
-        static Theme BlankTheme(int mask)
+        /// <summary>The Blank's theme for a set of the heard regions, as bits in <see cref="Heard"/>'s order: their tunes run
+        /// together, or each in its own slot with holes between (<paramref name="holes"/>).</summary>
+        static Theme BlankTheme(int mask, bool holes = false)
         {
             // ---- The Blank: everything the player has heard, remembered wrong; motifs reversed, the Remnant's voices under them. ----
             // Three bars at the Blank's slow beat, then two of rest (silence 40%).
-            string id = mask == AllHeard ? "blank" : "blank-" + string.Concat(Heard.Where((r, i) => (mask & (1 << i)) != 0).Select(r => char.ToLowerInvariant(r.ToString()[0])));
+            string id = mask == AllHeard ? "blank" : (holes ? "blank-holes-" : "blank-") + string.Concat(Heard.Where((r, i) => (mask & (1 << i)) != 0).Select(r => char.ToLowerInvariant(r.ToString()[0])));
             var blank = new Theme { Id = id, Region = Region.Blank, Bars = 3, RestBars = 2 };
             blank.Add("bed", "remnant", 0.6f).Add(0, 0f, 11f, 1f).Add(-3, 0f, 11f, 0.6f);                                  // the Remnant's voices under
             var kpulse = blank.Add("pulse", "celesta", 0.4f);
             for (int bar = 0; bar < 3; bar++) kpulse.Add(7, bar * 4f + 0.5f, 0.5f, 0.7f).Add(9, bar * 4f + 2.5f, 0.5f, 0.5f);   // a clock, off the beat
             var klead = blank.Add("lead", "reversedpiano", 0.9f);
-            for (int k = 0; k < Heard.Length; k++)
+            for (int k = 0, slot = 0; k < Heard.Length; k++)
             {
-                if ((mask & (1 << k)) == 0) continue;   // never drawn: a rest where its tune would be
+                if ((mask & (1 << k)) == 0) { if (holes) slot++; continue; }   // never drawn: run past it, or a rest where its tune would be
                 // Each region's lead as it opens, backwards, in the Blank's own mode: the tune remembered wrong, in its slot.
-                float at = 1f + k * 2f;
+                float at = 1f + slot++ * 2f;
                 foreach (var n in ThemeOf(Heard[k]).Stem("lead").Notes.OrderBy(n => n.Start).Take(4).Reverse()) { klead.Add(n.Degree, at, 0.5f, 0.8f); at += 0.5f; }
             }
             var kvoices = blank.Add("voices", "remnant", 0.5f);

@@ -72,6 +72,12 @@ namespace OWSBG.Tests
         public IEnumerator Talk(string where, string node, int[] choices)
         {
             Assert.IsTrue(_svc.StartNode(node), where + ": " + node + " exists and starts");
+            yield return Follow(where, node, choices);
+        }
+
+        /// <summary>A scene something else started (an arena whose boss speaks first): read it and make its choices.</summary>
+        public IEnumerator Follow(string where, string node, int[] choices)
+        {
             yield return Until(() => _view.IsVisible, 5f, node + "'s page");
             int k = 0;
             float t = 0f;

@@ -1254,6 +1254,7 @@ namespace OWSBG.Setup
             public string WalkRelay, RelayFightId; public int WalkLeg;
             public readonly List<(string title, (string name, Vector2 pos)[] beats)> Verses = new List<(string, (string, Vector2)[])>();
             public (System.Type type, string bossId, Vector2 pos, Vector2 size, float doorW, float doorE, Ability reward, string flag)? ArenaOf;
+            public string ArenaTalkNode;
             // The Steppe's (ENV-07): the camp's site in this room, grass that leans and parts, updrafts drawn as ink, a gauntlet on the room's own ground.
             public int CampSiteIndex = -1;
             public readonly List<(float x0, float x1, int n, bool tall, float z, float y)> Grasses = new List<(float, float, int, bool, float, float)>();
@@ -1418,6 +1419,8 @@ namespace OWSBG.Setup
                 return this;
             }
             public RoomRecipe Arena(System.Type type, string bossId, float x, Vector2 size, float doorW, float doorE, Ability reward = Ability.None, string flag = null) { ArenaOf = (type, bossId, new Vector2(x, size.y * 0.5f), size, doorW, doorE, reward, flag); return this; }
+            /// <summary>The boss speaks as the doors shut (ArenaIntroTalk), and the fight waits for the scene to end.</summary>
+            public RoomRecipe ArenaTalk(string node) { ArenaTalkNode = node; return this; }
         }
 
         static string Scene(string id) => "Greybox_" + id;
@@ -1549,7 +1552,7 @@ namespace OWSBG.Setup
                     .Down(E("Stair_1"), -10f).Up(E("Stair_3"), 2f, 12.3f),
                 new RoomRecipe("Emberdown_Stair_3").Tiles("Ground_Iron", "Ground_Basalt").EmberdownPapers("Mid_Furnaces")
                     .Floor(-20f, -17f).Floor(-13f, 20f).Desk(-10f)
-                    .Arena(typeof(Brann), "brann", 8f, new Vector2(0.9f, 1.9f), -6f, 15f)
+                    .Arena(typeof(Brann), "brann", 8f, new Vector2(0.9f, 1.9f), -6f, 15f).ArenaTalk("Stair_Brann")   // he says why as the doors shut (emberdown-arc.md)
                     .Down(E("Stair_2"), -15f).East(E("Rest_1")),
                 // ---- Kettil's Rest: the town, flat, counted ----
                 new RoomRecipe("Emberdown_Rest_1").Tiles("Ground_Ash", "Ground_Ash").EmberdownPapers("Mid_Roosts", "Far_Bell")
@@ -2211,6 +2214,11 @@ namespace OWSBG.Setup
             {
                 var a = r.ArenaOf.Value;
                 MakeArena(room, a.type, a.bossId, a.pos, a.size, a.doorW, a.doorE, a.reward, a.flag, r.Roots);
+                if (!string.IsNullOrEmpty(r.ArenaTalkNode))
+                {
+                    var arenaGo = room.transform.Find("Arena_" + a.type.Name).gameObject;
+                    arenaGo.AddComponent<ArenaIntroTalk>().Configure(arenaGo.GetComponent<BossArena>(), r.ArenaTalkNode);
+                }
             }
             MakeFadeGroup(room);
             if (r.GauntletOf.HasValue) { var g = r.GauntletOf.Value; MakeGauntlet(room, g.id, g.hx0, g.hx1, g.gx0, g.gx1, g.gtop, g.startX); }

@@ -113,8 +113,9 @@ namespace OWSBG.Tests
             float head = 0f, tail = 0f;
             for (int i = 0; i < edge; i++) { head += Math.Abs(s[i]); tail += Math.Abs(s[s.Length - 1 - i]); }
             Assert.Less(head / edge, 0.02f, "silent at the start"); Assert.Less(tail / edge, 0.02f, "and at the end: no click at the join");
-            CollectionAssert.AreEquivalent(new[] { "survey", FootstepSounds.SlideCue }, InkSounds.Cues.Where(c => c.Loop && c.Kind != InkSounds.Kind.Enemy).Select(c => c.Id),
-                "of hers, only the survey and the wall's scrape loop (AUD-17)");
+            var slides = Enum.GetValues(typeof(FootstepSounds.Surface)).Cast<FootstepSounds.Surface>().Select(FootstepSounds.SlideCue);
+            CollectionAssert.AreEquivalent(new[] { "survey" }.Concat(slides), InkSounds.Cues.Where(c => c.Loop && c.Kind != InkSounds.Kind.Enemy).Select(c => c.Id),
+                "of hers, only the survey and the wall's scrape loop, on every surface (AUD-17, AUD-21)");
         }
 
         [Test]

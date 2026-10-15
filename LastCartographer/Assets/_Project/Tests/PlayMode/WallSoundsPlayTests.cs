@@ -12,8 +12,9 @@ namespace OWSBG.Tests
 {
     /// <summary>
     /// Wren on a wall and her feet in a fading place, in play (AUD-17, docs/design/footsteps.md §4): her talons catch as
-    /// she clings, scrape while the spent hold slides her down, and scuff as she pushes off; in a place faded to the
-    /// third stage she runs on the page, whatever the ground is drawn as.
+    /// she clings, scrape while the spent hold slides her down, and scuff as she pushes off, on the wall's own surface
+    /// (AUD-21: an iron wall screeches, an unmarked one is its region's ground); in a place faded to the third stage she
+    /// runs on the page, and grips it, whatever the ground and the wall are drawn as.
     /// </summary>
     public class WallSoundsPlayTests
     {
@@ -84,6 +85,38 @@ namespace OWSBG.Tests
             _ctrl.Teleport(new Vector2(_lx - 3f, 0f));
         }
 
+        void Wall(string? tile)
+        {
+            if (tile == null)
+            {
+                _wall = new GameObject("Wall") { layer = Layer("Ground") };
+                _wall.AddComponent<BoxCollider2D>().size = new Vector2(1f, 12f);
+            }
+            else
+            {
+                _wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                Object.DestroyImmediate(_wall.GetComponent<BoxCollider>());
+                var r = _wall.GetComponent<MeshRenderer>();
+                r.sharedMaterial = new Material(r.sharedMaterial) { name = "M_" + tile };
+                _wall.name = "Wall";
+                _wall.layer = Layer("Ground");
+                _wall.transform.localScale = new Vector3(1f, 12f, 1f);
+                _wall.AddComponent<BoxCollider2D>().size = Vector2.one;
+            }
+            _wall.transform.position = new Vector3(_ctrl!.Position.x + 2.4f, 5f, 0f);
+        }
+
+        IEnumerator UpTheWall()
+        {
+            Bank.Hush();
+            _input!.PressJump(); _input.JumpHeld = true;
+            _input.Move = Vector2.right;
+            yield return Frames(3);
+            _input.JumpHeld = false;
+            yield return Until(() => _ctrl!.IsClinging, 3f, "the Talonhold");
+            yield return Frames(1);
+        }
+
         [UnityTest]
         public IEnumerator HerTalonsCatchScrapeAndPushOff()
         {
@@ -91,30 +124,62 @@ namespace OWSBG.Tests
             _wren!.GetComponent<AbilitySet>().Set(Ability.Talonhold);
             _ctrl!.Recompute();
             yield return Frames(10);
-            _wall = new GameObject("Wall") { layer = Layer("Ground") };
-            _wall.AddComponent<BoxCollider2D>().size = new Vector2(1f, 12f);
-            _wall.transform.position = new Vector3(_ctrl.Position.x + 2.4f, 5f, 0f);
+            Wall(null);   // drawn as nothing: the region's ground, and the test's room is no region's, so the page
             yield return Frames(2);
-            Bank.Hush();
-            _input!.PressJump(); _input.JumpHeld = true;
-            _input.Move = Vector2.right;
-            yield return Frames(3);
-            _input.JumpHeld = false;
-            yield return Until(() => _ctrl.IsClinging, 3f, "the Talonhold");
-            yield return Frames(1);
-            Assert.That(Bank.Recent, Does.Contain(FootstepSounds.ClingCue), "her talons catch the wall");
-            Assert.AreEqual(FootstepSounds.ClingCue, _feet!.LastWall);
+            var paper = FootstepSounds.Surface.Paper;
+            yield return UpTheWall();
+            Assert.That(Bank.Recent, Does.Contain(FootstepSounds.ClingCue(paper)), "her talons catch the wall");
+            Assert.AreEqual(FootstepSounds.ClingCue(paper), _feet!.LastWall);
             Assert.IsNull(_feet.Sliding, "holding, not sliding");
-            Assert.AreEqual(1, Bank.Recent.Count(c => c == FootstepSounds.ClingCue), "one catch for one cling");
+            Assert.AreEqual(1, Bank.Recent.Count(c => c.StartsWith("wall_cling_")), "one catch for one cling");
             yield return Until(() => _ctrl.IsSliding, _ctrl.clingSeconds + 1f, "the hold to be spent");
             yield return Frames(2);
-            Assert.AreEqual(FootstepSounds.SlideCue, _feet.Sliding, "the scrape down the wall");
-            _input.PressJump();
+            Assert.AreEqual(FootstepSounds.SlideCue(paper), _feet.Sliding, "the scrape down the wall");
+            _input!.PressJump();
             yield return Frames(2);
             _input.Move = Vector2.zero;
-            Assert.That(Bank.Recent, Does.Contain(FootstepSounds.KickCue), "the push off");
-            Assert.AreEqual(FootstepSounds.KickCue, _feet.LastWall);
+            Assert.That(Bank.Recent, Does.Contain(FootstepSounds.KickCue(paper)), "the push off");
+            Assert.AreEqual(FootstepSounds.KickCue(paper), _feet.LastWall);
             Assert.IsNull(_feet.Sliding, "off the wall, the scrape stops");
+        }
+
+        [UnityTest]
+        public IEnumerator AnIronWallScreechesUnderHerTalons()
+        {
+            Build("Ground_Stone");
+            _wren!.GetComponent<AbilitySet>().Set(Ability.Talonhold);
+            _ctrl!.Recompute();
+            yield return Frames(10);
+            Wall("Ground_Iron");
+            yield return Frames(2);
+            var iron = FootstepSounds.Surface.Iron;
+            yield return UpTheWall();
+            Assert.AreEqual(iron, _feet!.LastWallSurface, "the wall is drawn as iron");
+            Assert.AreEqual(FootstepSounds.ClingCue(iron), _feet.LastWall, "the catch on iron");
+            yield return Until(() => _ctrl.IsSliding, _ctrl.clingSeconds + 1f, "the hold to be spent");
+            yield return Frames(2);
+            Assert.AreEqual(FootstepSounds.SlideCue(iron), _feet.Sliding, "iron screeching down");
+            _input!.PressJump();
+            yield return Frames(2);
+            _input.Move = Vector2.zero;
+            Assert.AreEqual(FootstepSounds.KickCue(iron), _feet.LastWall, "pushed off iron");
+            Assert.That(Bank.Recent.Where(c => c.StartsWith("wall_")), Is.All.EndsWith("_iron"), "nothing but iron");
+        }
+
+        [UnityTest]
+        public IEnumerator InAPlaceFadedToTheThirdStageSheGripsThePage()
+        {
+            Build("Ground_Stone");
+            _wren!.GetComponent<AbilitySet>().Set(Ability.Talonhold);
+            _ctrl!.Recompute();
+            Assert.IsTrue(FadeStages.Advance(GameState.World, "Sound_Fade", FootstepSounds.PaperStage), "the place faded");
+            MixDriver.Instance!.RoomOverride = "Greybox_Sound_Fade";
+            yield return Frames(10);
+            Wall("Ground_Iron");
+            yield return Frames(2);
+            yield return UpTheWall();
+            Assert.AreEqual(FootstepSounds.Surface.Paper, _feet!.LastWallSurface, "the iron's drawing gone, the page under her talons");
+            Assert.AreEqual(FootstepSounds.ClingCue(FootstepSounds.Surface.Paper), _feet.LastWall);
         }
 
         [UnityTest]

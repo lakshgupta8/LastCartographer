@@ -10,9 +10,9 @@ namespace OWSBG.World
     /// stands on wears (<see cref="FootstepSounds.OfMaterial"/>), or the region's ground where it wears none. The three
     /// takes turn in order. A landing is the surface's landing under the pen set down, louder the longer she was in the
     /// air. A dash, a glide, a cling or a frozen Wren makes no steps. <see cref="WrenSounds"/> puts it on her.
-    /// On a wall (AUD-17) her talons catch as she clings, scrape while she slides, and scuff as she pushes off. In a
-    /// fading place her feet thin with it, a stage at a time, and from the stage the ground's drawing goes they step on
-    /// the page (<see cref="FootstepSounds.UnderFade"/>).
+    /// On a wall (AUD-17) her talons catch as she clings, scrape while she slides, and scuff as she pushes off, each on
+    /// the wall's own surface, read as the ground's is (AUD-21). In a fading place her feet thin with it, a stage at a
+    /// time, and from the stage the ground's drawing goes they step on the page, and grip it (<see cref="FootstepSounds.UnderFade"/>).
     /// </summary>
     public sealed class Footsteps : MonoBehaviour
     {
@@ -22,6 +22,8 @@ namespace OWSBG.World
         int _take;
         bool _wasClinging;
         AudioSource _slide;
+        string _slideCue;
+        FootstepSounds.Surface _wall = FootstepSounds.Surface.Paper;
         readonly Dictionary<Collider2D, FootstepSounds.Surface> _known = new Dictionary<Collider2D, FootstepSounds.Surface>();
 
         public int Steps { get; private set; }
@@ -30,7 +32,9 @@ namespace OWSBG.World
         /// <summary>The last of her wall's sounds: the cling's catch or the push off.</summary>
         public string LastWall { get; private set; }
         /// <summary>The slide's scrape, while it plays.</summary>
-        public string Sliding => _slide != null && _slide.isPlaying ? FootstepSounds.SlideCue : null;
+        public string Sliding => _slide != null && _slide.isPlaying ? _slideCue : null;
+        /// <summary>The surface of the wall she last gripped, as she hears it (the page, in a place faded far enough).</summary>
+        public FootstepSounds.Surface LastWallSurface => _wall;
         /// <summary>The fade stage of the place she is in, as the mix has it.</summary>
         public static int Stage => Mix.Live != null ? Mix.Live.Stage : 0;
         /// <summary>How far she runs between footfalls.</summary>
@@ -102,13 +106,15 @@ namespace OWSBG.World
         void Wall()
         {
             bool clinging = _ctrl.IsClinging && !_ctrl.Frozen;
-            if (clinging && !_wasClinging) Play(FootstepSounds.ClingCue);
+            if (clinging) _wall = FootstepSounds.UnderFade(SurfaceBeside(_ctrl.WallDirection) ?? _wall, Stage);
+            if (clinging && !_wasClinging) Play(FootstepSounds.ClingCue(_wall));
             _wasClinging = clinging;
             if (clinging && _ctrl.IsSliding) StartSlide();
             else StopSlide();
         }
 
-        void OnWallJumped() => Play(FootstepSounds.KickCue);
+        /// <summary>Off the wall she was on: as the jump is taken the wall is still the one beside her, or the one she held.</summary>
+        void OnWallJumped() => Play(FootstepSounds.KickCue(FootstepSounds.UnderFade(SurfaceBeside(_ctrl.WallDirection) ?? _wall, Stage)));
 
         void Play(string cue)
         {
@@ -120,19 +126,25 @@ namespace OWSBG.World
         {
             var bank = InkSoundBank.Instance;
             if (bank == null) return;
+            string cue = FootstepSounds.SlideCue(_wall);
             if (_slide == null)
             {
-                var clip = bank.Clip(FootstepSounds.SlideCue);
-                if (clip == null) return;
                 _slide = gameObject.AddComponent<AudioSource>();
                 _slide.playOnAwake = false;
                 _slide.spatialBlend = 0f;   // panned by hand, from where she is
                 _slide.loop = true;
+            }
+            if (cue != _slideCue)   // down onto another wall: its own scrape
+            {
+                var clip = bank.Clip(cue);
+                if (clip == null) return;
+                _slide.Stop();
                 _slide.clip = clip;
+                _slideCue = cue;
             }
             if (!_slide.isPlaying) _slide.Play();
             var place = bank.Place(_ctrl.Position);
-            var c = InkSounds.Of(FootstepSounds.SlideCue);
+            var c = InkSounds.Of(cue);
             _slide.panStereo = place.pan;
             _slide.volume = bank.Volume * (c != null ? c.Gain : 1f) * place.gain * FootstepSounds.FadeGain(Stage);
         }
@@ -147,8 +159,21 @@ namespace OWSBG.World
         {
             var feet = _ctrl.Position;
             var hit = Physics2D.Raycast(feet + Vector2.up * 0.1f, Vector2.down, 0.5f, _ctrl.groundMask);
-            var col = hit.collider;
-            if (col == null) return FootstepSounds.OfRegion(Mix.RegionOf(gameObject.scene.name));
+            return hit.collider == null ? FootstepSounds.OfRegion(Mix.RegionOf(gameObject.scene.name)) : SurfaceOf(hit.collider);
+        }
+
+        /// <summary>What the wall beside her is (dir -1 left, 1 right), read as the ground is; null where there is none.</summary>
+        public FootstepSounds.Surface? SurfaceBeside(int dir)
+        {
+            if (dir == 0) return null;
+            var at = _ctrl.Position + Vector2.up * 0.55f;   // her middle, where the talons are
+            var hit = Physics2D.Raycast(at, new Vector2(dir, 0f), 0.8f, _ctrl.groundMask);
+            return hit.collider == null ? (FootstepSounds.Surface?)null : SurfaceOf(hit.collider);
+        }
+
+        /// <summary>A block's surface: its tile, else its room's region's ground. Kept, since blocks do not change.</summary>
+        FootstepSounds.Surface SurfaceOf(Collider2D col)
+        {
             if (_known.TryGetValue(col, out var known)) return known;
             var r = col.GetComponent<Renderer>();
             if (r == null) r = col.GetComponentInParent<Renderer>();

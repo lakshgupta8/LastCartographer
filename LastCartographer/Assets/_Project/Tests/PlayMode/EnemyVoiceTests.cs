@@ -158,6 +158,29 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator ACantorsTollDragsTheEraserFromWhereItIsDrawnAndThatIsTheErasure()
+        {
+            var w = GameState.World;
+            w.MarkSurveyed("Sound_Erase/Post");
+            var cantor = Make<Cantor>(new Vector2(_lx + 2f, 3f));
+            cantor.PlaceId = "Sound_Erase";
+            yield return Until(() => cantor.IsRinging, 2f);
+            int mark = Bank.Recent.Count;
+            yield return Until(() => cantor.Tolls == 1, 2f);
+            Assert.AreEqual(1, cantor.Tolls);
+            var since = Bank.Recent.Skip(mark).ToList();
+            Assert.IsTrue(Atlas.IsErased(w, "Sound_Erase"), "the toll erased the place");
+            Assert.AreEqual(3, since.Count(c => c == "eraser_sweep"), "three sweeps out from the bell");
+            Assert.That(since, Does.Not.Contain("erased"), "the sweeps are the erasure: the eraser is not dragged twice");
+            Assert.Greater(Bank.LastPan, 0f, "heard to the right, where the bell is and its last sweep is drawn");
+            Assert.IsNull(Cantor.Tolling, "the toll is over");
+
+            int before = Bank.Recent.Count;
+            Assert.IsTrue(FadeStages.Erase(w, "Sound_Elsewhere"), "a place erased with no bell over it");
+            Assert.That(Bank.Recent.Skip(before), Does.Contain("erased"), "is still the page's eraser");
+        }
+
+        [UnityTest]
         public IEnumerator TooManyVoicesKeepTheTellsAndDropFromTheBottom()
         {
             yield return null;

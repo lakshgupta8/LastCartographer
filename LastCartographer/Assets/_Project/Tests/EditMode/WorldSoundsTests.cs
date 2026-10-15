@@ -86,6 +86,22 @@ namespace OWSBG.Tests
         }
 
         [Test]
+        public void ACantorsEraserIsARubbedSweep()
+        {
+            var c = InkSounds.Of("eraser_sweep");
+            Assert.IsNotNull(c, "a Cantor's toll drags the eraser (AUD-22)");
+            Assert.AreEqual(InkSounds.Kind.World, c.Kind);
+            Assert.AreEqual(Mix.Bus.Sfx, c.Bus, "in the room, not on the pages");
+            Assert.IsFalse(c.Loop);
+            var s = InkSounds.Render("eraser_sweep");
+            Assert.Greater(InkSounds.Seconds(s), 0.3f, "a sweep, not a tap");
+            Assert.Less(InkSounds.Seconds(s), InkSounds.Seconds(InkSounds.Render("erased")), "one sweep, shorter than a place's two");
+            Assert.Less(c.Gain, InkSounds.Of("erased").Gain, "three at once sit where the one did");
+            CollectionAssert.AllItemsAreUnique(new[] { WorldSounds.SweepPitch(-1), WorldSounds.SweepPitch(0), WorldSounds.SweepPitch(1) }, "three sweeps, three pitches");
+            Assert.AreEqual(1f, WorldSounds.SweepPitch(0));
+        }
+
+        [Test]
         public void ASlidersTickAndASeedsDropCarryTheirValues()
         {
             Assert.AreEqual(1f, WorldSounds.TickPitch(-1f), 0.001f, "a switch ticks plain");

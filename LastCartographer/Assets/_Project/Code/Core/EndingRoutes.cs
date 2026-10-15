@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace OWSBG.Core
 {
-    public enum RouteStepKind { Talk, Boss }
+    public enum RouteStepKind { Talk, Boss, Walk }
 
     /// <summary>One move on a route: a scene played with these choices, or a boss beaten. Where it happens, and what it grants.</summary>
     public sealed class RouteStep
@@ -14,6 +14,8 @@ namespace OWSBG.Core
         public int[] Choices;
         public Ability Grants;
         public string Note;
+        /// <summary>A walk through rooms (<see cref="RouteStepKind.Walk"/>, Key the relay): walked until this many legs are.</summary>
+        public int Legs;
     }
 
     public sealed class EndingRoute
@@ -40,6 +42,9 @@ namespace OWSBG.Core
             => new RouteStep { Kind = RouteStepKind.Talk, Key = node, Zone = zone, Choices = choices, Grants = grants, Note = note };
         static RouteStep Boss(string id, string zone, int[] choices, Ability grants, string note)
             => new RouteStep { Kind = RouteStepKind.Boss, Key = id, Zone = zone, Choices = choices, Grants = grants, Note = note };
+        /// <summary>A relay walked by her feet, room by room (BoundsWalks.Relay), until <paramref name="legs"/> are walked.</summary>
+        static RouteStep Walk(string relay, string zone, int legs, string note)
+            => new RouteStep { Kind = RouteStepKind.Walk, Key = relay, Zone = zone, Choices = new int[0], Legs = legs, Note = note };
         static void Route(Ending e, params RouteStep[] steps) => _all.Add(new EndingRoute { Ending = e, Steps = steps });
 
         public static void EnsureDefaults()
@@ -57,7 +62,9 @@ namespace OWSBG.Core
                 Talk("Baths_Kettil_Debate", "Emberdown.CinderBaths", new[] { 0 }, Ability.None, "the debate; `emberdown.debate.heard`"),
                 Talk("Rest_Kettil", "Emberdown.KettilsRest", new[] { 0 }, Ability.None, "\"Then let's bring them up.\": `emberdown.hollowvein_opened`"),
                 Talk("Hollowvein_Runa_Walk", "Emberdown.Hollowvein", new[] { 0 }, Ability.None, "\"Then we walk it down.\": the long roll-call"),
+                Walk("hollowvein", "Emberdown.Hollowvein", 3, "three rooms walked down, a verse each: only the fourth is left, and it wakes"),
                 Boss("collapse", "Emberdown.Hollowvein", new int[0], Ability.None, "6.4 The Collapse, on the fourth verse"),
+                Walk("hollowvein", "Emberdown.Hollowvein", 4, "the fourth verse sung: the four rooms held"),
                 Talk("Hollowvein_Runa_After", "Emberdown.Hollowvein", new int[0], Ability.None, "thirty-one; `emberdown.hollowvein.walked`, **keystone.hollowvein**"),
                 Talk("QuietHouse_Teodor", "Verdance.QuietHouse", new[] { 0 }, Ability.None, "Teodor; `verdance.teodor.met`"),
                 Talk("RootChapel_Teodor_Thread", "Verdance.RootChapel", new[] { 0 }, Ability.Inkthread, "Inkthread; `verdance.teodor.thread`"),
@@ -74,6 +81,7 @@ namespace OWSBG.Core
                 Talk("Grass_Idrenne_Night", "Windreach.IdrennesFire", new[] { 0 }, Ability.None, "the third fire: known; `windreach.camp.walked`"),
                 Talk("Fire_Idrenne", "Windreach.IdrennesFire", new[] { 0, 1 }, Ability.None, "Idrenne's Fire, witnessed; \"I'll leave it undrawn.\"; **keystone.windreach**"),
                 Talk("EdgeCamp_Notice", "Greyfold.EdgeCamp", new[] { 0 }, Ability.None, "Voss's notice: `act2.threshold`"),
+                Talk("Threshold_Halvard", "Greyfold.Threshold", new[] { 0 }, Ability.None, "\"The count ends here.\": his lance up"),
                 Boss("halvard_3", "Greyfold.Threshold", new int[0], Ability.None, "6.3 Halvard's third"),
                 Talk("Threshold_Halvard", "Greyfold.Threshold", new int[0], Ability.None, "\"I'll enter it as a survey.\""),
                 Talk("Threshold_Voss", "Greyfold.Threshold", new[] { 1 }, Ability.None, "the one speech"),
@@ -106,7 +114,9 @@ namespace OWSBG.Core
                 Talk("Baths_Kettil_Debate", "Emberdown.CinderBaths", new[] { 0 }, Ability.None, "the debate; `emberdown.debate.heard`"),
                 Talk("Rest_Kettil", "Emberdown.KettilsRest", new[] { 0 }, Ability.None, "\"Then let's bring them up.\": `emberdown.hollowvein_opened`"),
                 Talk("Hollowvein_Runa_Walk", "Emberdown.Hollowvein", new[] { 0 }, Ability.None, "\"Then we walk it down.\": the long roll-call"),
+                Walk("hollowvein", "Emberdown.Hollowvein", 3, "three rooms walked down, a verse each: only the fourth is left, and it wakes"),
                 Boss("collapse", "Emberdown.Hollowvein", new int[0], Ability.None, "6.4 The Collapse, on the fourth verse"),
+                Walk("hollowvein", "Emberdown.Hollowvein", 4, "the fourth verse sung: the four rooms held"),
                 Talk("Hollowvein_Runa_After", "Emberdown.Hollowvein", new int[0], Ability.None, "thirty-one; `emberdown.hollowvein.walked`, **keystone.hollowvein**"),
                 Talk("QuietHouse_Teodor", "Verdance.QuietHouse", new[] { 0 }, Ability.None, "Teodor; `verdance.teodor.met`"),
                 Talk("RootChapel_Teodor_Thread", "Verdance.RootChapel", new[] { 0 }, Ability.Inkthread, "Inkthread; `verdance.teodor.thread`"),
@@ -123,6 +133,7 @@ namespace OWSBG.Core
                 Talk("Grass_Idrenne_Night", "Windreach.IdrennesFire", new[] { 0 }, Ability.None, "the third fire: known; `windreach.camp.walked`"),
                 Talk("Fire_Idrenne", "Windreach.IdrennesFire", new[] { 0, 1 }, Ability.None, "Idrenne's Fire, witnessed; \"I'll leave it undrawn.\"; **keystone.windreach**"),
                 Talk("EdgeCamp_Notice", "Greyfold.EdgeCamp", new[] { 0 }, Ability.None, "Voss's notice: `act2.threshold`"),
+                Talk("Threshold_Halvard", "Greyfold.Threshold", new[] { 0 }, Ability.None, "\"The count ends here.\": his lance up"),
                 Boss("halvard_3", "Greyfold.Threshold", new int[0], Ability.None, "6.3 Halvard's third"),
                 Talk("Threshold_Halvard", "Greyfold.Threshold", new int[0], Ability.None, "\"I'll enter it as a survey.\""),
                 Talk("Threshold_Voss", "Greyfold.Threshold", new[] { 1 }, Ability.None, "the one speech"),
@@ -160,6 +171,7 @@ namespace OWSBG.Core
                 Talk("Bridges_Halvard_Hunt", "Halden.SevenBridges", new[] { 1 }, Ability.None, "the second hunt; \"Stand aside.\" (Warden)"),
                 Talk("Hall_Pell_Minder", "Halden.JourneymansHall", new[] { 0 }, Ability.None, "Interlude A: \"Let me read it.\" Two Warden voices: **Pell keeps it**"),
                 Talk("EdgeCamp_Notice", "Greyfold.EdgeCamp", new[] { 0 }, Ability.None, "Voss's notice: `act2.threshold`"),
+                Talk("Threshold_Halvard", "Greyfold.Threshold", new[] { 0 }, Ability.None, "\"The count ends here.\": his lance up"),
                 Boss("halvard_3", "Greyfold.Threshold", new int[0], Ability.None, "6.3 Halvard's third"),
                 Talk("Threshold_Halvard", "Greyfold.Threshold", new int[0], Ability.None, "\"I'll enter it as a survey.\""),
                 Talk("Threshold_Voss", "Greyfold.Threshold", new[] { 1 }, Ability.None, "the one speech"),
@@ -185,6 +197,7 @@ namespace OWSBG.Core
                 Talk("Bridges_Halvard_Hunt", "Halden.SevenBridges", new[] { 1 }, Ability.None, "the second hunt; \"Stand aside.\" (Warden)"),
                 Talk("Hall_Pell_Minder", "Halden.JourneymansHall", new[] { 0 }, Ability.None, "Interlude A: \"Let me read it.\" Two Warden voices: **Pell keeps it**"),
                 Talk("EdgeCamp_Notice", "Greyfold.EdgeCamp", new[] { 0 }, Ability.None, "Voss's notice: `act2.threshold`"),
+                Talk("Threshold_Halvard", "Greyfold.Threshold", new[] { 0 }, Ability.None, "\"The count ends here.\": his lance up"),
                 Boss("halvard_3", "Greyfold.Threshold", new int[0], Ability.None, "6.3 Halvard's third"),
                 Talk("Threshold_Halvard", "Greyfold.Threshold", new int[0], Ability.None, "\"I'll enter it as a survey.\""),
                 Talk("Threshold_Voss", "Greyfold.Threshold", new[] { 1 }, Ability.None, "the one speech"),

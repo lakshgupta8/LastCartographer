@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using OWSBG.Core;
 using OWSBG.Narrative;
@@ -123,17 +124,39 @@ namespace OWSBG.Tests
                     where + ": " + step.Zone + " is reachable with " + kit + " and what has been written so far" + (allowSoft ? ", soft gaps allowed" : ""));
                 if (i == breakStep)
                     Assert.IsFalse(WorldGraph.Reachable(kit, w.Is, false).Contains(step.Zone), where + ": " + step.Zone + " is only reached by the soft gap, so this is a break");
-                if (step.Kind == RouteStepKind.Boss)
+                if (step.Kind == RouteStepKind.Walk)
+                {
+                    // Her feet: each room of the relay walked in turn, as the rooms take it up when she comes in.
+                    var relay = BoundsWalks.FindRelay(step.Key);
+                    Assert.IsNotNull(relay, where + " is a walk through rooms");
+                    while (BoundsWalks.LegsWalked(w, relay!) < step.Legs)
+                    {
+                        int leg = BoundsWalks.LegsWalked(w, relay!);
+                        Assert.IsTrue(BoundsWalks.IsLegDue(w, relay!, leg), where + ": leg " + (leg + 1) + " (" + relay!.Legs[leg] + ") is due");
+                        BoundsWalks.WalkLeg(w, relay!, leg);
+                    }
+                }
+                else if (step.Kind == RouteStepKind.Boss)
                 {
                     var sheet = Bosses.Find(step.Key);
                     Assert.IsNotNull(sheet, where + " is a boss with a sheet");
                     Assert.AreEqual(sheet.Zone, step.Zone, where + " is fought where its sheet says");
                     Assert.AreEqual(sheet.Grants, step.Grants, where + " grants what its sheet says");
+                    // The story-timing pass: the arena is awake by now, not still waiting on a flag the route has not written.
+                    var arenas = StagePresence.ArenasFor(step.Key);
+                    if (arenas.Count > 0)
+                        Assert.IsTrue(arenas.Any(a => string.IsNullOrEmpty(a.flag) || w.Is(a.flag)),
+                            where + ": the arena is awake by now (" + string.Join(", ", arenas.Select(a => a.scene + " waits on " + a.flag)) + ")");
                     w.Set(Bosses.FlagKey(step.Key), true);
                     if (sheet.Grants != Ability.None) w.Set(AbilitySet.FlagKey(sheet.Grants), true);
                 }
                 else
                 {
+                    // The story-timing pass: someone who starts this scene is standing by now (a scene only code starts has no talker).
+                    var talkers = StagePresence.TalkersFor(step.Key);
+                    if (talkers.Count > 0)
+                        Assert.IsTrue(talkers.Any(t => t.Stands(w)),
+                            where + ": nobody who starts it is standing by now: " + string.Join(", ", talkers.Select(t => t.ToString())));
                     yield return Talk(where, step.Key, step.Choices);
                     if (step.Grants != Ability.None)
                         Assert.IsTrue(w.Is(AbilitySet.FlagKey(step.Grants)), where + " grants " + step.Grants);

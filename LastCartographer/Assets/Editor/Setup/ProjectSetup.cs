@@ -2106,7 +2106,7 @@ namespace OWSBG.Setup
                     .West(B("Capital_2")).East(B("Capital_4")),
                 new RoomRecipe("Blank_Capital_4").Tiles("Ground_Street", "Ground_Street").BlankPapers("Mid_Mirror", "Far_Islands", "Farther_Grey", 8f)
                     .Floor(-20f, 20f).Npc("Corvin", -12f, "Capital_Corvin", corvin).Remnant("Marrow", -16f, "Capital_Marrow_Word", marrow).Prop("Chair", 14f)   // he has drawn her a chair
-                    .Arena(typeof(Archivist), "archivist", 1.5f, new Vector2(2.2f, 2.4f), -8f, 11f, Ability.None, "corvin.stance")   // the choice laid out first
+                    .Arena(typeof(Archivist), "archivist", 1.5f, new Vector2(2.2f, 2.4f), -8f, 11f, Ability.None, "capital.corvin.spoken")   // the choice laid out first; the fight comes whatever she answers, silence too (act3.md: the stance is what he does after)
                     .West(B("Capital_3")),
                 // ---- Aury's Lighthouse: the faded third, from inside the white ----
                 new RoomRecipe("Blank_Aury_1").Tiles("Ground_Causeway", "Ground_Causeway").BlankPapers("Mid_Causeway")

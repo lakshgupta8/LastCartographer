@@ -31,14 +31,17 @@ namespace OWSBG.World
             if (isActiveAndEnabled) Apply();
         }
 
-        public bool ShouldStand(WorldState w)
+        public bool ShouldStand(WorldState w) => ShouldStand(w, _requires, _requiresValue, _hiddenWhen, _hiddenValue);
+
+        /// <summary>The rule, for a presence read from a scene without loading it (the route replay asks who stands where).</summary>
+        public static bool ShouldStand(WorldState w, string requires, int requiresValue, string hiddenWhen, int hiddenValue)
         {
             if (w == null) return true;
-            if (!string.IsNullOrEmpty(_requires) && (_requiresValue == 0 ? !w.Is(_requires) : w.Get(_requires) != _requiresValue)) return false;
-            if (!string.IsNullOrEmpty(_hiddenWhen))
+            if (!string.IsNullOrEmpty(requires) && (requiresValue == 0 ? !w.Is(requires) : w.Get(requires) != requiresValue)) return false;
+            if (!string.IsNullOrEmpty(hiddenWhen))
             {
-                int v = w.Get(_hiddenWhen);
-                if (_hiddenValue == 0 ? v != 0 : v == _hiddenValue) return false;
+                int v = w.Get(hiddenWhen);
+                if (hiddenValue == 0 ? v != 0 : v == hiddenValue) return false;
             }
             return true;
         }

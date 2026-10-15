@@ -46,6 +46,10 @@ namespace OWSBG.World
         }
         /// <summary>After a toll: the Cantor and the place it rang over.</summary>
         public static event Action<Cantor, string> Tolled;
+        /// <summary>The Cantor whose toll is under way, while it is (its erasure is heard as its eraser, AUD-22); else null.</summary>
+        public static Cantor Tolling { get; private set; }
+        /// <summary>The eraser's three sweeps out from the bell, k = -1, 0, 1: where each is drawn.</summary>
+        public static Vector2 SweepAt(Vector2 bell, int k) => bell + new Vector2(k * 2.6f, 0.4f - 0.6f * Mathf.Abs(k));
 
         int _frames;
         float _cooldown, _bob;
@@ -114,6 +118,13 @@ namespace OWSBG.World
 
         void Toll()
         {
+            Tolling = this;
+            try { TollNow(); }
+            finally { Tolling = null; }
+        }
+
+        void TollNow()
+        {
             Tolls++;
             State = Move.Recover;
             _frames = 0;
@@ -131,7 +142,7 @@ namespace OWSBG.World
                 Captions.Show(Loc.F("caption.erased", "Erased: {0}. Draw it again.", Atlas.PlaceName(place)), 4f);
             // The erasure (ENV-12): an eraser dragged across the page, three sweeps out from the bell.
             for (int k = -1; k <= 1; k++)
-                InkFx.Spawn("eraser", (Vector2)transform.position + new Vector2(k * 2.6f, 0.4f - 0.6f * Mathf.Abs(k)), 0f, 1.4f);
+                InkFx.Spawn("eraser", SweepAt(transform.position, k), 0f, 1.4f);
             Tolled?.Invoke(this, place);
         }
 

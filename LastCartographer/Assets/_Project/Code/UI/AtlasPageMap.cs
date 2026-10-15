@@ -281,7 +281,8 @@ namespace OWSBG.UI
 
         /// <summary>
         /// One mark, about 2s across, centred on <paramref name="at"/>: a drafting desk (its slanted board on two legs), a
-        /// lamp (a post with the flame on it, lit in ochre), a shop (an iris seed, the coast's coin). Ink when used, pencil otherwise.
+        /// lamp (a post with the flame on it, lit in ochre), a shop (an iris seed, the coast's coin), an arena (two lances
+        /// crossed). Ink when used (or, for an arena, won), pencil otherwise.
         /// </summary>
         static void Mark(Painter2D p, MapMarkKind kind, Vector2 at, float s, bool inked)
         {
@@ -293,6 +294,13 @@ namespace OWSBG.UI
                     p.BeginPath(); p.MoveTo(at + new Vector2(-s, -s * 0.1f)); p.LineTo(at + new Vector2(s, -s * 0.7f)); p.Stroke();
                     p.BeginPath(); p.MoveTo(at + new Vector2(-s * 0.6f, -s * 0.2f)); p.LineTo(at + new Vector2(-s * 0.6f, s)); p.Stroke();
                     p.BeginPath(); p.MoveTo(at + new Vector2(s * 0.6f, -s * 0.55f)); p.LineTo(at + new Vector2(s * 0.6f, s)); p.Stroke();
+                    break;
+                case MapMarkKind.Arena:
+                    // Two lances crossed, the map's sign for a fight; each with a short guard.
+                    p.BeginPath(); p.MoveTo(at + new Vector2(-s, s)); p.LineTo(at + new Vector2(s, -s)); p.Stroke();
+                    p.BeginPath(); p.MoveTo(at + new Vector2(-s, -s)); p.LineTo(at + new Vector2(s, s)); p.Stroke();
+                    p.BeginPath(); p.MoveTo(at + new Vector2(-s * 0.85f, s * 0.35f)); p.LineTo(at + new Vector2(-s * 0.35f, s * 0.85f)); p.Stroke();
+                    p.BeginPath(); p.MoveTo(at + new Vector2(s * 0.35f, s * 0.85f)); p.LineTo(at + new Vector2(s * 0.85f, s * 0.35f)); p.Stroke();
                     break;
                 case MapMarkKind.Lamp:
                     p.BeginPath(); p.MoveTo(at + new Vector2(0f, s)); p.LineTo(at + new Vector2(0f, -s * 0.3f)); p.Stroke();

@@ -227,7 +227,7 @@ namespace OWSBG.Tests
             var corra = SceneText("Blank_Capital_2");
             Assert.GreaterOrEqual(Count(corra, MatGuid("M_Ground_Crayon")), 1, "a crayon floor");
             Assert.GreaterOrEqual(Count(corra, "m_Name: Prop_Crayon"), 1, "her father on the wall");
-            Assert.GreaterOrEqual(Count(SceneText("Blank_Capital_4"), "_requiresFlag: corvin.stance"), 1, "the choice laid out first");
+            Assert.GreaterOrEqual(Count(SceneText("Blank_Capital_4"), "_requiresFlag: capital.corvin.spoken"), 1, "the choice laid out first, whatever she answers (silence too)");
             Assert.GreaterOrEqual(Count(SceneText("Blank_Aury_2"), "m_Name: Prop_Beacon"), 1, "the light still turning");
         }
 

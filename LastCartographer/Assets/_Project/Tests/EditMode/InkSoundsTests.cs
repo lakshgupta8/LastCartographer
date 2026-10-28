@@ -114,8 +114,10 @@ namespace OWSBG.Tests
             for (int i = 0; i < edge; i++) { head += Math.Abs(s[i]); tail += Math.Abs(s[s.Length - 1 - i]); }
             Assert.Less(head / edge, 0.02f, "silent at the start"); Assert.Less(tail / edge, 0.02f, "and at the end: no click at the join");
             var slides = Enum.GetValues(typeof(FootstepSounds.Surface)).Cast<FootstepSounds.Surface>().Select(FootstepSounds.SlideCue);
-            CollectionAssert.AreEquivalent(new[] { "survey" }.Concat(slides), InkSounds.Cues.Where(c => c.Loop && c.Kind != InkSounds.Kind.Enemy).Select(c => c.Id),
+            CollectionAssert.AreEquivalent(new[] { "survey" }.Concat(slides), InkSounds.Cues.Where(c => c.Loop && c.Kind == InkSounds.Kind.Wren).Select(c => c.Id),
                 "of hers, only the survey and the wall's scrape loop, on every surface (AUD-17, AUD-21)");
+            CollectionAssert.AreEquivalent(new[] { WorldSounds.UpdraftCue }, InkSounds.Cues.Where(c => c.Loop && c.Kind != InkSounds.Kind.Enemy && c.Kind != InkSounds.Kind.Wren).Select(c => c.Id),
+                "of the world's, only rising air (AUD-25)");
         }
 
         [Test]

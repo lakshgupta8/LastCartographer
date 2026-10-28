@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace OWSBG.World
@@ -11,7 +12,10 @@ namespace OWSBG.World
         [SerializeField] float _fadeSpeed = 4f;
 
         public bool IsRevealed => _revealLeft > 0f;
+        /// <summary>A hidden platform made solid by a lantern (true) or let go again (false): it sounds as it is drawn and as it fades (AUD-25).</summary>
+        public static event Action<HiddenPlatform, bool> Solidified;
         float _revealLeft, _ink;
+        bool _solid, _woke;
         Renderer _renderer;
         Collider2D[] _colliders;
         MaterialPropertyBlock _mpb;
@@ -28,11 +32,18 @@ namespace OWSBG.World
             _mpb = new MaterialPropertyBlock();
             IsDrawn = _renderer != null && _renderer.sharedMaterial != null && _renderer.sharedMaterial.HasProperty(InkId);
             SetSolid(false);
+            _woke = true;
         }
 
         public void Reveal(float seconds) { _revealLeft = Mathf.Max(_revealLeft, seconds); SetSolid(true); }
 
-        void SetSolid(bool on) { foreach (var c in _colliders) c.enabled = on; }
+        void SetSolid(bool on)
+        {
+            foreach (var c in _colliders) c.enabled = on;
+            bool changed = on != _solid;
+            _solid = on;
+            if (changed && _woke) Solidified?.Invoke(this, on);
+        }
 
         void Update()
         {

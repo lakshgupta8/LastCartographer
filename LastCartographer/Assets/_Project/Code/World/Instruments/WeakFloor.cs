@@ -14,6 +14,8 @@ namespace OWSBG.World
 
         public bool IsBroken { get; private set; }
         public event Action<WeakFloor> Broke;
+        /// <summary>Any weak floor giving way: where it breaks sounds (AUD-25).</summary>
+        public static event Action<WeakFloor> AnyBroke;
 
         Renderer _renderer;
         MaterialPropertyBlock _mpb;
@@ -46,6 +48,7 @@ namespace OWSBG.World
             var b = _renderer != null ? _renderer.bounds : new Bounds(transform.position, Vector3.one);
             if (InkFx.Spawn("crumble", new Vector2(b.center.x, b.max.y), 0f, Mathf.Max(0.8f, b.size.x / 2.4f)) != null && _renderer != null) _renderer.enabled = false;
             Broke?.Invoke(this);
+            AnyBroke?.Invoke(this);
             return true;
         }
 

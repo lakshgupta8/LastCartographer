@@ -58,7 +58,7 @@ namespace OWSBG.Tests
                 Assert.AreEqual(Mix.Bus.Sfx, c.Bus, c.Id + ": in the room");
                 Assert.AreEqual(AudioDirection.Voice.World, c.Voice, c.Id + ": kept after the fight's sounds");
                 Assert.That(InkSounds.FileName(c), Does.StartWith("world_sfx_"));
-                Assert.IsFalse(c.Loop);
+                Assert.AreEqual(c.Id == WorldSounds.UpdraftCue, c.Loop, c.Id + ": a one-shot, but rising air (AUD-25)");
             }
             foreach (var c in InkSounds.Cues.Where(c => c.Kind != InkSounds.Kind.Ui)) Assert.AreEqual(Mix.Bus.Sfx, c.Bus, c.Id);
             // The mix keeps the pages whole while the room is paused (audio-mix.md).
@@ -83,6 +83,27 @@ namespace OWSBG.Tests
             Assert.Less(InkSounds.Of("fade_step").Gain, InkSounds.Of("erased").Gain, "and quieter");
             Assert.Greater(RollCallSong.EnergyAbove(R("parry"), 2500f), 0.5f, "a parry rings bright");
             Assert.AreEqual(1f, InkSounds.Of("parry").Gain, 0.001f, "and full: it is the answer to a tell");
+        }
+
+        [Test]
+        public void ThePropsThatMoveSoundLikeWhatTheyAre()
+        {
+            foreach (var id in new[] { "floor_break", "plank_drawn", "plank_undrawn", "tide_sweep", WorldSounds.UpdraftCue })
+            {
+                var c = InkSounds.Of(id);
+                Assert.IsNotNull(c, id + " (AUD-25)");
+                Assert.AreEqual(InkSounds.Kind.World, c.Kind, id);
+                Assert.AreEqual(Mix.Bus.Sfx, c.Bus, id + " is in the room");
+                Assert.AreEqual(id == WorldSounds.UpdraftCue, c.Loop, id + (c.Loop ? " loops" : " is played once"));
+            }
+            Assert.LessOrEqual(InkSounds.Of(WorldSounds.UpdraftCue).Gain, 0.5f, "rising air sits under the room");
+            var air = InkSounds.Render(WorldSounds.UpdraftCue);
+            float inside = 0f;
+            for (int i = 1; i < air.Length; i++) inside = Math.Max(inside, Math.Abs(air[i] - air[i - 1]));
+            Assert.LessOrEqual(Math.Abs(air[0] - air[air.Length - 1]), inside + 0.01f, "the rush meets itself");
+            Assert.Greater(InkSounds.Seconds(InkSounds.Render("floor_break")), InkSounds.Seconds(InkSounds.Render("plank_drawn")), "a floor gives way for longer than a plank is drawn");
+            Assert.Less(InkSounds.Of("plank_undrawn").Gain, InkSounds.Of("plank_drawn").Gain, "let go more softly than drawn");
+            Assert.Greater(InkSounds.Seconds(InkSounds.Render("tide_sweep")), 0.8f, "a wave, not a splash");
         }
 
         [Test]

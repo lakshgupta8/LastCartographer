@@ -181,6 +181,74 @@ namespace OWSBG.Tests
         }
 
         [UnityTest]
+        public IEnumerator ThePropsThatMoveAreHeardWhereTheyAre()
+        {
+            var ctrl = MakeWren();
+            yield return Frames(2);
+
+            Mark();
+            _a = new GameObject("WeakFloor") { layer = Layer("Ground") };
+            _a.transform.position = new Vector3(_lx + 3f, 0f, 0f);
+            _a.AddComponent<BoxCollider2D>().size = new Vector2(2f, 0.5f);
+            var floor = _a.AddComponent<WeakFloor>();
+            Assert.IsFalse(floor.TakeHit(new HitInfo { Damage = 1, Direction = Vector2.down }), "a quill only scratches it");
+            CollectionAssert.IsEmpty(Since, "scratched: nothing gives");
+            Assert.IsTrue(floor.TakeHit(new HitInfo { Damage = 3, Direction = Vector2.down }), "the plumb weight's 3");
+            CollectionAssert.AreEqual(new[] { "floor_break" }, Since, "the floor gives way");
+            Assert.Greater(Bank.LastPan, 0f, "from the right, where it was");
+            Object.Destroy(_a); _a = null;
+
+            Mark();
+            _a = new GameObject("Hidden") { layer = Layer("Ground") };
+            _a.transform.position = new Vector3(_lx - 3f, 2f, 0f);
+            _a.AddComponent<BoxCollider2D>().size = new Vector2(2f, 0.4f);
+            var hidden = _a.AddComponent<HiddenPlatform>();
+            yield return null;
+            CollectionAssert.IsEmpty(Since, "not drawn, and silent about it");
+            hidden.Reveal(0.2f);
+            hidden.Reveal(0.3f);
+            CollectionAssert.AreEqual(new[] { "plank_drawn" }, Since, "the lantern draws it, once");
+            Assert.Less(Bank.LastPan, 0f, "on the left, where it is");
+            yield return Until(() => Since.Contains("plank_undrawn"), 1.5f);
+            CollectionAssert.AreEqual(new[] { "plank_drawn", "plank_undrawn" }, Since, "and lets it go");
+            Object.Destroy(_a); _a = null;
+
+            Mark();
+            _wren!.GetComponent<AbilitySet>().Unlock(Ability.Clarity);
+            Mark();
+            _b = new GameObject("LanternPlank") { layer = Layer("Ground") };
+            _b.transform.position = new Vector3(_lx + 2f, 2f, 0f);
+            _b.AddComponent<BoxCollider2D>().size = new Vector2(2f, 0.4f);
+            var plank = _b.AddComponent<LanternPlatform>();
+            yield return Frames(3);
+            Assert.IsTrue(plank.IsDrawn, "within her reach");
+            Assert.That(Since, Does.Contain("plank_drawn"), "drawn as she comes near");
+            Mark();
+            ctrl.Teleport(new Vector2(_lx - 15f, 0f));
+            yield return Frames(3);
+            Assert.IsFalse(plank.IsDrawn);
+            CollectionAssert.AreEqual(new[] { "plank_undrawn" }, Since, "let go as she leaves");
+            Object.Destroy(_b); _b = null;
+            ctrl.Teleport(new Vector2(_lx, 0f));
+            yield return Frames(2);
+
+            Mark();
+            _a = new GameObject("Tide");
+            var tide = _a.AddComponent<Tide>();
+            tide.WestBank = new Vector2(_lx - 4f, 0f); tide.EastBank = new Vector2(_lx + 4f, 0f);
+            tide.Sweep(ctrl);
+            Assert.That(Since, Does.Contain("tide_sweep"), "the tide takes her back");
+            Object.Destroy(_a); _a = null;
+
+            _a = Updraft.Make("Updraft", null, new Vector2(_lx + 1f, 3f), new Vector2(1.5f, 6f), 9f).gameObject;
+            var air = _a.GetComponent<UpdraftVoice>();
+            Assert.IsNotNull(air, "every updraft is heard");
+            yield return Frames(3);
+            Assert.AreEqual(WorldSounds.UpdraftCue, air.Looping, "the air rising");
+            Assert.AreEqual(UpdraftVoice.Idle, air.Level, 0.05f, "a hiss while it carries no one");
+        }
+
+        [UnityTest]
         public IEnumerator TheOptionsPageOpensMovesAndTicksASliderAtItsLevel()
         {
             float music = Options.Get(Options.Volume.Music);

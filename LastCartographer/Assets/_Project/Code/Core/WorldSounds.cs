@@ -51,6 +51,9 @@ namespace OWSBG.Core
         /// <summary>The pitch a seed drops at: a little higher for every seed it is worth, up to a fifth.</summary>
         public static float SeedPitch(int count) => 1f + 0.06f * Math.Max(0, Math.Min(8, count - 1));
 
+        /// <summary>The loop an updraft's air rushes on (AUD-25).</summary>
+        public const string UpdraftCue = "updraft_rise";
+
         /// <summary>A Cantor's eraser, sweep k of three (-1, 0, 1): the outer two a little under and over the middle one.</summary>
         public static float SweepPitch(int k) => 1f + 0.06f * Math.Max(-1, Math.Min(1, k));
 
@@ -87,6 +90,12 @@ namespace OWSBG.Core
             World("ability", "an ability learned: a flourish of the pen, rising", Ability, 0.8f);
             World("fade_step", "a place fades a stage: a soft pass of the eraser", FadeStep, 0.35f);
             World("erased", "a place erased: the eraser dragged across the page, twice, and the paper left", Erased, 0.6f);
+            // the props that move (AUD-25)
+            World("floor_break", "a weak floor giving way: a crack, the planks splintering and their grit falling", FloorBreak, 0.8f);
+            World("plank_drawn", "a plank drawn by the lantern's light: a quick stroke of the pen, rising", PlankDrawn, 0.35f);
+            World("plank_undrawn", "a plank let go as the light leaves it: a soft rub of the eraser", PlankUndrawn, 0.25f);
+            World("tide_sweep", "the tide taking her back to the bank: a wave rising, breaking and drawing off", TideSweep, 0.7f);
+            InkSounds.Add(UpdraftCue, InkSounds.Kind.World, "rising air: a rush that hisses under the room and carries", UpdraftRise, 0.35f, true);
             World("eraser_sweep", "a Cantor's toll: one sweep of the eraser across the room, rubber juddering on the page and the crumbs", EraserSweep, 0.45f);
             World("recovered", "a place recovered: ink drawn back", Recovered, 0.6f);
             World("anchor", "a place anchored: a stake driven and the Guild's seal pressed", Anchor, 0.9f);
@@ -239,6 +248,39 @@ namespace OWSBG.Core
             Smear(s, 0.4f, 0.35f, 1100f, 450f, 0.9f, 741, 0.03f, 0.12f);
             Smear(s, 0.7f, 0.19f, 300f, 150f, 0.4f, 742, 0.05f, 0.05f);   // the paper left
             return s;
+        }
+
+        static float[] FloorBreak()
+        {
+            var s = Buf(0.7f);
+            Click(s, 0f, 2400f, 1f, 1500);
+            Drop(s, 0f, 0.2f, 170f, 70f, 1f, 0.001f, 0.08f);                                  // the weight going through
+            Scratch(s, 0.01f, 0.12f, 1400f, 700f, 1.5f, 0.6f, 1501, 0.001f, 0.05f);            // the planks splintering
+            Grain(s, 0.05f, 0.6f, 90f, 0.01f, 1500f, 3500f, 2f, 0.6f, 1502, 8f);               // the grit falling, thinning
+            return s;
+        }
+
+        static float[] PlankDrawn() { var s = Buf(0.16f); Scratch(s, 0f, 0.13f, 1500f, 2600f, 2f, 1f, 1503, 0.004f, 0.04f); return s; }
+
+        static float[] PlankUndrawn() { var s = Buf(0.22f); Smear(s, 0f, 0.2f, 1100f, 600f, 1f, 1504, 0.02f, 0.08f); return s; }
+
+        static float[] TideSweep()
+        {
+            var s = Buf(1.1f);
+            Smear(s, 0f, 0.5f, 500f, 1600f, 0.8f, 1505, 0.25f, 0.1f);                          // the wave rising
+            Smear(s, 0.4f, 0.6f, 1800f, 400f, 1f, 1506, 0.01f, 0.4f);                           // breaking, and drawing off
+            for (int k = 0; k < 4; k++) Drop(s, 0.5f + k * 0.11f, 0.05f, 600f + k * 120f, 1300f + k * 200f, 0.3f, 0.002f, 0.02f);   // the foam
+            return s;
+        }
+
+        static float[] UpdraftRise()
+        {
+            const float Ov = 0.05f;
+            var s = Buf(1f + Ov);
+            Scratch(s, 0f, 1f + Ov, 900f, 900f, 0.8f, 0.7f, 1507, 0.05f, 10f);                  // the column's rush
+            Smear(s, 0f, 1f + Ov, 400f, 400f, 0.5f, 1508, 0.05f, 10f);                          // and its weight of air
+            Grain(s, 0f, 1f + Ov, 20f, 0.02f, 1500f, 2600f, 1f, 0.3f, 1509, soft: true);        // gusts in it
+            return EnemySounds.Seamless(s, Ov);
         }
 
         /// <summary>One sweep of a rubber eraser: a rub that judders as the rubber catches and lets go, and the crumbs.</summary>

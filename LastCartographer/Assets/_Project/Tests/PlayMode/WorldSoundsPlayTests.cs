@@ -35,6 +35,8 @@ namespace OWSBG.Tests
         int _mark;
         void Mark() => _mark = Bank.Recent.Count;
         System.Collections.Generic.List<string> Since => Bank.Recent.Skip(_mark).ToList();
+        /// <summary>The room's sounds since the mark, the pages' left out: a caption or a journal note is the page's toast as well.</summary>
+        System.Collections.Generic.List<string> RoomSince => Since.Where(id => InkSounds.Of(id)?.Bus != Mix.Bus.Ui).ToList();
 
         [SetUp]
         public void SetUp()
@@ -135,15 +137,15 @@ namespace OWSBG.Tests
             Assert.IsTrue(Places.Decide(w, "Sound_Test/Anchored", PlaceFate.Anchored));
             Assert.IsTrue(Places.Decide(w, "Sound_Test/Held", PlaceFate.Held));
             Assert.IsTrue(Places.Decide(w, "Sound_Test/Released", PlaceFate.Released));
-            CollectionAssert.AreEqual(new[] { "anchor", "held", "released" }, Since, "a stake, a hand, a breath");
+            CollectionAssert.AreEqual(new[] { "anchor", "held", "released" }, RoomSince, "a stake, a hand, a breath");
 
             Mark();
             Assert.IsTrue(FadeStages.Advance(w, "Sound_Test/Fading", 1));
-            CollectionAssert.AreEqual(new[] { "fade_step" }, Since, "a stage: one soft pass");
+            CollectionAssert.AreEqual(new[] { "fade_step" }, RoomSince, "a stage: one soft pass");
             yield return null;
             Mark();
             Assert.IsTrue(Atlas.Erase(w, "Sound_Test/Fading"));
-            CollectionAssert.AreEqual(new[] { "erased" }, Since, "an erasure is the eraser, not a stage as well");
+            CollectionAssert.AreEqual(new[] { "erased" }, RoomSince, "an erasure is the eraser, not a stage as well");
             yield return null;
 
             const string id = "Sound_Test/Commission";
@@ -152,7 +154,7 @@ namespace OWSBG.Tests
             Assert.IsTrue(Commissions.Take(w, id));
             Assert.IsTrue(Commissions.Fulfil(w, id));
             Assert.IsTrue(Commissions.Close(w, id));
-            CollectionAssert.AreEqual(new[] { "ledger_take", "commission_done", "stamp" }, Since, "posting is silent; then the tick, the stroke, the stamp");
+            CollectionAssert.AreEqual(new[] { "ledger_take", "commission_done", "stamp" }, RoomSince, "posting is silent; then the tick, the stroke, the stamp");
         }
 
         [UnityTest]
@@ -167,7 +169,7 @@ namespace OWSBG.Tests
             Mark();
             gate.Bump(ctrl);
             gate.Bump(ctrl);
-            CollectionAssert.AreEqual(new[] { "barred" }, Since, "one knock, not one a frame");
+            CollectionAssert.AreEqual(new[] { "barred" }, RoomSince, "one knock, not one a frame");
             Assert.Less(Bank.LastPan, 0f, "from the left, where the way is");
 
             Mark();

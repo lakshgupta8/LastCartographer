@@ -190,7 +190,14 @@ namespace OWSBG.Narrative
             var clips = AddressableArt.Sheets(character, Clips, go.scene.IsValid() ? FindRoomRoot(go) : go, out float cell);
             if (clips.Count == 0) return false;
             var old = go.transform.Find("Sprite");
-            if (old != null) Object.DestroyImmediate(old.gameObject);   // now, so NpcInk finds the drawn renderer, not the grey one
+            if (old != null)
+            {
+                // Out of the way now, so NpcInk and CrowdTurns find the drawing, not the grey quad; gone at the frame's end,
+                // since an island can be built inside a trigger (a drift crossing), where nothing may be destroyed at once.
+                old.name = "Sprite_Grey";
+                old.gameObject.SetActive(false);
+                Object.Destroy(old.gameObject);
+            }
             var q = Quad(go.transform, "Sprite", ink, LayerMask.LayerToName(go.layer), ShadowCastingMode.TwoSided);
             q.transform.localScale = new Vector3(faceLeft ? -cell : cell, cell, 1f);
             q.transform.localPosition = new Vector3(0f, cell * 0.5f, 0f);

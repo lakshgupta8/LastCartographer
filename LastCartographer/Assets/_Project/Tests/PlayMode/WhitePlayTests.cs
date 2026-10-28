@@ -25,13 +25,7 @@ namespace OWSBG.Tests
             Pause.End();
             GameState.NewGame();
             Bootstrap.SkipPrologueOverride = true;
-            var empty = SceneManager.CreateScene("TestEmpty_" + Random.Range(0, 1 << 20));
-            SceneManager.SetActiveScene(empty);
-            for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
-            {
-                var s = SceneManager.GetSceneAt(i);
-                if (s.name == Bootstrap.PersistentSceneName || s.name.StartsWith("Greybox_") || s.name.StartsWith(Islands.ScenePrefix)) yield return SceneManager.UnloadSceneAsync(s);
-            }
+            yield return Unload();
         }
 
         [UnityTearDown]
@@ -40,7 +34,20 @@ namespace OWSBG.Tests
             Bootstrap.SkipPrologueOverride = null;
             Time.timeScale = 1f;
             GameState.NewGame();
-            yield return null;
+            // The game and its rooms go with the test: a white room left behind drains the next test's Wren.
+            yield return Unload();
+        }
+
+        /// <summary>An empty scene active, and the game, its rooms and any island unloaded.</summary>
+        static IEnumerator Unload()
+        {
+            var empty = SceneManager.CreateScene("TestEmpty_" + Random.Range(0, 1 << 20));
+            SceneManager.SetActiveScene(empty);
+            for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
+            {
+                var s = SceneManager.GetSceneAt(i);
+                if (s.name == Bootstrap.PersistentSceneName || s.name.StartsWith("Greybox_") || s.name.StartsWith(Islands.ScenePrefix)) yield return SceneManager.UnloadSceneAsync(s);
+            }
         }
 
         static IEnumerator Until(System.Func<bool> cond, float seconds, string what)

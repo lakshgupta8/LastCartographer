@@ -57,6 +57,7 @@ namespace OWSBG.Tests
             for (int i = 0; i < 20; i++) yield return null;
             var cam = Camera.main;
             if (cam == null) yield break;
+            if (SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.Null) yield break;   // no GPU (-nographics): no picture
             var rt = new RenderTexture(1280, 720, 24);
             var before = cam.targetTexture;
             cam.targetTexture = rt;
@@ -78,6 +79,7 @@ namespace OWSBG.Tests
         [UnityTest]
         public IEnumerator BrannsFloorIsDrawnAndBurnsAsItIsDrawn()
         {
+            GameState.World.Set("emberdown.brann.met", 1);   // his words already said (BrannSpeaksFirstTests has them): straight to the fight
             yield return Into("Greybox_Emberdown_Stair_3", 2f);
             var brann = Object.FindFirstObjectByType<Brann>();
             Assert.IsNotNull(brann, "Brann waits in the cold furnace");

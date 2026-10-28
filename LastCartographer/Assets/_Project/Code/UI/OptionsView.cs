@@ -39,6 +39,7 @@ namespace OWSBG.UI
         int _listenEndedFrame = -1;
         VisualElement _panel, _rows;
         Label _title, _hint, _version;
+        InkLettering _titleLettering;   // the title in her hand (atlas-map.md §5)
         InputActionRebindingExtensions.RebindingOperation _listen;
 
         void Awake() { Instance = this; }
@@ -221,14 +222,15 @@ namespace OWSBG.UI
             _panel.style.translate = new Translate(new Length(-50, LengthUnit.Percent), new Length(-50, LengthUnit.Percent));
             _panel.style.width = 760;
             _title = InkTheme.TitleText("title", "", 34, InkTheme.Ink);
-            _title.style.marginBottom = 12;
+            _titleLettering = InkLettering.Over(_title, 34, InkTheme.Ink, InkLettering.Rule.Flourish);
+            _titleLettering.style.marginBottom = 12;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _hint = InkTheme.Text("hint", "", 18, InkTheme.Dim, FontStyle.Italic);
             _hint.style.marginTop = 14;
             _version = InkTheme.Text("version", "", 13, InkTheme.Dim);
             _version.style.marginTop = 6;
             _version.style.unityTextAlign = TextAnchor.MiddleRight;
-            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_hint); _panel.Add(_version);
+            _panel.Add(_titleLettering); _panel.Add(_rows); _panel.Add(_hint); _panel.Add(_version);
             InkTheme.Show(_panel, false);
             layer.Add(_panel);
             _built = true;
@@ -246,6 +248,7 @@ namespace OWSBG.UI
             if (Current == Page.Controls)
             {
                 _title.text = Loc.T("options.controls.title", "Controls");
+                _titleLettering.Follow();
                 var head = MakeRow(-1, "", Loc.T("options.controls.keyboard", "Keyboard"), Loc.T("options.controls.gamepad", "Gamepad"), true);
                 _rows.Add(head);
                 var asset = Controls.Asset;
@@ -263,6 +266,7 @@ namespace OWSBG.UI
                 return;
             }
             _title.text = Loc.T("options.title", "Options");
+            _titleLettering.Follow();
             for (int i = 0; i < ItemCount; i++) _rows.Add(MakeRow(i, Label((Item)i), Value((Item)i), "", Arrows((Item)i), verbatim: (Item)i == Item.Language));
             _hint.text = Loc.T("options.hint", "Up and down to choose, left and right to change. Esc to carry on.");
         }

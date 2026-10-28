@@ -29,6 +29,7 @@ namespace OWSBG.UI
         bool _wasFrozen, _built;
         VisualElement _panel, _open, _closed, _host, _carried;
         Label _title, _empty, _scraps, _toast, _hint;
+        InkLettering _titleLettering;   // the title in her hand (atlas-map.md §5)
         string _pendingToast;
         float _toastLeft;
 
@@ -154,7 +155,8 @@ namespace OWSBG.UI
             _panel.style.width = 860;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
             _title = InkTheme.Title("title", "journal.title", "Journal", 34, InkTheme.Wash);
-            _title.style.marginBottom = 14;
+            _titleLettering = InkLettering.Over(_title, 34, InkTheme.Wash, InkLettering.Rule.Flourish);
+            _titleLettering.style.marginBottom = 14;
             _empty = InkTheme.Say("empty", "journal.empty", "No commissions taken. The ledgers are at the hubs.", 17, InkTheme.Dim);
             _open = new VisualElement { name = "open", pickingMode = PickingMode.Ignore };
             _closed = new VisualElement { name = "closed", pickingMode = PickingMode.Ignore };
@@ -165,7 +167,7 @@ namespace OWSBG.UI
             _carried.style.marginTop = 12;
             _hint = InkTheme.Say("hint", "journal.hint", "M / Esc close", 15, InkTheme.Dim);
             _hint.style.marginTop = 12;
-            _panel.Add(_title); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(_carried); _panel.Add(_hint);
+            _panel.Add(_titleLettering); _panel.Add(_empty); _panel.Add(_open); _panel.Add(_closed); _panel.Add(_scraps); _panel.Add(_carried); _panel.Add(_hint);
             InkTheme.Show(_panel, false);
             if (_host != null) Host(); else ui.Desk.Add(_panel);
 

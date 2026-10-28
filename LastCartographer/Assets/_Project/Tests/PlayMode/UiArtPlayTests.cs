@@ -1,5 +1,6 @@
 #nullable enable
 using System.Collections;
+using System.Linq;
 using NUnit.Framework;
 using OWSBG.Core;
 using OWSBG.UI;
@@ -102,6 +103,45 @@ namespace OWSBG.Tests
 
             var death = _hud.Root.parent.Q<Label>("hud-death");
             Assert.AreSame(InkArt.TitleFont, death.style.unityFontDefinition.value.font, "the death line is in the serif");
+        }
+
+        static string Letters(string words) => new string(words.Where(c => !char.IsWhiteSpace(c)).Select(char.ToUpperInvariant).ToArray());
+
+        [UnityTest]
+        public IEnumerator EveryPagesTitleIsLetteredByHand()
+        {
+            // The desk, the ledger, the journal and the options letter their titles as the atlas does (atlas-map.md §5).
+            var ledger = _ui!.AddComponent<LedgerView>();
+            var journal = _ui.AddComponent<JournalView>();
+            var options = _ui.AddComponent<OptionsView>();
+            yield return Frames(3);
+            _menu!.Open(_ctrl!);
+            options.Open();
+            yield return Frames(2);
+            foreach (var (page, name) in new (VisualElement, string)[] { (_menu.Panel, "the desk"), (ledger.Panel, "the ledger"), (journal.Panel, "the journal"), (options.Panel, "the options") })
+            {
+                Assert.IsNotNull(page, name + " is built");
+                var lettering = page.Q<InkLettering>("title-lettering");
+                Assert.IsNotNull(lettering, name + "'s title is lettered");
+                var title = page.Q<Label>("title");
+                Assert.AreSame(title, lettering.Source, name + ": the words stay in its title");
+                Assert.IsNotEmpty(title.text, name + " has a title");
+                Assert.AreEqual(Letters(title.text), string.Concat(lettering.Glyphs.Select(g => g.text)), name + " lettered as its title says");
+            }
+
+            // A page that changes its title is lettered again at once: the options' Controls page.
+            var optionsLettering = options.Panel.Q<InkLettering>("title-lettering");
+            for (int i = 0; i < (int)OptionsView.Item.Controls; i++) options.MoveRow(1);
+            options.Activate();
+            Assert.AreEqual(Letters(Loc.T("options.controls.title", "Controls")), string.Concat(optionsLettering.Glyphs.Select(g => g.text)), "the Controls page lettered");
+            options.Close();
+
+            // High contrast recolours the letters with the rest of the page.
+            var desk = _menu.Panel.Q<InkLettering>("title-lettering");
+            Options.HighContrast = true;
+            yield return Frames(2);
+            Assert.AreEqual(InkTheme.Wash, desk.Glyphs[0].style.color.value, "the letters take the high-contrast ink");
+            Options.HighContrast = false;
         }
 
         [UnityTest]

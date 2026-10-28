@@ -46,6 +46,7 @@ namespace OWSBG.UI
         bool _wasFrozen, _built;
         VisualElement _panel, _rows;
         Label _title, _blurb, _flavour;
+        InkLettering _titleLettering;   // the title in her hand (atlas-map.md §5)
 
         public VisualElement Panel => _panel;
 
@@ -205,7 +206,8 @@ namespace OWSBG.UI
             _panel.style.width = 760;
             _panel.style.maxWidth = new Length(92, LengthUnit.Percent);
             _title = InkTheme.Title("title", "desk.title", "Drafting desk", 34, InkTheme.Wash);
-            _title.style.marginBottom = 14;
+            _titleLettering = InkLettering.Over(_title, 34, InkTheme.Wash, InkLettering.Rule.Flourish);
+            _titleLettering.style.marginBottom = 14;
             _rows = new VisualElement { name = "rows", pickingMode = PickingMode.Ignore };
             _blurb = InkTheme.Text("blurb", "", 16, InkTheme.Dim);
             _blurb.style.marginTop = 10;
@@ -214,7 +216,7 @@ namespace OWSBG.UI
             _flavour.style.marginTop = 4;
             var hint = InkTheme.Say("hint", "desk.hint", "↑↓ row    ◂▸ change    1-3 Charter    J seal / buy / leave    Esc leave", 15, InkTheme.Dim);
             hint.style.marginTop = 18;
-            _panel.Add(_title); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(_flavour); _panel.Add(hint);
+            _panel.Add(_titleLettering); _panel.Add(_rows); _panel.Add(_blurb); _panel.Add(_flavour); _panel.Add(hint);
             InkTheme.Show(_panel, false);
             ui.Desk.Add(_panel);
             _built = true;

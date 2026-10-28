@@ -99,6 +99,17 @@ namespace OWSBG.Core
         /// whisper where it is erased.</summary>
         public static float FadeGain(int stage) => Math.Max(0, Math.Min(stage, FadeStages.Max)) switch { 0 => 1f, 1 => 0.85f, 2 => 0.65f, 3 => 0.45f, _ => 0.3f };
 
+        // ---- other birds' feet (AUD-23) ----
+
+        /// <summary>How far a townsfolk this tall walks between footfalls: a sparrow's short steps, a goose's long ones.</summary>
+        public static float NpcStride(float height) => Math.Max(0.4f, 0.55f * height);
+
+        /// <summary>The pitch another bird's step is played at: the same ground, under smaller feet higher, under bigger lower.</summary>
+        public static float NpcPitch(float height) => (float)Math.Max(0.75, Math.Min(1.3, Math.Sqrt(1.8 / Math.Max(0.5f, height))));
+
+        /// <summary>How loud another bird's step is against hers: lighter, and lighter the smaller the bird; never hers.</summary>
+        public static float NpcGain(float height) => Math.Max(0.3f, Math.Min(0.7f, 0.25f + 0.2f * height));
+
         // ---- the wall (AUD-17; by its surface, AUD-21) ----
 
         /// <summary>The Talonhold's catch as she grips a wall of this surface.</summary>

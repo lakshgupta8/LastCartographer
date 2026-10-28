@@ -23,6 +23,7 @@ namespace OWSBG.Narrative
         System.Func<string, bool> _has;   // the sheet's Has, bound once: a method group passed each frame is a delegate each frame
         NpcSchedule _schedule;
         NpcTalker _talker;
+        NpcFootsteps _feet;
         float _lastX;
         bool _hasLast;
 
@@ -36,6 +37,8 @@ namespace OWSBG.Narrative
             _has = _sheet != null ? _sheet.Has : null;
             _schedule = GetComponent<NpcSchedule>();
             _talker = GetComponent<NpcTalker>();
+            _feet = GetComponent<NpcFootsteps>();
+            if (_feet == null) _feet = gameObject.AddComponent<NpcFootsteps>();   // every drawn bird's feet are heard (AUD-23)
         }
 
         void OnEnable() { _hasLast = false; }
@@ -79,6 +82,7 @@ namespace OWSBG.Narrative
             string activity = _schedule != null && !_schedule.IsWalking ? _schedule.Activity : null;
             if (string.IsNullOrEmpty(activity)) activity = _activity;   // a crowd's bird: what it stands doing
             _sheet.Play(Choose(talking, walking, activity, _has));
+            _feet.Tick(walking);
         }
     }
 }

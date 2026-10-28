@@ -18,6 +18,8 @@ namespace OWSBG.World
         public Vector2 WestBank { get => _westBank; set => _westBank = value; }
         public Vector2 EastBank { get => _eastBank; set => _eastBank = value; }
         public event Action<WrenController> Swept;
+        /// <summary>Any tide taking her back: the water sounds where it took her (AUD-25).</summary>
+        public static event Action<Tide, Vector2> AnySwept;
 
         static bool _captioned;
 
@@ -31,12 +33,14 @@ namespace OWSBG.World
         public void Sweep(WrenController wren)
         {
             Sweeps++;
+            var at = wren.Position;
             var vitals = wren.GetComponent<WrenVitals>();
             if (vitals != null && _maskCost > 0) vitals.Damage(_maskCost);
             float mid = (_westBank.x + _eastBank.x) * 0.5f;
             wren.Teleport(wren.Position.x < mid ? _westBank : _eastBank);
             if (!_captioned) { _captioned = true; Captions.Show(Loc.T("caption.tide", "The tide takes her back to the bank."), 3f); }
             Swept?.Invoke(wren);
+            AnySwept?.Invoke(this, at);
         }
     }
 }

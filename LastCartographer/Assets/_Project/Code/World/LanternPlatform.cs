@@ -1,3 +1,4 @@
+using System;
 using OWSBG.Core;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ namespace OWSBG.World
     {
         public float Radius = 3.5f;
         public bool IsDrawn { get; private set; }
+        /// <summary>A lantern platform drawn as she comes within reach (true) or let go as she leaves it (false): it sounds as it changes (AUD-25).</summary>
+        public static event Action<LanternPlatform, bool> Changed;
+        bool _woke;
         /// <summary>How far from her it is drawn: her lantern-radius.</summary>
         public float Reach => _clarity != null && _clarity.Radius > 0f ? _clarity.Radius : Radius;
         BoxCollider2D _box;
@@ -34,6 +38,7 @@ namespace OWSBG.World
             _minX = centre - half;
             _maxX = centre + half;
             Set(false);
+            _woke = true;
         }
 
         void FixedUpdate()
@@ -53,6 +58,7 @@ namespace OWSBG.World
             IsDrawn = drawn;
             _box.enabled = drawn;
             if (_visual != null) _visual.transform.localScale = new Vector3(_drawnScale.x, drawn ? _drawnScale.y : 0.05f, drawn ? _drawnScale.z : 0.05f);   // outline
+            if (_woke) Changed?.Invoke(this, drawn);
         }
     }
 }

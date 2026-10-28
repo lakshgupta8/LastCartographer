@@ -20,6 +20,7 @@ namespace OWSBG.World
         {
             _box = GetComponent<BoxCollider2D>();
             _box.isTrigger = true;
+            if (GetComponent<UpdraftVoice>() == null) gameObject.AddComponent<UpdraftVoice>();   // rising air is heard (AUD-25)
         }
 
         void FixedUpdate()

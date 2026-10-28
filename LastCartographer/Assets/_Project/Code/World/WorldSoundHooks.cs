@@ -9,7 +9,8 @@ namespace OWSBG.World
     /// its whump, the desk its rest, a seed its drop (pitched by its worth), a seal pressed its stamp, a place erased the
     /// eraser and one recovered the ink drawn back, a decision its sound, an ability its flourish, a shut way a knock, a
     /// thing thrown its end as it ended (on her, the ground, the air or unwritten: AUD-19), a Cantor's toll its eraser's
-    /// three sweeps, which are also the place's erasure when it erases one (AUD-22). Sounds with a place in the
+    /// three sweeps, which are also the place's erasure when it erases one (AUD-22), the props that move their own: a weak
+    /// floor giving way, a plank drawn by the light or let go, the tide taking her back (AUD-25). Sounds with a place in the
     /// room play from it. Wren's own (her Instruments, her Clarity, her Charter) are <see cref="WrenSounds"/>'; the
     /// pages' are the views' (<c>UiSounds</c>).
     /// </summary>
@@ -54,6 +55,10 @@ namespace OWSBG.World
             Offerings.Offered += OnOffered;
             EnemyProjectile.Spent += OnShotSpent;
             Cantor.Tolled += OnTolled;
+            WeakFloor.AnyBroke += OnFloorBroke;
+            HiddenPlatform.Solidified += OnHiddenPlank;
+            LanternPlatform.Changed += OnLanternPlank;
+            Tide.AnySwept += OnTide;
         }
 
         void OnDisable()
@@ -80,6 +85,10 @@ namespace OWSBG.World
             Offerings.Offered -= OnOffered;
             EnemyProjectile.Spent -= OnShotSpent;
             Cantor.Tolled -= OnTolled;
+            WeakFloor.AnyBroke -= OnFloorBroke;
+            HiddenPlatform.Solidified -= OnHiddenPlank;
+            LanternPlatform.Changed -= OnLanternPlank;
+            Tide.AnySwept -= OnTide;
         }
 
         void Play(string id, Vector2? at = null, float pitch = 1f)
@@ -120,6 +129,12 @@ namespace OWSBG.World
             if (c == null) return;
             for (int k = -1; k <= 1; k++) Play("eraser_sweep", Cantor.SweepAt(c.transform.position, k), WorldSounds.SweepPitch(k));
         }
+
+        // ---- the props that move (AUD-25) ----
+        void OnFloorBroke(WeakFloor f) => Play("floor_break", At(f));
+        void OnHiddenPlank(HiddenPlatform p, bool drawn) => Play(drawn ? "plank_drawn" : "plank_undrawn", At(p));
+        void OnLanternPlank(LanternPlatform p, bool drawn) => Play(drawn ? "plank_drawn" : "plank_undrawn", At(p));
+        void OnTide(Tide t, Vector2 at) => Play("tide_sweep", at);
 
         void LateUpdate() { _hush = false; }
     }
